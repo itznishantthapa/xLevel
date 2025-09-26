@@ -1,0 +1,1 @@
+export { default as ShakeText } from './ShakeText'

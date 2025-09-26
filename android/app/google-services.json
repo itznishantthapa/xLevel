@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "901665380294",
+    "project_id": "wingo-31228",
+    "storage_bucket": "wingo-31228.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:901665380294:android:02d21a5ed36700b68f44c7",
+        "android_client_info": {
+          "package_name": "com.blackonedevs.levelesportmatchmaking"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "901665380294-qgoj8tt5ad89a0rp01aee5424i9h8n63.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.blackonedevs.levelesportmatchmaking",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "901665380294-v3ob04ujmlqlugqhtm6bb09asm9b6sp2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.blackonedevs.levelesportmatchmaking",
+            "certificate_hash": "dbc9552100891045b05232bd9b89389211437564"
+          }
+        },
+        {
+          "client_id": "901665380294-lhur8lkcqkdt1d0e9b5q3p25mknfejbs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3TewYP06PeCVZRv1c74QjF192SfSqPxo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "901665380294-lhur8lkcqkdt1d0e9b5q3p25mknfejbs.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "901665380294-39c7o3o12jti8oag7v5dlqjtnrd091md.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.blackonedevs.xkickesportmatchmaking"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "name": "Level",
+    "slug": "Level",
+    "version": "1.3.0",
+    "android": {
+      "package": "com.blackonedevs.levelesportmatchmaking"
+    },
+    "ios": {
+      "bundleIdentifier": "com.blackonedevs.levelesportmatchmaking"
+    }
+  }
+}

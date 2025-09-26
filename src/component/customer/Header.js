@@ -1,0 +1,327 @@
+"use client"
+
+import { Image, Platform, Pressable, StyleSheet, Text, View } from "react-native"
+import { useMemo } from "react"
+import { Octicons, Entypo, MaterialIcons, Fontisto, MaterialCommunityIcons, Ionicons, FontAwesome6 } from "@expo/vector-icons"
+import { useThemeStore } from "../../store/themeStore"
+import { useSocials } from "../../queries/useSocials"
+import { useAuthStore } from "../../store/authStore"
+import { scaleWidth } from "../../utils/scaling"
+
+const Header = ({
+  player_name,
+  wallet_balance,
+  profile_picture,
+  handleProfile,
+  handleMessenger,
+  handleInstagram,
+  handleWhatsapp,
+}) => {
+  const { data: socials = [] } = useSocials()
+  const { isLight } = useThemeStore()
+   const { user } = useAuthStore()
+  const { displayName, availableSocials, themeStyles } = useMemo(() => {
+    const firstName = player_name ? player_name.split(" ")[0] : ""
+    const computedDisplayName = firstName.length > 10 ? `${firstName.slice(0, 10)}...` : firstName
+
+    const socialMap = {
+      Messenger: { icon: "messenger", IconComponent: Fontisto, handler: handleMessenger },
+      Instagram: { icon: "instagram", IconComponent: Entypo, handler: handleInstagram },
+      Whatsapp: { icon: "logo-whatsapp", IconComponent: Ionicons, handler: handleWhatsapp },
+    }
+
+    const filteredSocials = socials
+      .filter((social) => socialMap[social.name])
+      .map((social) => ({ ...social, ...socialMap[social.name] }))
+
+    const computedThemeStyles = {
+      textColor: isLight ? "#333333" : "#EAEAEA",
+      iconColor: isLight ? "#333333" : "#EAEAEA",
+      buttonBackground: isLight ? "#fafafa" : "rgba(255, 255, 255, 0.1)",
+      profileBackground: isLight ? "#dadada" : "#444444",
+    }
+
+    return {
+      displayName: computedDisplayName,
+      availableSocials: filteredSocials,
+      themeStyles: computedThemeStyles,
+    }
+  }, [player_name, socials, isLight, handleMessenger, handleInstagram, handleWhatsapp])
+
+  const ProfileImage = () => {
+    // Determine which tag to show based on user enhancer data (only show active tags)
+    const getTagText = () => {
+      if (user?.enhancer?.active_hacker_tag) return 'Hcker'
+      if (user?.enhancer?.active_pro_tag) return 'Pro'
+      return null
+    }
+
+    const tagText = getTagText()
+
+    // Tag component to avoid duplication
+    const TagComponent = () => (
+      tagText ? (
+        <View style={{
+          position: 'absolute',
+          bottom: -6,
+          left: '50%',
+          transform: [{ translateX: -12 }],
+          backgroundColor: isLight ? '#000000' : '#ffffff',
+          paddingHorizontal: scaleWidth(6),
+          paddingVertical: scaleWidth(2),
+          borderRadius: scaleWidth(8),
+          borderWidth: scaleWidth(1),
+          borderColor: isLight ? '#ffffff' : '#000000',
+          shadowColor: '#000000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.25,
+          shadowRadius: 3.84,
+          elevation: 5,
+        }}>
+          <Text style={{
+            color: isLight ? '#ffffff' : '#000000',
+            fontSize: scaleWidth(8),
+            fontWeight: 'bold',
+            textAlign: 'center'
+          }}>
+            {tagText}
+          </Text>
+        </View>
+      ) : null
+    )
+
+    if (profile_picture) {
+      return (
+        <View style={styles.profileImageContainer}>
+          <Image
+            source={{ uri: profile_picture }}
+            style={styles.profileImage}
+            resizeMode="cover"
+            accessibilityLabel={`${player_name}'s profile picture`}
+          />
+          <TagComponent />
+        </View>
+      )
+    }
+
+    return (
+      <View style={styles.profileImageContainer}>
+        <View style={[styles.profileFallback, { backgroundColor: themeStyles.profileBackground }]}>
+          <Octicons name="feed-person" size={32} color={themeStyles.iconColor} accessibilityLabel="Default profile icon" />
+        </View>
+        <TagComponent />
+      </View>
+    )
+  }
+
+  return (
+    <View style={styles.header}>
+      {/* Left Section - Profile and User Info */}
+      <View style={styles.leftSection}>
+        <Pressable
+          style={styles.profileContainer}
+          onPress={handleProfile}
+          accessibilityRole="button"
+          accessibilityLabel="Open profile"
+        >
+          <ProfileImage />
+        </Pressable>
+
+        <View style={styles.userInfo}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+            <Text
+              style={[styles.greeting, { color: themeStyles.textColor }]}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              accessibilityLabel={`Hi, ${displayName}`}
+            >
+              Hi, {displayName}
+            </Text>
+            <FontAwesome6 name="hand-peace" size={18} color={themeStyles.iconColor} />
+          </View>
+
+          <Text
+            style={[styles.subtitle, { color: themeStyles.textColor }]}
+            accessibilityLabel="Get ready for the battle"
+          >
+            Get ready for the battle.
+          </Text>
+        </View>
+
+      </View>
+
+
+      {/* Right Section - Balance and Social Actions */}
+      <View style={styles.rightSection}>
+        <View
+          style={styles.balanceContainer}
+        >
+          <View style={styles.balanceContent}>
+            <Text style={{ color: '#00bf63', fontSize: 12 }}>Points</Text>
+
+
+            <Text style={styles.balanceText}>
+              {typeof wallet_balance === "number" ? wallet_balance.toFixed(2) : wallet_balance}
+            </Text>
+          </View>
+        </View>
+
+
+
+
+        {availableSocials.length > 0 && (
+          <View style={styles.socialSection}>
+
+
+            <View style={styles.socialContainer}>
+ 
+
+
+
+              {availableSocials.map((social) => {
+                const { IconComponent, icon, handler, name } = social
+                return (
+                  <Pressable
+                    key={name}
+                    style={[styles.socialButton, { backgroundColor: themeStyles.buttonBackground }]}
+                    onPress={handler}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Open ${name}`}
+                  >
+                    <IconComponent name={icon} size={20} color={themeStyles.iconColor} />
+                  </Pressable>
+                )
+              })}
+            </View>
+
+
+
+          </View>
+        )}
+      </View>
+    </View>
+  )
+}
+
+export default Header
+
+const styles = StyleSheet.create({
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 12,
+  },
+  leftSection: {
+    flexDirection: "row",
+    flex: 1,
+    alignItems: "center",
+  },
+  profileContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 28,
+    marginRight: 12,
+    position: 'relative',
+  },
+  profileImageContainer: {
+    width: '100%',
+    height: '100%',
+    position: 'relative',
+  },
+  profileImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 28,
+  },
+  profileFallback: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 28,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 2,
+    borderColor: "rgba(255, 255, 255, 0.1)",
+  },
+  userInfo: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  greeting: {
+    fontSize: 20,
+    fontWeight: "700",
+    marginBottom: 2,
+    lineHeight: 24,
+  },
+  subtitle: {
+    fontSize: 14,
+    fontWeight: "500",
+    opacity: 0.8,
+    lineHeight: 18,
+  },
+  rightSection: {
+    alignItems: "flex-end",
+    gap: 10,
+  },
+  balanceContainer: {
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 24,
+    flexDirection: "row",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 3,
+    minWidth: 80,
+  },
+  balanceContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: 8,
+  },
+  balanceText: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#333",
+    marginLeft: 6,
+  },
+  socialSection: {
+    alignItems: "flex-end",
+    gap: 6,
+
+  },
+  contactUsText: {
+    fontSize: 12,
+    fontWeight: "500",
+    opacity: 0.8,
+    textAlign: "right",
+  },
+  socialContainer: {
+    flexDirection: "row",
+    gap: 8,
+
+  },
+  socialButton: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+})

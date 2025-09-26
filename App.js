@@ -1,0 +1,48 @@
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import Main from './src/main/Main';
+import SystemNavigationBar from 'react-native-system-navigation-bar';
+import { useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
+import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
+import { queryClient } from './src/lib/queryClient';
+import { ErrorBoundary } from 'react-error-boundary';
+import AppErrorFallback from './src/component/customer/fallback/AppErrorFallback';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { BottomSheetProvider } from './src/context/BottomSheetContext';
+
+
+export default function App() {
+  
+  const asyncStoragePersister = createAsyncStoragePersister({
+    storage: AsyncStorage,
+  });
+
+  useEffect(() => {
+    SystemNavigationBar.setNavigationColor('transparent');
+  }, []);
+
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+    <ErrorBoundary
+      FallbackComponent={AppErrorFallback}
+      onError={(error, info) => {
+        if (__DEV__) console.error('Global UI Error:', error, info); 
+      }}
+    >
+      <PersistQueryClientProvider
+        client={queryClient}
+        persistOptions={{ persister: asyncStoragePersister }}
+      >
+
+          <SafeAreaProvider style={{ flex: 1 }}>
+            <BottomSheetProvider>
+              <Main />
+            </BottomSheetProvider>
+          </SafeAreaProvider>
+
+      </PersistQueryClientProvider>
+    </ErrorBoundary>
+    </GestureHandlerRootView>
+  );
+}

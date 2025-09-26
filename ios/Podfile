@@ -1,0 +1,160 @@
+require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
+require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
+
+require 'json'
+require 'fileutils' # Required for FileUtils.mkdir_p
+podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties.json'))) rescue {}
+
+ENV['RCT_NEW_ARCH_ENABLED'] = '0' if podfile_properties['newArchEnabled'] == 'false'
+ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] = podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
+
+platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
+install! 'cocoapods',
+  :deterministic_uuids => false
+
+prepare_react_native_project!
+
+target 'Level' do
+  use_modular_headers!
+  use_expo_modules!
+
+  if ENV['EXPO_USE_COMMUNITY_AUTOLINKING'] == '1'
+    config_command = ['node', '-e', "process.argv=['', '', 'config'];require('@react-native-community/cli').run()"];
+  else
+    config_command = [
+      'npx',
+      'expo-modules-autolinking',
+      'react-native-config',
+      '--json',
+      '--platform',
+      'ios'
+    ]
+  end
+
+  config = use_native_modules!(config_command)
+
+  use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
+  use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
+
+  use_react_native!(
+    :path => config[:reactNativePath],
+    :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
+    # An absolute path to your application root.
+    :app_path => "#{Pod::Config.instance.installation_root}/..",
+    :privacy_file_aggregation_enabled => podfile_properties['apple.privacyManifestAggregationEnabled'] != 'false',
+  )
+
+  post_install do |installer|
+    react_native_post_install(
+      installer,
+      config[:reactNativePath],
+      :mac_catalyst_enabled => false,
+      :ccache_enabled => podfile_properties['apple.ccacheEnabled'] == 'true',
+    )
+
+    # This is necessary for Xcode 14, because it signs resource bundles by default
+    # when building for devices.
+    installer.target_installation_results.pod_target_installation_results
+      .each do |pod_name, target_installation_result|
+      target_installation_result.resource_bundle_targets.each do |resource_bundle_target|
+        resource_bundle_target.build_configurations.each do |config|
+          config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
+        end
+      end
+    end
+
+    # Added
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+      end
+    end
+
+    # Fix ALL problematic modulemap files that cause redefinition errors
+    
+    # List of known problematic modulemaps
+    problematic_modulemaps = [
+      "React-jsitooling.modulemap",
+      "ReactCommon.modulemap",
+      "react_runtime.modulemap",
+      "react_debug.modulemap",
+      "React-debug.modulemap",
+      "React-Core.modulemap",
+      "React-RCTRuntime.modulemap"
+    ]
+    
+    # Fix all modulemaps in Headers directory
+    Dir.glob("./Pods/Headers/**/*.modulemap").each do |file|
+      basename = File.basename(file)
+      
+      # Check if this is a problematic modulemap
+      if problematic_modulemaps.include?(basename) || 
+         basename.include?("React") || 
+         basename.include?("react")
+        
+        # Get content to check if it's causing redefinition
+        content = File.read(file) rescue ""
+        if content.include?("module ReactCommon") || content.include?("module react_runtime")
+          puts "Neutralizing problematic modulemap: #{file}"
+          begin
+            File.open(file, 'w') do |f|
+              f.puts "// Empty modulemap to avoid redefinition errors"
+              f.puts "// Original content removed to prevent module redefinition errors"
+              f.puts "// Original module: #{basename}"
+            end
+          rescue => e
+            puts "Failed to update #{file}: #{e.message}"
+          end
+        end
+      end
+    end
+    
+    # Also check source files
+    Dir.glob("../node_modules/react-native/**/*.modulemap").each do |file|
+      basename = File.basename(file)
+      
+      if problematic_modulemaps.include?(basename) || 
+         basename.include?("React") || 
+         basename.include?("react")
+        
+        content = File.read(file) rescue ""
+        if content.include?("module ReactCommon") || content.include?("module react_runtime")
+          puts "Neutralizing source modulemap: #{file}"
+          begin
+            File.open(file, 'w') do |f|
+              f.puts "// Empty modulemap to avoid redefinition errors"
+              f.puts "// Original content removed to prevent module redefinition errors"
+              f.puts "// Original module: #{basename}"
+            end
+          rescue => e
+            puts "Failed to update source file #{file}: #{e.message}"
+          end
+        end
+      end
+    end
+    
+    # Specifically ensure the previously problematic files exist with safe content
+    [
+      "./Pods/Headers/Public/react_runtime/React-jsitooling.modulemap",
+      "./Pods/Headers/Public/ReactCommon/ReactCommon.modulemap"
+    ].each do |specific_file|
+      if !File.exist?(specific_file)
+        dir = File.dirname(specific_file)
+        if !Dir.exist?(dir)
+          puts "Creating directory: #{dir}"
+          FileUtils.mkdir_p(dir)
+        end
+        
+        puts "Creating empty placeholder modulemap: #{specific_file}"
+        begin
+          File.open(specific_file, 'w') do |f|
+            f.puts "// Empty modulemap to avoid redefinition errors"
+            f.puts "// This file was created by the post_install hook"
+          end
+        rescue => e
+          puts "Failed to create #{specific_file}: #{e.message}"
+        end
+      end
+    end
+  end
+end

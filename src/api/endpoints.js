@@ -1,0 +1,70 @@
+// api/endpoints.js
+// Centralized API route paths for easy maintenance
+
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+
+export const endpoints = {
+  // Auth
+  signup: "/api/user/signup/",
+  login: "/api/user/login/",
+  getUser: "/api/user/get-user/",
+  updateUser: "/api/user/update-profile/",
+  deleteUser: "/api/user/delete-account/",
+  googleSignup: "/api/user/google/auth/",
+  refreshUserData: "/api/auth/refresh-user-data/",
+  refreshToken: "/api/user/refresh-token/",
+  updateGamePoints: "/api/user/update-game-points/",
+  getLeaderboard: "/api/user/leaderboard/",
+  blockUser:"/api/user/block-user/",
+  unblockUser:"/api/user/unblock-user/",
+  getBlockedUsers:"/api/user/blocked-users/",
+
+  //enhancements
+  getEnhancements: "/api/enhancer/get-enhancers/",
+  exchangeEnhancements: "/api/enhancer/exchange/",
+  updateTagStatus:"/api/enhancer/update-tag-status/",
+
+
+  // Notifications
+  postFCMToken: "/api/notification/save-fcm-token/",
+  deleteFCMToken: "/api/notification/delete-fcm-token/",
+  getUserNotificationsOnLoads: "/api/notification/user-notifications-on-loads/",
+  getBanners: "/api/notification/banners/",
+
+  // Games
+  games: "/api/games/",
+  getGameProfiles: "/api/games/profiles/",
+  saveGameProfile: "/api/games/profiles/save/",
+  getGameRules: "/api/games/rules/",
+
+  // Socials
+  getSocials: "/api/social/",
+
+  // Challenges
+  getUpcomingGames: "/api/challenges/official/",
+  getOpenChallenges: "/api/challenges/customer-challenges/",
+  createChallenge: "/api/challenges/create/",
+  joinChallenge: "/api/challenges/join/",
+  submitResult: "/api/results/submit/",
+  getResult:"/api/results/get_result/",
+
+
+  updateOnChallenge: "/api/challenges/update-on-challenge/",
+  deleteChallenge: "/api/challenges/cancel/",
+  leaveChallenge: "/api/challenges/leave/",
+
+
+
+  getMatchesOnLoads: "/api/challenges/get-user-matches-on-loads/",
+  getOpenChallengesOnLoads: "/api/challenges/get-open-challenges-on-loads/",
+  getTournamentsOnLoads: "/api/challenges/get-user-tournaments-on-loads/",
+  confirmOpponent: "/api/challenges/confirm-opponent/",
+
+
+  //issues
+  createIssue:"/api/issues/create/",
+  getIssues:"/api/issues/my-issues/",
+  
+};
+
+
