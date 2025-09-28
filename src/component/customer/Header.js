@@ -18,21 +18,31 @@ const Header = ({
   handleWhatsapp,
 }) => {
   const { data: socials = [] } = useSocials()
+
+ 
+
   const { isLight } = useThemeStore()
    const { user } = useAuthStore()
   const { displayName, availableSocials, themeStyles } = useMemo(() => {
     const firstName = player_name ? player_name.split(" ")[0] : ""
     const computedDisplayName = firstName.length > 10 ? `${firstName.slice(0, 10)}...` : firstName
 
+    // Map using lowercase keys so incoming API variations (e.g. WhatsApp / Whatsapp) still match
     const socialMap = {
-      Messenger: { icon: "messenger", IconComponent: Fontisto, handler: handleMessenger },
-      Instagram: { icon: "instagram", IconComponent: Entypo, handler: handleInstagram },
-      Whatsapp: { icon: "logo-whatsapp", IconComponent: Ionicons, handler: handleWhatsapp },
+      messenger: { icon: "messenger", IconComponent: Fontisto, handler: handleMessenger },
+      instagram: { icon: "instagram", IconComponent: Entypo, handler: handleInstagram },
+      whatsapp: { icon: "logo-whatsapp", IconComponent: Ionicons, handler: handleWhatsapp },
     }
 
     const filteredSocials = socials
-      .filter((social) => socialMap[social.name])
-      .map((social) => ({ ...social, ...socialMap[social.name] }))
+      .map((social) => {
+        const key = social?.name?.toLowerCase?.() || "";
+        if (socialMap[key]) {
+          return { ...social, ...socialMap[key] }
+        }
+        return null
+      })
+      .filter(Boolean)
 
     const computedThemeStyles = {
       textColor: isLight ? "#333333" : "#EAEAEA",

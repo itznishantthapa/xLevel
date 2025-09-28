@@ -133,7 +133,7 @@ export default function RootLayout() {
     let mounted = true;
 
     const handleFCMCheckAndInit = async () => {
-      if (isAuthenticated && isCustomer && isInitialized) {
+      if (isAuthenticated && (isCustomer || isAdmin) && isInitialized) {
         if (!mounted) return;
 
         // (re)initialize listeners & channels

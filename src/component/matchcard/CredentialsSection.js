@@ -63,8 +63,8 @@ const CredentialsSection = ({
     const response = await credentials.sendCredentials(game, handleSendGameCredentials)
   }
 
-  // Don't show credentials section if match is completed or cancelled
-  if (game.status === "completed" || game.status === "cancelled") {
+  // Don't show credentials section if match is completed, cancelled, or at least one result is submitted
+  if (game.status === "completed" || game.status === "cancelled" || game?.at_least_one_result_submitted) {
     return null
   }
 

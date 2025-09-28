@@ -1,24 +1,49 @@
+import React from 'react'
 import { StatusBar, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useNavigation } from '@react-navigation/native'
+import { MaterialIcons, Ionicons } from '@expo/vector-icons'
 
 const Dashboard = () => {
-  const navigation = useNavigation();
   return (
     <>
-            <StatusBar
-              translucent
-              backgroundColor="transparent"
-              barStyle="light-content"
-            />
+      <StatusBar
+        translucent
+        backgroundColor="transparent"
+        barStyle="light-content"
+      />
 
-            <SafeAreaView style={{ flex: 1, backgroundColor: 'brown' }}>
-              <Text style={styles.favTxt}>Admin Dashboard</Text>
-              <View style={styles.container}>
-                <Text style={styles.text} onPress={() => navigation.navigate('profile')}>Click</Text>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.headerTitle}>Hello Admin !</Text>
+          </View>
+
+          {/* Success Card */}
+          <View style={styles.successCard}>
+            <View style={styles.iconContainer}>
+              <Ionicons name="checkmark-circle" size={48} color="#00bf63" />
+            </View>
+            
+            <Text style={styles.successTitle}>Logged In</Text>
+            <Text style={styles.successMessage}>
+              You have successfully logged in as admin and ready to receive admin notifications to your device.
+            </Text>
+
+            <View style={styles.featuresContainer}>
+              <View style={styles.featureItem}>
+                <MaterialIcons name="notifications-active" size={20} color="#00bf63" />
+                <Text style={styles.featureText}>Push Notifications Enabled</Text>
               </View>
-            </SafeAreaView>
-
+              
+              <View style={styles.featureItem}>
+                <MaterialIcons name="admin-panel-settings" size={20} color="#00bf63" />
+                <Text style={styles.featureText}>Admin Access Granted</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+      </SafeAreaView>
     </>
   )
 }
@@ -26,19 +51,72 @@ const Dashboard = () => {
 export default Dashboard
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#000000',
+  },
   container: {
     flex: 1,
-    justifyContent: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  header: {
     alignItems: 'center',
+    marginBottom: 40,
+    paddingTop: 20,
   },
-  favTxt: {
-    color: '#ffffff'
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginBottom: 8,
   },
-  text: {
-    fontSize: 20,
-    color: 'black',
-    padding: 10,
-    backgroundColor: 'red',
-    borderRadius: 10,
-  }
+  headerSubtitle: {
+    fontSize: 16,
+    color: '#cccccc',
+    textAlign: 'center',
+  },
+  successCard: {
+    backgroundColor: '#1a1a1a',
+    borderRadius: 16,
+    padding: 30,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#333333',
+  },
+  iconContainer: {
+    marginBottom: 20,
+  },
+  successTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  successMessage: {
+    fontSize: 16,
+    color: '#cccccc',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 30,
+  },
+  featuresContainer: {
+    width: '100%',
+    gap: 16,
+  },
+  featureItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: '#2a2a2a',
+    borderRadius: 12,
+    gap: 12,
+  },
+  featureText: {
+    fontSize: 16,
+    color: '#ffffff',
+    fontWeight: '500',
+  },
 })

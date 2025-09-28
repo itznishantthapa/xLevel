@@ -1,4 +1,3 @@
-import Toast from 'react-native-simple-toast';
 import { Linking } from 'react-native';
 
 /**
@@ -33,5 +32,6 @@ export const handleInstagram = async (appUrl, webUrl) => {
 };
 
 export const handleWhatsapp = async (appUrl, webUrl) => {
+  console.log("WhatsApp URLs:", { appUrl, webUrl });
   await handleSocialLink(appUrl, webUrl, 'WhatsApp');
 };

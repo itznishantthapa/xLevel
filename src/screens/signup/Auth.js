@@ -41,8 +41,8 @@ import { checkFCMTokenInStorage } from '../../utils/tokenUtils';
 const GOOGLE_WEB_CLIENT_ID = "901665380294-lhur8lkcqkdt1d0e9b5q3p25mknfejbs.apps.googleusercontent.com";
 const MINIMUM_AGE = 18;
 const DEFAULT_DATE = new Date(2000, 0, 1);
-const PRIVACY_URL = "https://levelwise.games/privacy";
-const TERMS_URL = "https://levelwise.games/terms";
+const PRIVACY_URL = "https://level.com.np/privacy";
+const TERMS_URL = "https://level.com.np/terms";
 
 // Animation configuration
 const ANIMATION_CONFIG = {

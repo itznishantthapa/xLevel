@@ -7,9 +7,9 @@ import { endpoints } from "./endpoints";
 
 // Central API client
 export const API = axios.create({
-  baseURL: "http://192.168.1.86:8000",
+  baseURL: "https://level-esport-matchmaking-gbfmu.ondigitalocean.app",
   headers: { "Content-Type": "application/json" },
-  timeout: 10000,
+  timeout: 6000,
 });
 
 // Inject bearer token from storage before every request (except auth endpoints)
@@ -112,7 +112,7 @@ API.interceptors.response.use(
     }
 
     // Your error handling messages
-    let message = "Something went wrong. Please try again.";
+    let message = "Relaunch required.";
     const backendMessage = error?.response?.data?.message;
     const errorsObj = error?.response?.data?.errors;
 

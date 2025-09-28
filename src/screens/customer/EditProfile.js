@@ -6,7 +6,8 @@ import {
   Pressable,
   TextInput,
   Image,
-  ScrollView
+  ScrollView,
+  Keyboard
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
@@ -145,6 +146,9 @@ const EditProfile = () => {
 
   //============Save Button Function============
   const handleSave = async () => {
+
+
+
     const profileChanged = hasProfileChanges()
     const tagChanged = hasTagChanges()
     
@@ -160,6 +164,7 @@ const EditProfile = () => {
       // Only validate and update profile if profile data changed
       if (profileChanged) {
         await editProfileSchema.validate({ full_name: profileData.full_name })
+        Keyboard.dismiss()
         await handleUpdateUser()
       }
 

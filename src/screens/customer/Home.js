@@ -235,17 +235,18 @@ useEffect(() => {
    */
 
   const handleMessengerWrapper = () => {
-    const messengerData = socials.find((social) => social.name === "Messenger")
+    const messengerData = socials.find((social) => social.name?.toLowerCase() === "messenger")
     handleMessenger(messengerData?.url, messengerData?.web_url)
   }
 
   const handleInstagramWrapper = () => {
-    const instagramData = socials.find((social) => social.name === "Instagram")
+    const instagramData = socials.find((social) => social.name?.toLowerCase() === "instagram")
     handleInstagram(instagramData?.url, instagramData?.web_url)
   }
 
   const handleWhatsappWrapper = () => {
-    const whatsappData = socials.find((social) => social.name === "Whatsapp")
+    // Use case-insensitive match; API may return "WhatsApp", "Whatsapp", etc.
+    const whatsappData = socials.find((social) => social.name?.toLowerCase() === "whatsapp")
     handleWhatsapp(whatsappData?.url, whatsappData?.web_url)
   }
 

@@ -22,8 +22,8 @@ import { scaleWidth } from "../../utils/scaling"
  */
 const Profile = () => {
   // Constants for legal URLs
-  const PRIVACY_URL = "https://levelwise.games/privacy";
-  const TERMS_URL = "https://levelwise.games/terms";
+  const PRIVACY_URL = "https://level.com.np/privacy";
+  const TERMS_URL = "https://level.com.np/terms";
 
   // Global state and hooks
   const navigation = useNavigation()
@@ -159,7 +159,7 @@ const Profile = () => {
                 <Text style={[styles.sectionTitle, { color: colors.text }]}>Game Profiles</Text>
                 <Pressable style={styles.addButton} onPress={() => navigation.navigate("setupGameInfo")}>
                   <MaterialIcons name="add" size={18} color="#00bf63" />
-                  <Text style={styles.addButtonText}>Add Game</Text>
+                  <Text style={styles.addButtonText}>Add Game Profiles</Text>
                 </Pressable>
               </View>
 
