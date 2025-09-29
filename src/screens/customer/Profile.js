@@ -344,7 +344,7 @@ const Profile = () => {
                 >
                   <View style={styles.actionContent}>
                     <MaterialCommunityIcons name="delete-variant" size={20} color={colors.text} />
-                    <Text style={[styles.actionText, { color: colors.text }]}>Account Deletion</Text>
+                    <Text style={[styles.actionText, { color: colors.text }]}>Deletion</Text>
                   </View>
                   <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
                 </Pressable>
