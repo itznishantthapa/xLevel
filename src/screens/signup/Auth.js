@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import { AntDesign, MaterialIcons } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Animated, {
   useSharedValue,
@@ -122,48 +122,51 @@ const Auth = () => {
 
   // Animation Functions
   const animateToWelcomeScreen = () => {
-    // Step 1: Show "Verified ✓" with celebration animation
-    titleScale.value = withSequence(
-      withTiming(1.1, { duration: 200, easing: Easing.out(Easing.cubic) }),
-      withTiming(1, { duration: 200, easing: Easing.out(Easing.cubic) })
-    );
-    
-    // Update to verified state
+    // Step 0: Wait for 0.3 seconds before starting verification animation
     setTimeout(() => {
-      runOnJS(setIsVerificationComplete)(true);
-    }, 100);
-
-    // Step 2: After showing "Verified", fade out age verification section
-    setTimeout(() => {
-      ageVerificationOpacity.value = withTiming(0, ANIMATION_CONFIG);
-      ageVerificationTranslateY.value = withTiming(-20, ANIMATION_CONFIG);
-    }, 1200); // Show "Verified" for 1.2 seconds
-
-    // Step 3: Animate title to "You're Welcome" and show auth section
-    setTimeout(() => {
-      // Animate title change
+      // Step 1: Show "Verified ✓" with celebration animation
       titleScale.value = withSequence(
-        withTiming(1.05, { duration: 200 }),
-        withTiming(1, { duration: 200 })
+        withTiming(1.1, { duration: 300, easing: Easing.out(Easing.cubic) }),
+        withTiming(1, { duration: 300, easing: Easing.out(Easing.cubic) })
       );
       
-      runOnJS(setIsAgeVerified)(true);
-      
-      // Animate in the auth section with slight delay
-      authSectionOpacity.value = withDelay(150, 
-        withTiming(1, {
-          duration: 500,
-          easing: Easing.out(Easing.cubic)
-        })
-      );
-      
-      authSectionTranslateY.value = withDelay(150,
-        withTiming(0, {
-          duration: 500,
-          easing: Easing.out(Easing.cubic)
-        })
-      );
-    }, 1500); // Total delay before showing welcome screen
+      // Update to verified state
+      setTimeout(() => {
+        runOnJS(setIsVerificationComplete)(true);
+      }, 100);
+
+      // Step 2: After showing "Verified", fade out age verification section
+      setTimeout(() => {
+        ageVerificationOpacity.value = withTiming(0, ANIMATION_CONFIG);
+        ageVerificationTranslateY.value = withTiming(-20, ANIMATION_CONFIG);
+      }, 1200); // Show "Verified" for 1.2 seconds
+
+      // Step 3: Animate title to "You're Welcome" and show auth section
+      setTimeout(() => {
+        // Animate title change
+        titleScale.value = withSequence(
+          withTiming(1.05, { duration: 200 }),
+          withTiming(1, { duration: 200 })
+        );
+        
+        runOnJS(setIsAgeVerified)(true);
+        
+        // Animate in the auth section with slight delay
+        authSectionOpacity.value = withDelay(150, 
+          withTiming(1, {
+            duration: 500,
+            easing: Easing.out(Easing.cubic)
+          })
+        );
+        
+        authSectionTranslateY.value = withDelay(150,
+          withTiming(0, {
+            duration: 500,
+            easing: Easing.out(Easing.cubic)
+          })
+        );
+      }, 1500); // Total delay before showing welcome screen
+    }, 300); // Wait 0.3 seconds before starting verification animation
   };
 
   const animateConfirmButton = (show) => {
@@ -363,7 +366,7 @@ const Auth = () => {
           onPress={showDatePicker}
         >
           <View style={styles.buttonContent}>
-            <MaterialIcons name="date-range" size={20} color={colors.text} />
+
             <Text style={[styles.buttonText, { color: colors.text }]}>
               {formatDate(date)}
             </Text>

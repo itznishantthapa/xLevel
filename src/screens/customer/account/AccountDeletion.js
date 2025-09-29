@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, Pressable, TextInput, Alert, Keyboard, Platform } from 'react-native'
-import React, { useState, useRef, useEffect } from 'react'
+import { StyleSheet, Text, View, Pressable, TextInput, Alert, Platform, KeyboardAvoidingView } from 'react-native'
+import React, { useState, useRef } from 'react'
 import { MaterialIcons } from '@expo/vector-icons'
 import { useThemeStore } from '../../../store/themeStore'
 import { CreateGameLayout } from '../../../component/customer/createGame'
@@ -14,10 +14,8 @@ const AccountDeletion = () => {
   const [selectedReason, setSelectedReason] = useState('')
   const [otherReason, setOtherReason] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [keyboardVisible, setKeyboardVisible] = useState(false)
   const { delete_user } = useAuthStore()
   const { showConfirmSheet } = useBottomSheet()
-  const scrollViewRef = useRef(null)
   const shakeRef = useRef(null)
 
   const deletionReasons = [
@@ -50,35 +48,7 @@ const AccountDeletion = () => {
     }
   }
 
-  // Keyboard event listeners
-  useEffect(() => {
-    const keyboardWillShow = Keyboard.addListener(
-      Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow",
-      (event) => {
-        setKeyboardVisible(true)
-        scrollViewRef.current?.scrollTo({
-          y: Platform.OS === "ios" ? 300 : 500,
-          animated: true,
-        })
-      },
-    )
 
-    const keyboardWillHide = Keyboard.addListener(
-      Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide",
-      () => {
-        setKeyboardVisible(false)
-        scrollViewRef.current?.scrollTo({
-          y: 0,
-          animated: true,
-        })
-      },
-    )
-
-    return () => {
-      keyboardWillShow.remove()
-      keyboardWillHide.remove()
-    }
-  }, [])
 
 
 
@@ -94,6 +64,10 @@ const AccountDeletion = () => {
       return
     }
 
+    setTimeout(() => {
+
+
+  
     // Confirm sheet
     showConfirmSheet({
       title: "Delete Account?",
@@ -129,12 +103,13 @@ const AccountDeletion = () => {
               reason: deletionReasons.find(reason => reason.id === selectedReason)?.label,
               reasonText: null
             };
-
+          
           await delete_user(payload);
           setIsLoading(false);
         }
       },
     });
+      }, 100);
   };
 
 
@@ -187,8 +162,6 @@ const AccountDeletion = () => {
       onSubmit={handleDeleteAccount}
       buttonTitle="Delete Account"
       loaderMessage="Processing deletion request..."
-      scrollViewRef={scrollViewRef}
-      keyboardVisible={keyboardVisible}
     >
       <View style={styles.container}>
         {/* Warning Header */}

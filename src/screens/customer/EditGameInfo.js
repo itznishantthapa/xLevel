@@ -344,10 +344,11 @@ const EditGameInfo = () => {
           break
       }
 
+        Keyboard.dismiss()
       await saveProfile(apiData)
-      await new Promise((resolve) => setTimeout(resolve, 400))
       navigation.goBack()
     } catch (error) {
+      Toast.show(error?.message , Toast.SHORT)
        if (__DEV__) {
         console.log("Error saving profile:", error)
        }

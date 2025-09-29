@@ -39,6 +39,7 @@ import { useThemeStore } from "../../store/themeStore"
 import { handleJoinGame } from "../../service/homeHandler"
 import { useInfiniteTournaments } from "../../queries/useTournament"
 import { useRegisterTournament } from "../../queries/useMutation/useRegisterTournament"
+import { scaleHeight } from "../../utils/scaling"
 
 /**
  * ========================================================================
@@ -411,6 +412,7 @@ useEffect(() => {
             colors={[isLight ? '#000000' : '#ffffff']}
             tintColor={isLight ? '#000000' : '#ffffff'}
             progressBackgroundColor={isLight ? '#ffffff' : '#000000'}
+            progressViewOffset={insets.top + scaleHeight(50)}
           />
         }
       />

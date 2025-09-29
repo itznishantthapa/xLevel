@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, Pressable, Image, Platform, ActivityIndicator, Modal, TouchableOpacity, StatusBar, TextInput, Keyboard } from 'react-native';
-import React, { useState, useRef, useEffect } from 'react';
+import { StyleSheet, Text, View, Pressable, Image, Platform, ActivityIndicator, Modal, TouchableOpacity, StatusBar, TextInput } from 'react-native';
+import React, { useState, useRef } from 'react';
 import { useThemeStore } from '../../../store/themeStore';
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from '@react-navigation/native';
@@ -15,7 +15,6 @@ const DropIssue = ({ route }) => {
     const navigation = useNavigation();
     const { isLight } = useThemeStore();
     const [isLoading, setIsLoading] = useState(false);
-    const scrollViewRef = useRef(null);
     const [previewImage, setPreviewImage] = useState(null);
     const { mutateAsync: createIssue } = useCreateIssue();
 
@@ -271,7 +270,6 @@ const DropIssue = ({ route }) => {
                 isLight={isLight}
                 isLoading={isLoading}
                 onSubmit={handleSubmit}
-                scrollViewRef={scrollViewRef}
                 buttonTitle="Submit Issue"
                 loaderMessage="Reporting issue..."
             >

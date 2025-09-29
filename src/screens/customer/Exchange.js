@@ -156,6 +156,7 @@ const Exchange = () => {
 
           try {
             const response = await EnhancerAPI.exchangeEnhancements(payload)
+            await new Promise(resolve => setTimeout(resolve, 3000));
             if (response.status === 200) {
               // Navigate to Thanks screen with exchange data
               navigation.navigate('thanks', {
