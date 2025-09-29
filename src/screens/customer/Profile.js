@@ -231,7 +231,7 @@ const Profile = () => {
               <View style={[styles.settingsCard, { backgroundColor: colors.cardBackground }]}>
                 <Pressable onPress={toggleTheme} style={styles.settingRow}>
                   <View style={styles.settingInfo}>
-                    <Text style={[styles.settingTitle, { color: colors.text }]}>Dark Mode</Text>
+                    <Text style={[styles.settingTitle, { color: colors.text }]}>Scheme</Text>
                     <Text style={[styles.settingDescription, { color: colors.textTertiary }]}>
                       Switch between light and dark themes
                     </Text>

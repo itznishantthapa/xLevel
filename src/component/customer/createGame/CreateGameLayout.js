@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, StatusBar } from 'react-native';
+import { View, StyleSheet, ScrollView, StatusBar, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Loader from '../../Loader';
@@ -16,8 +16,7 @@ import AppHeader from '../../../screens/customer/header/AppHeader';
  * @param {boolean} props.isLoading - Loading state
  * @param {boolean} props.isFormValid - Whether the form is valid for submission
  * @param {function} props.onSubmit - Function to call when form is submitted
- * @param {Object} props.scrollViewRef - Ref for the ScrollView (for keyboard handling)
- * @param {boolean} props.keyboardVisible - Whether keyboard is visible
+ * NOTE: Keyboard handling now uses KeyboardAvoidingView internally; external refs no longer required.
  * @param {string} props.buttonTitle - Title for the submit button (default: "Create Match")
  * @param {string} props.loaderMessage - Message for the loader (default: "Creating match...")
  * @returns {JSX.Element}
@@ -28,8 +27,6 @@ const CreateGameLayout = ({
   isLight, 
   isLoading,
   onSubmit, 
-  scrollViewRef, 
-  keyboardVisible,
   buttonTitle = "Create Match",
   loaderMessage = "Creating match..."
 }) => {
@@ -40,28 +37,32 @@ const CreateGameLayout = ({
 
       <SafeAreaView style={styles.safeArea}>
         <AppHeader backButton={true} title={title} />
-
-        <ScrollView
-          ref={scrollViewRef}
-          style={styles.scrollView}
-          contentContainerStyle={keyboardVisible && { paddingBottom: 300 }}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
         >
-          <View style={[styles.gameCard, { 
-            backgroundColor: isLight ? "#ffffff" : "#000000",
-            borderColor: isLight ? "#333333" : "#dadada",
-            borderWidth: 1,
-            marginHorizontal: -1.5
-          }]}>
-            {children}
-          </View>
-        </ScrollView>
+          <ScrollView
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollContent}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            <View style={[styles.gameCard, { 
+              backgroundColor: isLight ? "#ffffff" : "#000000",
+              borderColor: isLight ? "#333333" : "#dadada",
+              borderWidth: 1,
+              marginHorizontal: -1.5
+            }]}> 
+              {children}
+            </View>
+          </ScrollView>
 
-        {/* Submit Button */}
-        <View style={{ marginHorizontal: 20, marginBottom: 10 }}>
-          <CoolButton title={buttonTitle} handlePress={onSubmit} />
-        </View>
+          {/* Submit Button */}
+          <View style={{ marginHorizontal: 20, marginBottom: 10 }}>
+            <CoolButton title={buttonTitle} handlePress={onSubmit} />
+          </View>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </View>
   );
@@ -77,6 +78,9 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     paddingHorizontal: 0,
+  },
+  scrollContent: {
+    paddingBottom: 40,
   },
   gameCard: {
     borderRadius: 12,

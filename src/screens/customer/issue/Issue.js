@@ -1,8 +1,8 @@
-import { StyleSheet, Text, View, FlatList, ActivityIndicator, StatusBar, Pressable, RefreshControl, Platform } from 'react-native'
-import React, { useCallback, useEffect, useState } from 'react'
+import { StyleSheet, Text, View, FlatList, StatusBar, RefreshControl, Platform } from 'react-native'
+import React, { useCallback, useState, useMemo } from 'react'
 import { useThemeStore } from '../../../store/themeStore'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { MaterialIcons, FontAwesome, Ionicons } from '@expo/vector-icons'
+import { MaterialIcons, Ionicons } from '@expo/vector-icons'
 import AppHeader from '../header/AppHeader'
 import { useIssues } from '../../../queries/useIssue'
 import { useNetworkStatus } from '../../../hooks/useNetworkStatus'
@@ -12,77 +12,28 @@ import Loader from '../../../component/Loader'
 const Issue = () => {
   const { isLight } = useThemeStore()
   const insets = useSafeAreaInsets()
-    const { isConnected } = useNetworkStatus();
+  const { isConnected } = useNetworkStatus();
 
 
-    const PAGE_SIZE = 10;
-    
-    const { 
-      data: { flat: issues = [], hasMore = false } = {},
-      fetchNextPage, 
-      isFetchingNextPage, 
-      isLoading: issuesLoading,
-      isError,
-      error,
-      refetch,
-      isRefetching
-    } = useIssues(PAGE_SIZE) 
+  const PAGE_SIZE = 10;
+
+  const {
+    data: { flat: issues = [], hasMore = false } = {},
+    fetchNextPage,
+    isFetchingNextPage,
+    isLoading: issuesLoading,
+    isError,
+    error,
+    refetch,
+    isRefetching
+  } = useIssues(PAGE_SIZE)
 
 
 
-  
+
   // Mock data for issues - replace with actual API call later
-  const [issues1, setIssues] = useState([
-    {
-      id: 1,
-      challenge_id: 75,
-      issue_type: "mistake_setting",
-      description: "Game settings were different from what was mentioned by creator",
-      status: "pending",
-      created_at: "2025-09-08T10:42:15.862150Z",
-      resolved_at: null,
-      admin_notes: null,
-      game_name: "PUBG Mobile",
-      game_mode: "Team Death Match"
-    },
-    {
-      id: 2,
-      challenge_id: 76,
-      issue_type: "offline",
-      description: "Connection lost during the game",
-      status: "resolved",
-      created_at: "2025-09-08T10:43:36.779575Z",
-      resolved_at: "2025-09-08T14:30:00.000000Z",
-      admin_notes: "Issue resolved - credits returned to user",
-      game_name: "eFootball",
-      game_mode: "Friend Match"
-    },
-    {
-      id: 3,
-      challenge_id: 77,
-      issue_type: "opponent_not_joined",
-      description: "Opponent didn't join after credentials were provided",
-      status: "under_review",
-      created_at: "2025-09-07T15:20:10.123456Z",
-      resolved_at: null,
-      admin_notes: null,
-      game_name: "Chess",
-      game_mode: "Blitz"
-    },
-    {
-      id: 4,
-      challenge_id: 78,
-      issue_type: "creator_not_provided",
-      description: "Creator never provided room credentials",
-      status: "rejected",
-      created_at: "2025-09-06T09:15:30.987654Z",
-      resolved_at: "2025-09-07T11:00:00.000000Z",
-      admin_notes: "Insufficient evidence provided",
-      game_name: "Call of Duty",
-      game_mode: "Clash Squad"
-    }
-  ])
-  
+  // NOTE: local mock removed; relying on server data from useIssues
+
   const [isManualRefreshing, setIsManualRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(false)
 
@@ -93,7 +44,7 @@ const Issue = () => {
     subText: isLight ? "#000000" : "#ffffff",
     card: isLight ? "#ffffff" : "#000000",
     cardBorder: isLight ? "#333333" : "#ffffff",
-    pending:isLight ? "#0000000" : "#ffffff",
+    pending: isLight ? "#0000000" : "#ffffff",
     resolved: "#00C851",
     under_review: isLight ? "#0000000" : "#ffffff",
     rejected: isLight ? "#0000000" : "#ffffff",
@@ -105,7 +56,7 @@ const Issue = () => {
    */
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
-    
+
     const date = new Date(dateString)
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
@@ -185,15 +136,15 @@ const Issue = () => {
 
 
 
-    /**
-   * Handle refresh for issue list
-   */
+  /**
+ * Handle refresh for issue list
+ */
   const handleRefresh = useCallback(async () => {
     if (!isConnected) {
       Toast.show("No internet connection.", Toast.SHORT);
       return;
     }
-    
+
     setIsManualRefreshing(true);
     try {
       // Clear the issues query from cache and refetch
@@ -281,6 +232,16 @@ const Issue = () => {
     </View>
   ), [colors, isLight])
 
+  const listEmptyComponent = useMemo(() => (
+    !issuesLoading && !isManualRefreshing ? (
+      <View style={styles.emptyContainer}>
+        <MaterialIcons name="report-off" size={64} color={colors.subText} />
+        <Text style={[styles.emptyText, { color: colors.text }]}>No issues reported yet</Text>
+        <Text style={[styles.pullText, { color: colors.subText }]}>Pull down to refresh</Text>
+      </View>
+    ) : null
+  ), [issuesLoading, isManualRefreshing, colors])
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
       <StatusBar barStyle={isLight ? "dark-content" : "light-content"} />
@@ -291,32 +252,25 @@ const Issue = () => {
         title={'Reported Issues'}
       />
       <Loader visible={issuesLoading || isManualRefreshing} message="Loading issues..." />
-      {/* Issue List */}
-      {!issuesLoading && !isManualRefreshing && issues.length === 0  ? (
-        <View style={styles.emptyContainer}>
-          <MaterialIcons name="report-off" size={64} color={colors.subText} />
-          <Text style={[styles.emptyText, { color: colors.text }]}>No issues reported yet</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={issues}
-          renderItem={renderIssueCard}
-          keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={[styles.listContainer, { paddingBottom: insets.bottom + 24 }]}
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl
-              refreshing={isManualRefreshing}
-              onRefresh={handleRefresh}
-              tintColor={isLight ? "#000000" : "#ffffff"}
-              colors={[isLight ? "#000000" : "#ffffff"]}
-              progressBackgroundColor={isLight ? "#f0f0f0" : "#333333"}
-              progressViewOffset={10}
-              style={{ backgroundColor: 'transparent' }}
-            />
-          }
-        />
-      )}
+      <FlatList
+        data={issues}
+        renderItem={renderIssueCard}
+        keyExtractor={(item) => item.id?.toString?.() || String(item.index)}
+        contentContainerStyle={[styles.listContainer, { paddingBottom: insets.bottom + 24, flexGrow: 1 }]}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={listEmptyComponent}
+        refreshControl={
+          <RefreshControl
+            refreshing={false}
+            onRefresh={handleRefresh}
+            tintColor={isLight ? "#000000" : "#ffffff"}
+            colors={[isLight ? "#000000" : "#ffffff"]}
+            progressBackgroundColor={isLight ? "#f0f0f0" : "#333333"}
+            progressViewOffset={10}
+            style={{ backgroundColor: 'transparent' }}
+          />
+        }
+      />
     </View>
   )
 }

@@ -6,10 +6,12 @@ import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import {  Octicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useThemeStore } from '../store/themeStore';
 import Notify from '../screens/customer/Notify';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator();
 
 export default function CustomerTabNavigator() {
+    const insets = useSafeAreaInsets();
     const { isLight } = useThemeStore();
 
     return (
@@ -20,6 +22,7 @@ export default function CustomerTabNavigator() {
                 tabBarActiveTintColor: '#00bf63',
                 tabBarInactiveTintColor: isLight ? '#666666' : 'rgba(255, 255, 255, 0.7)',
                 tabBarStyle: {
+                      height: 56 + insets.bottom,
                     borderTopWidth: 1,
                     backgroundColor: isLight ? '#ffffff' : '#000000',
                 },

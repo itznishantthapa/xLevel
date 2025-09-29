@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useMemo, useRef, useEffect, useCallback } from "react"
-import { View, TextInput, Keyboard, Platform, StyleSheet } from "react-native"
+import { useState, useMemo, useRef, useCallback } from "react"
+import { View, TextInput, StyleSheet } from "react-native"
 import Toast from "react-native-simple-toast"
 import { useThemeStore } from "../../../store/themeStore"
 import { useNavigation } from "@react-navigation/native"
@@ -100,38 +100,7 @@ const CreatePubg = ({ route }) => {
 
   // Handle tournament creation
   const [isLoading, setIsLoading] = useState(false)
-  const scrollViewRef = useRef(null)
-  const [keyboardVisible, setKeyboardVisible] = useState(false)
-
-  // Keyboard event listeners
-  useEffect(() => {
-    const keyboardWillShow = Keyboard.addListener(
-      Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow",
-      (event) => {
-        setKeyboardVisible(true)
-        scrollViewRef.current?.scrollTo({
-          y: Platform.OS === "ios" ? 300 : 500,
-          animated: true,
-        })
-      },
-    )
-
-    const keyboardWillHide = Keyboard.addListener(
-      Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide",
-      () => {
-        setKeyboardVisible(false)
-        scrollViewRef.current?.scrollTo({
-          y: 500,
-          animated: true,
-        })
-      },
-    )
-
-    return () => {
-      keyboardWillShow.remove()
-      keyboardWillHide.remove()
-    }
-  }, [])
+  // Keyboard handling removed; handled globally by CreateGameLayout
 
   // Handle navigation to rules
   const handleReadRules = useCallback(() => {
@@ -220,8 +189,6 @@ const CreatePubg = ({ route }) => {
       isLoading={isLoading || isCreateMatchLoading}
       isFormValid={isFormValid}
       onSubmit={handleCreateTournament}
-      scrollViewRef={scrollViewRef}
-      keyboardVisible={keyboardVisible}
     >
       {/* Game Info Display */}
       <GameInfoHeader 

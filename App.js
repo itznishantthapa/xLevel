@@ -10,30 +10,37 @@ import { ErrorBoundary } from 'react-error-boundary';
 import AppErrorFallback from './src/component/customer/fallback/AppErrorFallback';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetProvider } from './src/context/BottomSheetContext';
+import { StatusBar } from 'react-native';
+import { useThemeStore } from './src/store/themeStore';
 
 
 export default function App() {
-  
+  const { isLight } = useThemeStore()
+
+
+
   const asyncStoragePersister = createAsyncStoragePersister({
     storage: AsyncStorage,
   });
 
   useEffect(() => {
-    SystemNavigationBar.setNavigationColor('transparent');
-  }, []);
+    SystemNavigationBar.setNavigationColor(isLight ? '#ffffff' : '#000000', isLight ? 'dark' : 'light', 'navigation');
+    // tell the window to apply system insets (status/nav) to the root view
+    SystemNavigationBar.setFitsSystemWindows(true);
+  }, [isLight]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-    <ErrorBoundary
-      FallbackComponent={AppErrorFallback}
-      onError={(error, info) => {
-        if (__DEV__) console.error('Global UI Error:', error, info); 
-      }}
-    >
-      <PersistQueryClientProvider
-        client={queryClient}
-        persistOptions={{ persister: asyncStoragePersister }}
+      <ErrorBoundary
+        FallbackComponent={AppErrorFallback}
+        onError={(error, info) => {
+          if (__DEV__) console.error('Global UI Error:', error, info);
+        }}
       >
+        <PersistQueryClientProvider
+          client={queryClient}
+          persistOptions={{ persister: asyncStoragePersister }}
+        >
 
           <SafeAreaProvider style={{ flex: 1 }}>
             <BottomSheetProvider>
@@ -41,8 +48,8 @@ export default function App() {
             </BottomSheetProvider>
           </SafeAreaProvider>
 
-      </PersistQueryClientProvider>
-    </ErrorBoundary>
+        </PersistQueryClientProvider>
+      </ErrorBoundary>
     </GestureHandlerRootView>
   );
 }

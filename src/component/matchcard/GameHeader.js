@@ -15,15 +15,10 @@ const GameHeader = ({ game, isLight, isCreator, user, handleDeleteChallenge, han
         isCreator
           ? "Are you sure you want to cancelled your match?"
           : "Are you sure you want to leave this match?",
-      confirmText: "Cancel",
+      confirmText: "Confirm",
       cancelText: "Cancel",
       isDestructive: true,
       onConfirm: () => {
-        // if (game.status === "in_progress" || isCreator) {
-        //   handleDeleteChallenge(game?.id)
-        // } else {
-        //   handleLeaveChallenge(game?.id)
-        // }
         if (isCreator || game.is_free) {
           handleDeleteChallenge(game?.id)
         } else {

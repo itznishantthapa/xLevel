@@ -112,7 +112,7 @@ API.interceptors.response.use(
     }
 
     // Your error handling messages
-    let message = "Relaunch required.";
+    let message = "Restart your app.";
     const backendMessage = error?.response?.data?.message;
     const errorsObj = error?.response?.data?.errors;
 

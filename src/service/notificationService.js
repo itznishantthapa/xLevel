@@ -28,31 +28,42 @@ export const requestNotificationPermission = async () => {
     const messaging = getMessaging(app);
 
     if (Platform.OS === 'android') {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
-      );
-      if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-        if (__DEV__) console.log('We are unable to grant the notification permission !')
-        return false;
+      // Check Android version
+      if (Platform.Version >= 33) {
+        // Android 13+ requires POST_NOTIFICATIONS
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+        );
+        if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+          console.log('Notification permission denied');
+          return false;
+        }
       }
+      // Android < 13 → skip asking, just register
+      await registerDeviceForRemoteMessages(messaging);
+      return true;
     }
 
+    // iOS → ask for permission
     const authStatus = await requestPermission(messaging);
     const enabled =
       authStatus === AuthorizationStatus.AUTHORIZED ||
       authStatus === AuthorizationStatus.PROVISIONAL;
 
     if (!enabled) {
-      if (__DEV__) console.log('We are unable to grant the notification permission !')
+      console.log('Notification permission denied (iOS)');
       return false;
     }
 
     await registerDeviceForRemoteMessages(messaging);
+
+
     return true;
   } catch (error) {
-    if (__DEV__) console.log(error)
+    console.log('Permission error:', error);
     return false;
   }
+
 };
 
 
@@ -110,7 +121,7 @@ export const setupNotificationListeners = async () => {
             body: body,
             data: payloadData,            //<--------- this is the data that will be passed to the screen and used in navigation on tap
             channelId: 'high_importance',
-            
+
           },
           trigger: {
             type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
@@ -173,7 +184,7 @@ export const postFCMToken = async () => {
 
     return response.data;
   } catch (error) {
-     if (__DEV__) console.log(error)
+    if (__DEV__) console.log(error)
   }
 };
 
@@ -199,6 +210,6 @@ export const getUserNotificationsOnLoads = async (offset = 0, limit = 7) => {
     const response = await API.get(endpoints.getUserNotificationsOnLoads, { params: { offset, limit } });
     return response.data;
   } catch (error) {
-      if (__DEV__) console.log(error)
+    if (__DEV__) console.log(error)
   }
 };

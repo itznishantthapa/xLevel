@@ -9,10 +9,10 @@ import {
   Image,
   Pressable,
   Alert,
-  Platform
+  Platform,
+  FlatList
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { FlashList } from '@shopify/flash-list'
 import { MaterialIcons, MaterialCommunityIcons, Octicons, FontAwesome5 } from '@expo/vector-icons'
 import Toast from "react-native-simple-toast"
 import { useThemeStore } from '../../store/themeStore'
@@ -172,16 +172,12 @@ const BlockedUserList = () => {
       Toast.show("No internet connection.", Toast.SHORT)
       return
     }
-
     setIsRefreshing(true)
     try {
-      // Clear cache and refetch blocked users
       queryClient.removeQueries({ queryKey: ['blockedUsers'] })
       await refetch()
-    } catch (error) {
-      if (__DEV__) {
-        console.log('Failed to refresh blocked users:', error)
-      }
+    } catch (e) {
+      if (__DEV__) console.log('Failed to refresh blocked users:', e)
     } finally {
       setIsRefreshing(false)
     }
@@ -198,13 +194,16 @@ const BlockedUserList = () => {
     )
   ), [isLight, handleUnblockUser])
 
-  // FlashList props
-  const flashListProps = useMemo(() => ({
-    estimatedItemSize: ITEM_HEIGHT,
-    estimatedListSize: { height, width },
-    showsVerticalScrollIndicator: false,
-    contentContainerStyle: styles.listContainer,
-  }), [])
+  // Empty component for when no blocked users
+  const listEmptyComponent = useMemo(() => (
+    !isFetching ? (
+      <View style={styles.emptyContainer}>
+        <FontAwesome5 name="users-slash" size={64} color={isLight ? "#333333" : "#ffffff"} />
+        <Text style={[styles.emptyText, { color: isLight ? "#333333" : "#ffffff" }]}>No blocked users</Text>
+        <Text style={[styles.pullText, { color: isLight ? '#666666' : 'rgba(255,255,255,0.6)' }]}>Pull down to refresh</Text>
+      </View>
+    ) : null
+  ), [isFetching, isLight])
 
   return (
     <View style={[
@@ -225,31 +224,25 @@ const BlockedUserList = () => {
         backButton={Platform.OS === 'ios'} // Show back button only on iOS
       />
 
-      <View style={styles.listWrapper}>
-        {!isFetching && blockedUsers.length === 0 ? (
-          <View style={styles.emptyContainer}>
-
-            <FontAwesome5 name="users-slash" size={64} color={isLight ? "#333333" : "#ffffff"} />
-            <Text style={[styles.emptyText, { color: isLight ? "#333333" : "#ffffff" }]}>No blocked users</Text>
-          </View>
-        ) : (
-          <FlashList
-            {...flashListProps}
-            data={isFetching && blockedUsers.length === 0 ? [] : blockedUsers}
-            renderItem={renderBlockedUserCard}
-            keyExtractor={(item) => item.block_id.toString()}
-            refreshControl={
-              <RefreshControl
-                refreshing={false}
-                onRefresh={handleRefresh}
-                colors={[isLight ? '#000000' : '#ffffff']}
-                tintColor={isLight ? '#000000' : '#ffffff'}
-                progressBackgroundColor={isLight ? '#ffffff' : '#000000'}
-              />
-            }
+      <FlatList
+        data={blockedUsers}
+        renderItem={renderBlockedUserCard}
+        keyExtractor={(item) => item.block_id?.toString?.() || String(item.index)}
+        contentContainerStyle={[styles.listContainer, { paddingBottom: insets.bottom + 24, flexGrow: 1 }]}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={listEmptyComponent}
+        refreshControl={
+          <RefreshControl
+            refreshing={false}
+            onRefresh={handleRefresh}
+            tintColor={isLight ? "#000000" : "#ffffff"}
+            colors={[isLight ? "#000000" : "#ffffff"]}
+            progressBackgroundColor={isLight ? "#f0f0f0" : "#333333"}
+            progressViewOffset={10}
+            style={{ backgroundColor: 'transparent' }}
           />
-        )}
-      </View>
+        }
+      />
 
       {/* Loading indicator for initial load and unblock operations */}
       <Loader visible={isLoading || (isFetching && blockedUsers.length === 0)} />
@@ -263,13 +256,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  listWrapper: {
-    flex: 1,
-    width: width,
-    height: height,
-  },
   listContainer: {
-    paddingBottom: 20,
+    paddingHorizontal: 16,
+    gap: 12,
   },
 
   // Card Styles
@@ -371,6 +360,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
     marginTop: 16,
+    textAlign: 'center',
+  },
+  pullText: {
+    fontSize: 14,
+    fontWeight: '400',
+    marginTop: 8,
     textAlign: 'center',
   },
 })

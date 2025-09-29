@@ -167,14 +167,17 @@ export default function RootLayout() {
   const initializeNotifications = async () => {
     try {
       const hasPermission = await requestNotificationPermission();
+
+      // On lower Android (no prompt) -> hasPermission will still be true
       if (!hasPermission) return false;
 
+      // Always try to get token
       const token = await getFCMToken();
       if (token) {
         await storeFCMToken(token);
       }
 
-      // cleanup any previous listeners
+      // cleanup old listeners
       if (notificationUnsubscribeRef.current) {
         notificationUnsubscribeRef.current();
       }
@@ -183,6 +186,7 @@ export default function RootLayout() {
       notificationUnsubscribeRef.current = await setupNotificationListeners();
 
       await setupNotificationChannel();
+
       return true;
     } catch (error) {
       if (__DEV__) {
@@ -245,16 +249,16 @@ export default function RootLayout() {
 
   //============ Main Render ============
   return (
- 
-      <NavigationContainer
-        ref={navigationRef}
-        onReady={() => {
-          NavigationService.executePendingNavigation();
-        }}
-      >
-        {getContent()}
-      </NavigationContainer>
- 
+
+    <NavigationContainer
+      ref={navigationRef}
+      onReady={() => {
+        NavigationService.executePendingNavigation();
+      }}
+    >
+      {getContent()}
+    </NavigationContainer>
+
   );
 }
 

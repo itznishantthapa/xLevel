@@ -3,8 +3,8 @@
 import { useNavigation } from "@react-navigation/native"
 import { FlashList } from "@shopify/flash-list"
 import { useCallback, useEffect, useState } from "react"
-import { RefreshControl, StatusBar, StyleSheet, View } from "react-native"
-import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { Platform, RefreshControl, StatusBar, StyleSheet, View } from "react-native"
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import Toast from "react-native-simple-toast"
 
 // Custom Components

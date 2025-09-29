@@ -1,21 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  StyleSheet,
-  Text,
-  Pressable,
-  View,
-  Dimensions,
-  SafeAreaView,
-} from 'react-native';
+import { StyleSheet, Text, Pressable, View, Dimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  withTiming,
   withSpring,
-
+  runOnJS,
 } from 'react-native-reanimated';
-import { runOnJS } from 'react-native-worklets';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import {
   AntDesign,
@@ -42,7 +33,7 @@ const AccessBar = ({ navigation }) => {
     reorderStatsItems, 
     getToggleableOptions 
   } = useStatsPreferenceStore();
-  const [draggedIndex, setDraggedIndex] = useState(-1);
+  const [draggedIndex, setDraggedIndex] = useState(-1); // index currently being dragged
   const [isDragging, setIsDragging] = useState(false);
 
   const TOGGLEABLE_OPTIONS = getToggleableOptions();
@@ -57,10 +48,10 @@ const AccessBar = ({ navigation }) => {
     }))
   ).current;
 
-  // Update animation values when statsConfig changes
+  // Keep animatedValues array length in sync with statsConfig (handles add/remove)
   useEffect(() => {
-    if (animatedValues.length !== statsConfig.length) {
-      // Recreate animatedValues array if the length changed
+    // Add missing animated value objects
+    if (animatedValues.length < statsConfig.length) {
       for (let i = animatedValues.length; i < statsConfig.length; i++) {
         animatedValues.push({
           translateX: useSharedValue(0),
@@ -70,58 +61,61 @@ const AccessBar = ({ navigation }) => {
         });
       }
     }
-  }, [statsConfig.length]);
+    // If items were removed, truncate extra animated values
+    if (animatedValues.length > statsConfig.length) {
+      animatedValues.splice(statsConfig.length);
+    }
+  }, [statsConfig.length, animatedValues]);
 
   const handleToggle = (index) => {
-    if (isDragging) return;
+    if (isDragging) return; // ignore taps while dragging
     toggleStatsItem(index);
   };
 
-  // Modern gesture handler using Gesture.Pan
+  /**
+   * Long-press then horizontal drag to reorder.
+   * Using activateAfterLongPress avoids conflicts with simple taps (for toggling)
+   * and reduces risk of crashes in release caused by rapid state updates in quick tap detection.
+   */
   const createPanGesture = (index) => {
-    let startTime = 0;
-    
+    const H_THRESHOLD = 30; // px movement before considering reorder
+
     return Gesture.Pan()
-      .onBegin(() => {
-        startTime = Date.now();
-      })
+      .activateAfterLongPress(160) // ms before pan activates (allows normal tap before this)
       .onStart(() => {
         runOnJS(setIsDragging)(true);
         runOnJS(setDraggedIndex)(index);
-        animatedValues[index].scale.value = withSpring(1.1);
-        animatedValues[index].zIndex.value = 999;
+        animatedValues[index].scale.value = withSpring(1.08);
+        animatedValues[index].zIndex.value = 10;
       })
-      .onUpdate((event) => {
-        animatedValues[index].translateX.value = event.translationX;
-        animatedValues[index].translateY.value = event.translationY;
+      .onUpdate((e) => {
+        // Only horizontal translation matters for reordering
+        animatedValues[index].translateX.value = e.translationX;
       })
-      .onEnd((event) => {
-        const duration = Date.now() - startTime;
-        const distance = Math.sqrt(event.translationX ** 2 + event.translationY ** 2);
-        
-        // If it's a quick tap (less than 200ms and less than 10px movement), treat as toggle
-        if (duration < 200 && distance < 10) {
-          runOnJS(handleToggle)(index);
-        } else {
-          // Otherwise treat as drag reorder
-          const itemWidth = (SCREEN_WIDTH - 60) / 4;
-          const threshold = itemWidth / 2;
-          let targetIndex = index;
-          const dragDistance = event.translationX;
-          if (Math.abs(dragDistance) > threshold) {
-            if (dragDistance > 0 && index < statsConfig.length - 1) {
-              targetIndex = index + 1;
-            } else if (dragDistance < 0 && index > 0) {
-              targetIndex = index - 1;
-            }
-          }
-          if (targetIndex !== index) {
-            runOnJS(reorderStatsItems)(index, targetIndex);
-          }
+      .onEnd((e) => {
+        const dragX = e.translationX;
+        let targetIndex = index;
+
+        if (Math.abs(dragX) > H_THRESHOLD) {
+          // Move one slot left/right per gesture end (simple + predictable)
+            if (dragX > 0 && index < statsConfig.length - 1) targetIndex = index + 1;
+            if (dragX < 0 && index > 0) targetIndex = index - 1;
         }
-        
+
+        if (targetIndex !== index) {
+          runOnJS(reorderStatsItems)(index, targetIndex);
+        }
+
+        // Reset animation values
         animatedValues[index].translateX.value = withSpring(0);
-        animatedValues[index].translateY.value = withSpring(0);
+        animatedValues[index].scale.value = withSpring(1);
+        animatedValues[index].zIndex.value = 0;
+        runOnJS(setIsDragging)(false);
+        runOnJS(setDraggedIndex)(-1);
+      })
+      .onFinalize(() => {
+        // Ensure cleanup even if gesture cancels
+        animatedValues[index].translateX.value = withSpring(0);
         animatedValues[index].scale.value = withSpring(1);
         animatedValues[index].zIndex.value = 0;
         runOnJS(setIsDragging)(false);
@@ -171,9 +165,7 @@ const AccessBar = ({ navigation }) => {
 
           >
             {renderIcon(item, color)}
-            <Text style={[styles.statLabel, { color }]}> 
-              {item.name}
-            </Text>
+            <Text style={[styles.statLabel, { color }]}>{item.name}</Text>
             {isToggleable && (
               <View style={[styles.toggleIndicator, { backgroundColor: color }]} />
             )}
@@ -226,7 +218,7 @@ const AccessBar = ({ navigation }) => {
               color={isLight ? '#666666' : '#CCCCCC'} 
             />
             <Text style={[styles.instructionText, { color: isLight ? '#666666' : '#CCCCCC' }]}>
-              Drag to change position
+              Hold & Drag to change position
             </Text>
           </View>
           <View style={styles.instructionRow}>
