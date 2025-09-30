@@ -87,8 +87,9 @@ const LeaderboardCard = React.memo(({ user, isLight, isCurrentUser = false }) =>
               </View>
             )}
             
-            {/* Pro/Hcker Tag */}
-            {(user.have_pro_tag || user.have_hacker_tag) && (
+               {/* (createdBy?.active_hacker_tag || createdBy?.active_pro_tag) && ( */}
+            {/* Pro/Hckr Tag */}
+            {(user.active_pro_tag || user.active_hacker_tag) && (
               <View style={{
                 position: 'absolute',
                 bottom: -6,
@@ -112,7 +113,7 @@ const LeaderboardCard = React.memo(({ user, isLight, isCurrentUser = false }) =>
                   fontWeight: 'bold',
                   textAlign: 'center'
                 }}>
-                  {user.have_hacker_tag ? 'Hcker' : 'Pro'}
+                  {user.active_hacker_tag ? 'Hckr' : 'Pro'}
                 </Text>
               </View>
             )}
@@ -268,9 +269,9 @@ const Leaderboard = () => {
                   <Octicons name="feed-person" size={24} color={isLight ? '#666666' : '#ffffff'} />
                 </View>
               )}
-              
-              {/* Pro/Hcker Tag */}
-              {(user?.enhancer?.have_pro_tag || user?.enhancer?.have_hacker_tag) && (
+                {/* (createdBy?.active_hacker_tag || createdBy?.active_pro_tag) && ( */}
+              {/* Pro/Hckr Tag */}
+              {(user?.enhancer?.active_pro_tag || user?.enhancer?.active_hacker_tag) && (
                 <View style={{
                   position: 'absolute',
                   bottom: -6,
@@ -294,7 +295,7 @@ const Leaderboard = () => {
                     fontWeight: 'bold',
                     textAlign: 'center'
                   }}>
-                    {user?.enhancer?.have_hacker_tag ? 'Hcker' : 'Pro'}
+                    {user?.enhancer?.active_hacker_tag ? 'Hckr' : 'Pro'}
                   </Text>
                 </View>
               )}

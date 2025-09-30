@@ -1,4 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
+import { ErrorBoundary } from 'react-error-boundary';
+import AppErrorFallback from '../component/customer/fallback/AppErrorFallback';
 import { navigationRef, NavigationService } from '../service/navigationService';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Animated } from 'react-native';
@@ -256,7 +258,14 @@ export default function RootLayout() {
         NavigationService.executePendingNavigation();
       }}
     >
-      {getContent()}
+      <ErrorBoundary
+        FallbackComponent={AppErrorFallback}
+        onError={(error, info) => {
+          if (__DEV__) console.error('Navigation Error:', error, info);
+        }}
+      >
+        {getContent()}
+      </ErrorBoundary>
     </NavigationContainer>
 
   );

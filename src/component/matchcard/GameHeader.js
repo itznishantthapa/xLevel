@@ -49,7 +49,7 @@ const GameHeader = ({ game, isLight, isCreator, user, handleDeleteChallenge, han
       {!game.isAccepted && game.status !== "cancelled" && game.status !== "expired" && game.status !== "completed" && game.status !== "in_progress"&& ( */}
       <View style={{ flexDirection: "row", alignItems: "center", gap: scaleWidth(20), marginLeft: "auto", paddingRight: forOpenGames ? scaleWidth(10) : 0 }}>
         {
-          (game.status === 'in_progress' || game.status === 'not_started') && (
+          ((game.status === 'in_progress' || game.status === 'not_started' ) && !game.is_free) && (
             <View>
               <PulseAnimation size={scaleWidth(10)} color="#00C851" />
             </View>
@@ -77,7 +77,7 @@ const GameHeader = ({ game, isLight, isCreator, user, handleDeleteChallenge, han
             <TouchableOpacity  onPress={() => handleIssue(game?.id, isCreator, game?.game?.name, game?.game?.game_mode, game)}>
                 <FontAwesome5 name="exclamation-circle" size={scaleWidth(18)} color={isLight ? "#000000" : "#fff"} />
             </TouchableOpacity>
-          ) : game.status !== "cancelled" && game.is_free && !forOpenGames  &&  (
+          ) : game.status !== "cancelled" && game.is_free && !forOpenGames && game.status !== "completed"  &&  (
              <Pressable onPress={handleDelete}>
               <Octicons name="diff-removed" size={scaleWidth(18)} color={isLight ? "#000000" : "#fff"} />
             </Pressable>

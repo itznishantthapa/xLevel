@@ -3,8 +3,16 @@ import { endpoints } from "./endpoints";
 
 export const EnhancerAPI = {
   getEnhancements: async () => {
-    const res = await API.get(endpoints.getEnhancements);
-    return res.data?.enhancers ?? [];
+    try {
+      const res = await API.get(endpoints.getEnhancements);
+      // Ensure we always return an array
+      const enhancers = res.data?.enhancers ?? [];
+      return Array.isArray(enhancers) ? enhancers : [];
+    } catch (error) {
+       if(__DEV__){
+         console.error('Failed to fetch enhancements:', error);
+       }
+    }
   },
 
   exchangeEnhancements: async (payload) => {

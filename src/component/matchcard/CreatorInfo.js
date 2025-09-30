@@ -116,7 +116,7 @@ const CreatorInfo = ({ game, isLight, isCreator, user }) => {
                       fontSize: scaleWidth(8),
                       fontWeight: 'bold',
                       textAlign: 'center'
-                    }}>{createdBy?.active_hacker_tag ? 'Hcker' : 'Pro'}</Text>
+                    }}>{createdBy?.active_hacker_tag ? 'Hckr' : 'Pro'}</Text>
                   </View>
                 )
               }
@@ -165,7 +165,7 @@ const CreatorInfo = ({ game, isLight, isCreator, user }) => {
                     fontSize: scaleWidth(8),
                     fontWeight: 'bold',
                     textAlign: 'center'
-                  }}>{createdBy?.active_hacker_tag ? 'Hcker' : 'Pro'}</Text>
+                  }}>{createdBy?.active_hacker_tag ? 'Hckr' : 'Pro'}</Text>
                 </View>
               )
             }
@@ -215,7 +215,7 @@ const CreatorInfo = ({ game, isLight, isCreator, user }) => {
                     fontSize: scaleWidth(8),
                     fontWeight: 'bold',
                     textAlign: 'center'
-                  }}>{createdBy?.active_hacker_tag ? 'Hcker' : 'Pro'}</Text>
+                  }}>{createdBy?.active_hacker_tag ? 'Hckr' : 'Pro'}</Text>
                 </View>
               )
             }

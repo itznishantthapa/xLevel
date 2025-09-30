@@ -61,7 +61,7 @@ const Header = ({
   const ProfileImage = () => {
     // Determine which tag to show based on user enhancer data (only show active tags)
     const getTagText = () => {
-      if (user?.enhancer?.active_hacker_tag) return 'Hcker'
+      if (user?.enhancer?.active_hacker_tag) return 'Hckr'
       if (user?.enhancer?.active_pro_tag) return 'Pro'
       return null
     }

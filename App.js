@@ -6,8 +6,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
 import { queryClient } from './src/lib/queryClient';
-import { ErrorBoundary } from 'react-error-boundary';
-import AppErrorFallback from './src/component/customer/fallback/AppErrorFallback';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetProvider } from './src/context/BottomSheetContext';
 import { StatusBar } from 'react-native';
@@ -31,12 +29,6 @@ export default function App() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ErrorBoundary
-        FallbackComponent={AppErrorFallback}
-        onError={(error, info) => {
-          if (__DEV__) console.error('Global UI Error:', error, info);
-        }}
-      >
         <PersistQueryClientProvider
           client={queryClient}
           persistOptions={{ persister: asyncStoragePersister }}
@@ -49,7 +41,6 @@ export default function App() {
           </SafeAreaProvider>
 
         </PersistQueryClientProvider>
-      </ErrorBoundary>
     </GestureHandlerRootView>
   );
 }

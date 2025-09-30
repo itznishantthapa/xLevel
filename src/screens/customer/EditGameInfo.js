@@ -41,40 +41,33 @@ const chessValidationSchema = baseValidationSchema.shape({
   total_games_played: yup
     .string()
     .matches(/^[0-9]+$/, 'Must be a valid number')
-    .test('min-value', 'Must be 0 or greater', (value) => {
-      return value ? parseInt(value) >= 0 : false
-    })
+    .test('min-value', 'Must be 0 or greater', v => (v !== undefined && v !== null && v !== '') ? parseInt(v) >= 0 : false)
     .required('Total games played is required'),
   rapid_rating: yup
     .string()
     .matches(/^[0-9]+$/, 'Must be a valid number')
-    .test('min-value', 'Must be 0 or greater', (value) => {
-      return value ? parseInt(value) >= 0 : false
-    })
+    .test('min-value', 'Must be 0 or greater', v => (v !== undefined && v !== null && v !== '') ? parseInt(v) >= 0 : false)
+    .test('max-value', 'Rapid rating cannot exceed 3600', v => (v !== undefined && v !== null && v !== '') ? parseInt(v) <= 3600 : false)
     .required('Rapid rating is required'),
   blitz_rating: yup
     .string()
     .matches(/^[0-9]+$/, 'Must be a valid number')
-    .test('min-value', 'Must be 0 or greater', (value) => {
-      return value ? parseInt(value) >= 0 : false
-    })
+    .test('min-value', 'Must be 0 or greater', v => (v !== undefined && v !== null && v !== '') ? parseInt(v) >= 0 : false)
+    .test('max-value', 'Blitz rating cannot exceed 3600', v => (v !== undefined && v !== null && v !== '') ? parseInt(v) <= 3600 : false)
     .required('Blitz rating is required'),
   bullet_rating: yup
     .string()
     .matches(/^[0-9]+$/, 'Must be a valid number')
-    .test('min-value', 'Must be 0 or greater', (value) => {
-      return value ? parseInt(value) >= 0 : false
-    })
+    .test('min-value', 'Must be 0 or greater', v => (v !== undefined && v !== null && v !== '') ? parseInt(v) >= 0 : false)
+    .test('max-value', 'Bullet rating cannot exceed 3600', v => (v !== undefined && v !== null && v !== '') ? parseInt(v) <= 3600 : false)
     .required('Bullet rating is required'),
 })
 
+// Base schema for Free Fire / PUBG before length specialization
 const freeFirePubgValidationSchema = relaxedUsernameValidationSchema.shape({
   uid: yup
     .string()
-    .matches(/^[\x00-\x7F]*$/, 'No emojis allowed in UID')
-    .matches(/^[a-zA-Z0-9]+$/, 'Only letters and numbers allowed')
-    .min(1, 'UID is required')
-    .max(20, 'UID cannot exceed 20 characters')
+    .matches(/^[0-9]+$/, 'UID must contain only digits')
     .required('Game UID is required'),
   level: yup
     .string()
@@ -88,10 +81,8 @@ const freeFirePubgValidationSchema = relaxedUsernameValidationSchema.shape({
 const efootballValidationSchema = relaxedUsernameValidationSchema.shape({
   uid: yup
     .string()
-    .matches(/^[\x00-\x7F]*$/, 'No emojis allowed in UID')
-    .matches(/^[a-zA-Z0-9]+$/, 'Only letters and numbers allowed')
-    .min(1, 'UID is required')
-    .max(20, 'UID cannot exceed 20 characters')
+    .transform(v => (v ? v.replace(/-/g, '').toUpperCase() : v))
+    .matches(/^[A-Z0-9]{13}$/,'eFootball ID must be exactly 13 characters (A-Z, 0-9)')
     .required('Game UID is required'),
   current_division: yup
     .string()
@@ -120,8 +111,7 @@ const efootballValidationSchema = relaxedUsernameValidationSchema.shape({
 const defaultGameValidationSchema = baseValidationSchema.shape({
   game_uid: yup
     .string()
-    .matches(/^[\x00-\x7F]*$/, 'No emojis allowed in UID')
-    .matches(/^[a-zA-Z0-9]+$/, 'Only letters and numbers allowed')
+    .matches(/^[A-Za-z0-9]+$/, 'Only letters and numbers allowed')
     .min(1, 'UID is required')
     .max(20, 'UID cannot exceed 20 characters')
     .required('Game UID is required'),
@@ -240,24 +230,42 @@ const EditGameInfo = () => {
 
   // Update profile field helper with real-time validation
   const updateProfile = (field, value) => {
-    setGameProfile((prev) => ({ ...prev, [field]: value }))
-    // Clear error when user starts typing and validate field
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: '' }))
+    let transformed = value
+    if (field === 'uid' || field === 'game_uid') {
+      switch (gameName) {
+        case 'efootball':
+          transformed = value.replace(/-/g, '').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,13)
+          break
+        case 'free fire':
+          transformed = value.replace(/[^0-9]/g,'').slice(0,12)
+          break
+        case 'pubg':
+          transformed = value.replace(/[^0-9]/g,'').slice(0,12)
+          break
+        default:
+          transformed = value.replace(/[^A-Za-z0-9]/g,'')
+      }
     }
-    // Real-time validation for the specific field
-    validateField(field, value)
+    setGameProfile((prev) => ({ ...prev, [field]: transformed }))
+    // Clear error when user starts typing and validate field
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }))
+    validateField(field, transformed)
   }
 
   // Get the appropriate validation schema based on game type
   const getValidationSchema = () => {
     switch (gameName) {
-      case "chess":
+      case 'chess':
         return chessValidationSchema
-      case "free fire":
-      case "pubg":
-        return freeFirePubgValidationSchema
-      case "efootball":
+      case 'free fire':
+        return freeFirePubgValidationSchema.shape({
+          uid: freeFirePubgValidationSchema.fields.uid.clone().test('ff-length','Free Fire UID must be 9-12 digits', v => !!v && /^[0-9]{9,12}$/.test(v))
+        })
+      case 'pubg':
+        return freeFirePubgValidationSchema.shape({
+          uid: freeFirePubgValidationSchema.fields.uid.clone().test('pubg-length','PUBG UID must be 8-10 digits', v => !!v && /^[0-9]{8,10}$/.test(v))
+        })
+      case 'efootball':
         return efootballValidationSchema
       default:
         return defaultGameValidationSchema
@@ -700,6 +708,15 @@ const EditGameInfo = () => {
           {/* Game-specific fields */}
           {renderGameSpecificFields()}
         </View>
+        
+        {/* Chess Update Restriction Notice */}
+        {gameName === 'chess' && (
+          <View style={[styles.noticeContainer, { backgroundColor: isLight ? "#f8f9fa" : "#1a1a1a", borderColor: isLight ? "#000000" : "#ffffff" }]}>
+            <Text style={[styles.noticeText, { color: isLight ? "#000000" : "#ffffff" }]}>
+              You can update your chess profile once every 2 days
+            </Text>
+          </View>
+        )}
       </View>
     </CreateGameLayout>
   )
@@ -758,5 +775,16 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#FF4444',
     marginTop: 4,
+  },
+  noticeContainer: {
+    padding: 12,
+    borderRadius: 6,
+    borderWidth: 1,
+    marginTop: 16,
+  },
+  noticeText: {
+    fontSize: 13,
+    fontWeight: '500',
+    textAlign: 'center',
   },
 })

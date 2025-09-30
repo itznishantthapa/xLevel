@@ -30,7 +30,7 @@ const ActionButtons = ({ game, isLight, isCreator, user, handleResultUpload, for
     )
   }
 
-  if (game.isAccepted && game.status === "in_progress") {
+  if (game.isAccepted && game.status === "in_progress" && !game.is_free) {
     return (
       <Pressable
         style={[sharedStyles.sendButton, isLight ? { backgroundColor: "#000000" } : { backgroundColor: "#eaf4f4" }, { flexDirection: "row", alignItems: "center", justifyContent: "center",gap:8 }]}

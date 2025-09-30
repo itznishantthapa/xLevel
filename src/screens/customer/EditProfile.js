@@ -190,7 +190,7 @@ const EditProfile = () => {
     const tagOptions = [
       { id: 'off', label: 'Tag Off' },
       { id: 'pro', label: 'Pro Tag', available: user?.enhancer?.have_pro_tag },
-      { id: 'hacker', label: 'Hcker Tag', available: user?.enhancer?.have_hacker_tag },
+      { id: 'hacker', label: 'Hckr Tag', available: user?.enhancer?.have_hacker_tag },
     ].filter(option => option.id === 'off' || option.available)
 
     // Only show exposure controls if user owns exposer enhancer
@@ -309,7 +309,7 @@ const EditProfile = () => {
                 </View>
               )}
 
-              {/* Pro/Hcker Tag */}
+              {/* Pro/Hckr Tag */}
               {selectedTag !== 'off' && (
                 <View style={{
                   position: 'absolute',
@@ -334,7 +334,7 @@ const EditProfile = () => {
                     fontWeight: 'bold',
                     textAlign: 'center'
                   }}>
-                    {selectedTag === 'hacker' ? 'Hcker' : 'Pro'}
+                    {selectedTag === 'hacker' ? 'Hckr' : 'Pro'}
                   </Text>
                 </View>
               )}

@@ -111,7 +111,7 @@ const Profile = () => {
                 </View>
               )}
               
-              {/* Pro/Hcker Tag - Only show if user owns AND has it active */}
+              {/* Pro/Hckr Tag - Only show if user owns AND has it active */}
               {(user?.enhancer?.active_pro_tag || user?.enhancer?.active_hacker_tag) && (
                 <View style={{
                   position: 'absolute',
@@ -136,7 +136,7 @@ const Profile = () => {
                     fontWeight: 'bold',
                     textAlign: 'center'
                   }}>
-                    {user?.enhancer?.active_hacker_tag ? 'Hcker' : 'Pro'}
+                    {user?.enhancer?.active_hacker_tag ? 'Hckr' : 'Pro'}
                   </Text>
                 </View>
               )}

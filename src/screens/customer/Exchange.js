@@ -7,7 +7,8 @@ import {
   Pressable,
   Image,
   ImageBackground,
-  Platform
+  Platform,
+  RefreshControl
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useThemeStore } from "../../store/themeStore"
@@ -18,6 +19,7 @@ import CreatorInfo from "../../component/matchcard/CreatorInfo"
 import { useEnhancements } from "../../queries/useEnhancer"
 import { useEffect, useState } from "react"
 import { useBottomSheet } from "../../context/BottomSheetContext"
+import { useQueryClient } from "@tanstack/react-query"
 import * as LocalAuthentication from "expo-local-authentication"
 import Toast from "react-native-simple-toast"
 import { useNavigation } from "@react-navigation/native"
@@ -34,29 +36,30 @@ import Animated, {
 const Exchange = () => {
   const { isLight } = useThemeStore()
   const { user, get_user } = useAuthStore()
-  const { data: enhancers = [] } = useEnhancements()
+  const { data: enhancers = [], isLoading: isQueryLoading, isError, error, refetch, isFetching } = useEnhancements()
   const { showConfirmSheet } = useBottomSheet()
   const navigation = useNavigation()
+  const queryClient = useQueryClient()
   const [isLoading, setIsLoading] = useState(false)
-  const [dataLoaded, setDataLoaded] = useState(false)
-  const [isInitialLoading, setIsInitialLoading] = useState(true)
+  const [isRefreshing, setIsRefreshing] = useState(false)
+
 
   useEffect(() => {
-    // Set initial loading to false after first render
-    if (isInitialLoading) {
-      const timer = setTimeout(() => {
-        setIsInitialLoading(false)
-        if (enhancers.length > 0) {
-          setDataLoaded(true)
-        }
-      }, 100) // Small delay to prevent flash
-      return () => clearTimeout(timer)
+    console.log('Enhancements:', enhancers);
+  }, [enhancers])
+  
+
+  // Handle pull-to-refresh
+  const handleRefresh = async () => {
+    setIsRefreshing(true)
+    try {
+      await refetch()
+    } catch (err) {
+      Toast.show('Failed to refresh data.')
+    } finally {
+      setIsRefreshing(false)
     }
-    // Trigger animation when data is loaded
-    if (enhancers.length > 0 && !dataLoaded) {
-      setDataLoaded(true)
-    }
-  }, [enhancers, dataLoaded, isInitialLoading])
+  }
 
   //  LOG  Enhancements: [{"discount": 0, "id": 1, "price": 400, "type": "pro_tag"}]
 
@@ -82,7 +85,7 @@ const Exchange = () => {
     },
     hacker_tag: {
       title: "Hacker Tag",
-      description: "Stand out with the exclusive 'Hcker' tag below your profile",
+      description: "Stand out with the exclusive 'Hckr' tag below your profile",
       color: colors.warning,
       enhancementKey: 'have_hacker_tag'
     },
@@ -178,6 +181,7 @@ const Exchange = () => {
     })
   }
 
+  
   const SkeletonCard = ({ index }) => (
     <Animated.View 
       entering={FadeIn.delay(index * 50).duration(400)}
@@ -220,6 +224,24 @@ const Exchange = () => {
       
       {/* Button Skeleton */}
       <View style={[styles.skeletonButton, { backgroundColor: isLight ? "#f0f0f0" : "#2a2a2a" }]} />
+    </Animated.View>
+  )
+
+  // Retry Component for when data fails to load
+  const RetryComponent = () => (
+    <Animated.View 
+      entering={FadeIn.duration(800)}
+      style={[styles.retryContainer, { backgroundColor: colors.cardBackground }]}
+    >
+      <AntDesign name="exclamationcircle" size={24} color={colors.textTertiary} />
+      <Text style={[styles.retryTitle, { color: colors.text }]}>Failed to load enhancements</Text>
+      <Text style={[styles.retryDescription, { color: colors.textTertiary }]}>Check your connection and try again</Text>
+      <Pressable
+        style={[styles.retryButton, { backgroundColor: isLight ? "#000000" : "#ffffff" }]}
+        onPress={handleRefresh}
+      >
+        <Text style={[styles.retryButtonText, { color: isLight ? "#ffffff" : "#000000" }]}>Retry</Text>
+      </Pressable>
     </Animated.View>
   )
 
@@ -348,11 +370,21 @@ const Exchange = () => {
             style={styles.scrollView}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollContent}
+            refreshControl={
+              <RefreshControl
+                refreshing={false}
+                onRefresh={handleRefresh}
+                colors={[isLight ? "#000000" : "#000000"]}
+                tintColor={isLight ? "#000000" : "#ffffff"}
+              />
+            }
           >
 
             {/* Exchange Products */}
             <View style={styles.productsSection}>
-              {isInitialLoading || (enhancers.length === 0 && !dataLoaded) ? (
+              {isError ? (
+                <RetryComponent />
+              ) : (isQueryLoading && enhancers.length === 0) || isFetching ? (
                 // Show skeleton cards while loading
                 [0, 1, 2].map((_, index) => (
                   <SkeletonCard key={`skeleton-${index}`} index={index} />
@@ -391,8 +423,12 @@ const Exchange = () => {
                   entering={FadeIn.duration(800)}
                   style={styles.noDataContainer}
                 >
+                  <AntDesign name="shoppingcart" size={32} color={colors.textTertiary} style={{ marginBottom: 8 }} />
                   <Text style={[styles.noDataText, { color: colors.textTertiary }]}>
-                    No enhancements available at the moment
+                    No enhancements available
+                  </Text>
+                  <Text style={[styles.noDataSubText, { color: colors.textTertiary }]}>
+                    Pull down to refresh
                   </Text>
                 </Animated.View>
               )}
@@ -405,7 +441,7 @@ const Exchange = () => {
             >
               <AntDesign name="infocirlce" size={16} color={colors.textTertiary} />
               <Text style={[styles.infoText, { color: colors.textTertiary }]}>
-            "Enhancements are permanent. You can turn them on or off in your profile, and they will be displayed across all your game profiles."
+            "Enhancements are permanent. You can turn them on or off in your profile once your exchange is complete, and they will be displayed across all your game profiles."
               </Text>
             </Animated.View>
           </ScrollView>
@@ -531,6 +567,40 @@ const styles = StyleSheet.create({
   noDataText: {
     fontSize: 16,
     textAlign: "center",
+    marginBottom: 4,
+  },
+  noDataSubText: {
+    fontSize: 12,
+    textAlign: "center",
+  },
+
+  // Retry Component
+  retryContainer: {
+    alignItems: "center",
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+    marginHorizontal: 10,
+    borderRadius: 16,
+    gap: 8,
+  },
+  retryTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  retryDescription: {
+    fontSize: 12,
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  retryButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    fontSize: 14,
+    fontWeight: "600",
   },
 
   // Preview Section
