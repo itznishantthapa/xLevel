@@ -114,18 +114,17 @@ export const setupNotificationListeners = async () => {
         const { title, body } = remoteMessage.notification;
         const payloadData = remoteMessage.data || {};
 
-        // show popup using expo-notifications in foreground, implement this after the Notifications.setNotificationHandler()
+        // show popup using expo-notifications in foreground
         await Notifications.scheduleNotificationAsync({
           content: {
             title: title,
             body: body,
-            data: payloadData,            //<--------- this is the data that will be passed to the screen and used in navigation on tap
+            data: payloadData,
             channelId: 'high_importance',
-
           },
           trigger: {
             type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-            seconds: 2,
+            seconds: 1,
           },
         });
       }

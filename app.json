@@ -8,7 +8,11 @@
       "ios_app_id": "ca-app-pub-xxxxxxxxxxxxxxxx~xxxxxxxxxx"
     },
     "android": {
-      "package": "com.blackonedevs.levelesportmatchmaking"
+      "package": "com.blackonedevs.levelesportmatchmaking",
+       "notification": {
+        "icon": "./src/assets/ic_notification.png",
+        "color": "#ffffff"
+      }
     },
     "ios": {
       "bundleIdentifier": "com.blackonedevs.levelesportmatchmaking"
