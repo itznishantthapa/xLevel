@@ -99,7 +99,7 @@ API.interceptors.response.use(
         // Log error but don't expose details to the user
 
         
-        // Silently clear tokens
+        // Silently clear tokens and perform logout
         try {
           await AsyncStorage.multiRemove(["@access_token", "@refresh_token"]);
         } catch (storageErr) {
@@ -130,7 +130,7 @@ API.interceptors.response.use(
         }
       }
     } else if (!error?.response) {
-      message = "Network error. Please check your connection.";
+      message = "No internet connection.";
     } else if (error?.code === "ECONNABORTED") {
       message = "Request timed out. Please try again.";
     }

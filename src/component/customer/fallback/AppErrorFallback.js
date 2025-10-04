@@ -30,6 +30,7 @@ const AppErrorFallback = ({ error, resetErrorBoundary }) => {
   }, [isLight])
 
   return (
+    
     <Pressable style={[styles.screen, { backgroundColor: themeStyles.surface, paddingTop: insets.top }]} onPress={handleReset} >
       <StatusBar translucent backgroundColor="transparent" barStyle={isLight ? "dark-content" : "light-content"} />
       <AppHeader backButton={false} title={'Unable to Load'} />

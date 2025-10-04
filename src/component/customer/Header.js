@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   greeting: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: "700",
     marginBottom: 2,
     lineHeight: 24,

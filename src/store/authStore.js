@@ -5,6 +5,7 @@ import {
   getUser,
   googleLoginUser,
   googleSignupUser,
+  appleSignupUser,
   loginUser,
   refreshUserData,
   signupUser,
@@ -82,6 +83,23 @@ export const useAuthStore = create((set) => ({
    */
   google_signup: async (payload) => {
     const user = await googleSignupUser(payload);
+    if (!user) return;
+    set({
+      user,
+      isAuthenticated: true,
+      isAdmin: user?.role === 'admin',
+      isCustomer: user?.role === 'customer',
+      isInitialized: true
+    });
+  },
+
+  /**
+   * Handles Apple signup and updates authentication state
+   * @param {Object} payload - Apple signup data
+   * @returns {Promise<void>}
+   */
+  apple_signup: async (payload) => {
+    const user = await appleSignupUser(payload);
     if (!user) return;
     set({
       user,

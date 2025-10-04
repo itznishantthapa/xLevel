@@ -11,6 +11,7 @@ export const endpoints = {
   updateUser: "/api/user/update-profile/",
   deleteUser: "/api/user/delete-account/",
   googleSignup: "/api/user/google/auth/",
+  appleSignup: "/api/user/apple/auth/",
   refreshUserData: "/api/auth/refresh-user-data/",
   refreshToken: "/api/user/refresh-token/",
   updateGamePoints: "/api/user/update-game-points/",

@@ -55,6 +55,22 @@ export const googleSignupUser = async (payload) => {
   }
 };
 
+export const appleSignupUser = async (payload) => {
+  try {
+    const response = await API.post(endpoints.appleSignup, payload);
+    const { tokens, user } = response.data;
+
+    await AsyncStorage.multiSet([
+      ['@access_token', tokens.access],
+      ['@refresh_token', tokens.refresh],
+      ['@user', JSON.stringify(user)]
+    ]);
+    return user;
+  } catch (error) {
+    Toast.show(error?.response?.data?.message || error.message || 'Apple Sign-In failed.');
+  }
+};
+
 
 
 export const loginUser = async (payload) => {

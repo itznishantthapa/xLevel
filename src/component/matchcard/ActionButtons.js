@@ -29,6 +29,13 @@ const ActionButtons = ({ game, isLight, isCreator, user, handleResultUpload, for
       </View>
     )
   }
+  if (game.status === "resolved") {
+    return (
+      <View style={[sharedStyles.statusButton, { borderColor: isLight ? "#000000" : "#ffffff" }]}>
+        <Text style={[sharedStyles.statusText, { color: isLight ? "#000000" : "#ffffff" }]}>Match is Resolved</Text>
+      </View>
+    )
+  }
 
   if (game.isAccepted && game.status === "in_progress" && !game.is_free) {
     return (

@@ -113,9 +113,9 @@ const MatchCardSkeleton = ({ isLight = true }) => {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 12,
-    marginHorizontal: 12,
-    marginVertical: 8,
+    marginHorizontal: scaleWidth(8),
+    marginVertical: scaleHeight(8),
+    borderRadius: scaleWidth(25),
     borderWidth: 1,
     overflow: "hidden",
   },

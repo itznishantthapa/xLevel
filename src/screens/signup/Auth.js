@@ -13,6 +13,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { AntDesign } from '@expo/vector-icons';
+import * as AppleAuthentication from 'expo-apple-authentication';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Animated, {
   useSharedValue,
@@ -55,11 +56,12 @@ const Auth = () => {
   const navigation = useNavigation();
   const { isLight } = useThemeStore();
   const insets = useSafeAreaInsets();
-  const { google_signup } = useAuthStore();
+  const { google_signup, apple_signup } = useAuthStore();
   const { isConnected } = useNetworkStatus();
 
   // State
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isAppleLoading, setIsAppleLoading] = useState(false);
   const [isAgeVerified, setIsAgeVerified] = useState(false);
   const [isVerificationComplete, setIsVerificationComplete] = useState(false); // New state for 'Verified' text
   const [date, setDate] = useState(DEFAULT_DATE);
@@ -260,6 +262,53 @@ const Auth = () => {
     }
   };
 
+  const handleAppleSignIn = async () => {
+    if (!isConnected) {
+      Toast.show('No internet connection.', Toast.SHORT);
+      return;
+    }
+    try {
+      setIsAppleLoading(true);
+      const available = await AppleAuthentication.isAvailableAsync();
+      if (!available) {
+        Toast.show('Apple Sign-In not available on this device.');
+        return;
+      }
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+
+      if (!credential?.identityToken) {
+        Toast.show('Apple Sign-In failed.');
+        return;
+      }
+
+      const fullName = credential.fullName ? `${credential.fullName.givenName || ''} ${credential.fullName.familyName || ''}`.trim() : undefined;
+      const payload = {
+        id_token: credential.identityToken,
+        email: credential.email, // optional per backend spec
+        full_name: fullName // optional
+      };
+
+      console.log("apple payload:", payload);
+
+      await apple_signup(payload);
+      const hasToken = await checkFCMTokenInStorage();
+      if (hasToken) {
+        await postFCMToken();
+      }
+    } catch (err) {
+      if (err?.code === 'ERR_REQUEST_CANCELED') return; // user canceled
+      if (__DEV__) console.error('Apple Sign-In Error:', err);
+      Toast.show('Unable to sign in with Apple.');
+    } finally {
+      setIsAppleLoading(false);
+    }
+  };
+
   // Auth buttons configuration
   const getAuthButtons = () => {
     const buttons = [
@@ -277,13 +326,14 @@ const Auth = () => {
     if (Platform.OS === 'ios') {
       buttons.push({
         id: 'apple',
-        icon: <AntDesign name="apple1" size={20} color={colors.text} />,
+        icon: isAppleLoading ? (
+          <ActivityIndicator size="small" color={colors.text} />
+        ) : (
+          <AntDesign name="apple1" size={20} color={colors.text} />
+        ),
         text: 'Continue with Apple',
-        onPress: () => {
-          console.log('Apple login pressed');
-          // TODO: Implement Apple login logic
-        },
-        disabled: false
+        onPress: handleAppleSignIn,
+        disabled: isAppleLoading
       });
     }
 

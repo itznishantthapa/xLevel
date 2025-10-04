@@ -113,7 +113,7 @@ const CredentialsSection = ({
         <View style={sharedStyles.credentialsInputContainer}>
           {hasCredentials ? (
             <Text style={[sharedStyles.credentialsGuide, { color: isLight ? "#333333" : "#ffffff" }]}>
-              Credentials sent successfully. Waiting for opponent...
+              Credentials sent successfully. Opponent is joining...
             </Text>
           ) : (
             <Text style={[sharedStyles.credentialsGuide, { color: isLight ? "#333333" : "#ffffff" }]}>
@@ -236,7 +236,7 @@ const CredentialsSection = ({
       return (
         <View style={sharedStyles.credentialsInputContainer}>
           <Text style={[sharedStyles.credentialsGuide, { color: isLight ? "#333333" : "#ffffff" }]}>
-            Credentials sent successfully. Waiting for opponent...
+            Credentials sent successfully. Opponent is joining...
           </Text>
 
           <Pressable
@@ -287,11 +287,11 @@ const CredentialsSection = ({
   // Opponent view - show received credentials based on type
 
   // Room ID and Password (for PUBG TDM, WOW, Clash Squad, eFootball Friend Match, etc.)
-  if (isRoomCredentials && game.room_id && game.room_pass) {
+  if (isRoomCredentials && game.room_id && game.room_pass &&  game.status === "in_progress") {
     return (
       <View style={sharedStyles.credentialsDisplayContainer}>
         <Text style={[sharedStyles.credentialsGuide, { color: isLight ? "#333333" : "#ffffff" }]}>
-          Room ID & Password
+          Room ID & Password (ID Must Be Copied)
         </Text>
         <View style={sharedStyles.inputRow}>
           <View style={sharedStyles.inputWrapper}>
@@ -331,11 +331,11 @@ const CredentialsSection = ({
   }
 
   // Team Code (for Lone Wolf mode)
-  if (isLoneWolf && game.team_code) {
+  if (isLoneWolf && game.team_code  &&  game.status === "in_progress") {
     return (
       <View style={sharedStyles.credentialsDisplayContainer}>
         <Text style={[sharedStyles.credentialsGuide, { color: isLight ? "#333333" : "#ffffff" }]}>
-          Join Your Opponent with Teamcode
+         Teamcode (Copy & Join – Required)
         </Text>
         <View style={sharedStyles.inputRow}>
           <View style={sharedStyles.inputWrapper}>
@@ -359,7 +359,7 @@ const CredentialsSection = ({
   }
 
   // Join URL (for Chess Blitz, Bullet only)
-  if (isChessGame && game.join_url) {
+  if (isChessGame && game.join_url && game.status === "in_progress") {
     const handlePressURL = () => {
 
       //if game is_accepted is true, then don't open the URL
@@ -394,7 +394,7 @@ const CredentialsSection = ({
     return (
       <View style={sharedStyles.credentialsDisplayContainer}>
         <Text style={[sharedStyles.credentialsGuide, { color: isLight ? "#333333" : "#ffffff" }]}>
-          Join Your Opponent with Join URL
+         URL (Click & Join – Required)
         </Text>
         <View style={sharedStyles.inputRow}>
           <View style={sharedStyles.inputWrapper}>

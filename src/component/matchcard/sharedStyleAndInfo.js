@@ -8,9 +8,9 @@ import Toast from "react-native-simple-toast";
 // Shared styles for use in all match card components
 export const sharedStyles = StyleSheet.create({
   card: {
-    marginHorizontal: scaleWidth(10),
+    marginHorizontal: scaleWidth(8),
     marginVertical: scaleHeight(8),
-    borderRadius: scaleWidth(16),
+    borderRadius: scaleWidth(25),
     backgroundColor: '#ffffff',
     borderWidth: scaleWidth(1),
     borderColor: '#333333',
@@ -45,7 +45,7 @@ export const sharedStyles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: scaleWidth(12),
     paddingVertical: scaleHeight(8),
-    borderRadius: scaleWidth(8),
+    borderRadius: scaleWidth(20),
     borderWidth: scaleWidth(1),
     borderColor: '#000000',
   },
