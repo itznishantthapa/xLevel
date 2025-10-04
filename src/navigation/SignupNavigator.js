@@ -5,7 +5,7 @@ const Stack = createStackNavigator();
 export default function SignupNavigator(){
     return(
         <>
-            <Stack.Navigator screenOptions={{headerShown:false}}>
+            <Stack.Navigator screenOptions={{headerShown:false , }}>
 
             <Stack.Screen component={Auth} name="auth" options={{animation:'fade'}}/>
             </Stack.Navigator>

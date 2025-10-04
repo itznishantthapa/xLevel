@@ -145,14 +145,25 @@ const TournamentCard = ({ game }) => {
           </View>
         </View>
 
-        <View style={styles.bonusInfo}>
-          <View style={[styles.entryFeeDisplay, { backgroundColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)' }]}>
-            <Text style={[styles.entryLabel, !isLight && styles.entryLabelDark]}>Entry</Text>
-            <View style={styles.entryAmountContainer}>
-              <Text style={[styles.entryAmount, !isLight && styles.entryAmountDark]}>{game.entry_fee} Points</Text>
+        {!game?.is_free && game?.entry_fee > 0 ? (
+          <View style={styles.bonusInfo}>
+            <View style={[styles.entryFeeDisplay, { backgroundColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)' }]}>
+              <Text style={[styles.entryLabel, !isLight && styles.entryLabelDark]}>Entry</Text>
+              <View style={styles.entryAmountContainer}>
+                <Text style={[styles.entryAmount, !isLight && styles.entryAmountDark]}>{game.entry_fee} Points</Text>
+              </View>
             </View>
           </View>
-        </View>
+        ):(
+                    <View style={styles.bonusInfo}>
+            <View style={[styles.entryFeeDisplay, { backgroundColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)' }]}>
+              <Text style={[styles.entryLabel, !isLight && styles.entryLabelDark]}>Entry</Text>
+              <View style={styles.entryAmountContainer}>
+                <Text style={[styles.entryAmount, !isLight && styles.entryAmountDark]}>Free</Text>
+              </View>
+            </View>
+          </View>
+        )}
       </View>
 
       {/* Progress Section */}

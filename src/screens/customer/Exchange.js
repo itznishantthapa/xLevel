@@ -44,10 +44,7 @@ const Exchange = () => {
   const [isRefreshing, setIsRefreshing] = useState(false)
 
 
-  useEffect(() => {
-    console.log('Enhancements:', enhancers);
-  }, [enhancers])
-  
+ 
 
   // Handle pull-to-refresh
   const handleRefresh = async () => {

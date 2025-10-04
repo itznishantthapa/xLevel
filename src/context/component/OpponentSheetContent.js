@@ -76,6 +76,7 @@ const OpponentSheetContent = React.memo(({ payload, isDark, insets, handleConfir
                 {/* Game Details Section */}
                 <View style={[styles.detailsSection, {
                 }]}>
+                    <View style={{borderTopRightRadius:15,borderBottomLeftRadius:15,borderBottomRightRadius:15,backgroundColor:'transparent',overflow:'hidden'}}>
                     {gameInfo.map((info, index) => (
                         <InfoRow 
                             key={`${info.label}-${index}`} 
@@ -84,6 +85,9 @@ const OpponentSheetContent = React.memo(({ payload, isDark, insets, handleConfir
                             isDark={isDark} 
                         />
                     ))}
+
+                    </View>
+
                 </View>
             </ScrollView>
 

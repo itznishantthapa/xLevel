@@ -257,6 +257,7 @@ export default function RootLayout() {
       onReady={() => {
         NavigationService.executePendingNavigation();
       }}
+      
     >
       <ErrorBoundary
         FallbackComponent={AppErrorFallback}

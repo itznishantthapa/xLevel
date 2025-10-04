@@ -1,4 +1,4 @@
-import { createStackNavigator } from "@react-navigation/stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Profile from "../screens/customer/Profile";
 import CustomerTabNavigator from "./CustomerTabNavigator";
 import InCategory from "../screens/customer/InCategory";
@@ -31,15 +31,15 @@ import BlockedUserList from "../screens/customer/BlockedUserList";
 import Exchange from "../screens/customer/Exchange";
 import AccessBar from "../screens/customer/AccessBar";
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 
 export default function CustomerNavigator(){
     return(
         <>
-        <Stack.Navigator  screenOptions={{headerShown:false,animation:'fade'}} >
+        <Stack.Navigator  screenOptions={{headerShown:false}} >
             <Stack.Screen component={CustomerTabNavigator} name="customerTabs"  />
-            <Stack.Screen component={Profile} name="profile" options={{animation:'slide_from_left'}}/>
+            <Stack.Screen component={Profile} name="profile" />
             <Stack.Screen component={EditProfile} name="editProfile"/>
             <Stack.Screen component={InCategory} name="inCategory"/>
             <Stack.Screen component={CreateGame} name="createGame"/>
@@ -48,9 +48,9 @@ export default function CustomerNavigator(){
             <Stack.Screen component={Notify} name="notify"/>
             <Stack.Screen component={SetupGameInfo} name="setupGameInfo"/>
             <Stack.Screen component={EditGameInfo} name="editGameInfo"/>
-            <Stack.Screen component={ResultUpload} name="resultUpload" options={{animation:'slide_from_right'}}/>
+            <Stack.Screen component={ResultUpload} name="resultUpload" />
             <Stack.Screen component={GameRules} name="gameRules"/>
-            <Stack.Screen component={RulesList} name="rulesList" options={{animation:'slide_from_right'}}/>
+            <Stack.Screen component={RulesList} name="rulesList" />
             <Stack.Screen component={AppErrorFallback} name="appErrorFallback"/>
             <Stack.Screen component={EfootballCreate} name="efootballCreate"/>
             <Stack.Screen component={CreateChess} name="createChess"/>

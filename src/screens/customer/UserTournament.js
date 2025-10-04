@@ -50,9 +50,7 @@ const UserTournament = () => {
   } = useInfiniteTournaments(5)
 
 
-  useEffect(() => {
-  console.log('UserTournament component rendered. Tournaments count:', tournaments);
-  }, [tournaments])
+ 
   
 
   const handleLoadMore = useCallback(async () => {

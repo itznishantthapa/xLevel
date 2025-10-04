@@ -28,14 +28,14 @@ export default function App() {
   }, [isLight]);
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1,backgroundColor: isLight ? '#ffffff' : '#000000'}}>
         <PersistQueryClientProvider
           client={queryClient}
           persistOptions={{ persister: asyncStoragePersister }}
         >
 
-          <SafeAreaProvider style={{ flex: 1 }}>
-            <BottomSheetProvider>
+          <SafeAreaProvider style={{ flex: 1}}>
+            <BottomSheetProvider >
               <Main />
             </BottomSheetProvider>
           </SafeAreaProvider>
