@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo, useRef, useCallback } from "react"
-import { View, TextInput, StyleSheet } from "react-native"
+import { View, TextInput, StyleSheet, Keyboard } from "react-native"
 import Toast from "react-native-simple-toast"
 import { useThemeStore } from "../../../store/themeStore"
 import { useNavigation } from "@react-navigation/native"
@@ -124,6 +124,7 @@ const CreatePubg = ({ route }) => {
   }, [queryClient, game_name, navigation])
 
   const handleCreateTournament = async () => {
+     Keyboard.dismiss()
     // Validate terms acceptance first and shake if not accepted
     if (!gameSettings.termsAccepted) {
       termsRef.current?.shake();

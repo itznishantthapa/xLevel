@@ -353,7 +353,7 @@ const EditProfile = () => {
               }]}
               value={profileData.full_name}
               onChangeText={(text) => setProfileData({ ...profileData, full_name: text })}
-              placeholder="Your Name ..."
+              placeholder="Your Name"
               placeholderTextColor={isLight ? "#999" : "#666"}
             />
 

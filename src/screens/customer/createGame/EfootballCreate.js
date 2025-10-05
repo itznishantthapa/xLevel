@@ -17,6 +17,7 @@ import {
   TermsAgreement,
   DividerLine
 } from "../../../component/customer/createGame"
+import { Keyboard } from "react-native"
 
 const CreateEFootball = ({ route }) => {
   const { isLight } = useThemeStore()
@@ -121,6 +122,7 @@ const CreateEFootball = ({ route }) => {
   }, [queryClient, game_name, navigation])
 
   const handleCreateTournament = async () => {
+     Keyboard.dismiss()
     // Validate terms acceptance first and shake if not accepted
     if (!gameSettings.termsAccepted) {
       termsRef.current?.shake();

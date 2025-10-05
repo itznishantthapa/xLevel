@@ -145,7 +145,9 @@ const Header = ({
               ellipsizeMode="tail"
               accessibilityLabel={`Hi, ${displayName}`}
             >
-              Hi, {displayName}
+              {
+                displayName ? `Hi, ${displayName}` : "Hi, (⁠◠⁠‿⁠◕⁠)"
+              }
             </Text>
             <FontAwesome6 name="hand-peace" size={18} color={themeStyles.iconColor} />
           </View>

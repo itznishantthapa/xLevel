@@ -710,10 +710,19 @@ const EditGameInfo = () => {
         </View>
         
         {/* Chess Update Restriction Notice */}
-        {gameName === 'chess' && (
+        {gameName === 'chess'  && (
           <View style={[styles.noticeContainer, { backgroundColor: isLight ? "#f8f9fa" : "#1a1a1a", borderColor: isLight ? "#000000" : "#ffffff" }]}>
             <Text style={[styles.noticeText, { color: isLight ? "#000000" : "#ffffff" }]}>
               You can update your chess profile once every 2 days
+            </Text>
+          </View>
+        )}
+
+        {/* eFootball Update Restriction Notice */}
+        {gameName === 'efootball'  && (
+          <View style={[styles.noticeContainer, { backgroundColor: isLight ? "#f8f9fa" : "#1a1a1a", borderColor: isLight ? "#000000" : "#ffffff" }]}>
+            <Text style={[styles.noticeText, { color: isLight ? "#000000" : "#ffffff" }]}>
+              You can update your eFootball profile once every 2 days
             </Text>
           </View>
         )}

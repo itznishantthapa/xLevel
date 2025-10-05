@@ -143,7 +143,14 @@ const Profile = () => {
             </View>
 
             <View style={styles.profileInfo}>
-              <Text style={[styles.playerName, { color: colors.text }]}>{user?.full_name}</Text>
+              <Text style={[styles.playerName, { color: colors.text }]}>
+                
+                {
+                user?.full_name ? `${user.full_name}` : "(⁠◠⁠‿⁠◕⁠)"
+                
+                }
+                
+                </Text>
               <Text style={[styles.email, { color: colors.textSecondary }]}>{user?.email}</Text>
             </View>
 

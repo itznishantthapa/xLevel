@@ -16,6 +16,7 @@ import {
   TermsAgreement,
   DividerLine
 } from "../../../component/customer/createGame"
+import { Keyboard } from "react-native"
 
 const CreateChess = ({ route }) => {
   const { isLight } = useThemeStore()
@@ -123,6 +124,7 @@ const CreateChess = ({ route }) => {
   }, [queryClient, game_name, navigation])
 
   const handleCreateTournament = async () => {
+    Keyboard.dismiss()
     // Validate terms acceptance first and shake if not accepted
     if (!gameSettings.termsAccepted) {
       termsRef.current?.shake();
@@ -144,6 +146,8 @@ const CreateChess = ({ route }) => {
 
     setIsLoading(true)
     try {
+
+     
       await createMatch(finalSettings)
 
       // Add a small delay to ensure cache is updated before navigation
