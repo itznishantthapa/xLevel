@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Pressable, TextInput, Alert, Platform, KeyboardAvoidingView } from 'react-native'
+import { StyleSheet, Text, View, Pressable, TextInput, Alert, Platform, KeyboardAvoidingView, Keyboard } from 'react-native'
 import React, { useState, useRef } from 'react'
 import { MaterialIcons } from '@expo/vector-icons'
 import { useThemeStore } from '../../../store/themeStore'
@@ -63,6 +63,9 @@ const AccountDeletion = () => {
       Toast.show('Please specify your reason for deleting the account.')
       return
     }
+
+
+    Keyboard.dismiss()
 
     setTimeout(() => {
 

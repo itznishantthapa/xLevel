@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, StatusBar, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Loader from '../../Loader';
 import CoolButton from '../common/CoolButton';
@@ -30,6 +31,7 @@ const CreateGameLayout = ({
   buttonTitle = "Create Match",
   loaderMessage = "Creating match..."
 }) => {
+  const insets = useSafeAreaInsets()
   return (
     <View style={[styles.mainContainer, { backgroundColor: isLight ? "#ffffff" : "#000000" }]}>
       <Loader visible={isLoading} message={loaderMessage} size={50} />
@@ -40,7 +42,7 @@ const CreateGameLayout = ({
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
+          keyboardVerticalOffset={insets.bottom + 40} 
         >
           <ScrollView
             style={styles.scrollView}

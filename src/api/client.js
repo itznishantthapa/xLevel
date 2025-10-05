@@ -8,15 +8,15 @@ import { endpoints } from "./endpoints";
 // Central API client
 export const API = axios.create({
   
-  baseURL: "https://level-esport-matchmaking-gbfmu.ondigitalocean.app",
-  // baseURL: "http://192.168.1.86:8000", 
+  // baseURL: "https://level-esport-matchmaking-gbfmu.ondigitalocean.app",
+  baseURL: "http://192.168.1.88:8000", 
   headers: { "Content-Type": "application/json" },
   timeout: 6000,
 });
 
 // Inject bearer token from storage before every request (except auth endpoints)
 API.interceptors.request.use(async (config) => {
-  const noAuthEndpoints = ["/api/user/google/auth/", "/api/user/login/", "/api/user/register/"];
+  const noAuthEndpoints = ["/api/user/google/auth/","/api/user/apple/auth/", "/api/user/login/", "/api/user/register/"];
   
   // Check if the current request URL matches any of the no-auth endpoints
   const shouldSkipAuth = noAuthEndpoints.some((endpoint) => {

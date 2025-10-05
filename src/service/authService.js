@@ -58,6 +58,7 @@ export const googleSignupUser = async (payload) => {
 export const appleSignupUser = async (payload) => {
   try {
     const response = await API.post(endpoints.appleSignup, payload);
+    console.log('Apple Signup Response:', response.data);
     const { tokens, user } = response.data;
 
     await AsyncStorage.multiSet([
