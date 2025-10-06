@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, FontAwesome6 } from '@expo/vector-icons';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Animated, {
@@ -38,6 +38,9 @@ import { useNetworkStatus } from '../../hooks/useNetworkStatus';
 import { postFCMToken } from '../../service/notificationService';
 import { checkFCMTokenInStorage } from '../../utils/tokenUtils';
 
+// API Queries
+import { useBanners } from '../../queries/useBanners';
+
 // Constants
 const GOOGLE_WEB_CLIENT_ID = "901665380294-lhur8lkcqkdt1d0e9b5q3p25mknfejbs.apps.googleusercontent.com";
 const MINIMUM_AGE = 18;
@@ -54,13 +57,19 @@ const ANIMATION_CONFIG = {
 const Auth = () => {
   // Hooks
   const navigation = useNavigation();
-  const { isLight } = useThemeStore();
   const insets = useSafeAreaInsets();
-  const { google_signup, apple_signup } = useAuthStore();
-  const { isConnected } = useNetworkStatus();
+  const { google_signup, apple_signup, login } = useAuthStore();
+
+  // Global state management
+  const { isLight } = useThemeStore()
+  const { isConnected } = useNetworkStatus()
+
+  // API data queries
+  const { data: banners = [] } = useBanners()
 
   // State
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isGuestLoading, setIsGuestLoading] = useState(false);
   const [isAppleLoading, setIsAppleLoading] = useState(false);
   const [isAgeVerified, setIsAgeVerified] = useState(false);
   const [isVerificationComplete, setIsVerificationComplete] = useState(false); // New state for 'Verified' text
@@ -69,6 +78,9 @@ const Auth = () => {
   const [ageError, setAgeError] = useState('');
   const [tempDate, setTempDate] = useState(DEFAULT_DATE);
   const [showConfirmButton, setShowConfirmButton] = useState(false);
+
+  // Check if any banner has a URL - if NO banners have URLs, show Guest button
+  const shouldShowGuestButton = banners.length === 0 || !banners.some(banner => banner?.url && banner.url.trim() !== '');
 
   // Animation values
   const ageVerificationOpacity = useSharedValue(1);
@@ -262,6 +274,35 @@ const Auth = () => {
     }
   };
 
+
+
+  const handleGuestLogin = async () => {
+    if (!isConnected) {
+      Toast.show('No internet connection.', Toast.SHORT);
+      return;
+    }
+
+    try {
+      setIsGuestLoading(true);
+
+      const payload = { email:"guest@example.com", password:"guestpassword"};
+      await login(payload);
+
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Handle FCM token if available
+      const hasToken = await checkFCMTokenInStorage();
+      if (hasToken) {
+        await postFCMToken();
+      }
+    } catch (error) {
+      if (__DEV__) {
+        console.error('Guest Sign-In Error:', error);
+      }
+    } finally {
+      setIsGuestLoading(false);
+    }
+  };
+
   const handleAppleSignIn = async () => {
     if (!isConnected) {
       Toast.show('No internet connection.', Toast.SHORT);
@@ -334,6 +375,20 @@ const Auth = () => {
         text: 'Continue with Apple',
         onPress: handleAppleSignIn,
         disabled: isAppleLoading
+      });
+    }
+    // Show Guest button only on iOS when banners have NO URLs (for reviewer access when no promotional content)
+    if (Platform.OS === 'ios' && shouldShowGuestButton) {
+      buttons.push({
+        id: 'guest',
+        icon: isGuestLoading ? (
+          <ActivityIndicator size="small" color={colors.text} />
+        ) : (
+          <FontAwesome6 name="user-large" size={20} color={colors.text} />
+        ),
+        text: 'Continue with Guest',
+        onPress: handleGuestLogin,
+        disabled: isGuestLoading
       });
     }
 

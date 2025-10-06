@@ -78,8 +78,11 @@ const MatchCard = ({
         </View>
 
         {
-          forOpenGames && (
+          forOpenGames ? (
             <Time time={game.created_at} isDark={!isLight} />
+          ):(
+               <Time time={ game.created_at} isDark={!isLight} forMatch={true}/>
+
           )
         }
 
