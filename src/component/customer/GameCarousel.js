@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { Entypo } from "@expo/vector-icons"
 import { useThemeStore } from '../../store/themeStore';
+import { useBanners } from '../../queries/useBanners';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.45;
@@ -19,6 +20,9 @@ const CARD_HEIGHT = 300;
 
 
 const GameCarousel = ({ games, handleGameCardPress }) => {
+      const { data: banners = [] } = useBanners()
+
+      const shouldShowLabel = banners.length === 0 || !banners.some(banner => banner?.url && banner.url.trim() !== '');
     const { isLight } = useThemeStore();
     return (
         <View style={styles.container}>
@@ -54,7 +58,9 @@ const GameCarousel = ({ games, handleGameCardPress }) => {
                             styles.gameName,
                             isLight ? {color: '#333333'} : {color: '#EAEAEA'}
                         ]}>
-                            {game.game_name}
+                            {!shouldShowLabel ? game.game_name : (
+                                <View style={{width: 50, height: 1, backgroundColor:  '#000000',alignItems:"center",justifyContent:'center'}}></View>
+                            )}
                         </Text>
                     </Pressable>
                 ))}
