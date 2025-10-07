@@ -78,39 +78,46 @@ const AccountDeletion = () => {
       confirmText: "Delete Account",
       cancelText: "Cancel",
       isDestructive: true,
-      onConfirm: async () => {
-        // Biometric or passcode auth before deletion
-        const hasHardware = await LocalAuthentication.hasHardwareAsync();
-        const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+onConfirm: async () => {
+  const hasHardware = await LocalAuthentication.hasHardwareAsync();
+  const isEnrolled = await LocalAuthentication.isEnrolledAsync();
 
-        if (!hasHardware || !isEnrolled) {
-          Toast.show("Biometric/Passcode not set up on this device.");
-          return;
+  let canProceed = false;
+
+  if (hasHardware && isEnrolled) {
+    const result = await LocalAuthentication.authenticateAsync({
+      promptMessage: "Confirm your identity",
+      fallbackLabel: "Use Passcode",
+    });
+    canProceed = result.success;
+  } else {
+    // No biometric or lock, continue deletion
+    canProceed = true;
+  }
+
+  if (canProceed) {
+    setIsLoading(true);
+
+    const payload = selectedReason === '8'
+      ? {
+          reason: 'Other',
+          reasonText: otherReason.trim(),
         }
+      : {
+          reason: deletionReasons.find(reason => reason.id === selectedReason)?.label,
+          reasonText: null,
+        };
 
-        const result = await LocalAuthentication.authenticateAsync({
-          promptMessage: "Confirm your identity",
-          fallbackLabel: "Use Passcode",
-        });
+    try {
+      await delete_user(payload);
+    } catch (error) {
+      Toast.show(error?.message || "Account deletion failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  }  
+},
 
-        if (result.success) {
-          setIsLoading(true);
-
-          // Create payload based on selection
-          const payload = selectedReason === '8'
-            ? {
-              reason: 'Other',
-              reasonText: otherReason.trim()
-            }
-            : {
-              reason: deletionReasons.find(reason => reason.id === selectedReason)?.label,
-              reasonText: null
-            };
-          
-          await delete_user(payload);
-          setIsLoading(false);
-        }
-      },
     });
       }, 100);
   };
