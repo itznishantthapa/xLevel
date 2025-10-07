@@ -362,7 +362,7 @@ const Auth = () => {
 
 
 
-    if (!Platform.OS === 'ios' && shouldShowEmailLogin) {
+    if (Platform.OS === 'ios' && shouldShowEmailLogin) {
       buttons.push({
         id: 'email',
         icon: <FontAwesome6 name="envelope" size={scaleWidth(20)} color={colors.text} />,
