@@ -1,5 +1,6 @@
 import { getApp } from '@react-native-firebase/app';
 import {
+  messaging,
   getMessaging,
   onMessage,
   onNotificationOpenedApp,
@@ -54,8 +55,9 @@ export const requestNotificationPermission = async () => {
       return false;
     }
 
-  // iOS auto-registers for remote notifications by default in RNFB unless disabled in firebase.json.
-  // Avoid manual registration to prevent warning logs on iOS.
+    await registerDeviceForRemoteMessages(messaging);
+
+
     return true;
   } catch (error) {
     console.log('Permission error:', error);
@@ -92,7 +94,7 @@ const handleNotificationNavigation = (remoteMessage) => {
   if (screen) {
     NavigationService.navigate(screen, remoteMessage.data);
   } else if (remoteMessage?.notification) {
-    NavigationService.navigate('customerTabs', { screen: 'HomeTab' });
+    NavigationService.navigate('notify');
   }
 };
 

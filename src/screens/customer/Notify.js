@@ -3,7 +3,6 @@ import { StatusBar, StyleSheet, Text, View, Dimensions, ActivityIndicator, Refre
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { FlashList } from '@shopify/flash-list'
 import Toast from "react-native-simple-toast"
-import Animated, { FadeIn } from 'react-native-reanimated'
 import { useThemeStore } from '../../store/themeStore'
 import { useNetworkStatus } from '../../hooks/useNetworkStatus'
 import { useInfiniteNotifications } from '../../queries/useNotifications'
@@ -15,43 +14,6 @@ import AppHeader from './header/AppHeader'
 
 const { width, height } = Dimensions.get('window')
 const ITEM_HEIGHT = 200 // Approximate height of each notification card
-
-const NotificationCardSkeleton = ({ index, isLight }) => (
-    <Animated.View 
-        entering={FadeIn.delay(index * 100).duration(600)}
-        style={[styles.skeletonCard, {
-            backgroundColor: isLight ? '#ffffff' : '#000000',
-            borderColor: isLight ? '#333333' : '#dadada',
-        }]}
-    >
-        {/* Header Section */}
-        <View style={styles.skeletonHeader}>
-            <View style={[styles.skeletonIcon, { backgroundColor: isLight ? '#f0f0f0' : '#2a2a2a' }]} />
-            <View style={styles.skeletonHeaderContent}>
-                <View style={[styles.skeletonTitle, { backgroundColor: isLight ? '#f0f0f0' : '#2a2a2a' }]} />
-                <View style={[styles.skeletonTime, { backgroundColor: isLight ? '#f0f0f0' : '#2a2a2a' }]} />
-            </View>
-        </View>
-
-        {/* Message Section */}
-        <View style={styles.skeletonMessageContainer}>
-            <View style={[styles.skeletonMessage, { backgroundColor: isLight ? '#f0f0f0' : '#2a2a2a' }]} />
-            <View style={[styles.skeletonMessageShort, { backgroundColor: isLight ? '#f0f0f0' : '#2a2a2a' }]} />
-        </View>
-
-        {/* Room Details Section (for some cards) */}
-        {index % 3 === 0 && (
-            <View style={styles.skeletonRoomContainer}>
-                <View style={[styles.skeletonRoomItem, { backgroundColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)' }]} />
-                <View style={[styles.skeletonRoomItem, { backgroundColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)' }]} />
-                <View style={[styles.skeletonRoomItem, { backgroundColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)' }]} />
-            </View>
-        )}
-
-        {/* Bottom Line */}
-        <View style={[styles.skeletonBottomLine, { backgroundColor: isLight ? '#e0e0e0' : 'rgba(255, 255, 255, 0.1)' }]} />
-    </Animated.View>
-)
 
 const EmptyListComponent = ({ isLight }) => (
     <View style={styles.emptyContainer}>
@@ -148,15 +110,9 @@ const Notify = () => {
             <View style={styles.listWrapper}>
                 <FlashList
                     {...flashListProps}
-                    data={isFetching && notifications.length === 0 ? Array(5).fill(null).map((_, i) => ({ id: `skeleton-${i}`, isSkeleton: true })) : notifications}
-                    renderItem={({ item, index }) => 
-                        item.isSkeleton ? (
-                            <NotificationCardSkeleton index={index} isLight={isLight} />
-                        ) : (
-                            <NotificationCard notification={item} />
-                        )
-                    }
-                    keyExtractor={(item) => item.isSkeleton ? item.id : item.id.toString()}
+                    data={isFetching && notifications.length === 0 ? [] : notifications}
+                    renderItem={renderNotificationCard}
+                    keyExtractor={(item) => item.id.toString()}
                     ListHeaderComponent={<HeaderComponent />}
                     ListEmptyComponent={isFetching ? null : <EmptyListComponent isLight={isLight} />}
                     refreshControl={
@@ -170,7 +126,7 @@ const Notify = () => {
                     }
                 />
             </View>
-            {/* Remove the Loader component as we're using skeleton cards now */}
+            <Loader visible={isFetching && notifications.length === 0} />
             {isFetchingNextPage && (
                 <ActivityIndicator
                     style={styles.loadingIndicator}
@@ -215,71 +171,5 @@ const styles = StyleSheet.create({
     },
     loadingIndicator: {
         marginTop: 10
-    },
-    // Skeleton Styles
-    skeletonCard: {
-        marginHorizontal: 15,
-        marginVertical: 8,
-        borderRadius: 12,
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        borderWidth: 1,
-    },
-    skeletonHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 12,
-    },
-    skeletonIcon: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        marginRight: 12,
-    },
-    skeletonHeaderContent: {
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    skeletonTitle: {
-        height: 14,
-        width: 120,
-        borderRadius: 4,
-    },
-    skeletonTime: {
-        height: 12,
-        width: 60,
-        borderRadius: 4,
-    },
-    skeletonMessageContainer: {
-        marginBottom: 12,
-    },
-    skeletonMessage: {
-        height: 14,
-        width: '100%',
-        borderRadius: 4,
-        marginBottom: 6,
-    },
-    skeletonMessageShort: {
-        height: 14,
-        width: '75%',
-        borderRadius: 4,
-    },
-    skeletonRoomContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 12,
-        marginBottom: 12,
-    },
-    skeletonRoomItem: {
-        flex: 1,
-        height: 32,
-        borderRadius: 8,
-    },
-    skeletonBottomLine: {
-        width: '100%',
-        height: 1,
-        marginVertical: 12,
-    },
+    }
 });

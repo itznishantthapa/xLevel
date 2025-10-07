@@ -303,9 +303,6 @@ useEffect(() => {
       // TODO: Implement actual registration logic with access code
       await registerTournament({ challenge_id: id, access_code: accessCode });
       
-      // Invalidate upcoming challenges query to refetch and update the list
-      await queryClient.invalidateQueries({ queryKey: ["upcomingChallenges"] });
-      
       // Add a small delay to ensure cache is updated before navigation
       await new Promise(resolve => setTimeout(resolve, 300));
       
