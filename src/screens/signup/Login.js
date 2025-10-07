@@ -153,7 +153,21 @@ const Login = () => {
         await postFCMToken()
       }
     } catch (error) {
-       Toast.show(error?.message || 'Failed to recognize.', Toast.SHORT)
+      // Check if it's a validation error
+      if (error.name === 'ValidationError') {
+        // Set field-specific errors
+        const newErrors = { email: '', password: '' };
+        error.inner.forEach((err) => {
+          if (err.path) {
+            newErrors[err.path] = err.message;
+          }
+        });
+        setErrors(newErrors);
+        
+      } else {
+        // Handle login API errors
+        Toast.show(error?.message || 'Failed to sign in.', Toast.SHORT);
+      }
     } finally {
       setIsLoading(false);
     }

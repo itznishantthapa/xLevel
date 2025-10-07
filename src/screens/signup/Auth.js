@@ -61,12 +61,19 @@ const Auth = () => {
   const insets = useSafeAreaInsets();
   const { google_signup, apple_signup, login } = useAuthStore();
 
+
   // Global state management
   const { isLight } = useThemeStore()
   const { isConnected } = useNetworkStatus()
 
   // API data queries
   const { data: banners = [] } = useBanners()
+
+
+  const shouldShowEmailLogin = banners.length === 0 || !banners.some(banner => banner?.url && banner.url.trim() !== '');
+
+
+
 
   // State
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -115,11 +122,11 @@ const Auth = () => {
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
-    
+
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
       age--;
     }
-    
+
     return age;
   };
 
@@ -140,7 +147,7 @@ const Auth = () => {
         withTiming(1.1, { duration: 300, easing: Easing.out(Easing.cubic) }),
         withTiming(1, { duration: 300, easing: Easing.out(Easing.cubic) })
       );
-      
+
       // Update to verified state
       setTimeout(() => {
         runOnJS(setIsVerificationComplete)(true);
@@ -159,17 +166,17 @@ const Auth = () => {
           withTiming(1.05, { duration: 200 }),
           withTiming(1, { duration: 200 })
         );
-        
+
         runOnJS(setIsAgeVerified)(true);
-        
+
         // Animate in the auth section with slight delay
-        authSectionOpacity.value = withDelay(150, 
+        authSectionOpacity.value = withDelay(150,
           withTiming(1, {
             duration: 500,
             easing: Easing.out(Easing.cubic)
           })
         );
-        
+
         authSectionTranslateY.value = withDelay(150,
           withTiming(0, {
             duration: 500,
@@ -194,7 +201,7 @@ const Auth = () => {
   // Age Verification Functions
   const validateAndProceed = (selectedDate) => {
     const age = calculateAge(selectedDate);
-    
+
     if (age >= MINIMUM_AGE) {
       setAgeError('');
       animateToWelcomeScreen();
@@ -207,7 +214,7 @@ const Auth = () => {
   const handleDateChange = (event, selectedDate) => {
     if (Platform.OS === 'android') {
       setShowPicker(false);
-      
+
       if (event.type === 'set' && selectedDate) {
         setDate(selectedDate);
         validateAndProceed(selectedDate);
@@ -224,7 +231,7 @@ const Auth = () => {
 
   const handleConfirmDate = () => {
     animateConfirmButton(false);
-    
+
     setTimeout(() => {
       setDate(tempDate);
       setShowConfirmButton(false);
@@ -247,9 +254,9 @@ const Auth = () => {
       setIsGoogleLoading(true);
       await GoogleSignin.hasPlayServices();
       await GoogleSignin.signOut(); // Clear existing sessions
-      
+
       const userInfo = await GoogleSignin.signIn();
-      
+
       if (!userInfo?.data?.idToken) {
         return;
       }
@@ -316,9 +323,9 @@ const Auth = () => {
         await postFCMToken();
       }
     } catch (err) {
-      if (err?.code === 'ERR_REQUEST_CANCELED') return; // user canceled
-      if (__DEV__) console.error('Apple Sign-In Error:', err);
-      Toast.show('Unable to sign in with Apple.');
+      // if (err?.code === 'ERR_REQUEST_CANCELED') return; // user canceled
+      // if (__DEV__) console.error('Apple Sign-In Error:', err);
+
     } finally {
       setIsAppleLoading(false);
     }
@@ -329,8 +336,8 @@ const Auth = () => {
     const buttons = [
       {
         id: 'google',
-        icon: isGoogleLoading ? 
-          <ActivityIndicator size="small" color={colors.text} /> : 
+        icon: isGoogleLoading ?
+          <ActivityIndicator size="small" color={colors.text} /> :
           <AntDesign name="google" size={scaleWidth(20)} color={colors.text} />,
         text: 'Continue with Google',
         onPress: handleGoogleSignIn,
@@ -351,14 +358,21 @@ const Auth = () => {
         disabled: isAppleLoading
       });
     }
-    // Always show Email button as an alternative login method
-    buttons.push({
-      id: 'email',
-  icon: <FontAwesome6 name="envelope" size={scaleWidth(20)} color={colors.text} />,
-      text: 'Continue with Email',
-      onPress: handleEmailLogin,
-      disabled: false
-    });
+
+
+
+
+    if (!Platform.OS === 'ios' && shouldShowEmailLogin) {
+      buttons.push({
+        id: 'email',
+        icon: <FontAwesome6 name="envelope" size={scaleWidth(20)} color={colors.text} />,
+        text: 'Continue with Email',
+        onPress: handleEmailLogin,
+        disabled: false
+      });
+    }
+
+
 
     return buttons;
   };
@@ -474,8 +488,8 @@ const Auth = () => {
           }]}
           onPress={handleConfirmDate}
         >
-          <Text style={[styles.buttonText, { 
-            color: colors.background, 
+          <Text style={[styles.buttonText, {
+            color: colors.background,
             fontWeight: '600',
             textAlign: 'center'
           }]}>
@@ -543,14 +557,14 @@ const Auth = () => {
         {isAgeVerified ? (
           <>
             <Text>By continuing, you agree to our </Text>
-            <Text 
+            <Text
               style={[styles.termsLink, { color: colors.success }]}
               onPress={handleOpenTerms}
             >
               Terms of Service
             </Text>
             <Text> and </Text>
-            <Text 
+            <Text
               style={[styles.termsLink, { color: colors.success }]}
               onPress={handleOpenPrivacy}
             >
@@ -573,15 +587,15 @@ const Auth = () => {
       />
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         {renderHeader()}
-        
+
         <View style={[styles.authSection, { backgroundColor: colors.authSectionBg }]}>
           <View style={styles.welcomeTextContainer}>
             <Animated.Text style={[styles.welcomeTitle, { color: colors.text }, titleAnimatedStyle]}>
               {isAgeVerified ? "You're Welcome" : (isVerificationComplete ? "Verified ✓" : "Verify Your Age")}
             </Animated.Text>
             <Text style={[styles.welcomeSubtitle, { color: colors.textSecondary }]}>
-              {isAgeVerified 
-                ? "Choose your preferred sign-in method" 
+              {isAgeVerified
+                ? "Choose your preferred sign-in method"
                 : "Please select your date of birth to continue"
               }
             </Text>
@@ -633,7 +647,7 @@ const styles = StyleSheet.create({
     width: scaleWidth(60),
     height: scaleHeight(2),
   },
-  
+
   // Auth Section Styles
   authSection: {
     flex: 1,
@@ -689,7 +703,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textDecorationLine: 'underline',
   },
-  
+
   // Age Verification Styles
   ageVerificationContainer: {
     gap: scaleHeight(16),

@@ -30,6 +30,7 @@ import Thanks from "../screens/customer/issue/Thanks";
 import BlockedUserList from "../screens/customer/BlockedUserList";
 import Exchange from "../screens/customer/Exchange";
 import AccessBar from "../screens/customer/AccessBar";
+import { Platform } from "react-native";
 
 const Stack = createNativeStackNavigator();
 
@@ -39,7 +40,7 @@ export default function CustomerNavigator(){
         <>
         <Stack.Navigator  screenOptions={{headerShown:false}} >
             <Stack.Screen component={CustomerTabNavigator} name="customerTabs"  />
-            <Stack.Screen component={Profile} name="profile" options={{ animation: 'slide_from_left' }} />
+            <Stack.Screen component={Profile} name="profile" options={{ animation: Platform.OS === 'ios' ? 'slide_from_left' : 'fade' }} />
             <Stack.Screen component={EditProfile} name="editProfile"/>
             <Stack.Screen component={InCategory} name="inCategory"/>
             <Stack.Screen component={CreateGame} name="createGame"/>
