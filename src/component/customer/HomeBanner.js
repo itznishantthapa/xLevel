@@ -1,6 +1,13 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, Image, Pressable, Dimensions,Linking } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Text, Image, Pressable, Dimensions, Linking } from 'react-native';
 import PagerView from 'react-native-pager-view';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  Easing,
+} from 'react-native-reanimated';
+import { scaleWidth, scaleHeight } from '../../utils/scaling';
 
 
 const BannerPage = ({ data }) => {
@@ -31,6 +38,42 @@ const BannerPage = ({ data }) => {
   );
 };
 
+const AnimatedIndicator = ({ isActive, index, totalPages }) => {
+  const width = useSharedValue(isActive ? scaleWidth(24) : scaleWidth(8));
+  const opacity = useSharedValue(isActive ? 1 : 0.4);
+
+  useEffect(() => {
+    width.value = withTiming(
+      isActive ? scaleWidth(24) : scaleWidth(8),
+      {
+        duration: 300,
+        easing: Easing.out(Easing.cubic),
+      }
+    );
+    opacity.value = withTiming(
+      isActive ? 1 : 0.4,
+      {
+        duration: 300,
+        easing: Easing.out(Easing.cubic),
+      }
+    );
+  }, [isActive]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    width: width.value,
+    opacity: opacity.value,
+  }));
+
+  return (
+    <Animated.View
+      style={[
+        styles.indicatorLine,
+        animatedStyle,
+      ]}
+    />
+  );
+};
+
 const HomeBanner = ({data}) => {
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -54,15 +97,14 @@ const HomeBanner = ({data}) => {
         ))}
       </PagerView>
       
-      {/* Page Indicator */}
-      <View style={styles.paginationContainer}>
+      {/* Animated Line Indicators */}
+      <View style={styles.indicatorContainer}>
         {data?.map((_, index) => (
-          <View
+          <AnimatedIndicator
             key={index}
-            style={[
-              styles.paginationDot,
-              currentPage === index && styles.paginationDotActive
-            ]}
+            isActive={currentPage === index}
+            index={index}
+            totalPages={data.length}
           />
         ))}
       </View>
@@ -72,69 +114,95 @@ const HomeBanner = ({data}) => {
 
 const styles = StyleSheet.create({
   container: {
-    height: 180,
-    marginHorizontal: 5,
+    height: scaleHeight(180),
+    marginHorizontal: scaleWidth(5),
   },
   pagerView: {
     flex: 1,
   },
   pageContainer: {
     flex: 1,
-    paddingHorizontal: 5,
+    paddingHorizontal: scaleWidth(5),
   },
   bannerCard: {
     flex: 1,
     flexDirection: 'row',
     backgroundColor: 'transparent',
-    borderRadius: 20,
+    borderRadius: scaleWidth(20),
     width: '100%',
     overflow: 'hidden',
   },
-    bannerContenterImage: {
+  bannerContenterImage: {
     width: '100%',
     height: '100%',
   },
   
   title: {
     color: '#ffffff',
-    fontSize: 24,
+    fontSize: scaleWidth(24),
     fontWeight: 'bold',
-    marginVertical: 10,
+    marginVertical: scaleHeight(10),
   },
   actionButton: {
     backgroundColor: '#000000',
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-    borderRadius: 20,
+    paddingHorizontal: scaleWidth(20),
+    paddingVertical: scaleHeight(8),
+    borderRadius: scaleWidth(20),
     alignSelf: 'flex-start',
   },
   actionButtonText: {
     color: '#ffffff',
-    fontSize: 14,
+    fontSize: scaleWidth(14),
     fontWeight: '600',
   },
 
+  // New animated indicator styles
+  indicatorContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: scaleHeight(12),
+    left: 0,
+    right: 0,
+    gap: scaleWidth(6),
+  },
+  indicatorLine: {
+    height: scaleHeight(3),
+    backgroundColor: '#ffffff',
+    borderRadius: scaleWidth(2),
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+
+  // Deprecated dot styles (keeping for reference, can be removed)
   paginationContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute',
-    bottom: 10,
+    bottom: scaleHeight(10),
     left: 0,
     right: 0,
   },
   paginationDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: scaleWidth(8),
+    height: scaleHeight(8),
+    borderRadius: scaleWidth(4),
     backgroundColor: 'rgba(255, 255, 255, 0.5)',
-    marginHorizontal: 4,
+    marginHorizontal: scaleWidth(4),
   },
   paginationDotActive: {
     backgroundColor: '#ffffff',
-    width: 12,
-    height: 12,
-    borderRadius: 6,
+    width: scaleWidth(12),
+    height: scaleHeight(12),
+    borderRadius: scaleWidth(6),
   },
 });
 

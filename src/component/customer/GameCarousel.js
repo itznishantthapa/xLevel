@@ -45,7 +45,8 @@ const GameCarousel = ({ games, handleGameCardPress }) => {
                         key={game.game_id}
                         style={[
                             styles.gameCard,
-                            { marginLeft: index === 0 ? 20 : 0 }
+                            { marginLeft: index === 0 ? 20 : 0 },
+                            isLight ? {borderColor: '#000000'} : {borderColor: '#EAEAEA'}
                         ]}
                         onPress={() => handleGameCardPress(game)}
                         activeOpacity={0.9}
@@ -59,7 +60,7 @@ const GameCarousel = ({ games, handleGameCardPress }) => {
                             isLight ? {color: '#333333'} : {color: '#EAEAEA'}
                         ]}>
                             {!shouldShowLabel ? game.game_name : (
-                                <View style={{width: 50, height: 1, backgroundColor:  '#000000',alignItems:"center",justifyContent:'center'}}></View>
+                                <View style={{width: 50, height: 2, backgroundColor:isLight ? '#000000' : '#EAEAEA',alignItems:"center",justifyContent:'center',borderRadius:10}}></View>
                             )}
                         </Text>
                     </Pressable>
