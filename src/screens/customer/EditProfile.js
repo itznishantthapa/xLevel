@@ -89,7 +89,7 @@ const EditProfile = () => {
         mediaTypes: ['images'],
         allowsEditing: true,
         aspect: [1, 1],
-        quality: 1,
+        quality: 0,
       })
 
       if (!result.canceled) {
@@ -100,7 +100,9 @@ const EditProfile = () => {
         }))
       }
     } catch (error) {
-      Toast.show('Unable to pick image', Toast.SHORT)
+      if(__DEV__){
+        Toast.show('Unable to pick image', Toast.SHORT)
+      }
     }
   }
 

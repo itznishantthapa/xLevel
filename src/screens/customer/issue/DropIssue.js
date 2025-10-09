@@ -73,7 +73,7 @@ const DropIssue = ({ route }) => {
         try {
             const result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: "images",
-                quality: 1,
+                quality: 0,
             });
 
             if (!result.canceled) {

@@ -244,7 +244,7 @@ const NotificationCard = ({ notification }) => {
 
 const styles = StyleSheet.create({
     cardContainer: {
-        marginHorizontal: 15,
+        marginHorizontal: 10,
         marginVertical: 8,
     },
     card: {

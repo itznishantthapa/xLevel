@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
     },
     // Skeleton Styles
     skeletonCard: {
-        marginHorizontal: 15,
+        marginHorizontal: 10,
         marginVertical: 8,
         borderRadius: 12,
         paddingHorizontal: 16,
