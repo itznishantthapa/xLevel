@@ -293,7 +293,6 @@ const Auth = () => {
       setIsAppleLoading(true);
       const available = await AppleAuthentication.isAvailableAsync();
       if (!available) {
-        Toast.show('Apple Sign-In not available on this device.');
         return;
       }
       const credential = await AppleAuthentication.signInAsync({
@@ -422,10 +421,9 @@ const Auth = () => {
   const renderDatePicker = () => {
     if (Platform.OS === 'ios') {
       return (
-        <View style={[styles.authButton, {
+        <View style={[styles.authButton, styles.iosDatePickerContainer, {
           backgroundColor: colors.buttonBackground,
           borderColor: colors.buttonBorder,
-          paddingVertical: 8,
         }]}>
           <DateTimePicker
             value={tempDate}
@@ -715,9 +713,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  iosDatePickerContainer: {
+    paddingVertical: scaleHeight(12),
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: scaleHeight(48),
+  },
   iosDatePicker: {
     width: '100%',
-    height: scaleHeight(40),
+    height: scaleHeight(36),
+    alignSelf: 'flex-start',
   },
   ageErrorText: {
     fontSize: scaleWidth(14),

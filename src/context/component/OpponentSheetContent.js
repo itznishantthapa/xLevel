@@ -76,7 +76,7 @@ const OpponentSheetContent = React.memo(({ payload, isDark, insets, handleConfir
                 {/* Game Details Section */}
                 <View style={[styles.detailsSection, {
                 }]}>
-                    <View style={{borderTopRightRadius:15,borderBottomLeftRadius:15,borderBottomRightRadius:15,backgroundColor:'transparent',overflow:'hidden'}}>
+                    <View style={{borderTopRightRadius:15,borderBottomLeftRadius:15,borderBottomRightRadius:15,backgroundColor:'transparent',overflow:'hidden',borderWidth:1,borderColor:isDark?'#ffffff':'#dddddd'}}>
                     {gameInfo.map((info, index) => (
                         <InfoRow 
                             key={`${info.label}-${index}`} 

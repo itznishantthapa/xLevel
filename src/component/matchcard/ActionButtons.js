@@ -22,6 +22,7 @@ const ActionButtons = ({ game, isLight, isCreator, user, handleResultUpload, for
       </View>
     )
   }
+
   if (game.status === "expired") {
     return (
       <View style={[sharedStyles.statusButton, { borderColor: isLight ? "#000000" : "#ffffff" }]}>
@@ -29,6 +30,7 @@ const ActionButtons = ({ game, isLight, isCreator, user, handleResultUpload, for
       </View>
     )
   }
+  
   if (game.status === "resolved") {
     return (
       <View style={[sharedStyles.statusButton, { borderColor: isLight ? "#000000" : "#ffffff" }]}>

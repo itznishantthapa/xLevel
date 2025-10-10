@@ -89,7 +89,7 @@ const EditProfile = () => {
         mediaTypes: ['images'],
         allowsEditing: true,
         aspect: [1, 1],
-        quality: 0,
+        quality: 1,
       })
 
       if (!result.canceled) {
