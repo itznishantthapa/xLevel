@@ -117,9 +117,9 @@ const CredentialsSection = ({
             </Text>
           ) : (
             <Text style={[sharedStyles.credentialsGuide, { color: isLight ? "#333333" : "#ffffff" }]}>
-              {isRoomCredentials ? "Send Room ID & Password to your opponent" :
-                isLoneWolf ? "Send Teamcode to your opponent" :
-                  "Send Join URL to your opponent"}
+              {isRoomCredentials ? "Send Room ID & Password" :
+                isLoneWolf ? "Send Teamcode" :
+                  "Send Join URL"}
             </Text>
           )}
 
