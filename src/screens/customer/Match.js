@@ -51,9 +51,9 @@ const Match = () => {
     try {
       await ChallengeAPI.deleteChallenge({ challenge_id: challengeId });
       await refetch();
-      Toast.show('Challenge deleted.', Toast.SHORT);
+      Toast.show('Challenge cancelled.', Toast.SHORT);
     } catch (error) {
-      Toast.show(error?.message || 'Unable to delete challenge', Toast.SHORT);
+      Toast.show(error?.message || 'Unable to cancel challenge', Toast.SHORT);
     }
   }, [refetch]);
 

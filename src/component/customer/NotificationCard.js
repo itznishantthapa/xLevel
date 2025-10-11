@@ -117,29 +117,29 @@ const NotificationCard = ({ notification }) => {
     const notificationConfig = useMemo(() => ({
         [NOTIFICATION_TYPES.GAME]: {
             title: 'Game Invitation',
-            bgColor: isLight ? '#f0f4ff' : 'rgba(255, 255, 255, 0.1)',
+            bgColor: isLight ? '#eef5ff' : 'rgba(46, 81, 255, 0.2)',
             icon: <MaterialCommunityIcons 
                 name="gamepad-variant" 
                 size={16} 
-                color={isLight ? "#667eea" : "#ffffff"} 
+                color={isLight ? "#4263eb" : "#6d8cff"} 
             />
         },
         [NOTIFICATION_TYPES.CREDITED]: {
             title: 'Game Point Update',
-            bgColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)',
+            bgColor: isLight ? '#e6f9ee' : 'rgba(18, 184, 134, 0.2)',
             icon: <MaterialCommunityIcons 
                 name="star-three-points" 
                 size={16} 
-                color={isLight ? "#666666" : "#ffffff"} 
+                color={isLight ? "#12b886" : "#20c997"} 
             />
         },
         [NOTIFICATION_TYPES.NORMAL]: {
             title: 'Notification',
-            bgColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)',
+            bgColor: isLight ? '#fff3e0' : 'rgba(255, 152, 0, 0.2)',
             icon: <Entypo 
                 name="notification" 
                 size={16} 
-                color={isLight ? "#666666" : "#ffffff"} 
+                color={isLight ? "#ff9800" : "#ffb74d"} 
             />
         }
     }), [isLight]);
@@ -264,6 +264,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 12,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 1,
+        elevation: 1,
     },
     headerContent: {
         flex: 1,
