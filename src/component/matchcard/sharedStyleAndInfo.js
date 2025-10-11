@@ -61,6 +61,14 @@ export const sharedStyles = StyleSheet.create({
   gameInfoTextDark: {
     color: '#eaf4f4',
   },
+  iconContainer: {
+    width: scaleWidth(24),
+    height: scaleWidth(24),
+    borderRadius: scaleWidth(12),
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: scaleWidth(6),
+  },
   verticalDivider: {
     width: scaleWidth(1),
     backgroundColor: '#e0e0e0',

@@ -40,7 +40,7 @@ export default function CustomerNavigator(){
         <>
         <Stack.Navigator  screenOptions={{headerShown:false}} >
             <Stack.Screen component={CustomerTabNavigator} name="customerTabs"  />
-            <Stack.Screen component={Profile} name="profile" options={{ animation: Platform.OS === 'ios' ? 'slide_from_left' : 'ios_from_left' }} />
+            <Stack.Screen component={Profile} name="profile" options={{ animation: Platform.OS === 'ios' ? 'slide_from_left' : 'default' }} />
             <Stack.Screen component={EditProfile} name="editProfile"/>
             <Stack.Screen component={InCategory} name="inCategory" options={{ animation: "fade"}}/>
             <Stack.Screen component={CreateGame} name="createGame"/>

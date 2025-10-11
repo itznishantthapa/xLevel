@@ -69,7 +69,7 @@ export default function CustomerTabNavigator() {
                 component={Notify}
                 options={{
                     tabBarLabel: ({ focused, color }) => (
-                        <Text style={{ color, fontSize: 12, fontWeight: focused ? 'bold' : 'normal', marginBottom: 3 }}>Notification</Text>
+                        <Text style={{ color, fontSize: 12, fontWeight: focused ? 'bold' : 'normal', marginBottom: 3 }}>Notify</Text>
                     ),
                     tabBarIcon: ({ focused, color, size }) => (
                         <View style={styles.tabIconContainer}>

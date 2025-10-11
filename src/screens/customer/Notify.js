@@ -65,7 +65,7 @@ const EmptyListComponent = ({ isLight }) => (
 )
 
 const HeaderComponent = () => (
-    <AppHeader title={'Notifications'} />
+    <AppHeader title={'Notify & Alert'} />
 )
 
 const getItemType = (item) => {

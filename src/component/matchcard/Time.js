@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
     paddingVertical: scaleHeight(6),
     alignSelf: 'flex-start',
     gap: scaleWidth(10),
+    borderRadius: scaleWidth(20),
   },
   label: {
     fontSize: scaleWidth(14),

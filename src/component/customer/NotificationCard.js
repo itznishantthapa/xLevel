@@ -128,7 +128,7 @@ const NotificationCard = ({ notification }) => {
             title: 'Game Point Update',
             bgColor: isLight ? '#e6f9ee' : 'rgba(18, 184, 134, 0.2)',
             icon: <MaterialCommunityIcons 
-                name="star-three-points" 
+                name="star-four-points-outline" 
                 size={16} 
                 color={isLight ? "#12b886" : "#20c997"} 
             />
@@ -264,11 +264,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 12,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 1,
-        elevation: 1,
+ 
     },
     headerContent: {
         flex: 1,
