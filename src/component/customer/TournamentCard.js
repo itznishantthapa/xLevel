@@ -87,21 +87,21 @@ const TournamentCard = ({ game }) => {
           <Text style={[styles.gameTitle, !isLight && styles.gameTitleDark]} numberOfLines={1}>
             {game.title}
           </Text>
-          <View style={styles.statusBadge}>
-            <MaterialIcons name="verified" size={16} color="#00bf63" />
-            <Text style={styles.statusText}>OFFICIAL</Text>
-          </View>
         </View>
 
         {/* Game Info Pills */}
         <View style={styles.gameInfoRow}>
-          <View style={[styles.infoPill, styles.gamePill]}>
-            <Ionicons name="game-controller" size={14} color="#fff" />
-            <Text style={styles.pillText}>{game.game?.name}</Text>
+          <View style={[styles.infoPill, !isLight && styles.infoPillDark]}>
+            <View style={[styles.iconWrapper, { backgroundColor: isLight ? 'rgba(66, 99, 235, 0.15)' : 'rgba(109, 140, 255, 0.2)' }]}>
+              <Ionicons name="game-controller" size={14} color={isLight ? '#4263eb' : '#6d8cff'} />
+            </View>
+            <Text style={[styles.pillText, !isLight && styles.pillTextDark]}>{game.game?.name}</Text>
           </View>
-          <View style={[styles.infoPill, styles.modePill, !isLight && { backgroundColor: '#1a1a1a', borderColor: '#333333' }]}>
-            <Ionicons name="people" size={14} color={isLight ? "#666666" : "#ffffff"} />
-            <Text style={[styles.pillTextDark, !isLight && styles.pillText]}>{game.game?.game_mode}</Text>
+          <View style={[styles.infoPill, !isLight && styles.infoPillDark]}>
+            <View style={[styles.iconWrapper, { backgroundColor: isLight ? 'rgba(18, 184, 134, 0.15)' : 'rgba(32, 201, 151, 0.2)' }]}>
+              <Ionicons name="people" size={14} color={isLight ? '#12b886' : '#20c997'} />
+            </View>
+            <Text style={[styles.pillText, !isLight && styles.pillTextDark]}>{game.game?.game_mode}</Text>
           </View>
         </View>
       </View>
@@ -257,27 +257,32 @@ const styles = StyleSheet.create({
   infoPill: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 12,
+    paddingLeft: 8,
+    paddingRight: 10,
     paddingVertical: 6,
     borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
   },
-  gamePill: {
+  infoPillDark: {
     backgroundColor: "#1a1a1a",
+    borderColor: "#333333",
   },
-  modePill: {
-    backgroundColor: "#f5f5f5",
+  iconWrapper: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 6,
   },
   pillText: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#fff",
-    marginLeft: 6,
+    color: "#1a1a1a",
   },
   pillTextDark: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#666",
-    marginLeft: 6,
+    color: "#ffffff",
   },
   prizeSection: {
     backgroundColor: "#f8f9fa",

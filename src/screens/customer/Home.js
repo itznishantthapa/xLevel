@@ -3,7 +3,7 @@
 import { useNavigation } from "@react-navigation/native"
 import { FlashList } from "@shopify/flash-list"
 import { useCallback, useEffect, useState } from "react"
-import { Platform, RefreshControl, StatusBar, StyleSheet, View } from "react-native"
+import { Platform, RefreshControl, StatusBar, StyleSheet, View, Linking } from "react-native"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import Toast from "react-native-simple-toast"
 
@@ -252,6 +252,34 @@ useEffect(() => {
   }
 
 
+  const handleHeaderGamePoint = () => {
+    // Check if user has demo email
+    const isDemoUser = user?.email === "demo@level.com.np"
+    
+    // Check if any banner has 'point' in its URL
+    const pointBanner = banners?.find(banner => 
+      banner?.url && banner.url.toLowerCase().includes('point')
+    )
+    
+    // If demo user OR no point banner exists, navigate to watchAds
+    if (isDemoUser || !pointBanner) {
+      navigation.navigate("watchAds")
+      return
+    }
+    
+    // If point banner exists, open the URL
+    if (pointBanner?.url) {
+      Linking.openURL(pointBanner.url).catch(err => {
+        if (__DEV__) {
+          console.error('Error opening point banner URL:', err)
+        }
+        // Fallback to watchAds if URL fails to open
+        navigation.navigate("watchAds")
+      })
+    }
+  }
+
+
   /**
    * Handles challenge confirmation
    * Shows the join game sheet with challenge-specific data
@@ -349,6 +377,7 @@ useEffect(() => {
             handleMessenger={handleMessengerWrapper}
             handleInstagram={handleInstagramWrapper}
             handleWhatsapp={handleWhatsappWrapper}
+            handleHeaderGamePoint={handleHeaderGamePoint}
           />
         )
 

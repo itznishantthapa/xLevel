@@ -16,6 +16,7 @@ const Header = ({
   handleMessenger,
   handleInstagram,
   handleWhatsapp,
+  handleHeaderGamePoint
 }) => {
   const { data: socials = [] } = useSocials()
 
@@ -165,8 +166,9 @@ const Header = ({
 
       {/* Right Section - Balance and Social Actions */}
       <View style={styles.rightSection}>
-        <View
+        <Pressable
           style={styles.balanceContainer}
+          onPress={handleHeaderGamePoint}
         >
           <View style={styles.balanceContent}>
             <Text style={{ color: '#00bf63', fontSize: 12 }}>Points</Text>
@@ -176,7 +178,8 @@ const Header = ({
               {typeof wallet_balance === "number" ? wallet_balance.toFixed(2) : wallet_balance}
             </Text>
           </View>
-        </View>
+            <Ionicons name="add" size={14} color="#00bf63" />
+        </Pressable>
 
 
 
@@ -305,6 +308,7 @@ const styles = StyleSheet.create({
     color: "#333",
     marginLeft: 6,
   },
+ 
   socialSection: {
     alignItems: "flex-end",
     gap: 6,
