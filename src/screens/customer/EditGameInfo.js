@@ -477,7 +477,7 @@ const EditGameInfo = () => {
                 ]}
                 value={gameProfile.uid}
                 onChangeText={(text) => updateProfile("uid", text)}
-                placeholder="Ex. 123456789"
+                placeholder="Paste Your Game UID."
                 placeholderTextColor={isLight ? "#666666" : "#999999"}
                 maxLength={20}
               />
@@ -497,7 +497,7 @@ const EditGameInfo = () => {
                 ]}
                 value={gameProfile.level}
                 onChangeText={(text) => updateProfile("level", text)}
-                placeholder="Ex. 65"
+                placeholder="Enter Your Game Level."
                 placeholderTextColor={isLight ? "#666666" : "#999999"}
                 keyboardType="numeric"
                 maxLength={3}
@@ -659,7 +659,7 @@ const EditGameInfo = () => {
       <View style={[styles.gameHeader, { backgroundColor: isLight ? "#f5f5f5" : "#1a1a1a" }]}>
         <Image source={{ uri: gameProfile.game_logo_url }} style={styles.gameLogo} />
         <View style={styles.gameInfo}>
-          <Text style={[styles.gameName, { color: isLight ? "#333333" : "#ffffff" }]}>{gameProfile.game_name}</Text>
+          <Text style={[styles.gameName, { color: isLight ? "#333333" : "#ffffff" }]}>{gameProfile.game_name === 'Chess' ? "Chess.com" : gameProfile.game_name}</Text>
           <Text style={[styles.gameModes, { color: isLight ? "#666666" : "#999999" }]}>
             {(isEditing ? profile?.game_mode : game?.game_modes?.join(", "))?.split(", ").join(" • ") ||
               "No game modes"}
@@ -696,7 +696,7 @@ const EditGameInfo = () => {
               ]}
               value={gameProfile.game_username}
               onChangeText={(text) => updateProfile("game_username", text)}
-              placeholder={gameName === 'chess' ? "Ex. rockychess" : gameName === 'free fire' ? "Ex. myFreeFireName" : gameName === 'pubg' ? "Ex. myPubgName" : gameName === 'efootball' ? "Ex. nameEFootball" : "Enter your username"}
+              placeholder={"Paste Your Game Username."}
               placeholderTextColor={isLight ? "#666666" : "#999999"}
               maxLength={30}
             />

@@ -300,7 +300,7 @@ const UpcommingList = ({ games, handleConfirmChallenge }) => {
             )
 
           }
-          <FontAwesome6 name="fire" size={18} color={"#ef233c"} />
+          <FontAwesome6 name="fire" size={18} color={isLight? "#000000" : "#ffffff"} />
         </View>
       </View>
 
