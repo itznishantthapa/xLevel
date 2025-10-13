@@ -171,7 +171,11 @@ const Header = ({
           onPress={handleHeaderGamePoint}
         >
           <View style={styles.balanceContent}>
-            <Text style={{ color: '#00bf63', fontSize: 12 }}>Points</Text>
+            <MaterialCommunityIcons 
+              name="star-four-points-outline" 
+              size={16} 
+              color="#00bf63" 
+            />
 
 
             <Text style={styles.balanceText}>

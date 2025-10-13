@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     gap: scaleWidth(6),
   },
   indicatorLine: {
-    height: scaleHeight(3),
+    height: scaleHeight(5),
     backgroundColor: '#ffffff',
     borderRadius: scaleWidth(2),
     shadowColor: '#000',

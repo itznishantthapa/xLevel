@@ -5,7 +5,7 @@ import { useThemeStore } from '../../store/themeStore';
 import { useStatsPreferenceStore } from '../../store/statsPreference';
 
 
-const StatsContainer = ({ handleGameProfiles, handleTournament, handleGameRules, handleMatches, handleWatchAds, handleLeaderboard }) => {
+const StatsContainer = ({ handleTournament, handleGameRules, handleMatches, handleWatchAds, handleLeaderboard, handleWithdraw }) => {
   const { isLight } = useThemeStore();
   const { statsConfig, isLoading } = useStatsPreferenceStore();
   // Function to render icon based on item configuration
@@ -29,8 +29,8 @@ const StatsContainer = ({ handleGameProfiles, handleTournament, handleGameRules,
       case 'watchads':
         handleWatchAds?.();
         break;
-      case 'gameprofile':
-        handleGameProfiles?.();
+      case 'redeem':
+        handleWithdraw?.();
         break;
       case 'leaderboard':
         handleLeaderboard?.();

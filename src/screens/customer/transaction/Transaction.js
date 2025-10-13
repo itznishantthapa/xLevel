@@ -10,6 +10,7 @@ import { queryClient } from '../../../lib/queryClient'
 import { useNetworkStatus } from '../../../hooks/useNetworkStatus'
 import Toast from 'react-native-simple-toast'
 
+
 const Transaction = () => {
   const { isLight } = useThemeStore()
   const insets = useSafeAreaInsets()
@@ -225,7 +226,7 @@ const Transaction = () => {
       {/* Always show content during manual refresh, otherwise only when not loading */}
       {!isLoading && !isManualRefreshing && transactions.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <MaterialCommunityIcons name="crown" size={64} color={colors.subText} />
+          <MaterialCommunityIcons  name="star-four-points-outline" size={64} color={colors.subText} />
           <Text style={[styles.emptyText, { color: colors.text }]}>No transactions done yet</Text>
         </View>
       ) : (

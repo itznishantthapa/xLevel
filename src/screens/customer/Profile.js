@@ -280,6 +280,17 @@ const Profile = () => {
 
                 <Pressable
                   style={[styles.actionRow, styles.actionRowBorder, { borderBottomColor: colors.border }]}
+                  onPress={() => navigation.navigate("transaction")}
+                >
+                  <View style={styles.actionContent}>
+                    <MaterialIcons name="receipt-long" size={20} color={colors.text} />
+                    <Text style={[styles.actionText, { color: colors.text }]}>My Transactions</Text>
+                  </View>
+                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
+                </Pressable>
+
+                <Pressable
+                  style={[styles.actionRow, styles.actionRowBorder, { borderBottomColor: colors.border }]}
                   onPress={() => navigation.navigate("issue")}
                 >
                   <View style={styles.actionContent}>

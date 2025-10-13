@@ -89,6 +89,11 @@ const Home = () => {
   const { mutateAsync: registerTournament } = useRegisterTournament();
   const { data: upcomingChallenges, isLoading: isUpcomingLoading } = useUpcomingChallenges()
 
+  // Filter out QR image from banners - only show banners that don't have 'qrimage' in url
+  const displayBanners = banners.filter(banner => 
+    !banner?.url?.toLowerCase().includes('qrimage')
+  )
+
  
   
 
@@ -263,7 +268,7 @@ useEffect(() => {
     
     // If demo user OR no point banner exists, navigate to watchAds
     if (isDemoUser || !pointBanner) {
-      navigation.navigate("watchAds")
+      navigation.navigate("scanPay")
       return
     }
     
@@ -386,7 +391,7 @@ useEffect(() => {
           <StatsContainer
             num_loss={user?.num_loss || 0}
             num_win={user?.num_win || 0}
-            handleGameProfiles={() => navigation.navigate("setupGameInfo")}
+            handleWithdraw={() => navigation.navigate("withDraw")}
             handleTournament={() => navigation.navigate("userTournament")}
             handleGameRules={() => navigation.navigate("gameRules")}
             handleMatches={() => navigation.navigate("match")}
@@ -396,7 +401,7 @@ useEffect(() => {
         )
 
       case "banner":
-        return <HomeBanner data={banners} />
+        return <HomeBanner data={displayBanners} />
 
       case "games":
         return <GameCarousel games={games} handleGameCardPress={handleGameCardPress} />

@@ -8,13 +8,12 @@ import {
   Pressable,
   TextInput,
   Platform,
-  Keyboard,
 } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useNavigation } from "@react-navigation/native"
-import { Ionicons,MaterialCommunityIcons } from "@expo/vector-icons"
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons"
 import { useThemeStore } from "../../store/themeStore"
-import { useState, useRef, useEffect } from "react"
+import { useState } from "react"
 import Toast from "react-native-simple-toast"
 import * as ImagePicker from "expo-image-picker"
 import { TranscationAPI } from "../../api/transcationApi"
@@ -22,6 +21,7 @@ import { useQueryClient } from "@tanstack/react-query"
 import AppHeader from "./header/AppHeader"
 import { useCredit } from "../../queries/useMutation/useCredit"
 import CoolButton from "../../component/customer/common/CoolButton"
+import { useBanners } from "../../queries/useBanners"
 
 
 const ScanPay = () => {
@@ -33,14 +33,20 @@ const ScanPay = () => {
   const [crownAmount, setCrownAmount] = useState("")
   const [imageResult, setImageResult] = useState(null)
   const [screenshot, setScreenshot] = useState(null)
-  const scrollViewRef = useRef(null)
-  const [keyboardVisible, setKeyboardVisible] = useState(false)
   const [errors, setErrors] = useState({
     amount: '',
     screenshot: ''
   })
   const { mutateAsync: creditCrown } = useCredit();
+  const { data: banners = [] } = useBanners();
 
+  // Filter banner to get QR image - check if url includes 'qrimage'
+  const qrBanner = banners.find(banner => 
+    banner?.url?.toLowerCase().includes('qrimage')
+  );
+  const qrImageUrl = qrBanner?.image;
+
+ 
   const colors = {
     background: isLight ? "#ffffff" : "#000000",
     text: isLight ? "#000000" : "#ffffff",
@@ -49,35 +55,6 @@ const ScanPay = () => {
     inputBg: isLight ? "#ffffff" : "#1a1a1a",
     qrBg: isLight ? "#f8f9fa" : "#1a1a1a",
   }
-
-  useEffect(() => {
-    const keyboardWillShow = Keyboard.addListener(
-      Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow",
-      (event) => {
-        setKeyboardVisible(true)
-        scrollViewRef.current?.scrollTo({
-          y: Platform.OS === "ios" ? 300 : 500,
-          animated: true,
-        })
-      },
-    )
-
-    const keyboardWillHide = Keyboard.addListener(
-      Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide",
-      () => {
-        setKeyboardVisible(false)
-        scrollViewRef.current?.scrollTo({
-          y: 0,
-          animated: true,
-        })
-      },
-    )
-
-    return () => {
-      keyboardWillShow.remove()
-      keyboardWillHide.remove()
-    }
-  }, [])
 
   // Image picker function
   const pickImage = async () => {
@@ -106,7 +83,7 @@ const ScanPay = () => {
     };
 
     if (!crownAmount) {
-      newErrors.amount = 'Please enter crown amount';
+      newErrors.amount = 'Please enter amount';
     }
 
     if (!screenshot) {
@@ -118,7 +95,7 @@ const ScanPay = () => {
   };
 
   const handleSubmit = async () => {
-  
+
     if (!validateFields()) {
       return;
     }
@@ -139,168 +116,195 @@ const ScanPay = () => {
       await creditCrown(formData);
 
 
-        navigation.reset({
-          index: 1,
-          routes: [
-            { name: 'customerTabs' },
-            { name: 'transaction' }
-          ],
-        });
-  
-  
+      navigation.reset({
+        index: 1,
+        routes: [
+          { name: 'customerTabs' },
+          { name: 'transaction' }
+        ],
+      });
+
+
     } catch (err) {
       Toast.show(err?.message || 'Failed to submit credit request.', Toast.SHORT)
     } finally {
       setTimeout(() => {
         setdisableBtn(false)
-      }, 2000) 
+      }, 2000)
     }
   }
 
   return (
     <>
-      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+      <StatusBar translucent backgroundColor="transparent" barStyle={isLight ? "dark-content" : "light-content"} />
       <View style={[styles.container, {
         backgroundColor: colors.background,
+        paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }]}>
-        {/* Full-width header with wallet-style curve */}
-        <View style={styles.headerContainer}>
-          {/* Main header content */}
-          <View style={[styles.headerContent, { paddingTop: Platform.OS === 'android' ? insets.top + 20 : insets.top }]}>
-            {
-              Platform.OS === 'ios' && (
-                <Pressable style={{ alignSelf: 'flex-start', marginLeft: 10 }} onPress={() => navigation.goBack()}>
-                  <Ionicons name="chevron-back" size={25} color={'white'} />
-                </Pressable>
-              )
-            }
 
-
-
-            <View style={styles.logoContainerInner}>
-              {/* Left Crown */}
-              <View style={styles.crownWrapper}>
-                <MaterialCommunityIcons
-                  name="crown"
-                  size={65}
-                  color="#00C851"
-                  style={{ transform: [{ rotate: "-15deg" }] }}
-                />
-              </View>
-
-              {/* Logo with Enhanced Styling */}
-              <View style={styles.logoWrapper}>
-                <Image
-                  source={require("../../assets/xKick.png")}
-                  style={styles.logo}
-                  resizeMode="contain"
-                />
-                <Text style={styles.tagline}>Level Up Your Gaming Wallet</Text>
-                <View style={styles.taglineUnderline} />
-              </View>
-
-              {/* Right Crown */}
-              <View style={styles.crownWrapper}>
-                <MaterialCommunityIcons
-                  name="crown"
-                  size={65}
-                  color="#00C851"
-                  style={{ transform: [{ rotate: "15deg" }] }}
-                />
-              </View>
-            </View>
-          </View>
-
-          {/* Curved bottom edge */}
-          <View style={styles.curveContainer}>
-            <View style={[styles.curve, { backgroundColor: colors.background }]} />
-          </View>
-        </View>
+        <AppHeader
+          backButton={Platform.OS === 'ios'}
+          title={'Scan & Pay'}
+        />
 
         <ScrollView
-          ref={scrollViewRef}
-          contentContainerStyle={[
-            styles.scrollContent,
-            keyboardVisible && { paddingBottom: 300 },
-          ]}
+          contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
 
-          {/* QR Code Section */}
-          <View style={[styles.qrContainer, { backgroundColor: colors.qrBg }]}>
-            <Image source={require("../../assets/nishant-qr.png")} style={styles.qrLogo} resizeMode="contain" />
+          {/* Pocket Design with Instructions */}
+          <View style={styles.pocketWrapper}>
+            <View style={[styles.pocketContainer, {
+              backgroundColor: isLight ? '#00C851' : '#1a1a1a',
+              borderColor: '#00C851'
+            }]}>
+              {/* Pocket Content - Instructions */}
+              <View style={styles.pocketContent}>
+                <View style={styles.instructionHeader}>
+                  <MaterialCommunityIcons name="information" size={20} color={isLight ? "#ffffff" : "#00C851"} />
+                  <Text style={[styles.instructionTitle, { color: isLight ? "#ffffff" : "#00C851" }]}>
+                    Payment Instructions
+                  </Text>
+                </View>
+
+                <View style={styles.instructionsContainer}>
+                  <View style={styles.instructionRow}>
+                    <View style={[styles.stepBadge, { backgroundColor: isLight ? "rgba(255,255,255,0.2)" : "rgba(0,200,81,0.2)" }]}>
+                      <Text style={[styles.stepNumber, { color: isLight ? "#ffffff" : "#00C851" }]}>1</Text>
+                    </View>
+                    <Text style={[styles.instructionText, { color: isLight ? "#ffffff" : colors.text }]}>
+                      Payment must be between Rs. 10 and Rs. 10,000 (Rs. 1 = 1 Point).
+                    </Text>
+                  </View>
+
+                  <View style={styles.instructionRow}>
+                    <View style={[styles.stepBadge, { backgroundColor: isLight ? "rgba(255,255,255,0.2)" : "rgba(0,200,81,0.2)" }]}>
+                      <Text style={[styles.stepNumber, { color: isLight ? "#ffffff" : "#00C851" }]}>2</Text>
+                    </View>
+                    <Text style={[styles.instructionText, { color: isLight ? "#ffffff" : colors.text }]}>
+                      Write your app's email in the payment remarks (Important).
+                    </Text>
+                  </View>
+
+                  <View style={styles.instructionRow}>
+                    <View style={[styles.stepBadge, { backgroundColor: isLight ? "rgba(255,255,255,0.2)" : "rgba(0,200,81,0.2)" }]}>
+                      <Text style={[styles.stepNumber, { color: isLight ? "#ffffff" : "#00C851" }]}>3</Text>
+                    </View>
+                    <Text style={[styles.instructionText, { color: isLight ? "#ffffff" : colors.text }]}>
+                      Upload payment screenshot below
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+
+            {/* QR Code overlapping the pocket bottom */}
+            <View style={styles.qrOverlapContainer}>
+              <View style={[styles.qrContainer, {
+                backgroundColor: colors.qrBg,
+                borderColor: colors.border
+              }]}>
+                {qrImageUrl ? (
+                  <Image 
+                    source={{ uri: qrImageUrl }} 
+                    style={styles.qrLogo} 
+                    resizeMode="contain" 
+                  />
+                ) : (
+                  <View style={styles.qrPlaceholder}>
+                    <Ionicons name="qr-code-outline" size={80} color={colors.textSecondary} />
+                    <Text style={[styles.qrPlaceholderText, { color: colors.textSecondary }]}>
+                      Loading QR Code...
+                    </Text>
+                  </View>
+                )}
+              </View>
+            </View>
           </View>
 
           {/* Form Fields */}
           <View style={styles.formContainer}>
+            {/* Crown Amount Input */}
             <View style={styles.inputContainer}>
               <View style={styles.labelCrownContainer}>
-                <Text style={[styles.inputLabel, { color: colors.text }]}>Crown Amount</Text>
-                <MaterialCommunityIcons name="crown" size={20} color="#00C851" style={{ marginBottom: 4 }} />
+                <Text style={[styles.inputLabel, { color: colors.text }]}>Points Amount</Text>
               </View>
-              <TextInput
-                style={[styles.input, {
-                  borderColor: colors.border,
-                  backgroundColor: colors.inputBg,
-                  color: colors.text
-                }]}
-                placeholder="eg. 100"
-                placeholderTextColor={colors.textSecondary}
-                keyboardType="numeric"
-                value={crownAmount}
-                onChangeText={(text) => {
-                  setCrownAmount(text);
-                  if (errors.amount) {
-                    setErrors(prev => ({ ...prev, amount: '' }));
-                  }
-                }}
-              />
+              <View style={[styles.inputWrapper, {
+                borderColor: errors.amount ? '#FF4444' : colors.border,
+                backgroundColor: colors.inputBg,
+              }]}>
+
+                <MaterialCommunityIcons
+                  name="star-four-points-outline"
+                  size={20}
+                  color={colors.textSecondary}
+                  style={styles.inputIcon}
+                />
+                <TextInput
+                  style={[styles.input, { color: colors.text }]}
+                  placeholder="Enter amount (e.g., 100)"
+                  placeholderTextColor={colors.textSecondary}
+                  keyboardType="numeric"
+                  value={crownAmount}
+                  onChangeText={(text) => {
+                    setCrownAmount(text);
+                    if (errors.amount) {
+                      setErrors(prev => ({ ...prev, amount: '' }));
+                    }
+                  }}
+                />
+              </View>
               {errors.amount ? (
-                <Text style={[styles.errorText, { color: '#FF4444', marginTop: 4 }]}>{errors.amount}</Text>
+                <View style={styles.errorContainer}>
+                  <Ionicons name="alert-circle" size={14} color="#FF4444" />
+                  <Text style={styles.errorText}>{errors.amount}</Text>
+                </View>
               ) : null}
             </View>
 
-            <Pressable
-              style={[styles.uploadButton, screenshot && styles.uploadButtonWithImage]}
-              onPress={pickImage}
-            >
-              {screenshot ? (
-                <View style={styles.selectedImageContainer}>
-                  <Image source={{ uri: screenshot }} style={styles.selectedImage} />
-                  <Text style={styles.changeImageText}>Change Screenshot</Text>
+            {/* Upload Screenshot Section */}
+            <View style={styles.uploadContainer}>
+              <View style={styles.labelCrownContainer}>
+                <Text style={[styles.inputLabel, { color: colors.text }]}>Payment Screenshot</Text>
+              </View>
+              <Pressable
+                style={[
+                  styles.uploadButton,
+                  screenshot && styles.uploadButtonWithImage,
+                  errors.screenshot && styles.uploadButtonError,
+                  { borderColor: errors.screenshot ? '#FF4444' : '#00C851' }
+                ]}
+                onPress={pickImage}
+              >
+                {screenshot ? (
+                  <View style={styles.selectedImageContainer}>
+                    <Image source={{ uri: screenshot }} style={styles.selectedImage} />
+                    <View style={styles.imageTextContainer}>
+                      <Text style={[styles.imageFileName, { color: colors.text }]}>Screenshot uploaded</Text>
+                      <Text style={styles.changeImageText}>Tap to change</Text>
+                    </View>
+                  </View>
+                ) : (
+                  <View style={styles.uploadButtonContent}>
+                    <View style={styles.uploadIconContainer}>
+                      <Ionicons name="cloud-upload-outline" size={32} color="#00C851" />
+                    </View>
+                    <Text style={styles.uploadButtonText}>Tap to upload screenshot</Text>
+                  </View>
+                )}
+              </Pressable>
+              {errors.screenshot ? (
+                <View style={styles.errorContainer}>
+                  <Ionicons name="alert-circle" size={14} color="#FF4444" />
+                  <Text style={styles.errorText}>{errors.screenshot}</Text>
                 </View>
-              ) : (
-                <>
-                  <Ionicons name="cloud-upload-outline" size={24} color="#00C851" />
-                  <Text style={styles.uploadButtonText}>Upload Screenshot</Text>
-                </>
-              )}
-            </Pressable>
-            {errors.screenshot ? (
-              <Text style={[styles.errorText, { color: '#FF4444', textAlign: 'start', marginTop: 8 }]}>
-                {errors.screenshot}
-              </Text>
-            ) : null}
+              ) : null}
+            </View>
           </View>
 
         </ScrollView>
-        {/* <View style={styles.footer}>
-          <Pressable
-            style={[
-              styles.submitButton,
-              { backgroundColor: isLight ? '#000000' : '#ffffff' }
-            ]}
-            onPress={handleSubmit}
-            disabled={disableBtn} 
-          >
-            <Text style={[
-              styles.submitButtonText,
-              { color: isLight ? '#ffffff' : '#000000' }
-            ]}>{disableBtn ? 'Submitting...' : 'Submit'}</Text>
-          </Pressable>
-        </View> */}
 
         <View style={styles.footer}>
           <CoolButton handlePress={handleSubmit} disableBtn={disableBtn} title={'Submit'} />
@@ -318,58 +322,6 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
   },
-  headerContainer: {
-    width: '100%',
-    backgroundColor: '#000000',
-  },
-  headerContent: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  curveContainer: {
-    height: 50,
-    overflow: 'hidden',
-    marginTop: -1,
-    backgroundColor: 'transparent',
-    justifyContent: 'flex-end',
-    position: 'relative',
-  },
-  curve: {
-    height: 30,
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
-    borderWidth: 1,
-    borderColor: '#00C851',
-    borderBottomWidth: 0,
-  },
-  logoContainerInner: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    paddingHorizontal: 20,
-  },
-  crownWrapper: {
-    padding: 5,
-  },
-  logoWrapper: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 15,
-  },
-  tagline: {
-    color: '#00C851',
-    fontSize: 12,
-    fontWeight: '600',
-    letterSpacing: 1,
-    marginTop: 2,
-    marginBottom: 4,
-  },
-  taglineUnderline: {
-    width: 80,
-    height: 2,
-    backgroundColor: '#00C851',
-    marginTop: 2,
-  },
   footer: {
     paddingHorizontal: 20,
     paddingBottom: 10,
@@ -377,110 +329,219 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: 15,
-    paddingTop: 20,
+    // paddingTop: 20,
+    paddingBottom: 40,
   },
-  logo: {
-    width: 150,
-    height: 90,
-    marginBottom: 5,
+  pocketWrapper: {
+    width: "100%",
+    // marginBottom: 60,
+    position: 'relative',
+  },
+  pocketContainer: {
+    width: "100%",
+    borderBottomLeftRadius: 80,
+    borderBottomRightRadius: 80,
+    borderWidth: 2,
+    paddingTop: 20,
+    paddingBottom: 80,
+    paddingHorizontal: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
+    elevation: 8,
+  },
+  pocketContent: {
+    width: "100%",
+  },
+  instructionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginBottom: 16,
+  },
+  instructionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
+  instructionsContainer: {
+    gap: 12,
+    paddingHorizontal: 5,
+    marginBottom: 10,
+  },
+  instructionRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+  },
+  stepBadge: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stepNumber: {
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  instructionText: {
+    flex: 1,
+    fontSize: 13,
+    fontWeight: '500',
+    lineHeight: 18,
+    paddingTop: 4,
+  },
+  qrOverlapContainer: {
+    position: 'absolute',
+    bottom: -220,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    zIndex: 10,
   },
   qrContainer: {
-    width: "100%",
-    height: 350,
-    borderRadius: 12,
+    width: '90%',
+    height: 340,
+    borderRadius: 20,
+    borderWidth: 3,
     padding: 20,
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 4,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 10,
   },
   qrLogo: {
     height: "100%",
     width: "100%",
   },
+  qrPlaceholder: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  qrPlaceholderText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
   formContainer: {
     marginBottom: 20,
-    marginTop: 20,
+    marginTop: 230,
   },
   inputContainer: {
-    marginBottom: 15,
+    marginBottom: 20,
+  },
+  uploadContainer: {
+    marginBottom: 20,
   },
   labelCrownContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
-    gap: 4,
+    gap: 6,
+    marginBottom: 10,
   },
   inputLabel: {
-    fontSize: 14,
-    marginBottom: 8,
-    fontWeight: "500",
+    fontSize: 15,
+    fontWeight: "600",
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+  },
+  inputIcon: {
+    marginRight: 8,
   },
   input: {
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    flex: 1,
+    paddingVertical: 12,
     fontSize: 16,
   },
   uploadButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: "#00C851",
     borderStyle: "dashed",
-    borderRadius: 8,
-    paddingVertical: 12,
-    backgroundColor: "rgba(0, 200, 81, 0.1)",
+    borderRadius: 12,
+    paddingVertical: 24,
+    paddingHorizontal: 16,
+    backgroundColor: "rgba(0, 200, 81, 0.05)",
+  },
+  uploadButtonError: {
+    backgroundColor: "rgba(255, 68, 68, 0.05)",
+  },
+  uploadButtonContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  uploadIconContainer: {
+    marginBottom: 8,
   },
   uploadButtonText: {
-    marginLeft: 8,
     fontSize: 16,
     color: "#00C851",
-    fontWeight: "500",
-  },
-  submitButton: {
-    paddingVertical: 12,
-    borderRadius: 10,
-    alignItems: "center",
-    marginTop: 20,
-    marginBottom: 0,
-  },
-  submitButtonText: {
-    fontSize: 18,
     fontWeight: "600",
+    marginBottom: 4,
+  },
+  uploadButtonSubtext: {
+    fontSize: 12,
+    fontWeight: "400",
   },
   selectedImageContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     width: "100%",
+    gap: 12,
   },
   selectedImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 8,
-    marginRight: 10,
+    width: 70,
+    height: 70,
+    borderRadius: 10,
+  },
+  imageTextContainer: {
+    flex: 1,
+  },
+  imageFileName: {
+    fontSize: 15,
+    fontWeight: "600",
+    marginBottom: 4,
   },
   changeImageText: {
-    fontSize: 16,
+    fontSize: 13,
     color: "#00C851",
     fontWeight: "500",
   },
   uploadButtonWithImage: {
-    backgroundColor: "rgba(0, 200, 81, 0.05)",
+    backgroundColor: "rgba(0, 200, 81, 0.08)",
+    borderStyle: "solid",
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 6,
   },
   errorText: {
-
     fontSize: 12,
     fontWeight: '500',
-
+    color: '#FF4444',
   }
 })

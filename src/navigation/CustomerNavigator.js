@@ -31,6 +31,10 @@ import BlockedUserList from "../screens/customer/BlockedUserList";
 import Exchange from "../screens/customer/Exchange";
 import AccessBar from "../screens/customer/AccessBar";
 import { Platform } from "react-native";
+import WithDraw from "../screens/customer/WithDraw";
+import ScanPay from "../screens/customer/ScanPay";
+import Transaction from "../screens/customer/transaction/Transaction";
+
 
 const Stack = createNativeStackNavigator();
 
@@ -45,6 +49,9 @@ export default function CustomerNavigator(){
             <Stack.Screen component={InCategory} name="inCategory" options={{ animation: "fade"}}/>
             <Stack.Screen component={CreateGame} name="createGame"/>
             <Stack.Screen component={UserTournament} name="userTournament"/>
+            <Stack.Screen component={WithDraw} name="withDraw"/>
+            <Stack.Screen component={ScanPay} name="scanPay"/>
+            <Stack.Screen component={Transaction} name="transaction"/>
             <Stack.Screen component={Match} name="match"/>
             <Stack.Screen component={Notify} name="notify"/>
             <Stack.Screen component={SetupGameInfo} name="setupGameInfo"/>

@@ -14,7 +14,7 @@ const DEFAULT_STATS = [
 const TOGGLEABLE_OPTIONS = {
   watchads: {
     primary: { id: 'watchads', type: 'watchads', name: 'Watch Ads', icon: 'play-circle-outline', iconLib: 'Ionicons' },
-    secondary: { id: 'gameprofile', type: 'watchads', name: 'Game Profiles', icon: 'playlist-add', iconLib: 'MaterialIcons' },
+    secondary: { id: 'redeem', type: 'watchads', name: 'Redeem', icon: 'wallet-giftcard', iconLib: 'MaterialCommunityIcons' },
   },
   leaderboard: {
     primary: { id: 'leaderboard', type: 'leaderboard', name: 'Leaderboard', icon: 'trophy', iconLib: 'SimpleLineIcons' },
