@@ -23,7 +23,8 @@ export default function CustomerTabNavigator() {
                 tabBarInactiveTintColor: isLight ? '#666666' : 'rgba(255, 255, 255, 0.7)',
                 tabBarStyle: {
                       height: 56 + insets.bottom,
-                    borderTopWidth: 1,
+                    borderTopWidth: 3,
+                    borderColor: isLight ? '#ffffff' : '#ffffff',
                     backgroundColor: isLight ? '#ffffff' : '#000000',
                 },
                 tabBarButton: (props) => (

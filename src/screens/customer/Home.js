@@ -34,6 +34,7 @@ import { queryClient } from "../../lib/queryClient"
 // State Management
 import { useAuthStore } from "../../store/authStore"
 import { useThemeStore } from "../../store/themeStore"
+import { useStatsPreferenceStore } from "../../store/statsPreference"
 
 // New import for handleJoinGame
 import { handleJoinGame } from "../../service/homeHandler"
@@ -76,6 +77,7 @@ const Home = () => {
   const { user, get_user } = useAuthStore()
   const { isLight } = useThemeStore()
   const { isConnected } = useNetworkStatus()
+  const { setStatsBasedOnPointBanner } = useStatsPreferenceStore()
 
   // Local component state
   const [refreshing, setRefreshing] = useState(false)
@@ -90,38 +92,55 @@ const Home = () => {
   const { data: upcomingChallenges, isLoading: isUpcomingLoading } = useUpcomingChallenges()
 
   // Filter out QR image from banners - only show banners that don't have 'qrimage' in url
-  const displayBanners = banners.filter(banner => 
+  const displayBanners = banners.filter(banner =>
     !banner?.url?.toLowerCase().includes('qrimage')
   )
 
- 
-  
+  // Check if any banner has 'point' in its URL
+  const hasPointBanner = banners?.some(banner =>
+    banner?.url && banner.url.toLowerCase().includes('point')
+  )
 
- 
- 
+  /*
+   * ====================================================================
+   * Update Stats Configuration Based on Point Banner
+   * ====================================================================
+   */
+  useEffect(() => {
+    // Update stats configuration when banners data changes
+    if (banners && banners.length > 0) {
+      setStatsBasedOnPointBanner(hasPointBanner)
+    }
+  }, [banners, hasPointBanner, setStatsBasedOnPointBanner])
+
+
+
+
+
+
   /*
    * ====================================================================
    * Mounting User Data & Upcoming Challenges
    * ====================================================================
    */
 
-useEffect(() => {
-  const mountData = async () => {
-    try {
-      // Refresh user data
-      await get_user();
-      
-      // Refresh upcoming challenges
-      await queryClient.invalidateQueries({ queryKey: ["upcomingChallenges"] });
-    } catch (error) {
-      if (__DEV__) {
-        console.error("Mount Data Error:", error);
-      }
-    }
-  };
+  useEffect(() => {
+    const mountData = async () => {
+      try {
+        // Refresh user data
+        await get_user();
 
-  mountData();
-}, []);
+        // Refresh upcoming challenges
+        await queryClient.invalidateQueries({ queryKey: ["upcomingChallenges"] });
+      } catch (error) {
+        if (__DEV__) {
+          console.error("Mount Data Error:", error);
+        }
+      }
+    };
+
+    mountData();
+  }, []);
 
 
 
@@ -151,7 +170,7 @@ useEffect(() => {
 
       // You can add more query invalidations here if needed
     } catch (error) {
-        if (__DEV__) {  
+      if (__DEV__) {
         console.error("Refresh Error:", error);
       }
     } finally {
@@ -184,7 +203,7 @@ useEffect(() => {
     navigation.navigate("profile", { userData: user })
   }
 
- 
+
 
   /*
    * ====================================================================
@@ -208,7 +227,7 @@ useEffect(() => {
     if (!isConnected) {
       return
     }
- 
+
     // Check if user has a profile for this game
     const existingProfile = gameProfiles?.find((profile) => profile.game_id === game.game_id)
 
@@ -260,27 +279,21 @@ useEffect(() => {
   const handleHeaderGamePoint = () => {
     // Check if user has demo email
     const isDemoUser = user?.email === "demo@level.com.np"
-    
+
     // Check if any banner has 'point' in its URL
-    const pointBanner = banners?.find(banner => 
+    const pointBanner = banners?.find(banner =>
       banner?.url && banner.url.toLowerCase().includes('point')
     )
-    
+
     // If demo user OR no point banner exists, navigate to watchAds
     if (isDemoUser || !pointBanner) {
-      navigation.navigate("scanPay")
+      navigation.navigate("watchAds")
       return
     }
-    
+
     // If point banner exists, open the URL
     if (pointBanner?.url) {
-      Linking.openURL(pointBanner.url).catch(err => {
-        if (__DEV__) {
-          console.error('Error opening point banner URL:', err)
-        }
-        // Fallback to watchAds if URL fails to open
-        navigation.navigate("watchAds")
-      })
+      navigation.navigate("scanPay")
     }
   }
 
@@ -327,18 +340,18 @@ useEffect(() => {
    *
    * @param {string} id - Challenge ID to join
    */
-  
+
 
   const handleRegisterChallenge = async (id, accessCode) => {
     try {
-   
+
 
       // TODO: Implement actual registration logic with access code
       await registerTournament({ challenge_id: id, access_code: accessCode });
-      
+
       // Add a small delay to ensure cache is updated before navigation
       await new Promise(resolve => setTimeout(resolve, 300));
-      
+
       navigation.reset({
         index: 1,
         routes: [{ name: "customerTabs" }, { name: "userTournament" }],
@@ -372,18 +385,21 @@ useEffect(() => {
    */
   const renderSection = ({ item }) => {
     switch (item.type) {
-      case "header":
+      case "headerWithBanner":
         return (
-          <Header
-            player_name={user?.full_name}
-            wallet_balance={user?.wallet_balance}
-            profile_picture={user?.profile_picture}
-            handleProfile={handleProfile}
-            handleMessenger={handleMessengerWrapper}
-            handleInstagram={handleInstagramWrapper}
-            handleWhatsapp={handleWhatsappWrapper}
-            handleHeaderGamePoint={handleHeaderGamePoint}
-          />
+          <View>
+            <Header
+              player_name={user?.full_name}
+              wallet_balance={user?.wallet_balance}
+              profile_picture={user?.profile_picture}
+              handleProfile={handleProfile}
+              handleMessenger={handleMessengerWrapper}
+              handleInstagram={handleInstagramWrapper}
+              handleWhatsapp={handleWhatsappWrapper}
+              handleHeaderGamePoint={handleHeaderGamePoint}
+            />
+            <HomeBanner data={displayBanners} />
+          </View>
         )
 
       case "stats":
@@ -401,7 +417,7 @@ useEffect(() => {
         )
 
       case "banner":
-        return <HomeBanner data={displayBanners} />
+        return null // Banner is now rendered with header
 
       case "games":
         return <GameCarousel games={games} handleGameCardPress={handleGameCardPress} />
@@ -434,7 +450,7 @@ useEffect(() => {
 
       {/* Main content list with optimized scrolling */}
       <FlashList
-        data={[{ type: "header" }, { type: "stats" }, { type: "banner" }, { type: "games" }, { type: "upcoming" }]}
+        data={[{ type: "headerWithBanner" }, { type: "stats" }, { type: "games" }, { type: "upcoming" }]}
         renderItem={renderSection}
         estimatedItemSize={200}
         showsVerticalScrollIndicator={false}

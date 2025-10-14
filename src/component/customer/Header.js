@@ -31,7 +31,7 @@ const Header = ({
     // Map using lowercase keys so incoming API variations (e.g. WhatsApp / Whatsapp) still match
     const socialMap = {
       messenger: { icon: "messenger", IconComponent: Fontisto, handler: handleMessenger },
-      instagram: { icon: "instagram", IconComponent: Entypo, handler: handleInstagram },
+      instagram: { icon: "tiktok", IconComponent: MaterialIcons, handler: handleInstagram },
       whatsapp: { icon: "logo-whatsapp", IconComponent: Ionicons, handler: handleWhatsapp },
     }
 
@@ -126,7 +126,13 @@ const Header = ({
   }
 
   return (
-    <View style={styles.header}>
+    <View style={[
+      styles.header,
+      {
+        // backgroundColor: isLight ? '#f8f9fa' : '#1a1a1a',
+        borderColor: isLight ? '#000000' : '#ffffff',
+      }
+    ]}>
       {/* Left Section - Profile and User Info */}
       <View style={styles.leftSection}>
         <Pressable
@@ -230,8 +236,16 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "flex-start",
     paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 12,
+    paddingTop: 10,
+    paddingBottom: 50,
+    borderTopLeftRadius: 40,
+    borderTopRightRadius: 40,
+    borderBottomLeftRadius: 40,
+    borderBottomRightRadius: 40,
+    borderBottomWidth: 3,
+    borderLeftWidth: 3,
+    borderRightWidth: 3,
+ 
   },
   leftSection: {
     flexDirection: "row",

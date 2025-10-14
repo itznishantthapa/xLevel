@@ -84,12 +84,12 @@ const styles = StyleSheet.create({
   statsContainer: {
     flexDirection: 'row',
     marginHorizontal: 10,
-    marginTop: -10,
-    borderRadius: 15,
+    marginTop: 10,
+    borderTopRightRadius: 15,
+    borderTopLeftRadius: 15,
     paddingVertical: 15,
-    borderWidth: 1,
-    marginBottom: 10,
-    marginTop: 5,
+    borderWidth: 3,
+    // marginBottom: 15,
   },
   statItem: {
     flex: 1,
@@ -102,12 +102,12 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 12,
-
     fontWeight: '500',
   },
   statDivider: {
-    width: 1,
+    width: 2,
     backgroundColor: 'grey',
     marginVertical: 5,
+    borderRadius: 1.5,
   },
 })

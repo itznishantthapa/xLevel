@@ -102,13 +102,13 @@ const styles = StyleSheet.create({
         marginRight: 15,
         borderRadius: 20,
         overflow: 'hidden',
-        borderWidth: 1,
+        borderWidth: 2,
         alignItems: 'center',
     },
     gameName: {
         fontSize: 12,
         fontWeight: '600',
-        marginTop: 8,
+        marginTop: 4,
         textAlign: 'center',
     },
     gameImage: {

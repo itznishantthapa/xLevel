@@ -125,7 +125,7 @@ const InCategory = ({ route }) => {
           <StatsContainer
             num_loss={user?.num_loss || 0}
             num_win={user?.num_win || 0}
-            handleGameProfiles={() => navigation.navigate("setupGameInfo")}
+            handleWithdraw={() => navigation.navigate("withDraw")}
             handleTournament={() => navigation.navigate("userTournament")}
             handleGameRules={() => navigation.navigate("gameRules")}
             handleMatches={() => navigation.navigate("match")}

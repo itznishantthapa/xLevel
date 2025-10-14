@@ -10,6 +10,14 @@ const DEFAULT_STATS = [
   { id: 'matches', type: 'matches', name: 'My Match', icon: 'gamepad-circle-right', iconLib: 'MaterialCommunityIcons' },
 ];
 
+// Configuration when point banner exists
+const POINT_BANNER_STATS = [
+  { id: 'gamerules', type: 'leaderboard', name: 'Game Rules', icon: 'book-outline', iconLib: 'Ionicons' },
+  { id: 'tournament', type: 'tournament', name: 'Tournaments', icon: 'game-controller-outline', iconLib: 'Ionicons' },
+  { id: 'matches', type: 'matches', name: 'My Match', icon: 'gamepad-circle-right', iconLib: 'MaterialCommunityIcons' },
+  { id: 'redeem', type: 'watchads', name: 'Redeem', icon: 'wallet-giftcard', iconLib: 'MaterialCommunityIcons' },
+];
+
 // Toggleable options
 const TOGGLEABLE_OPTIONS = {
   watchads: {
@@ -28,10 +36,23 @@ export const useStatsPreferenceStore = create(
       // State
       statsConfig: DEFAULT_STATS,
       isLoading: false,
+      hasPointBanner: false,
 
       // Actions
       updateStatsConfig: (newConfig) => {
         set({ statsConfig: newConfig });
+      },
+
+      setStatsBasedOnPointBanner: (hasPointBanner) => {
+        const currentHasPointBanner = get().hasPointBanner;
+        
+        // Only update if the point banner state has changed
+        if (currentHasPointBanner !== hasPointBanner) {
+          set({ 
+            hasPointBanner,
+            statsConfig: hasPointBanner ? POINT_BANNER_STATS : DEFAULT_STATS 
+          });
+        }
       },
 
       toggleStatsItem: (index) => {
@@ -61,12 +82,13 @@ export const useStatsPreferenceStore = create(
       },
 
       resetToDefault: () => {
-        set({ statsConfig: DEFAULT_STATS });
+        set({ statsConfig: DEFAULT_STATS, hasPointBanner: false });
       },
 
       // Getters/Constants
       getToggleableOptions: () => TOGGLEABLE_OPTIONS,
       getDefaultStats: () => DEFAULT_STATS,
+      getPointBannerStats: () => POINT_BANNER_STATS,
     }),
     {
       name: 'stats-preferences-storage',

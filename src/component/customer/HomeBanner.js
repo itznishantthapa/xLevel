@@ -8,6 +8,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { scaleWidth, scaleHeight } from '../../utils/scaling';
+import { useThemeStore } from '../../store/themeStore';
 
 
 const BannerPage = ({ data }) => {
@@ -38,37 +39,32 @@ const BannerPage = ({ data }) => {
   );
 };
 
-const AnimatedIndicator = ({ isActive, index, totalPages }) => {
-  const width = useSharedValue(isActive ? scaleWidth(24) : scaleWidth(8));
-  const opacity = useSharedValue(isActive ? 1 : 0.4);
+const AnimatedIndicator = ({ isActive, isLight }) => {
+  const scale = useSharedValue(isActive ? 1 : 0.8);
 
   useEffect(() => {
-    width.value = withTiming(
-      isActive ? scaleWidth(24) : scaleWidth(8),
-      {
-        duration: 300,
-        easing: Easing.out(Easing.cubic),
-      }
-    );
-    opacity.value = withTiming(
-      isActive ? 1 : 0.4,
-      {
-        duration: 300,
-        easing: Easing.out(Easing.cubic),
-      }
-    );
+    // Smooth easing animation with scale
+    scale.value = withTiming(isActive ? 1 : 0.8, {
+      duration: 250,
+      easing: Easing.bezier(0.4, 0.0, 0.2, 1),
+    });
   }, [isActive]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    width: width.value,
-    opacity: opacity.value,
+    transform: [{ scale: scale.value }],
   }));
+
+  // Theme-aware colors
+  const dotStyle = isLight 
+    ? (isActive ? styles.indicatorDotActiveLightMode : styles.indicatorDotLightMode)
+    : (isActive ? styles.indicatorDotActiveDarkMode : styles.indicatorDotDarkMode);
 
   return (
     <Animated.View
       style={[
-        styles.indicatorLine,
+        styles.indicatorDot,
         animatedStyle,
+        dotStyle,
       ]}
     />
   );
@@ -76,37 +72,43 @@ const AnimatedIndicator = ({ isActive, index, totalPages }) => {
 
 const HomeBanner = ({data}) => {
   const [currentPage, setCurrentPage] = useState(0);
-
- 
+  const { isLight } = useThemeStore();
 
   const handlePageChange = (e) => {
     setCurrentPage(e.nativeEvent.position);
   };
 
+  // Theme-aware colors
+  const indicatorColors = {
+    active: isLight ? '#000000' : '#FFFFFF',
+    inactive: isLight ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.3)',
+  };
+
   return (
     <View style={styles.container}>
-      <PagerView
-        style={styles.pagerView}
-        initialPage={0}
-        onPageSelected={handlePageChange}
-      >
-        {data?.map((banner) => (
-          <View key={banner.id}>
-            <BannerPage data={banner} onPress={banner.onPress} />
-          </View>
-        ))}
-      </PagerView>
-      
-      {/* Animated Line Indicators */}
-      <View style={styles.indicatorContainer}>
-        {data?.map((_, index) => (
-          <AnimatedIndicator
-            key={index}
-            isActive={currentPage === index}
-            index={index}
-            totalPages={data.length}
-          />
-        ))}
+      <View style={styles.bannerWrapper}>
+        <PagerView
+          style={styles.pagerView}
+          initialPage={0}
+          onPageSelected={handlePageChange}
+        >
+          {data?.map((banner) => (
+            <View key={banner.id}>
+              <BannerPage data={banner} onPress={banner.onPress} />
+            </View>
+          ))}
+        </PagerView>
+        
+        {/* Circular Dot Indicators - Over Banner */}
+        <View style={styles.indicatorContainer}>
+          {data?.map((_, index) => (
+            <AnimatedIndicator
+              key={index}
+              isActive={currentPage === index}
+              isLight={isLight}
+            />
+          ))}
+        </View>
       </View>
     </View>
   );
@@ -114,8 +116,14 @@ const HomeBanner = ({data}) => {
 
 const styles = StyleSheet.create({
   container: {
+    marginHorizontal: scaleWidth(10),
+    marginTop: scaleHeight(-45),
+    marginBottom: scaleHeight(15),
+    zIndex: 10,
+  },
+  bannerWrapper: {
     height: scaleHeight(180),
-    marginHorizontal: scaleWidth(5),
+    position: 'relative',
   },
   pagerView: {
     flex: 1,
@@ -137,26 +145,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   
-  title: {
-    color: '#ffffff',
-    fontSize: scaleWidth(24),
-    fontWeight: 'bold',
-    marginVertical: scaleHeight(10),
-  },
-  actionButton: {
-    backgroundColor: '#000000',
-    paddingHorizontal: scaleWidth(20),
-    paddingVertical: scaleHeight(8),
-    borderRadius: scaleWidth(20),
-    alignSelf: 'flex-start',
-  },
-  actionButtonText: {
-    color: '#ffffff',
-    fontSize: scaleWidth(14),
-    fontWeight: '600',
-  },
-
-  // New animated indicator styles
+  // Circular dot indicators - over banner
   indicatorContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -165,44 +154,34 @@ const styles = StyleSheet.create({
     bottom: scaleHeight(12),
     left: 0,
     right: 0,
-    gap: scaleWidth(6),
+    gap: scaleWidth(8),
   },
-  indicatorLine: {
-    height: scaleHeight(5),
-    backgroundColor: '#ffffff',
-    borderRadius: scaleWidth(2),
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-
-  // Deprecated dot styles (keeping for reference, can be removed)
-  paginationContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
-    bottom: scaleHeight(10),
-    left: 0,
-    right: 0,
-  },
-  paginationDot: {
+  indicatorDot: {
     width: scaleWidth(8),
-    height: scaleHeight(8),
+    height: scaleWidth(8),
     borderRadius: scaleWidth(4),
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
-    marginHorizontal: scaleWidth(4),
   },
-  paginationDotActive: {
+  // Light mode styles
+  indicatorDotLightMode: {
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  indicatorDotActiveLightMode: {
     backgroundColor: '#ffffff',
-    width: scaleWidth(12),
-    height: scaleHeight(12),
-    borderRadius: scaleWidth(6),
+    borderWidth: 1,
+    borderColor: 'rgba(0, 0, 0, 0.2)',
+  },
+  // Dark mode styles
+  indicatorDotDarkMode: {
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  indicatorDotActiveDarkMode: {
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
   },
 });
 
