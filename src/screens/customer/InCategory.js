@@ -131,6 +131,7 @@ const InCategory = ({ route }) => {
             handleMatches={() => navigation.navigate("match")}
             handleWatchAds={() => navigation.navigate("watchAds")}
             handleLeaderboard={() => navigation.navigate("leaderboard")}
+            handleTransaction={() => navigation.navigate("transaction")}
           />
 
           {/* Game Mode Selection */}

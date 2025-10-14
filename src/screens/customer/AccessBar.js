@@ -126,7 +126,7 @@ const AccessBar = ({ navigation }) => {
 
 
 
-  const renderIcon = (item, color, size = scaleWidth(30)) => {
+  const renderIcon = (item, color, size = 30) => {
     const IconComponent = {
       Ionicons,
       MaterialIcons,
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: scaleWidth(20),
+    // paddingHorizontal: scaleWidth(20),
     paddingVertical: scaleHeight(20),
   },
   description: {
@@ -265,11 +265,12 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     flexDirection: 'row',
-    borderRadius: scaleWidth(15),
-    paddingVertical: scaleHeight(15),
-    borderWidth: 1,
-    width: SCREEN_WIDTH - scaleWidth(40),
-    backgroundColor: 'rgba(0,0,0,0.02)',
+    marginHorizontal: 10,
+    marginTop: 10,
+    borderTopRightRadius: 15,
+    borderTopLeftRadius: 15,
+    paddingVertical: 15,
+    borderWidth: 3,
   },
   statItem: {
     flex: 1,
@@ -278,7 +279,7 @@ const styles = StyleSheet.create({
   statItemContent: {
     alignItems: 'center',
     padding: scaleWidth(8),
-    minHeight: scaleHeight(60),
+    minHeight: 60,
     justifyContent: 'center',
   },
   toggleableItem: {
@@ -293,15 +294,16 @@ const styles = StyleSheet.create({
     borderRadius: scaleWidth(3),
   },
   statLabel: {
-    fontSize: scaleWidth(12),
+    fontSize: 12,
     fontWeight: '500',
     textAlign: 'center',
     marginTop: scaleHeight(4),
   },
   statDivider: {
-    width: scaleWidth(1),
+    width: 2,
     backgroundColor: 'grey',
-    marginVertical: scaleHeight(5),
+    marginVertical: 5,
+    borderRadius: 1.5,
   },
   instructions: {
     alignItems: 'center',

@@ -25,6 +25,11 @@ export const endpoints = {
   exchangeEnhancements: "/api/enhancer/exchange/",
   updateTagStatus:"/api/enhancer/update-tag-status/",
 
+  //transactions
+  transcationCredit: "/api/transaction/credit/",
+  transcationWithdraw: "/api/transaction/withdraw/",
+  getTransactions: "/api/transaction/history/",
+
 
   // Notifications
   postFCMToken: "/api/notification/save-fcm-token/",

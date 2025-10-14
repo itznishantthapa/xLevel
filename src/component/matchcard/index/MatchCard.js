@@ -1,4 +1,4 @@
-import { View } from "react-native"
+import { Text, View } from "react-native"
 import GameHeader from "../GameHeader"
 import { sharedStyles } from "../sharedStyleAndInfo"
 import GameDetails from "../gameDetails/GameDetails"
@@ -7,12 +7,13 @@ import StatusDisplay from "../StatusDisplay"
 import OpponentsList from "../OpponentsList"
 import CredentialsSection from "../CredentialsSection"
 import ActionButtons from "../ActionButtons"
+import StampID from "../StampID"
 import { useThemeStore } from "../../../store/themeStore"
 import { useAuthStore } from "../../../store/authStore"
 import { Time } from "../Time"
-import { scaleHeight } from "../../../utils/scaling"
+import { scaleHeight, scaleWidth } from "../../../utils/scaling"
 import SettingInfo from "../SettingInfo"
-import { MaterialIcons } from "@expo/vector-icons"
+import { Fontisto, MaterialIcons } from "@expo/vector-icons"
 
 
 /**
@@ -51,14 +52,14 @@ const MatchCard = ({
           handleReportUser={handleReportUser}
           forOpenGames={forOpenGames}
           handleIssue={handleIssue}
-   
+
         />
 
         {/* Main Content Columns */}
         <View style={sharedStyles.mainSection}>
           {/* Left Section - Game Details */}
           <View style={sharedStyles.leftSection}>
-          <SettingInfo />
+            <SettingInfo />
             <GameDetails game={game} isLight={isLight} />
           </View>
 
@@ -70,9 +71,9 @@ const MatchCard = ({
             <CreatorInfo game={game} isLight={isLight} isCreator={isCreator} user={user} />
 
             <StatusDisplay game={game} isLight={isLight} win_pot={win_pot} user={user} />
-            {/* <View style={{position:'absolute',bottom:scaleHeight(5),right:"40%"}}>
-           
-            </View> */}
+            
+            {/* Challenge ID Stamp */}
+            <StampID gameId={game.id} isLight={isLight} />
           </View>
 
         </View>
@@ -80,8 +81,8 @@ const MatchCard = ({
         {
           forOpenGames ? (
             <Time time={game.created_at} isDark={!isLight} />
-          ):(
-               <Time time={ game.created_at} isDark={!isLight} forMatch={true}/>
+          ) : (
+            <Time time={game.created_at} isDark={!isLight} forMatch={true} />
 
           )
         }

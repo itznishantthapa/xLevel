@@ -37,7 +37,7 @@ const SelectIssue = ({ route }) => {
 
 
 
- 
+
 
 
     return (
@@ -54,22 +54,28 @@ const SelectIssue = ({ route }) => {
 
             <View style={{ marginTop: 10, paddingHorizontal: 10 }}>
 
-                <Pressable
-                    style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}
-                    activeOpacity={0.8}
-                    onPress={() => navigation.navigate('dropIssue', { challenge_id, issueType: 'mistake_setting', game_name, game_mode })}  // Pass game_name and game_mode
-                >
-                    <View style={styles.cardContent}>
 
-                        <View style={styles.gameInfo}>
-                            <Text style={[styles.gameName, { color: colors.text }]}>Game Settings</Text>
-                            <Text style={[styles.gameModes, { color: colors.subText }]}>
-                                Report if the game settings metioned by the creator are not matching with the actual game settings.
-                            </Text>
-                        </View>
-                        <MaterialIcons name="chevron-right" size={24} color={colors.subText} />
-                    </View>
-                </Pressable>
+                {
+                    !isCreator && (
+                        <Pressable
+                            style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}
+                            activeOpacity={0.8}
+                            onPress={() => navigation.navigate('dropIssue', { challenge_id, issueType: 'mistake_setting', game_name, game_mode })}  // Pass game_name and game_mode
+                        >
+                            <View style={styles.cardContent}>
+
+                                <View style={styles.gameInfo}>
+                                    <Text style={[styles.gameName, { color: colors.text }]}>Game Settings</Text>
+                                    <Text style={[styles.gameModes, { color: colors.subText }]}>
+                                        Report if the game settings metioned by the creator are not matching with the actual game settings.
+                                    </Text>
+                                </View>
+                                <MaterialIcons name="chevron-right" size={24} color={colors.subText} />
+                            </View>
+                        </Pressable>
+                    )
+                }
+
 
 
                 {
@@ -181,7 +187,7 @@ const SelectIssue = ({ route }) => {
                                 </Text>
                             </View>
 
-                             <MaterialIcons name="chevron-right" size={24} color={colors.subText} />
+                            <MaterialIcons name="chevron-right" size={24} color={colors.subText} />
                         </View>
                     </Pressable>
                 )}

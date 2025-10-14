@@ -4,6 +4,7 @@ import { useThemeStore } from "../../store/themeStore"
 import { useAuthStore } from "../../store/authStore"
 import Clipboard from "@react-native-clipboard/clipboard"
 import Toast from "react-native-simple-toast"
+import StampID from "../matchcard/StampID"
 
 const TournamentCard = ({ game }) => {
   const { user } = useAuthStore()
@@ -102,6 +103,11 @@ const TournamentCard = ({ game }) => {
               <Ionicons name="people" size={14} color={isLight ? '#12b886' : '#20c997'} />
             </View>
             <Text style={[styles.pillText, !isLight && styles.pillTextDark]}>{game.game?.game_mode}</Text>
+          </View>
+          
+          {/* Tournament ID Stamp */}
+          <View style={{ flex: 1, alignItems: 'flex-end' }}>
+            <StampID gameId={game.id} isLight={isLight} />
           </View>
         </View>
       </View>

@@ -27,6 +27,7 @@ const TOGGLEABLE_OPTIONS = {
   leaderboard: {
     primary: { id: 'leaderboard', type: 'leaderboard', name: 'Leaderboard', icon: 'trophy', iconLib: 'SimpleLineIcons' },
     secondary: { id: 'gamerules', type: 'leaderboard', name: 'Game Rules', icon: 'book-outline', iconLib: 'Ionicons' },
+    tertiary: { id: 'transaction', type: 'leaderboard', name: 'Transaction', icon: 'receipt-long', iconLib: 'MaterialIcons' },
   },
 };
 
@@ -62,8 +63,22 @@ export const useStatsPreferenceStore = create(
 
         if (toggleOptions) {
           const newConfig = [...currentConfig];
-          const isCurrentPrimary = currentItem.id === toggleOptions.primary.id;
-          const newItem = isCurrentPrimary ? toggleOptions.secondary : toggleOptions.primary;
+          let newItem;
+          
+          // Handle 3-way toggle for leaderboard type
+          if (toggleOptions.tertiary) {
+            if (currentItem.id === toggleOptions.primary.id) {
+              newItem = toggleOptions.secondary;
+            } else if (currentItem.id === toggleOptions.secondary.id) {
+              newItem = toggleOptions.tertiary;
+            } else {
+              newItem = toggleOptions.primary;
+            }
+          } else {
+            // Handle 2-way toggle for other types
+            const isCurrentPrimary = currentItem.id === toggleOptions.primary.id;
+            newItem = isCurrentPrimary ? toggleOptions.secondary : toggleOptions.primary;
+          }
           
           // Preserve the type for future toggles
           newConfig[index] = { ...newItem, type: currentItem.type };

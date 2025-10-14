@@ -396,20 +396,31 @@ const JoinSheetContent = React.memo(
           </View>
           {game.created_by.role === "customer" && (
             <>
-              <View style={styles.gameRow}>
-                <View style={[styles.gameItem, { borderColor: isDark ? "#ffffff" : "#333333" }]}>
+              {/* For chess, show only Creator name in a single full-width card */}
+              {game.game?.name?.toLowerCase() === "chess" ? (
+                <View style={[styles.infoRowCompact, { borderColor: isDark ? "#ffffff" : "#333333" }]}>
                   <Text style={[styles.label, { color: isDark ? "#cccccc" : "#666666" }]}>Creator</Text>
                   <Text style={[styles.value, { color: isDark ? "#ffffff" : "#333333" }]} numberOfLines={1}>
                     {game.created_by?.full_name}
                   </Text>
                 </View>
-                <View style={[styles.gameItem, { borderColor: isDark ? "#ffffff" : "#333333" }]}>
-                  <Text style={[styles.label, { color: isDark ? "#cccccc" : "#666666" }]}>UID</Text>
-                  <Text style={[styles.value, { color: isDark ? "#ffffff" : "#333333" }]} numberOfLines={1}>
-                    {game.created_by?.game_uid}
-                  </Text>
+              ) : (
+                // For other games, show Creator and UID side by side
+                <View style={styles.gameRow}>
+                  <View style={[styles.gameItem, { borderColor: isDark ? "#ffffff" : "#333333" }]}>
+                    <Text style={[styles.label, { color: isDark ? "#cccccc" : "#666666" }]}>Creator</Text>
+                    <Text style={[styles.value, { color: isDark ? "#ffffff" : "#333333" }]} numberOfLines={1}>
+                      {game.created_by?.full_name}
+                    </Text>
+                  </View>
+                  <View style={[styles.gameItem, { borderColor: isDark ? "#ffffff" : "#333333" }]}>
+                    <Text style={[styles.label, { color: isDark ? "#cccccc" : "#666666" }]}>UID</Text>
+                    <Text style={[styles.value, { color: isDark ? "#ffffff" : "#333333" }]} numberOfLines={1}>
+                      {game.created_by?.game_uid}
+                    </Text>
+                  </View>
                 </View>
-              </View>
+              )}
 
               {/* <View style={[styles.infoRowCompact, { borderColor: isDark ? "#ffffff" : "#333333" }]}>
                 <Text style={[styles.label, { color: isDark ? "#cccccc" : "#666666" }]}>Fight Type</Text>

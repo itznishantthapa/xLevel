@@ -240,7 +240,7 @@ const Transaction = () => {
           onEndReachedThreshold={0.3}
           refreshControl={
             <RefreshControl
-              refreshing={isManualRefreshing}
+              refreshing={false}
               onRefresh={() => handleRefresh()}
               tintColor={isLight ? "#000000" : "#ffffff"}
               colors={[isLight ? "#000000" : "#ffffff"]}

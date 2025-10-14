@@ -413,6 +413,7 @@ const Home = () => {
             handleMatches={() => navigation.navigate("match")}
             handleWatchAds={() => navigation.navigate("watchAds")}
             handleLeaderboard={() => navigation.navigate("leaderboard")}
+            handleTransaction={() => navigation.navigate("transaction")}
           />
         )
 
