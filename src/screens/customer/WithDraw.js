@@ -119,7 +119,7 @@ const WithDraw = () => {
       }]}>
 
         <AppHeader
-          backButton={Platform.OS === 'ios'}
+          backButton={true}
           title={'Withdraw Points'}
         />
 

@@ -12,7 +12,7 @@ const DEFAULT_STATS = [
 
 // Configuration when point banner exists
 const POINT_BANNER_STATS = [
-  { id: 'gamerules', type: 'leaderboard', name: 'Game Rules', icon: 'book-outline', iconLib: 'Ionicons' },
+  { id: 'transaction', type: 'leaderboard', name: 'Transaction', icon: 'receipt-long', iconLib: 'MaterialIcons' },
   { id: 'tournament', type: 'tournament', name: 'Tournaments', icon: 'game-controller-outline', iconLib: 'Ionicons' },
   { id: 'matches', type: 'matches', name: 'My Match', icon: 'gamepad-circle-right', iconLib: 'MaterialCommunityIcons' },
   { id: 'redeem', type: 'watchads', name: 'Redeem', icon: 'wallet-giftcard', iconLib: 'MaterialCommunityIcons' },

@@ -173,7 +173,7 @@ const EmptyListComponent = ({ isLight }) => (
  */
 const HeaderComponent = () => (
   <AppHeader title={'Leaderboard'} 
-  backButton={Platform.OS === 'ios'}
+  backButton={true}
   />
 )
 

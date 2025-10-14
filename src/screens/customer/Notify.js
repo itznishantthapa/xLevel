@@ -156,7 +156,7 @@ const Notify = () => {
                             <NotificationCard notification={item} />
                         )
                     }
-                    keyExtractor={(item) => item.isSkeleton ? item.id : item.id.toString()}
+                    keyExtractor={(item, index) => item.isSkeleton ? item.id : `notification-${item.id}-${index}`}
                     ListHeaderComponent={<HeaderComponent />}
                     ListEmptyComponent={isFetching ? null : <EmptyListComponent isLight={isLight} />}
                     refreshControl={

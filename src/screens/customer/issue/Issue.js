@@ -248,7 +248,7 @@ const Issue = () => {
 
       {/* Header */}
       <AppHeader
-        backButton={Platform.OS === 'ios'} // Show back button only on iOS
+        backButton={true} // Show back button only on iOS
         title={'Reported Issues'}
       />
       <Loader visible={issuesLoading || isManualRefreshing} message="Loading issues..." />

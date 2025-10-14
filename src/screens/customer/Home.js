@@ -277,16 +277,15 @@ const Home = () => {
 
 
   const handleHeaderGamePoint = () => {
-    // Check if user has demo email
-    const isDemoUser = user?.email === "demo@level.com.np"
+
 
     // Check if any banner has 'point' in its URL
     const pointBanner = banners?.find(banner =>
       banner?.url && banner.url.toLowerCase().includes('point')
     )
 
-    // If demo user OR no point banner exists, navigate to watchAds
-    if (isDemoUser || !pointBanner) {
+    // If no point banner exists, navigate to watchAds
+    if (!pointBanner) {
       navigation.navigate("watchAds")
       return
     }

@@ -20,7 +20,7 @@ export default function Credits() {
         <View style={[styles.container, { paddingTop: insets.top, backgroundColor: colors.background }]}>
             <StatusBar translucent backgroundColor="transparent" barStyle={isLight ? "dark-content" : "light-content"} />
                <AppHeader
-              backButton={Platform.OS === 'ios'}
+              backButton={true}
               title={'Credits & Attributions'}
             />
             <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>

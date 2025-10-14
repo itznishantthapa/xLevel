@@ -161,7 +161,7 @@ const Transaction = () => {
         <View style={styles.cardHeader}>
           <View style={styles.codeContainer}>
             <Text style={[styles.codeLabel, { color: colors.subText }]}>Transaction ID</Text>
-            <Text style={[styles.codeValue, { color: colors.text }]}>{item.transaction_code}</Text>
+            <Text style={[styles.codeValue, { color: colors.text }]}>#{item.id}</Text>
           </View>
           <Text style={[styles.dateText, { color: colors.subText }]}>{formatDate(item.created_at)}</Text>
         </View>

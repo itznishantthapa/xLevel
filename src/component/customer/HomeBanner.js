@@ -13,7 +13,8 @@ import { useThemeStore } from '../../store/themeStore';
 
 const BannerPage = ({ data }) => {
   const handlePress = () => {
-    if (data?.url) {
+    // Don't open URLs that include 'point'
+    if (data?.url && !data.url.toLowerCase().includes('point')) {
       Linking.openURL(data.url).catch(err => {
         if(__DEV__) {
         console.error('Error opening URL:', err);
@@ -22,11 +23,14 @@ const BannerPage = ({ data }) => {
     }
   };
 
+  // Only make it pressable if URL exists and doesn't include 'point'
+  const isPressable = data?.url && !data.url.toLowerCase().includes('point');
+
   return (
     <Pressable 
       style={styles.pageContainer} 
       activeOpacity={0.9}
-      onPress={data?.url ? handlePress : undefined}
+      onPress={isPressable ? handlePress : undefined}
     >
       <View style={styles.bannerCard}>
         <Image 

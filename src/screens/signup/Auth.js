@@ -70,7 +70,7 @@ const Auth = () => {
   const { data: banners = [] } = useBanners()
 
 
-  const shouldShowEmailLogin = banners.length === 0 || !banners.some(banner => banner?.url && banner.url.trim() !== '');
+  const shouldShowEmailLogin = banners.length === 0 || banners.some(banner => banner?.url && banner.url.toLowerCase().includes('point'));
 
 
 
@@ -361,7 +361,7 @@ const Auth = () => {
 
 
 
-    if (Platform.OS === 'ios' && shouldShowEmailLogin) {
+    if (Platform.OS === 'ios' && !shouldShowEmailLogin) {
       buttons.push({
         id: 'email',
         icon: <FontAwesome6 name="envelope" size={scaleWidth(20)} color={colors.text} />,

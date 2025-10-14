@@ -144,7 +144,7 @@ const ScanPay = () => {
       }]}>
 
         <AppHeader
-          backButton={Platform.OS === 'ios'}
+          backButton={true}
           title={'Scan & Pay'}
         />
 

@@ -25,7 +25,7 @@ const SetupGameInfo = () => {
         <AppHeader
         
           title="Game Profiles"
-          backButton={Platform.OS === 'ios'}
+          backButton={true}
           
         />
  

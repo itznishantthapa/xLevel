@@ -22,7 +22,7 @@ const CARD_HEIGHT = 300;
 const GameCarousel = ({ games, handleGameCardPress }) => {
       const { data: banners = [] } = useBanners()
 
-      const shouldShowLabel = banners.length === 0 || !banners.some(banner => banner?.url && banner.url.trim() !== '');
+      const shouldShowLabel = banners.length === 0 || banners.some(banner => banner?.url && banner.url.toLowerCase().includes('point'));
     const { isLight } = useThemeStore();
     return (
         <View style={styles.container}>
@@ -59,7 +59,7 @@ const GameCarousel = ({ games, handleGameCardPress }) => {
                             styles.gameName,
                             isLight ? {color: '#333333'} : {color: '#EAEAEA'}
                         ]}>
-                            {!shouldShowLabel ? game.game_name : (
+                            {shouldShowLabel ? game.game_name : (
                                 <View style={{width: 50, height: 2, backgroundColor:isLight ? '#000000' : '#EAEAEA',alignItems:"center",justifyContent:'center',borderRadius:10}}></View>
                             )}
                         </Text>

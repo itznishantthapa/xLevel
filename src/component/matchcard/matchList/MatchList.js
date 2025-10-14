@@ -90,7 +90,7 @@ const MatchList = ({
   // Memoize the header component
   const HeaderComponent = useMemo(() => (
       <AppHeader
-        backButton={Platform.OS === 'ios'}
+        backButton={true}
         title={'My Matches'}
       />
   ), [isLight]);
