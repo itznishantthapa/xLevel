@@ -11,7 +11,7 @@ export const useWithdraw = () => {
     mutationFn: (payload) => TranscationAPI.withdraw(payload),
 
     onSuccess: (data) => {
-      const withdrawTransaction = data.transaction;
+      const withdrawTransaction = data?.transaction;
 
       // Update cached matches immediately
       queryClient.setQueryData(["transactions", 8], (oldData) => {

@@ -41,6 +41,7 @@ import { handleJoinGame } from "../../service/homeHandler"
 import { useInfiniteTournaments } from "../../queries/useTournament"
 import { useRegisterTournament } from "../../queries/useMutation/useRegisterTournament"
 import { scaleHeight } from "../../utils/scaling"
+import Loader from "../../component/Loader"
 
 /**
  * ========================================================================
@@ -81,6 +82,7 @@ const Home = () => {
 
   // Local component state
   const [refreshing, setRefreshing] = useState(false)
+  const [isJoiningTournament, setIsJoiningTournament] = useState(false)
 
 
   // API data queries
@@ -343,7 +345,7 @@ const Home = () => {
 
   const handleRegisterChallenge = async (id, accessCode) => {
     try {
-
+      setIsJoiningTournament(true);
 
       // TODO: Implement actual registration logic with access code
       await registerTournament({ challenge_id: id, access_code: accessCode });
@@ -358,6 +360,8 @@ const Home = () => {
 
     } catch (error) {
       Toast.show(error?.message || "Failed to join challenge.", Toast.SHORT);
+    } finally {
+      setIsJoiningTournament(false);
     }
   };
 
@@ -468,6 +472,13 @@ const Home = () => {
       />
 
       {/* Note: Bottom sheet is handled globally by BottomSheetProvider */}
+      
+      {/* Loader for tournament joining */}
+      <Loader 
+        visible={isJoiningTournament} 
+        message="Joining tournament..."
+        size={56}
+      />
     </View>
   )
 }

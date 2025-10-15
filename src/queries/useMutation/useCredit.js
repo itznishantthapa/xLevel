@@ -11,7 +11,7 @@ export const useCredit = () => {
     mutationFn: (payload) => TranscationAPI.credit(payload),
 
     onSuccess: (data) => {
-      const creditTransaction = data.transaction;
+      const creditTransaction = data?.transaction;
 
       // Update cached matches immediately
       queryClient.setQueryData(["transactions", 8], (oldData) => {

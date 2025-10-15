@@ -212,7 +212,7 @@ const WithDraw = () => {
           </View>
 
           {errors.qr ? (
-            <View style={styles.errorContainer}>
+            <View style={[styles.errorContainer, { paddingHorizontal: 15 }]}>
               <Ionicons name="alert-circle" size={14} color="#FF4444" />
               <Text style={styles.errorText}>{errors.qr}</Text>
             </View>
@@ -282,7 +282,6 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: 15,
     paddingBottom: 40,
   },
   pocketWrapper: {
@@ -417,6 +416,7 @@ const styles = StyleSheet.create({
   formContainer: {
     marginBottom: 20,
     marginTop: 230,
+    paddingHorizontal: 15,
   },
   inputContainer: {
     marginBottom: 20,

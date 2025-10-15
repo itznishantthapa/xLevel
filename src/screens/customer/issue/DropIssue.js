@@ -288,7 +288,7 @@ const DropIssue = ({ route }) => {
                         { color: isLight ? '#666666' : '#cccccc' }
                     ]}>
                         {issueType === 'mistake_setting'
-                            ? 'Please upload a screenshot and describe the issue with game settings (Note: 30 points fine & 3-day ban for wrong info).'
+                            ? 'Please upload a screenshot and describe the issue. (We may request more screenshots if needed. False info may result in a 50-point fine, permanent ban, or both.)'
                             : 'Please describe the issue in detail.'
                         }
                     </Text>

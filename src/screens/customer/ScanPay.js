@@ -328,7 +328,6 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: 15,
     // paddingTop: 20,
     paddingBottom: 40,
   },
@@ -439,6 +438,7 @@ const styles = StyleSheet.create({
   formContainer: {
     marginBottom: 20,
     marginTop: 230,
+    paddingHorizontal: 15,
   },
   inputContainer: {
     marginBottom: 20,

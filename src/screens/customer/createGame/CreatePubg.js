@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo, useRef, useCallback } from "react"
-import { View, TextInput, StyleSheet, Keyboard } from "react-native"
+import { View, Text, TextInput, StyleSheet, Keyboard } from "react-native"
 import Toast from "react-native-simple-toast"
 import { useThemeStore } from "../../../store/themeStore"
 import { useNavigation } from "@react-navigation/native"
@@ -69,7 +69,7 @@ const CreatePubg = ({ route }) => {
   // Calculate winning amount with 10% service fee deduction
   const winningAmount = useMemo(() => {
     const fee = Number.parseFloat(gameSettings.entry_fee) || 0
-    return (fee * 2 * 0.9).toFixed(2)
+    return Math.floor(fee * 2 * 0.9)
   }, [gameSettings.entry_fee])
 
   // Handle option selection for game settings
@@ -292,6 +292,15 @@ const CreatePubg = ({ route }) => {
         valueKey="value"
       />
 
+      {/* Free Entry Info Message */}
+      {gameSettings.match_type === "free" && (
+        <View style={styles.infoContainer}>
+          <Text style={[styles.infoText, { color: isLight ? "#666666" : "#cccccc" }]}>
+            You can create and join up to 5 free entry matches per week.
+          </Text>
+        </View>
+      )}
+
       {/* Entry Fee Input - Only show for paid matches */}
       {gameSettings.match_type === "paid" && (
         <EntryFeeInput
@@ -333,6 +342,16 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     padding: 0,
+  },
+  infoContainer: {
+    marginTop: -8,
+    marginBottom: 12,
+    paddingHorizontal: 4,
+  },
+  infoText: {
+    fontSize: 12,
+    // fontStyle: "italic",
+    lineHeight: 16,
   },
 });
 

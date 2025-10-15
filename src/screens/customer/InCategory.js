@@ -8,6 +8,7 @@ import Header from '../../component/customer/Header';
 import StatsContainer from '../../component/customer/StatsContainer';
 import GameMode from '../../component/customer/GameMode';
 import { useSocials } from '../../queries/useSocials';
+import { useBanners } from '../../queries/useBanners';
 
 
 
@@ -22,6 +23,7 @@ const InCategory = ({ route }) => {
   const { user } = useAuthStore();
   const { isLight } = useThemeStore();
     const { data: socials = [] } = useSocials()
+    const { data: banners = [] } = useBanners()
 
 
 
@@ -96,6 +98,24 @@ const InCategory = ({ route }) => {
     handleWhatsapp(whatsappData?.url, whatsappData?.web_url)
   }
 
+  const handleHeaderGamePoint = () => {
+    // Check if any banner has 'point' in its URL
+    const pointBanner = banners?.find(banner =>
+      banner?.url && banner.url.toLowerCase().includes('point')
+    )
+
+    // If no point banner exists, navigate to watchAds
+    if (!pointBanner) {
+      navigation.navigate("watchAds")
+      return
+    }
+
+    // If point banner exists, open the URL
+    if (pointBanner?.url) {
+      navigation.navigate("scanPay")
+    }
+  }
+
 
 
 
@@ -118,6 +138,7 @@ const InCategory = ({ route }) => {
             handleMessenger={handleMessengerWrapper}
             handleInstagram={handleInstagramWrapper}
             handleWhatsapp={handleWhatsappWrapper}
+            handleHeaderGamePoint={handleHeaderGamePoint}
           />
 
 

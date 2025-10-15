@@ -10,7 +10,7 @@ export const useCreateMatch = () => {
     mutationFn: (payload) => ChallengeAPI.create(payload),
 
     onSuccess: (data) => {
-      const joinedChallenge = data.challenge;
+      const joinedChallenge = data?.challenge;
 
       // Update cached matches immediately
       queryClient.setQueryData(["myMatch", 5], (oldData) => {

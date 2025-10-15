@@ -141,7 +141,7 @@ const EditProfile = () => {
       exposure_status: exposureStatus // 'on' or 'off'
     }
     const response = await EnhancerAPI.updateTagStatus(tagPayload);
-    if (response.status === 200) {
+    if (response?.status === 200) {
       await get_user() // Refresh user data to reflect tag changes
     }
   }

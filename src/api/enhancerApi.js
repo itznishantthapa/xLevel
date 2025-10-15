@@ -12,6 +12,7 @@ export const EnhancerAPI = {
        if(__DEV__){
          console.error('Failed to fetch enhancements:', error);
        }
+      throw error;
     }
   },
 

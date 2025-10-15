@@ -100,7 +100,7 @@ const MatchList = ({
   // Memoize the render item function for real match cards
   const renderMatchCard = ({ item }) => {
     const isCreator = user?.id === item?.created_by?.id;
-    const win_pot = (item?.entry_fee * 2 * 0.9).toFixed(0);
+    const win_pot = Math.floor((item?.entry_fee || 0) * 2 * 0.9);
 
     return isCreator? (
 
