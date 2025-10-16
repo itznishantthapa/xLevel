@@ -162,15 +162,6 @@ const WithDraw = () => {
                       Upload your payment QR code (Esewa, Khalti, etc.) below.
                     </Text>
                   </View>
-
-                  <View style={styles.instructionRow}>
-                    <View style={[styles.stepBadge, { backgroundColor: isLight ? "rgba(255,255,255,0.2)" : "rgba(255,149,0,0.2)" }]}>
-                      <Text style={[styles.stepNumber, { color: isLight ? "#ffffff" : "#FF9500" }]}>3</Text>
-                    </View>
-                    <Text style={[styles.instructionText, { color: isLight ? "#ffffff" : colors.text }]}>
-                      Enter withdrawal amount and submit for processing.
-                    </Text>
-                  </View>
                 </View>
               </View>
             </View>
@@ -294,7 +285,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 80,
     borderWidth: 2,
     paddingTop: 20,
-    paddingBottom: 80,
+    paddingBottom: 120,
     paddingHorizontal: 20,
     shadowColor: "#000",
     shadowOffset: {
