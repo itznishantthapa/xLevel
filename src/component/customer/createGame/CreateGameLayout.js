@@ -53,7 +53,7 @@ const CreateGameLayout = ({
             <View style={[styles.gameCard, { 
               backgroundColor: isLight ? "#ffffff" : "#000000",
               borderColor: isLight ? "#333333" : "#dadada",
-              borderWidth: 2,
+              borderWidth: 0,
               marginHorizontal: -2
             }]}> 
               {children}
@@ -87,8 +87,6 @@ const styles = StyleSheet.create({
   gameCard: {
     borderRadius: 12,
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    marginVertical: 8,
     marginBottom: 20,
   }
 });

@@ -205,7 +205,7 @@ const NotificationCard = ({ notification }) => {
                 { 
                     backgroundColor: isLight ? '#ffffff' : '#000000',
                     borderColor: isLight ? '#333333' : '#dadada',
-                    borderWidth: 2
+                    borderWidth: 1.5
                 }
             ]}>
                 {/* Header Section */}

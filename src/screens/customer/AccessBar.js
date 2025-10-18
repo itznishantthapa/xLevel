@@ -267,10 +267,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginHorizontal: 10,
     marginTop: 10,
-    borderTopRightRadius: 15,
-    borderTopLeftRadius: 15,
+    borderRadius: scaleWidth(15),
     paddingVertical: 15,
-    borderWidth: 3,
+    borderWidth: 1.5,
   },
   statItem: {
     flex: 1,
@@ -300,7 +299,7 @@ const styles = StyleSheet.create({
     marginTop: scaleHeight(4),
   },
   statDivider: {
-    width: 2,
+    width: 1,
     backgroundColor: 'grey',
     marginVertical: 5,
     borderRadius: 1.5,

@@ -1,191 +1,134 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, Image, Pressable, Dimensions, Linking } from 'react-native';
-import PagerView from 'react-native-pager-view';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  Easing,
-} from 'react-native-reanimated';
+import React, { useRef, useCallback } from 'react';
+import { StyleSheet, View, Image, Pressable, Dimensions, Linking } from 'react-native';
+import Carousel, { Pagination } from 'react-native-reanimated-carousel';
 import { scaleWidth, scaleHeight } from '../../utils/scaling';
 import { useThemeStore } from '../../store/themeStore';
-
+import { useSharedValue, useDerivedValue } from 'react-native-reanimated';
+import { useFocusEffect } from '@react-navigation/native';
 
 const BannerPage = ({ data }) => {
-  const handlePress = () => {
-    // Don't open URLs that include 'point'
+  const handlePress = useCallback(() => {
     if (data?.url && !data.url.toLowerCase().includes('point')) {
       Linking.openURL(data.url).catch(err => {
-        if(__DEV__) {
-        console.error('Error opening URL:', err);
-        }
+        if (__DEV__) console.error('Error opening URL:', err);
       });
     }
-  };
+  }, [data?.url]);
 
-  // Only make it pressable if URL exists and doesn't include 'point'
   const isPressable = data?.url && !data.url.toLowerCase().includes('point');
 
   return (
-    <Pressable 
-      style={styles.pageContainer} 
-      activeOpacity={0.9}
+    <Pressable
+      style={styles.pageContainer}
       onPress={isPressable ? handlePress : undefined}
+      disabled={!isPressable}
     >
-      <View style={styles.bannerCard}>
-        <Image 
-          source={{uri: data?.image}} 
-          style={styles.bannerContenterImage} 
-          resizeMode="cover"
-        />
-      </View>
+      <Image
+        source={{ uri: data?.image }}
+        style={styles.bannerImage}
+        resizeMode="cover"
+      />
     </Pressable>
   );
 };
 
-const AnimatedIndicator = ({ isActive, isLight }) => {
-  const scale = useSharedValue(isActive ? 1 : 0.8);
-
-  useEffect(() => {
-    // Smooth easing animation with scale
-    scale.value = withTiming(isActive ? 1 : 0.8, {
-      duration: 250,
-      easing: Easing.bezier(0.4, 0.0, 0.2, 1),
-    });
-  }, [isActive]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  // Theme-aware colors
-  const dotStyle = isLight 
-    ? (isActive ? styles.indicatorDotActiveLightMode : styles.indicatorDotLightMode)
-    : (isActive ? styles.indicatorDotActiveDarkMode : styles.indicatorDotDarkMode);
-
-  return (
-    <Animated.View
-      style={[
-        styles.indicatorDot,
-        animatedStyle,
-        dotStyle,
-      ]}
-    />
-  );
-};
-
-const HomeBanner = ({data}) => {
-  const [currentPage, setCurrentPage] = useState(0);
+// Optional `height` prop allows overriding banner height in dp; defaults to a compact height
+const HomeBanner = ({ data = [], height }) => {
+  const carouselRef = useRef(null);
+  const progress = useSharedValue(0);
+  const animatedProgress = useDerivedValue(() => progress.value);
   const { isLight } = useThemeStore();
 
-  const handlePageChange = (e) => {
-    setCurrentPage(e.nativeEvent.position);
-  };
+  const wrapperBg = isLight ? '#ffffff' : '#000000';
+  const { width } = Dimensions.get('window');
+  // Match StatsContainer width (marginHorizontal: 10 on each side)
+  const PAGE_WIDTH = width - 20;
+  // Use provided height if passed, else a smaller default height
+  const PAGE_HEIGHT = typeof height === 'number' ? height : scaleHeight(160);
 
-  // Theme-aware colors
-  const indicatorColors = {
-    active: isLight ? '#000000' : '#FFFFFF',
-    inactive: isLight ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.3)',
-  };
+  // Reset to beginning on screen focus
+  useFocusEffect(
+    useCallback(() => {
+      progress.value = 0;
+    }, [])
+  );
 
   return (
     <View style={styles.container}>
-      <View style={styles.bannerWrapper}>
-        <PagerView
-          style={styles.pagerView}
-          initialPage={0}
-          onPageSelected={handlePageChange}
-        >
-          {data?.map((banner) => (
-            <View key={banner.id}>
-              <BannerPage data={banner} onPress={banner.onPress} />
-            </View>
-          ))}
-        </PagerView>
-        
-        {/* Circular Dot Indicators - Over Banner */}
-        <View style={styles.indicatorContainer}>
-          {data?.map((_, index) => (
-            <AnimatedIndicator
-              key={index}
-              isActive={currentPage === index}
-              isLight={isLight}
-            />
-          ))}
-        </View>
+      <View style={[styles.wrapper, { backgroundColor: wrapperBg, height: PAGE_HEIGHT }]}>
+        <Carousel
+          ref={carouselRef}
+          width={PAGE_WIDTH}
+          height={PAGE_HEIGHT}
+          autoPlay
+          autoPlayInterval={5000}
+          loop
+          pagingEnabled
+          data={data}
+          style={{ width: '100%' }}
+          onProgressChange={(_, absoluteProgress) => {
+            // Update shared progress without reading during render
+            progress.value = absoluteProgress;
+          }}
+          renderItem={({ item }) => <BannerPage data={item} />}
+        />
       </View>
+
+      <Pagination.Basic
+        progress={animatedProgress}
+        data={data}
+        dotStyle={{
+          width: scaleWidth(10),
+          height: scaleWidth(10),
+          borderRadius: scaleWidth(5),
+          // Outlined ring for inactive dots
+          backgroundColor: 'transparent',
+          borderWidth: scaleWidth(1),
+          borderColor: isLight ? 'rgba(0,0,0,0.45)' : 'rgba(255,255,255,0.6)'
+        }}
+        activeDotStyle={{
+          width: scaleWidth(10),
+          height: scaleWidth(10),
+          borderRadius: scaleWidth(5),
+          // Filled dot for active
+          backgroundColor: isLight ? '#000000' : '#ffffff',
+          borderWidth: 2,
+          borderColor: isLight ? '#000000' : '#ffffff',
+
+        }}
+        containerStyle={{
+          alignSelf: 'center',
+          gap: 8,
+          marginTop: scaleHeight(8),
+ 
+        }}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: scaleWidth(10),
-    marginTop: scaleHeight(-45),
+    // Match StatsContainer margin for equal overall width
+    marginHorizontal: 10,
     marginBottom: scaleHeight(15),
-    zIndex: 10,
+    marginTop: scaleHeight(10),
   },
-  bannerWrapper: {
-    height: scaleHeight(180),
+  wrapper: {
+    // Height is controlled dynamically via inline style using PAGE_HEIGHT
     position: 'relative',
-  },
-  pagerView: {
-    flex: 1,
+    // borderRadius: scaleWidth(20),
+    overflow: 'hidden',
+  
   },
   pageContainer: {
     flex: 1,
-    paddingHorizontal: scaleWidth(5),
+    paddingHorizontal: 4,
   },
-  bannerCard: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: 'transparent',
-    borderRadius: scaleWidth(20),
-    width: '100%',
-    overflow: 'hidden',
-  },
-  bannerContenterImage: {
+  bannerImage: {
     width: '100%',
     height: '100%',
-  },
-  
-  // Circular dot indicators - over banner
-  indicatorContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
-    bottom: scaleHeight(12),
-    left: 0,
-    right: 0,
-    gap: scaleWidth(8),
-  },
-  indicatorDot: {
-    width: scaleWidth(8),
-    height: scaleWidth(8),
-    borderRadius: scaleWidth(4),
-  },
-  // Light mode styles
-  indicatorDotLightMode: {
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
-    borderWidth: 1,
-    borderColor: 'rgba(0, 0, 0, 0.1)',
-  },
-  indicatorDotActiveLightMode: {
-    backgroundColor: '#ffffff',
-    borderWidth: 1,
-    borderColor: 'rgba(0, 0, 0, 0.2)',
-  },
-  // Dark mode styles
-  indicatorDotDarkMode: {
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  indicatorDotActiveDarkMode: {
-    backgroundColor: '#ffffff',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderRadius: scaleWidth(12),
   },
 });
 

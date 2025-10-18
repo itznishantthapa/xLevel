@@ -34,6 +34,8 @@ import { useBanners } from '../queries/useBanners';
 import { useSocials } from '../queries/useSocials';
 import { useGames } from '../queries/useGames';
 // import { useAppQueries } from '../hooks/useAppQueries';
+import NoConnection from '../screens/NoConnection';
+import { useNetworkStatus } from '../hooks/useNetworkStatus';
 
 //============ Prevent Auto Hide Splash Screen ============
 SplashScreen.preventAutoHideAsync();
@@ -69,6 +71,9 @@ export default function RootLayout() {
   useBanners()
   useSocials()
   useGames()
+
+  // Network
+  const { isConnected } = useNetworkStatus();
 
 
   //============ Notification Unsubscribe Ref ============
@@ -252,22 +257,32 @@ export default function RootLayout() {
   //============ Main Render ============
   return (
 
-    <NavigationContainer
-      ref={navigationRef}
-      onReady={() => {
-        NavigationService.executePendingNavigation();
-      }}
-      
-    >
-      <ErrorBoundary
-        FallbackComponent={AppErrorFallback}
-        onError={(error, info) => {
-          if (__DEV__) console.error('Navigation Error:', error, info);
+    isConnected ? (
+      <NavigationContainer
+        ref={navigationRef}
+        onReady={() => {
+          NavigationService.executePendingNavigation();
         }}
+        
       >
-        {getContent()}
-      </ErrorBoundary>
-    </NavigationContainer>
+        <ErrorBoundary
+          FallbackComponent={AppErrorFallback}
+          onError={(error, info) => {
+            if (__DEV__) console.error('Navigation Error:', error, info);
+          }}
+        >
+          {getContent()}
+        </ErrorBoundary>
+      </NavigationContainer>
+    ) : (
+      <NoConnection onRetry={async () => {
+        // Simple retry: if user is already initialized/auth flow started, try refetching minimal data
+        try {
+          await initializeTheme();
+          await initAuth();
+        } catch {}
+      }} />
+    )
 
   );
 }

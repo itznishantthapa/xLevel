@@ -388,22 +388,8 @@ const Home = () => {
    */
   const renderSection = ({ item }) => {
     switch (item.type) {
-      case "headerWithBanner":
-        return (
-          <View>
-            <Header
-              player_name={user?.full_name}
-              wallet_balance={user?.wallet_balance}
-              profile_picture={user?.profile_picture}
-              handleProfile={handleProfile}
-              handleMessenger={handleMessengerWrapper}
-              handleInstagram={handleInstagramWrapper}
-              handleWhatsapp={handleWhatsappWrapper}
-              handleHeaderGamePoint={handleHeaderGamePoint}
-            />
-            <HomeBanner data={displayBanners} />
-          </View>
-        )
+      case "banner":
+        return <HomeBanner data={displayBanners} />
 
       case "stats":
         return (
@@ -419,9 +405,6 @@ const Home = () => {
             handleTransaction={() => navigation.navigate("transaction")}
           />
         )
-
-      case "banner":
-        return null // Banner is now rendered with header
 
       case "games":
         return <GameCarousel games={games} handleGameCardPress={handleGameCardPress} />
@@ -452,9 +435,21 @@ const Home = () => {
       {/* Status bar configuration for theme consistency */}
       <StatusBar translucent backgroundColor="transparent" barStyle={isLight ? "dark-content" : "light-content"} />
 
+      {/* Fixed Header at the top */}
+      <Header
+        player_name={user?.full_name}
+        wallet_balance={user?.wallet_balance}
+        profile_picture={user?.profile_picture}
+        handleProfile={handleProfile}
+        handleMessenger={handleMessengerWrapper}
+        handleInstagram={handleInstagramWrapper}
+        handleWhatsapp={handleWhatsappWrapper}
+        handleHeaderGamePoint={handleHeaderGamePoint}
+      />
+
       {/* Main content list with optimized scrolling */}
       <FlashList
-        data={[{ type: "headerWithBanner" }, { type: "stats" }, { type: "games" }, { type: "upcoming" }]}
+        data={[{ type: "banner" }, { type: "stats" }, { type: "games" }, { type: "upcoming" }]}
         renderItem={renderSection}
         estimatedItemSize={200}
         showsVerticalScrollIndicator={false}
@@ -466,7 +461,7 @@ const Home = () => {
             colors={[isLight ? '#000000' : '#ffffff']}
             tintColor={isLight ? '#000000' : '#ffffff'}
             progressBackgroundColor={isLight ? '#ffffff' : '#000000'}
-            progressViewOffset={insets.top + scaleHeight(50)}
+            // progressViewOffset={insets.top}
           />
         }
       />

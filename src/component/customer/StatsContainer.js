@@ -3,6 +3,7 @@ import { StyleSheet, Text, Pressable, View, Platform } from 'react-native'
 import { AntDesign, FontAwesome5, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons, SimpleLineIcons } from "@expo/vector-icons"
 import { useThemeStore } from '../../store/themeStore';
 import { useStatsPreferenceStore } from '../../store/statsPreference';
+import { scaleWidth } from '../../utils/scaling';
 
 
 const StatsContainer = ({ handleWithdraw, handleTournament, handleGameRules, handleMatches, handleLeaderboard, handleTransaction }) => {
@@ -84,13 +85,11 @@ export default StatsContainer
 const styles = StyleSheet.create({
   statsContainer: {
     flexDirection: 'row',
-    marginHorizontal: 10,
+    marginHorizontal: scaleWidth(16),
     marginTop: 10,
-    borderTopRightRadius: 15,
-    borderTopLeftRadius: 15,
+    borderRadius: 15,
     paddingVertical: 15,
-    borderWidth: 3,
-    // marginBottom: 15,
+    borderWidth: 1.5,
   },
   statItem: {
     flex: 1,
@@ -106,7 +105,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   statDivider: {
-    width: 2,
+    width: 1,
     backgroundColor: 'grey',
     marginVertical: 5,
     borderRadius: 1.5,

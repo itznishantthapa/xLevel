@@ -12,7 +12,7 @@ export const sharedStyles = StyleSheet.create({
     marginVertical: scaleHeight(8),
     borderRadius: scaleWidth(25),
     backgroundColor: '#ffffff',
-    borderWidth: scaleWidth(3),
+    borderWidth: scaleWidth(1.5),
     borderColor: '#333333',
   },
   cardDark: {

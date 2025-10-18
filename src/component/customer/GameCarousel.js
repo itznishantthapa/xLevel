@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
         marginRight: 15,
         borderRadius: 20,
         overflow: 'hidden',
-        borderWidth: 2,
+        borderWidth: 1.5,
         alignItems: 'center',
     },
     gameName: {

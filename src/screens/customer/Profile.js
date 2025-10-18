@@ -388,6 +388,13 @@ const Profile = () => {
               </View>
             </View>
           </View>
+
+          {/* App Version Footer */}
+          <View style={styles.versionFooter}>
+            <Text style={[styles.versionText, { color: colors.textTertiary }]}>
+              Version 2.1.0 
+            </Text>
+          </View>
         </ScrollView>
       </SafeAreaView>
     </View>
@@ -580,6 +587,18 @@ const styles = StyleSheet.create({
   },
   actionText: {
     fontSize: 14,
+    fontWeight: "500",
+  },
+
+  // Version Footer
+  versionFooter: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 24,
+ 
+  },
+  versionText: {
+    fontSize: 12,
     fontWeight: "500",
   },
 })

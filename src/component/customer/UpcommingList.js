@@ -361,11 +361,11 @@ const styles = StyleSheet.create({
 
   // Enhanced Card Styles
   card: {
-    marginHorizontal: 10,
+    marginHorizontal: 15,
     marginVertical: 8,
     borderRadius: 16,
     backgroundColor: "#ffffff",
-    borderWidth: 3,
+    borderWidth: 1.5,
     borderColor: "#333333",
   },
   cardDark: {

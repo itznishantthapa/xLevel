@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     borderRadius: 25,
     backgroundColor: "#ffffff",
-    borderWidth: 3,
+    borderWidth: 1.5,
     borderColor: "#333333",
   },
   cardDark: {

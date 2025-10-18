@@ -129,8 +129,14 @@ const Header = ({
     <View style={[
       styles.header,
       {
-        // backgroundColor: isLight ? '#f8f9fa' : '#1a1a1a',
-        borderColor: isLight ? '#000000' : '#ffffff',
+        backgroundColor: isLight ? '#ffffff' : '#000000',
+        borderColor: isLight ? '#333333' : '#ffffff' ,
+        shadowColor: isLight ? '#000' : '#fff',
+        // borderBottomWidth:5,
+        // borderRightWidth:1,
+        // borderLeftWidth:1,
+        // borderBottomRightRadius:15,
+        // borderBottomLeftRadius:15,
       }
     ]}>
       {/* Left Section - Profile and User Info */}
@@ -235,16 +241,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
-    paddingHorizontal: 16,
-    paddingTop: 10,
-    paddingBottom: 50,
-    borderTopLeftRadius: 40,
-    borderTopRightRadius: 40,
-    borderBottomLeftRadius: 40,
-    borderBottomRightRadius: 40,
-    borderBottomWidth: 3,
-    borderLeftWidth: 3,
-    borderRightWidth: 3,
+    paddingHorizontal: scaleWidth(15),
+    paddingTop: 12,
+    paddingBottom: 12,
+ 
  
   },
   leftSection: {
@@ -308,12 +308,11 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 1,
     },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 3,
-    minWidth: 80,
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
   balanceContent: {
     flexDirection: "row",
@@ -323,7 +322,7 @@ const styles = StyleSheet.create({
   balanceText: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#333",
+    color: "#000000",
     marginLeft: 6,
   },
  
