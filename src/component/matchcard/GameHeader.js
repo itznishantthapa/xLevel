@@ -1,5 +1,5 @@
 import { View, Text, Pressable, TouchableOpacity } from "react-native"
-import { FontAwesome5, Ionicons, MaterialIcons, Octicons } from "@expo/vector-icons"
+import { Entypo, FontAwesome5, Ionicons, MaterialIcons, Octicons } from "@expo/vector-icons"
 import { scaleHeight, scaleWidth } from "../../utils/scaling"
 import { sharedStyles } from "./sharedStyleAndInfo"
 import PulseAnimation from "../PulseAnimation"
@@ -76,7 +76,8 @@ const GameHeader = ({ game, isLight, isCreator, user, handleDeleteChallenge, han
         {
           !game.isAccepted && game.status !== "cancelled" && game.status !== "expired" && game.status !== "completed" && game.status !== "in_progress" && game.status !== "resolved" && !forOpenGames && !game.is_free && (
             <Pressable onPress={handleDelete}>
-             <Octicons name="diff-removed" size={scaleWidth(18)} color={isLight ? "#000000" : "#fff"} />
+
+             <Entypo name="squared-cross" size={scaleWidth(18)} color={isLight ? "#000000" : "#fff"} />
             </Pressable>
           )
         }
@@ -94,7 +95,7 @@ const GameHeader = ({ game, isLight, isCreator, user, handleDeleteChallenge, han
             </TouchableOpacity>
           ) : game.status !== "cancelled" && game.is_free && !forOpenGames && game.status !== "completed"  &&  (
              <Pressable onPress={handleDelete}>
-              <Octicons name="diff-removed" size={scaleWidth(18)} color={isLight ? "#000000" : "#fff"} />
+             <Entypo name="squared-cross" size={scaleWidth(18)} color={isLight ? "#000000" : "#fff"} />
             </Pressable>
           )
         }

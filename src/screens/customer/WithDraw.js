@@ -294,7 +294,6 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.15,
     shadowRadius: 5,
-    elevation: 8,
   },
   pocketContent: {
     width: "100%",

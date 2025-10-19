@@ -27,6 +27,7 @@ import { NavigationService } from "../service/navigationService"
 import { useQueryClient } from "@tanstack/react-query"
 import OpponentSheetContent from "./component/OpponentSheetContent"
 import { ShakeText } from "../component/customer/animation"
+import { scaleWidth } from "../utils/scaling"
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window")
 
@@ -534,6 +535,7 @@ const JoinSheetContent = React.memo(
                 <Text
                   style={{
                     color: isDark ? '#ffffff' : '#000000',
+                    fontSize: scaleWidth(14),
                   }}
                 >
                   I have read the game rules and regulation
@@ -819,8 +821,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   checkboxBox: {
-    width: 22,
-    height: 22,
+    width: 20,
+    height: 20,
     borderWidth: 2,
     borderRadius: 4,
     alignItems: 'center',
@@ -838,7 +840,7 @@ const styles = StyleSheet.create({
   },
   rulesLinkText: {
     color: "#00C851",
-    fontSize: 14,
+    fontSize: scaleWidth(14),
     fontWeight: "600",
     textDecorationLine: "underline",
   },
