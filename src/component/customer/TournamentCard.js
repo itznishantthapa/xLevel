@@ -106,7 +106,7 @@ const TournamentCard = ({ game }) => {
           </View>
           
           {/* Tournament ID Stamp */}
-          <View style={{ flex: 1, alignItems: 'flex-end' }}>
+          <View style={{ flex: 1, alignItems: 'flex-end', position: 'absolute', right: 20,bottom:5 }}>
             <StampID gameId={game.id} isLight={isLight} />
           </View>
         </View>

@@ -17,7 +17,7 @@ import Animated, {
  * @returns {JSX.Element}
  */
 const TermsAgreement = forwardRef(({ isAccepted, onToggle, isLight, onReadRules }, ref) => {
-  const termsText = "I have read the game rules and regulation.";
+  const termsText = "I have read the game rules and regulations.";
   
   // Shared value for shake animation
   const shakeOffset = useSharedValue(0);

@@ -91,7 +91,7 @@ const MatchList = ({
   const HeaderComponent = useMemo(() => (
       <AppHeader
         backButton={true}
-        title={'My Matches'}
+        title={'My Match'}
       />
   ), [isLight]);
 

@@ -84,7 +84,7 @@ const HomeBanner = ({ data = [], height }) => {
           // Outlined ring for inactive dots
           backgroundColor: 'transparent',
           borderWidth: scaleWidth(1),
-          borderColor: isLight ? 'rgba(0,0,0,0.45)' : 'rgba(255,255,255,0.6)'
+          borderColor: isLight ? "#000000" : '#ffffff'
         }}
         activeDotStyle={{
           width: scaleWidth(10),
@@ -92,7 +92,7 @@ const HomeBanner = ({ data = [], height }) => {
           borderRadius: scaleWidth(5),
           // Filled dot for active
           backgroundColor: isLight ? '#000000' : '#ffffff',
-          borderWidth: 2,
+          borderWidth: 0,
           borderColor: isLight ? '#000000' : '#ffffff',
 
         }}
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
   bannerImage: {
     width: '100%',
     height: '100%',
-    borderRadius: scaleWidth(12),
+    borderRadius: scaleWidth(15),
   },
 });
 

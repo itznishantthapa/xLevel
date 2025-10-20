@@ -538,7 +538,7 @@ const JoinSheetContent = React.memo(
                     fontSize: scaleWidth(14),
                   }}
                 >
-                  I have read the game rules and regulation
+                  I have read the game rules and regulations.
                 </Text>
               </ShakeText>
             </Pressable>
