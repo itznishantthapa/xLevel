@@ -73,14 +73,14 @@ const SelectIssue = ({ route }) => {
                                     <View style={styles.gameInfo}>
                                         <Text style={[styles.gameName, { color: colors.text }]}>Mistake Game Settings / Game Profiles</Text>
                                         <Text style={[styles.gameModes, { color: colors.subText }]}>
-                                            The creator is only allowed to change the specific game settings mentioned in the app.
+                                           Game Setting - The creator is only allowed to change the specific game settings mentioned in the app.
                                             If the creator modifies or adds unfair restrictions, you can provide a screenshot of the game settings as proof.
-                                            We will take action — you’ll receive 60% of the winning amount, and the creator will get 40%.{"\n\n"}
-                                            <Text style={styles.boldText}>Example:</Text> If the entry fee is 100 and the winning amount is 180, you’ll get 108 points and the creator will get 72 points.{"\n\n"}
-                                            If your opponent’s <Text style={styles.boldText}>game profile</Text> has major mismatches
+                                            If the report is valid and true, you'll receive 60% of the winning amount, and the creator will get 40%.{"\n\n"}
+                                           Game Profile - If your opponent's <Text style={styles.boldText}>game profile</Text> has major mismatches
                                             (Example: declared Level 50 but actually Level 55, 60, or more),
                                             you can <Text style={styles.boldText}>report this issue</Text> by selecting it and providing <Text style={styles.boldText}>screenshot evidence</Text>.
-                                            Reports with clear proof will be reviewed seriously.
+                                            If the report is valid and true, you'll receive 60% of the winning amount, and the creator will get 40%.{"\n\n"}
+                                            <Text style={styles.boldText}>Example:</Text> If the entry fee is 100 and the winning amount is 180, you'll get 108 points and the creator will get 72 points.
                                         </Text>
 
                                     </View>
@@ -276,5 +276,8 @@ const styles = StyleSheet.create({
     },
     gameModes: {
         fontSize: 14,
+    },
+    boldText: {
+        fontWeight: '700',
     },
 })

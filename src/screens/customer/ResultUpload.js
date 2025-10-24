@@ -105,7 +105,7 @@ const ResultUpload = ({ route }) => {
 
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: "images",
-        quality: 0,
+        quality: 1,
       });
 
       if (!result.canceled) {
@@ -481,23 +481,27 @@ const ResultUpload = ({ route }) => {
             style={[
               styles.seeExampleButton,
               { 
-                backgroundColor: '#00bf63',
+                backgroundColor: isLight ? '#f0fdf4' : '#022c22',
                 borderColor: '#00bf63'
               }
             ]}
           >
-            <MaterialIcons 
-              name="image" 
-              size={24} 
-              color="#ffffff" 
-            />
-            <Text style={styles.seeExampleButtonText}>
-              See Example Screenshots
-            </Text>
+            <View style={styles.exampleButtonContent}>
+              <View style={styles.exampleIconContainer}>
+                <MaterialIcons 
+                  name="photo-library" 
+                  size={20} 
+                  color="#00bf63" 
+                />
+              </View>
+              <Text style={[styles.seeExampleButtonText, { color: isLight ? '#003d1f' : '#00bf63' }]}>
+                View Example Screenshots
+              </Text>
+            </View>
             <MaterialIcons 
               name="arrow-forward" 
-              size={24} 
-              color="#ffffff" 
+              size={20} 
+              color="#00bf63" 
             />
           </Pressable>
 
@@ -610,25 +614,29 @@ const styles = StyleSheet.create({
   seeExampleButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    borderRadius: 12,
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
     marginBottom: 20,
-    gap: 12,
-    borderWidth: 2,
-    elevation: 4,
-    shadowColor: '#00bf63',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
+    borderWidth: 1.5,
+  },
+  exampleButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  exampleIconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 6,
+    backgroundColor: 'rgba(0, 191, 99, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   seeExampleButtonText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#ffffff',
-    flex: 1,
-    textAlign: 'center',
+    fontSize: 14,
+    fontWeight: '600',
   },
   rulesContainer: {
     flexDirection: 'column',

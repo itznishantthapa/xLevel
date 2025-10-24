@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useGuides } from '../../../queries/useGuide';
 import { useThemeStore } from '../../../store/themeStore';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons, MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { scaleWidth, scaleHeight } from '../../../utils/scaling';
 import AppHeader from '../header/AppHeader';
@@ -130,7 +130,7 @@ const Example = ({ route }) => {
               <Image
                 source={{ uri: filteredGuide.image1 }}
                 style={styles.exampleImage}
-                resizeMode="cover"
+                resizeMode="contain"
               />
               <View style={styles.tapToEnlargeOverlay}>
                 <MaterialIcons name="zoom-in" size={20} color="#ffffff" />
@@ -154,7 +154,7 @@ const Example = ({ route }) => {
               <Image
                 source={{ uri: filteredGuide.image2 }}
                 style={styles.exampleImage}
-                resizeMode="cover"
+                resizeMode="contain"
               />
               <View style={styles.tapToEnlargeOverlay}>
                 <MaterialIcons name="zoom-in" size={20} color="#ffffff" />
@@ -167,13 +167,18 @@ const Example = ({ route }) => {
           <View style={[
             styles.warningContainer,
             { 
-              backgroundColor: isLight ? '#fff3cd' : '#332701',
-              borderColor: isLight ? '#ffc107' : '#665200'
+              backgroundColor: isLight ? '#f5f5f5' : '#1a1a1a',
+              borderColor: isLight ? '#cccccc' : '#333333'
             }
           ]}>
-            <MaterialIcons name="warning" size={20} color={isLight ? '#856404' : '#ffc107'} />
-            <Text style={[styles.warningText, { color: isLight ? '#856404' : '#ffc107' }]}>
-              Your screenshots should match this format. Submitting incorrect or fake screenshots may result in account suspension.
+            <Ionicons 
+              name="warning-outline" 
+              size={20} 
+              color={isLight ? '#333333' : '#ffffff'} 
+              style={styles.warningIcon}
+            />
+            <Text style={[styles.warningText, { color: isLight ? '#333333' : '#ffffff' }]}>
+              Your screenshots should match this format. Submitting incorrect or fake screenshots may result in account ban.
             </Text>
           </View>
         </ScrollView>
@@ -251,7 +256,6 @@ const styles = StyleSheet.create({
   },
   exampleImageContainer: {
     width: '100%',
-    height: scaleHeight(300),
     borderRadius: 12,
     overflow: 'hidden',
     borderWidth: 1,
@@ -259,7 +263,7 @@ const styles = StyleSheet.create({
   },
   exampleImage: {
     width: '100%',
-    height: '100%',
+    aspectRatio: 1,
   },
   tapToEnlargeOverlay: {
     position: 'absolute',
@@ -280,18 +284,21 @@ const styles = StyleSheet.create({
   },
   warningContainer: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     padding: 16,
     borderRadius: 8,
     borderWidth: 1,
     marginTop: 8,
   },
+  warningIcon: {
+    marginRight: 8,
+  },
   warningText: {
     flex: 1,
     fontSize: 13,
-    fontWeight: '500',
-    marginLeft: 12,
+    fontWeight: '600',
     lineHeight: 18,
+    textAlign: 'left',
   },
   emptyContainer: {
     flex: 1,
