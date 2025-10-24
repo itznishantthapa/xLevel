@@ -34,6 +34,7 @@ import { Platform } from "react-native";
 import WithDraw from "../screens/customer/WithDraw";
 import ScanPay from "../screens/customer/ScanPay";
 import Transaction from "../screens/customer/transaction/Transaction";
+import Example from "../screens/customer/example/Example";
 
 
 const Stack = createNativeStackNavigator();
@@ -76,6 +77,7 @@ export default function CustomerNavigator(){
             <Stack.Screen component={BlockedUserList} name="blockedUserList"/>
             <Stack.Screen component={Exchange} name="exchange"/>
             <Stack.Screen component={AccessBar} name="accessBar"/>
+            <Stack.Screen component={Example} name="example"/>
         </Stack.Navigator>
         </>
     );

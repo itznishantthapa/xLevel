@@ -70,6 +70,9 @@ export const endpoints = {
   //issues
   createIssue:"/api/issues/create/",
   getIssues:"/api/issues/my-issues/",
+
+  //Guides
+  getGuides:"/api/guide/",
   
 };
 

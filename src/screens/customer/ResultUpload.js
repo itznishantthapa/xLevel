@@ -246,11 +246,11 @@ const ResultUpload = ({ route }) => {
               {
                 color: isLight ? "#333333" : "#ffffff",
                 marginLeft: 5,
-                borderBottomColor: isLight ? "#000000" : "#ffffff"
+                borderBottomWidth: 0,
               }
             ]}
           >
-            {status || "Not Submitted"}
+           ({status || "Not Submitted"})
           </Text>
         </View>
 
@@ -425,10 +425,81 @@ const ResultUpload = ({ route }) => {
 
           <Text style={[
             styles.subtitle,
-            { color: isLight ? '#666666' : '#cccccc' }
+            { color: isLight ? '#666666' : '#cccccc', marginBottom: 16 }
           ]}>
-            Please upload two screenshots of your game results and select the outcome.
+            Please upload two screenshots of your game results exactly as shown in the example.
           </Text>
+
+          {/* Important Rules */}
+          <View style={[
+            styles.rulesContainer,
+            { 
+              backgroundColor: isLight ? '#e8f9f0' : '#003d1f',
+              borderColor: '#00bf63'
+            }
+          ]}>
+            <View style={styles.rulesHeaderContainer}>
+              <MaterialIcons 
+                name="info-outline" 
+                size={24} 
+                color="#00bf63" 
+              />
+              <Text style={[
+                styles.rulesHeading,
+                { color: isLight ? '#003d1f' : '#ffffff' }
+              ]}>
+                Important Things to Know
+              </Text>
+            </View>
+            
+            <View style={styles.rulesTextContainer}>
+              {[
+                "If you lost the match, you don't need to submit the result.",
+                "If you won the match, you must submit the result within 20 minutes.",
+                "Submissions after 20 minutes may not be reviewed and can be marked as a loss.",
+                "The 20 minute timer starts when both players finish the match, not when it begins."
+              ].map((rule, index) => (
+                <Text
+                  key={index}
+                  style={[
+                    styles.rulesText,
+                    { color: isLight ? '#003d1f' : '#ffffff', marginTop: index === 0 ? 0 : 10 },
+                  ]}
+                >
+                  <Text style={styles.boldText}>{index + 1}.</Text> {rule}
+                </Text>
+              ))}
+            </View>
+          </View>
+
+          {/* See Example Button */}
+          <Pressable
+            onPress={() => navigation.navigate('example', { 
+              game: game?.game,
+              guideType: 'result'
+            })}
+            style={[
+              styles.seeExampleButton,
+              { 
+                backgroundColor: '#00bf63',
+                borderColor: '#00bf63'
+              }
+            ]}
+          >
+            <MaterialIcons 
+              name="image" 
+              size={24} 
+              color="#ffffff" 
+            />
+            <Text style={styles.seeExampleButtonText}>
+              See Example Screenshots
+            </Text>
+            <MaterialIcons 
+              name="arrow-forward" 
+              size={24} 
+              color="#ffffff" 
+            />
+          </Pressable>
 
           {/* Game Result Selector */}
           <GameResultSelector
@@ -535,7 +606,57 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 13,
-    marginBottom: 16,
+  },
+  seeExampleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    marginBottom: 20,
+    gap: 12,
+    borderWidth: 2,
+    elevation: 4,
+    shadowColor: '#00bf63',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  seeExampleButtonText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#ffffff',
+    flex: 1,
+    textAlign: 'center',
+  },
+  rulesContainer: {
+    flexDirection: 'column',
+    marginBottom: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  rulesHeaderContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+    gap: 8,
+  },
+  rulesHeading: {
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  rulesTextContainer: {
+    flex: 1,
+  },
+  rulesText: {
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  boldText: {
+    fontWeight: '700',
   },
   imagePickerSection: {
     marginBottom: 16,
