@@ -54,7 +54,7 @@ const DropIssue = ({ route }) => {
     const getDescriptionPlaceholder = () => {
         switch (issueType) {
             case 'mistake_setting':
-                return 'Describe what game settings were mentioned by creator vs actual game settings...';
+                return 'Describe what game settings or game profiles were mentioned by creator vs actual game settings or game profiles...';
             case 'mistake_credentials':
                 return 'Explain why you provided wrong credentials and confirm mutual agreement...';
             case 'opponent_not_joined':
@@ -298,7 +298,7 @@ const DropIssue = ({ route }) => {
                         <ImagePickerButton
                             screenshot={mistakeSettingImage}
                             onPress={pickImage}
-                            title="Upload Screenshot of Game Settings"
+                            title="Proof Screenshot of Game Profiles or Settings"
                             errorMessage={errors.image}
                         />
                     )}
