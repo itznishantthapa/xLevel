@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo, useRef, useCallback } from "react"
+import { Text, View, StyleSheet, Keyboard } from "react-native"
 import { useThemeStore } from "../../../store/themeStore"
 import { useNavigation } from "@react-navigation/native"
 import { useQueryClient } from "@tanstack/react-query"
@@ -19,7 +20,6 @@ import {
   TermsAgreement,
   DividerLine
 } from "../../../component/customer/createGame"
-import { Keyboard } from "react-native"
 
 const CreateGame = ({ route }) => {
   const { isLight } = useThemeStore()
@@ -79,7 +79,7 @@ const CreateGame = ({ route }) => {
   // Calculate winning amount with 10% service fee deduction
   const winningAmount = useMemo(() => {
     const pot = Number.parseFloat(gameSettings.game_pot) || 0
-    return (pot * 2 * 0.9).toFixed(2)
+    return Math.floor(pot * 2 * 0.9)
   }, [gameSettings.game_pot])
 
   // Handle option selection for game settings
@@ -291,6 +291,15 @@ const CreateGame = ({ route }) => {
         valueKey="value"
       />
 
+      {/* Free Entry Info Message */}
+      {gameSettings.match_type === "free" && (
+        <View style={styles.infoContainer}>
+          <Text style={[styles.infoText, { color: isLight ? "#666666" : "#cccccc" }]}>
+            You can create and join up to 5 free entry matches per week.
+          </Text>
+        </View>
+      )}
+
       {/* Entry Fee Input - Only show for paid matches */}
       {gameSettings.match_type === "paid" && (
         <EntryFeeInput
@@ -317,5 +326,18 @@ const CreateGame = ({ route }) => {
     </CreateGameLayout>
   )
 }
+
+const styles = StyleSheet.create({
+  infoContainer: {
+    marginTop: -8,
+    marginBottom: 12,
+    paddingHorizontal: 4,
+  },
+  infoText: {
+    fontSize: 12,
+    // fontStyle: "italic",
+    lineHeight: 16,
+  },
+});
 
 export default CreateGame

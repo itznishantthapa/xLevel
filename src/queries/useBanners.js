@@ -4,13 +4,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { BannerAPI } from "../api/bannerApi";
 
-const  THIRTY_MIN = 30 * 60 * 1000;
+const  TEN_MIN = 10 * 60 * 1000;
 
 export const useBanners = () =>
   useQuery({
     queryKey: ["banners"],
     queryFn: BannerAPI.getAll,
-    staleTime: THIRTY_MIN,
+    staleTime: TEN_MIN,
     select: (banners) => banners ?? [],
   });
 

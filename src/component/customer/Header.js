@@ -16,6 +16,7 @@ const Header = ({
   handleMessenger,
   handleInstagram,
   handleWhatsapp,
+  handleHeaderGamePoint
 }) => {
   const { data: socials = [] } = useSocials()
 
@@ -30,7 +31,7 @@ const Header = ({
     // Map using lowercase keys so incoming API variations (e.g. WhatsApp / Whatsapp) still match
     const socialMap = {
       messenger: { icon: "messenger", IconComponent: Fontisto, handler: handleMessenger },
-      instagram: { icon: "instagram", IconComponent: Entypo, handler: handleInstagram },
+      instagram: { icon: "tiktok", IconComponent: MaterialIcons, handler: handleInstagram },
       whatsapp: { icon: "logo-whatsapp", IconComponent: Ionicons, handler: handleWhatsapp },
     }
 
@@ -125,7 +126,19 @@ const Header = ({
   }
 
   return (
-    <View style={styles.header}>
+    <View style={[
+      styles.header,
+      {
+        backgroundColor: isLight ? '#ffffff' : '#000000',
+        borderColor: isLight ? '#333333' : '#ffffff' ,
+        shadowColor: isLight ? '#000' : '#fff',
+        // borderBottomWidth:5,
+        // borderRightWidth:1,
+        // borderLeftWidth:1,
+        // borderBottomRightRadius:15,
+        // borderBottomLeftRadius:15,
+      }
+    ]}>
       {/* Left Section - Profile and User Info */}
       <View style={styles.leftSection}>
         <Pressable
@@ -165,18 +178,24 @@ const Header = ({
 
       {/* Right Section - Balance and Social Actions */}
       <View style={styles.rightSection}>
-        <View
+        <Pressable
           style={styles.balanceContainer}
+          onPress={handleHeaderGamePoint}
         >
           <View style={styles.balanceContent}>
-            <Text style={{ color: '#00bf63', fontSize: 12 }}>Points</Text>
+            <MaterialCommunityIcons 
+              name="star-four-points-outline" 
+              size={16} 
+              color="#00bf63" 
+            />
 
 
             <Text style={styles.balanceText}>
               {typeof wallet_balance === "number" ? wallet_balance.toFixed(2) : wallet_balance}
             </Text>
           </View>
-        </View>
+            <Ionicons name="add" size={14} color="#00bf63" />
+        </Pressable>
 
 
 
@@ -222,9 +241,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
-    paddingHorizontal: 16,
+    paddingHorizontal: scaleWidth(15),
     paddingTop: 12,
     paddingBottom: 12,
+ 
+ 
   },
   leftSection: {
     flexDirection: "row",
@@ -287,12 +308,11 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 1,
     },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 3,
-    minWidth: 80,
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
   balanceContent: {
     flexDirection: "row",
@@ -302,9 +322,10 @@ const styles = StyleSheet.create({
   balanceText: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#333",
+    color: "#000000",
     marginLeft: 6,
   },
+ 
   socialSection: {
     alignItems: "flex-end",
     gap: 6,

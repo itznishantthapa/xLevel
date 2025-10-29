@@ -221,7 +221,7 @@ const BlockedUserList = () => {
 
       {/* Header - Always visible */}
       <AppHeader title={'Blocked Users'}
-        backButton={Platform.OS === 'ios'} // Show back button only on iOS
+        backButton={true} // Show back button only on iOS
       />
 
       <FlatList

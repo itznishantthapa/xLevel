@@ -3,9 +3,10 @@ import { StyleSheet, Text, Pressable, View, Platform } from 'react-native'
 import { AntDesign, FontAwesome5, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons, SimpleLineIcons } from "@expo/vector-icons"
 import { useThemeStore } from '../../store/themeStore';
 import { useStatsPreferenceStore } from '../../store/statsPreference';
+import { scaleWidth } from '../../utils/scaling';
 
 
-const StatsContainer = ({ handleGameProfiles, handleTournament, handleGameRules, handleMatches, handleWatchAds, handleLeaderboard }) => {
+const StatsContainer = ({ handleWithdraw, handleTournament, handleGameRules, handleMatches, handleLeaderboard, handleTransaction }) => {
   const { isLight } = useThemeStore();
   const { statsConfig, isLoading } = useStatsPreferenceStore();
   // Function to render icon based on item configuration
@@ -26,17 +27,18 @@ const StatsContainer = ({ handleGameProfiles, handleTournament, handleGameRules,
   // Function to handle item press based on item id
   const handleItemPress = (item) => {
     switch (item.id) {
-      case 'watchads':
-        handleWatchAds?.();
-        break;
-      case 'gameprofile':
-        handleGameProfiles?.();
-        break;
       case 'leaderboard':
         handleLeaderboard?.();
         break;
       case 'gamerules':
         handleGameRules?.();
+        break;
+      case 'redeem':
+        // Redeem should navigate to Withdraw
+        handleWithdraw?.();
+        break;
+      case 'transaction':
+        handleTransaction?.();
         break;
       case 'tournament':
         handleTournament?.();
@@ -83,13 +85,11 @@ export default StatsContainer
 const styles = StyleSheet.create({
   statsContainer: {
     flexDirection: 'row',
-    marginHorizontal: 10,
-    marginTop: -10,
-    borderRadius: 15,
+    marginHorizontal: scaleWidth(16),
+    marginTop: 10,
+    borderRadius: scaleWidth(15),
     paddingVertical: 15,
-    borderWidth: 1,
-    marginBottom: 10,
-    marginTop: 5,
+    borderWidth: 1.5,
   },
   statItem: {
     flex: 1,
@@ -102,12 +102,12 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 12,
-
     fontWeight: '500',
   },
   statDivider: {
     width: 1,
     backgroundColor: 'grey',
     marginVertical: 5,
+    borderRadius: 1.5,
   },
 })

@@ -1,6 +1,5 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import React, { useCallback, useImperativeHandle, forwardRef } from 'react';
-import { MaterialIcons } from "@expo/vector-icons";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -18,7 +17,7 @@ import Animated, {
  * @returns {JSX.Element}
  */
 const TermsAgreement = forwardRef(({ isAccepted, onToggle, isLight, onReadRules }, ref) => {
-  const termsText = "I have read the game rules and regulation.";
+  const termsText = "I have read the game rules and regulations.";
   
   // Shared value for shake animation
   const shakeOffset = useSharedValue(0);
@@ -45,32 +44,52 @@ const TermsAgreement = forwardRef(({ isAccepted, onToggle, isLight, onReadRules 
     transform: [{ translateX: shakeOffset.value }],
   }));
 
+  // Colors for strict black/white checkbox design
+  const borderColor = isLight ? "#000000" : "#ffffff";
+  const checkedBackground = isLight ? "#000000" : "#ffffff";
+  const checkColor = isLight ? "#ffffff" : "#000000";
+  const textColor = isLight ? "#000000" : "#ffffff";
+
   return (
     <View style={styles.termsContainer}>
       <View style={styles.checkboxContainer}>
-        <Pressable onPress={onToggle} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-          <MaterialIcons
-            name={isAccepted ? "check-box" : "check-box-outline-blank"}
-            size={24}
-            color={isAccepted ? "#00C851" : isLight ? "#666666" : "#cccccc"}
-          />
-        </Pressable>
-        <Animated.Text
-          style={[
-            styles.termsText,
-            {
-              color: isLight ? "#333333" : "#ffffff",
-            },
-            shakeAnimatedStyle,
-          ]}
+        {/* Make checkbox + terms text both toggleable */}
+        <Pressable
+          onPress={onToggle}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          style={styles.pressableArea}
+          accessibilityRole="checkbox"
+          accessibilityState={{ checked: !!isAccepted }}
         >
-          {termsText}
-        </Animated.Text>
-              {onReadRules && (
-        <Pressable style={styles.rulesLink} onPress={onReadRules}>
-          <Text style={styles.rulesLinkText}>Read rules</Text>
+          <View
+            style={[
+              styles.checkboxBox,
+              {
+                borderColor,
+                backgroundColor: isAccepted ? checkedBackground : 'transparent',
+              },
+            ]}
+          >
+            {isAccepted ? (
+              <Text style={[styles.checkMark, { color: checkColor }]}>✓</Text>
+            ) : null}
+          </View>
+          <Animated.Text
+            style={[
+              styles.termsText,
+              { color: textColor },
+              shakeAnimatedStyle,
+            ]}
+          >
+            {termsText}
+          </Animated.Text>
         </Pressable>
-      )}
+
+        {onReadRules && (
+          <Pressable style={styles.rulesLink} onPress={onReadRules}>
+            <Text style={styles.rulesLinkText}>Read rules</Text>
+          </Pressable>
+        )}
       </View>
 
     </View>
@@ -89,6 +108,25 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
+  },
+  pressableArea: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    flex: 1,
+  },
+  checkboxBox: {
+    width: 22,
+    height: 22,
+    borderWidth: 2,
+    borderRadius: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkMark: {
+    fontSize: 16,
+    fontWeight: '900',
+    lineHeight: 18,
   },
   termsText: {
     flex: 1,

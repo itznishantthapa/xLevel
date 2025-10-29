@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { Entypo } from "@expo/vector-icons"
 import { useThemeStore } from '../../store/themeStore';
+import { useBanners } from '../../queries/useBanners';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.45;
@@ -19,6 +20,9 @@ const CARD_HEIGHT = 300;
 
 
 const GameCarousel = ({ games, handleGameCardPress }) => {
+      const { data: banners = [] } = useBanners()
+
+      const shouldShowLabel = banners.length === 0 || banners.some(banner => banner?.url && banner.url.toLowerCase().includes('point'));
     const { isLight } = useThemeStore();
     return (
         <View style={styles.container}>
@@ -41,7 +45,8 @@ const GameCarousel = ({ games, handleGameCardPress }) => {
                         key={game.game_id}
                         style={[
                             styles.gameCard,
-                            { marginLeft: index === 0 ? 20 : 0 }
+                            { marginLeft: index === 0 ? 20 : 0 },
+                            isLight ? {borderColor: '#000000'} : {borderColor: '#EAEAEA'}
                         ]}
                         onPress={() => handleGameCardPress(game)}
                         activeOpacity={0.9}
@@ -54,7 +59,9 @@ const GameCarousel = ({ games, handleGameCardPress }) => {
                             styles.gameName,
                             isLight ? {color: '#333333'} : {color: '#EAEAEA'}
                         ]}>
-                            {game.game_name}
+                            {shouldShowLabel ? game.game_name : (
+                                <View style={{width: 50, height: 2, backgroundColor:isLight ? '#000000' : '#EAEAEA',alignItems:"center",justifyContent:'center',borderRadius:10}}></View>
+                            )}
                         </Text>
                     </Pressable>
                 ))}
@@ -95,13 +102,13 @@ const styles = StyleSheet.create({
         marginRight: 15,
         borderRadius: 20,
         overflow: 'hidden',
-        borderWidth: 1,
+        borderWidth: 1.5,
         alignItems: 'center',
     },
     gameName: {
         fontSize: 12,
         fontWeight: '600',
-        marginTop: 8,
+        marginTop: 4,
         textAlign: 'center',
     },
     gameImage: {

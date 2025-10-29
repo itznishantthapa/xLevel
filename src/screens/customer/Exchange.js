@@ -120,63 +120,63 @@ const Exchange = () => {
     active_hacker_tag: enhancements.have_hacker_tag || false,
   })
 
-  const handleExchange = async (enhancementType, enhancementId, enhancementTitle, enhancementPrice) => {
-    showConfirmSheet({
-      title: "Confirm Exchange",
-      message: `Exchange ${enhancementPrice} points for ${enhancementTitle}?`,
-      confirmText: "Exchange",
-      cancelText: "Cancel",
-      isDestructive: true,
-      onConfirm: async () => {
-        // Biometric authentication
-        const hasHardware = await LocalAuthentication.hasHardwareAsync()
-        const isEnrolled = await LocalAuthentication.isEnrolledAsync()
+ const handleExchange = async (enhancementType, enhancementId, enhancementTitle, enhancementPrice) => {
+  showConfirmSheet({
+    title: "Confirm Exchange",
+    message: `Exchange ${enhancementPrice} points for ${enhancementTitle}?`,
+    confirmText: "Exchange",
+    cancelText: "Cancel",
+    isDestructive: true,
+    onConfirm: async () => {
 
-        if (!hasHardware || !isEnrolled) {
-          Toast.show("Biometric/Passcode not set up on this device.")
-          return
-        }
+      const hasHardware = await LocalAuthentication.hasHardwareAsync()
+      const isEnrolled = await LocalAuthentication.isEnrolledAsync()
 
+      let canProceed = false
+
+      if (hasHardware && isEnrolled) {
+        // Try biometric authentication
         const result = await LocalAuthentication.authenticateAsync({
           promptMessage: "Verify your identity",
           fallbackLabel: "Use Passcode",
         })
+        canProceed = result.success
+      } else {
+        // No biometric or lock setup, skip auth
+        canProceed = true
+      }
 
-        if (result.success) {
-          // Create payload for API
-          const payload = {
-            enhancement_id: enhancementId,
-            enhancement_type: enhancementType,
-            price: enhancementPrice,
-          }
-
-
-        
-          setIsLoading(true)
-
-          try {
-            const response = await EnhancerAPI.exchangeEnhancements(payload)
-            await new Promise(resolve => setTimeout(resolve, 3000));
-            if (response.status === 200) {
-              // Navigate to Thanks screen with exchange data
-              navigation.navigate('thanks', {
-                type: 'exchange',
-                enhancementTitle,
-                enhancementPrice,
-                enhancementType
-              })
-              await get_user() // Refresh user data to reflect new enhancements 
-            }
-
-          } catch (error) {
-            Toast.show(error?.message || 'Exchange failed. Please try again.')
-          } finally {
-            setIsLoading(false)
-          }
+      if (canProceed) {
+        const payload = {
+          enhancement_id: enhancementId,
+          enhancement_type: enhancementType,
+          price: enhancementPrice,
         }
-      },
-    })
-  }
+
+        setIsLoading(true)
+        try {
+          const response = await EnhancerAPI.exchangeEnhancements(payload)
+          await new Promise(resolve => setTimeout(resolve, 3000))
+
+          if (response.status === 200) {
+            navigation.navigate('thanks', {
+              type: 'exchange',
+              enhancementTitle,
+              enhancementPrice,
+              enhancementType
+            })
+            await get_user()
+          }
+        } catch (error) {
+          Toast.show(error?.message || 'Exchange failed. Please try again.')
+        } finally {
+          setIsLoading(false)
+        }
+      } 
+    },
+  })
+}
+
 
   
   const SkeletonCard = ({ index }) => (

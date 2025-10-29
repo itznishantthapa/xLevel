@@ -54,7 +54,7 @@ const DropIssue = ({ route }) => {
     const getDescriptionPlaceholder = () => {
         switch (issueType) {
             case 'mistake_setting':
-                return 'Describe what game settings were mentioned by creator vs actual game settings...';
+                return 'Describe what game settings or game profiles were mentioned by creator vs actual game settings or game profiles...';
             case 'mistake_credentials':
                 return 'Explain why you provided wrong credentials and confirm mutual agreement...';
             case 'opponent_not_joined':
@@ -288,7 +288,7 @@ const DropIssue = ({ route }) => {
                         { color: isLight ? '#666666' : '#cccccc' }
                     ]}>
                         {issueType === 'mistake_setting'
-                            ? 'Please upload a screenshot and describe the issue with game settings (Note: 30 points fine & 3-day ban for wrong info).'
+                            ? 'Please upload a screenshot and describe the issue. (We may request more screenshots if needed. False info may result in a 50-point fine, permanent ban, or both.)'
                             : 'Please describe the issue in detail.'
                         }
                     </Text>
@@ -298,7 +298,7 @@ const DropIssue = ({ route }) => {
                         <ImagePickerButton
                             screenshot={mistakeSettingImage}
                             onPress={pickImage}
-                            title="Upload Screenshot of Game Settings"
+                            title="Proof Screenshot of Game Profiles or Settings"
                             errorMessage={errors.image}
                         />
                     )}

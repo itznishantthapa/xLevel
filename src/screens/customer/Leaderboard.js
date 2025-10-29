@@ -1,18 +1,17 @@
-import React, { useMemo, useState, useCallback } from 'react'
+import React, { useMemo, useCallback } from 'react'
 import { 
   StatusBar, 
   StyleSheet, 
   Text, 
   View, 
   Dimensions, 
-  ActivityIndicator, 
   RefreshControl,
   Image,
   Platform
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { FlashList } from '@shopify/flash-list'
-import { MaterialIcons, MaterialCommunityIcons, SimpleLineIcons, Octicons } from '@expo/vector-icons'
+import { MaterialCommunityIcons, SimpleLineIcons, Octicons, Ionicons } from '@expo/vector-icons'
 import Toast from "react-native-simple-toast"
 import { useThemeStore } from '../../store/themeStore'
 import { useAuthStore } from '../../store/authStore'
@@ -36,11 +35,11 @@ const LeaderboardCard = React.memo(({ user, isLight, isCurrentUser = false }) =>
   const getRankIcon = (rank) => {
     switch (rank) {
       case 1:
-        return  <SimpleLineIcons name='trophy' size={24} color={isLight ? '#333333' : '#EAEAEA'} />
+        return <SimpleLineIcons name='trophy' size={24} color="#FFD700" /> // Gold
       case 2:
-        return <SimpleLineIcons name='trophy' size={24} color={isLight ? '#333333' : '#EAEAEA'} />
+        return <SimpleLineIcons name='trophy' size={24} color="#C0C0C0" /> // Silver
       case 3:
-        return <SimpleLineIcons name='trophy' size={24} color={isLight ? '#333333' : '#EAEAEA'} />
+        return <SimpleLineIcons name='trophy' size={24} color="#CD7F32" /> // Bronze
       default:
         return (
           <View style={[styles.rankBadge, { backgroundColor: isLight ? '#f0f0f0' : 'rgba(255, 255, 255, 0.1)' }]}>
@@ -87,7 +86,6 @@ const LeaderboardCard = React.memo(({ user, isLight, isCurrentUser = false }) =>
               </View>
             )}
             
-               {/* (createdBy?.active_hacker_tag || createdBy?.active_pro_tag) && ( */}
             {/* Pro/Hckr Tag */}
             {(user.active_pro_tag || user.active_hacker_tag) && (
               <View style={{
@@ -133,7 +131,12 @@ const LeaderboardCard = React.memo(({ user, isLight, isCurrentUser = false }) =>
             )}
           </View>
           <View style={styles.pointsContainer}>
-            <Text style={[styles.pointsLabel, { color: '#00bf63' }]}>Points </Text>
+            <MaterialCommunityIcons 
+              name="star-four-points-outline" 
+              size={14} 
+              color="#00bf63" 
+              style={styles.pointsIcon}
+            />
             <Text style={[styles.pointsText, { color: isLight ? '#333333' : '#ffffff' }]}>
               {typeof wallet_balance === "number" ? wallet_balance.toFixed(2) : wallet_balance || 0}
             </Text>
@@ -170,7 +173,7 @@ const EmptyListComponent = ({ isLight }) => (
  */
 const HeaderComponent = () => (
   <AppHeader title={'Leaderboard'} 
-  backButton={Platform.OS === 'ios'}
+  backButton={true}
   />
 )
 
@@ -180,7 +183,6 @@ const HeaderComponent = () => (
 const Leaderboard = () => {
   const { isLight } = useThemeStore()
   const { user } = useAuthStore()
-  const [isRefreshing, setIsRefreshing] = useState(false)
   const { data, isFetching, refetch } = useLeaderboard()
   
   const insets = useSafeAreaInsets()
@@ -190,9 +192,6 @@ const Leaderboard = () => {
   const leaderboardData = data?.leaderboard_users ?? []
   const userRank = data?.user_rank
 
-  // Check if current user is in top 25
-  const isUserInTop25 = leaderboardData.some(leaderUser => leaderUser.id === user?.id)
-
   // Handle refresh
   const handleRefresh = useCallback(async () => {
     if (!isConnected) {
@@ -200,7 +199,6 @@ const Leaderboard = () => {
       return
     }
 
-    setIsRefreshing(true)
     try {
       // Clear cache and refetch
       queryClient.removeQueries({ queryKey: ["leaderboard"] })
@@ -209,9 +207,6 @@ const Leaderboard = () => {
       if (__DEV__) {
         console.log('Failed to refresh leaderboard:', error)
       }
-    } finally {
-      // Always ensure refreshing state is reset
-      setIsRefreshing(false)
     }
   }, [isConnected, refetch])
 
@@ -226,117 +221,19 @@ const Leaderboard = () => {
     )
   ), [isLight, user?.id])
 
-  // Current User Footer Component
-  const CurrentUserFooter = () => {
-    if (!user || !userRank) return null
-    
-    return (
-      <View style={[styles.userRankContainer, { backgroundColor: isLight ? '#f8f9fa' : 'rgba(255, 255, 255, 0.05)' }]}>
-        <View style={styles.currentUserHeader}>
-          <Text style={[styles.sectionTitle, { color: isLight ? '#333333' : '#ffffff' }]}>
-            Your Position
-          </Text>
-        </View>
-        
-        <View style={[
-          styles.currentUserCard,
-          { 
-            backgroundColor: isLight ? '#ffffff' : '#000000',
-            borderColor: isLight ? '#000000' : '#ffffff',
-            borderWidth: 2
-          }
-        ]}>
-          {/* Rank Section */}
-          <View style={styles.rankSection}>
-            <View style={[styles.rankBadge, { backgroundColor: isLight ? '#000000' : '#ffffff' }]}>
-              <Text style={[styles.rankText, { color: isLight ? '#ffffff' : '#000000' }]}>
-                {userRank}
-              </Text>
-            </View>
-          </View>
-
-          {/* Profile Section */}
-          <View style={styles.profileSection}>
-            <View style={styles.profileImageContainer}>
-              {user.profile_picture ? (
-                <Image
-                  source={{ uri: user.profile_picture }}
-                  style={styles.profileImage}
-                  defaultSource={{ uri: 'https://via.placeholder.com/50x50/cccccc/666666?text=User' }}
-                />
-              ) : (
-                <View style={[styles.profileImageFallback, { backgroundColor: isLight ? '#f0f0f0' : 'rgba(255, 255, 255, 0.1)' }]}>
-                  <Octicons name="feed-person" size={24} color={isLight ? '#666666' : '#ffffff'} />
-                </View>
-              )}
-                {/* (createdBy?.active_hacker_tag || createdBy?.active_pro_tag) && ( */}
-              {/* Pro/Hckr Tag */}
-              {(user?.enhancer?.active_pro_tag || user?.enhancer?.active_hacker_tag) && (
-                <View style={{
-                  position: 'absolute',
-                  bottom: -6,
-                  left: '50%',
-                  transform: [{ translateX: -12 }],
-                  backgroundColor: isLight ? '#000000' : '#ffffff',
-                  paddingHorizontal: scaleWidth(6),
-                  paddingVertical: scaleWidth(2),
-                  borderRadius: scaleWidth(8),
-                  borderWidth: scaleWidth(1),
-                  borderColor: isLight ? '#ffffff' : '#000000',
-                  shadowColor: '#000000',
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 3.84,
-                  elevation: 5,
-                }}>
-                  <Text style={{
-                    color: isLight ? '#ffffff' : '#000000',
-                    fontSize: scaleWidth(8),
-                    fontWeight: 'bold',
-                    textAlign: 'center'
-                  }}>
-                    {user?.enhancer?.active_hacker_tag ? 'Hckr' : 'Pro'}
-                  </Text>
-                </View>
-              )}
-            </View>
-          </View>
-
-          {/* User Info Section */}
-          <View style={styles.userInfoSection}>
-            <View style={styles.userNameContainer}>
-              <Text style={[styles.userName, { color: isLight ? '#333333' : '#ffffff' }]} numberOfLines={1}>
-                {user.full_name || 'You'}
-              </Text>
- 
-            </View>
-            <View style={styles.pointsContainer}>
-              <Text style={[styles.pointsLabel, { color: '#00bf63' }]}>Points </Text>
-              <Text style={[styles.pointsText, { color: isLight ? '#333333' : '#ffffff' }]}>
-                {typeof user.wallet_balance === "number" ? user.wallet_balance.toFixed(2) : user.wallet_balance || 0}
-              </Text>
-            </View>
-          </View>
-
-          {/* Trophy Icon */}
-          <View style={styles.chevronSection}>
-          <SimpleLineIcons name='trophy' size={24} color={isLight ? '#333333' : '#ffffff'} />
-          </View>
-        </View>
-                      
- 
-      </View>
-    )
-  }
+  // Fixed footer height for proper spacing
+  const FOOTER_HEIGHT = 140
 
   // FlashList props
   const flashListProps = useMemo(() => ({
     estimatedItemSize: ITEM_HEIGHT,
-    estimatedListSize: { height, width },
+    estimatedListSize: { height: height - FOOTER_HEIGHT, width },
     initialNumToRender: 25, // Show all 25 users at once
     showsVerticalScrollIndicator: false,
-    contentContainerStyle: styles.listContainer,
-  }), [])
+    contentContainerStyle: {
+      paddingBottom: user && userRank ? FOOTER_HEIGHT + 10 : 20
+    },
+  }), [user, userRank])
 
   return (
     <View style={[
@@ -360,7 +257,6 @@ const Leaderboard = () => {
           keyExtractor={(item) => item.id.toString()}
           ListHeaderComponent={<HeaderComponent />}
           ListEmptyComponent={isFetching ? null : <EmptyListComponent isLight={isLight} />}
-          ListFooterComponent={CurrentUserFooter}
           refreshControl={
             <RefreshControl
               refreshing={false}
@@ -372,6 +268,121 @@ const Leaderboard = () => {
           }
         />
       </View>
+      
+      {/* Fixed Current User Position Footer */}
+      {user && userRank && (
+        <View style={[
+          styles.fixedUserFooter,
+          { 
+            backgroundColor: isLight ? '#ffffff' : '#000000',
+            borderTopColor: isLight ? '#e0e0e0' : 'rgba(255, 255, 255, 0.1)',
+            paddingBottom: insets.bottom,
+          }
+        ]}>
+          <View style={styles.fixedFooterContent}>
+            <View style={styles.fixedSectionTitleContainer}>
+              <Ionicons 
+                name="sparkles-sharp" 
+                size={20} 
+                color={isLight ? '#333333' : '#ffffff'} 
+                style={styles.sparklesIcon}
+              />
+              <Text style={[styles.fixedSectionTitle, { color: isLight ? '#333333' : '#ffffff' }]}>
+                Your Position
+              </Text>
+            </View>
+            
+            <View style={[
+              styles.fixedCurrentUserCard,
+              { 
+                backgroundColor: isLight ? '#f8f9fa' : 'rgba(255, 255, 255, 0.05)',
+                borderColor: isLight ? '#000000' : '#ffffff',
+              }
+            ]}>
+              {/* Rank Section */}
+              <View style={styles.rankSection}>
+                <View style={[styles.rankBadge, { backgroundColor: isLight ? '#000000' : '#ffffff' }]}>
+                  <Text style={[styles.rankText, { color: isLight ? '#ffffff' : '#000000' }]}>
+                    {userRank}
+                  </Text>
+                </View>
+              </View>
+
+              {/* Profile Section */}
+              <View style={styles.profileSection}>
+                <View style={styles.profileImageContainer}>
+                  {user.profile_picture ? (
+                    <Image
+                      source={{ uri: user.profile_picture }}
+                      style={styles.profileImage}
+                      defaultSource={{ uri: 'https://via.placeholder.com/50x50/cccccc/666666?text=User' }}
+                    />
+                  ) : (
+                    <View style={[styles.profileImageFallback, { backgroundColor: isLight ? '#f0f0f0' : 'rgba(255, 255, 255, 0.1)' }]}>
+                      <Octicons name="feed-person" size={24} color={isLight ? '#666666' : '#ffffff'} />
+                    </View>
+                  )}
+                  
+                  {/* Pro/Hckr Tag */}
+                  {(user?.enhancer?.active_pro_tag || user?.enhancer?.active_hacker_tag) && (
+                    <View style={{
+                      position: 'absolute',
+                      bottom: -6,
+                      left: '50%',
+                      transform: [{ translateX: -12 }],
+                      backgroundColor: isLight ? '#000000' : '#ffffff',
+                      paddingHorizontal: scaleWidth(6),
+                      paddingVertical: scaleWidth(2),
+                      borderRadius: scaleWidth(8),
+                      borderWidth: scaleWidth(1),
+                      borderColor: isLight ? '#ffffff' : '#000000',
+                      shadowColor: '#000000',
+                      shadowOffset: { width: 0, height: 2 },
+                      shadowOpacity: 0.25,
+                      shadowRadius: 3.84,
+                      elevation: 5,
+                    }}>
+                      <Text style={{
+                        color: isLight ? '#ffffff' : '#000000',
+                        fontSize: scaleWidth(8),
+                        fontWeight: 'bold',
+                        textAlign: 'center'
+                      }}>
+                        {user?.enhancer?.active_hacker_tag ? 'Hckr' : 'Pro'}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              </View>
+
+              {/* User Info Section */}
+              <View style={styles.userInfoSection}>
+                <View style={styles.userNameContainer}>
+                  <Text style={[styles.userName, { color: isLight ? '#333333' : '#ffffff' }]} numberOfLines={1}>
+                    {user.full_name || 'You'}
+                  </Text>
+                </View>
+                <View style={styles.pointsContainer}>
+                  <MaterialCommunityIcons 
+                    name="star-four-points-outline" 
+                    size={14} 
+                    color="#00bf63" 
+                    style={styles.pointsIcon}
+                  />
+                  <Text style={[styles.pointsText, { color: isLight ? '#333333' : '#ffffff' }]}>
+                    {typeof user.wallet_balance === "number" ? user.wallet_balance.toFixed(2) : user.wallet_balance || 0}
+                  </Text>
+                </View>
+              </View>
+
+              {/* Trophy Icon */}
+              <View style={styles.chevronSection}>
+                <SimpleLineIcons name='trophy' size={24} color={isLight ? '#333333' : '#ffffff'} />
+              </View>
+            </View>
+          </View>
+        </View>
+      )}
       
       {/* Loading indicator for initial load */}
       <Loader visible={isFetching && leaderboardData.length === 0} />
@@ -390,18 +401,16 @@ const styles = StyleSheet.create({
     width: width,
     height: height,
   },
-  listContainer: {
-  },
   
   // Card Styles
   cardContainer: {
-    marginHorizontal: 5,
-    marginVertical: 4,
+    marginHorizontal: 8,
+    marginVertical: 6,
   },
   card: {
-    borderRadius: 12,
+    borderRadius: 16,
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 14,
     flexDirection: 'row',
     alignItems: 'center',
     minHeight: ITEM_HEIGHT - 8,
@@ -409,26 +418,31 @@ const styles = StyleSheet.create({
   
   // Rank Section
   rankSection: {
-    width: 40,
+    width: 45,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: 16,
   },
   rankBadge: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.15,
+    shadowRadius: 2,
+    elevation: 2,
   },
   rankText: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 15,
+    fontWeight: '700',
   },
   
   // Profile Section
   profileSection: {
-    marginRight: 12,
+    marginRight: 16,
   },
   profileImageContainer: {
     position: 'relative',
@@ -446,103 +460,124 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: 'rgba(255, 255, 255, 0.2)',
   },
   
   // User Info Section
   userInfoSection: {
     flex: 1,
     justifyContent: 'center',
+    paddingRight: 8,
   },
   userNameContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: 6,
   },
   userName: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '600',
     flex: 1,
+    letterSpacing: 0.3,
   },
   currentUserBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 12,
     marginLeft: 8,
   },
   currentUserText: {
-    fontSize: 10,
-    fontWeight: '600',
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
   pointsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 4,
   },
-  pointsLabel: {
-    fontSize: 12,
-    fontWeight: '500',
+  pointsIcon: {
+    marginRight: 2,
   },
   pointsText: {
     fontSize: 14,
     fontWeight: '700',
   },
   
- 
+  // Chevron Section
+  chevronSection: {
+    width: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 8,
+  },
   
   // Empty State
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 40,
-    paddingTop: 100,
+    paddingHorizontal: 48,
+    paddingTop: 120,
   },
   emptyTitle: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: '700',
     marginBottom: 12,
-    marginTop: 16,
+    marginTop: 20,
+    letterSpacing: 0.5,
   },
   emptySubtitle: {
-    fontSize: 16,
+    fontSize: 17,
     textAlign: 'center',
-    lineHeight: 24,
+    lineHeight: 26,
+    letterSpacing: 0.3,
   },
   
-  // Loading Indicator
-  loadingIndicator: {
-    marginVertical: 10,
+  // Fixed Footer Styles
+  fixedUserFooter: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    borderTopWidth: 1,
+    paddingTop: 16,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 10,
   },
-  
-  // User Rank Footer
-  userRankContainer: {
-    paddingVertical: 20,
-    paddingHorizontal: 5,
+  fixedFooterContent: {
+    paddingHorizontal: 16,
   },
-  currentUserHeader: {
-    marginBottom: 12,
+  fixedSectionTitleContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
   },
-  sectionTitle: {
-    fontSize: 18,
+  sparklesIcon: {
+    marginRight: 8,
+  },
+  fixedSectionTitle: {
+    fontSize: 16,
     fontWeight: '700',
+    letterSpacing: 0.5,
+    textAlign: 'center',
   },
-  currentUserCard: {
-    borderRadius: 12,
+  fixedCurrentUserCard: {
+    borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 12,
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: ITEM_HEIGHT - 8,
-    marginBottom: 8,
-  },
-  footerNote: {
-    fontSize: 12,
-    textAlign: 'center',
-    fontStyle: 'italic',
-  },
-  userRankText: {
-    fontSize: 16,
-    fontWeight: '600',
+    minHeight: 70,
+    borderWidth: 2,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
   },
 })

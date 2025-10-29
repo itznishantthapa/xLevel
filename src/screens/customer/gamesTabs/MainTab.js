@@ -10,6 +10,7 @@ import { useBottomSheet } from '../../../context/BottomSheetContext';
 import OpenGameList from '../../../component/matchcard/matchList/OpenGameList';
 import { queryClient } from '../../../lib/queryClient';
 import { useJoinMatch } from '../../../queries/useMutation/useJoinMatch';
+import Loader from '../../../component/Loader';
 
 
 const MainTab = ({ gameId, gameName }) => {
@@ -34,6 +35,7 @@ const MainTab = ({ gameId, gameName }) => {
   const [selectedGame, setSelectedGame] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isRefreshingScreen, setIsRefreshingScreen] = useState(false);
+  const [isJoiningChallenge, setIsJoiningChallenge] = useState(false);
 
   // Derived state
   const isLoading = ((!openChallenges.length) && isFetching) || isRefreshingScreen;
@@ -124,6 +126,8 @@ const MainTab = ({ gameId, gameName }) => {
    */
   const handleConfirmChallenge = async (joinData) => {
     try {
+      setIsJoiningChallenge(true);
+      
       // joinData can be either just the challenge_id (backward compatibility) 
       // or an object with challenge_id and access_code
       const payload = typeof joinData === 'object' ? joinData : { challenge_id: joinData };
@@ -140,6 +144,8 @@ const MainTab = ({ gameId, gameName }) => {
 
     } catch (error) {
       Toast.show(error?.message || "Failed to join challenge.", Toast.SHORT);
+    } finally {
+      setIsJoiningChallenge(false);
     }
   };
 
@@ -195,6 +201,13 @@ const MainTab = ({ gameId, gameName }) => {
         gameModes={freeFireModes}
         gameName={currentGame?.game_name || gameName}
         onFilterChange={handleFilterChange}
+      />
+      
+      {/* Loader for challenge joining */}
+      <Loader 
+        visible={isJoiningChallenge} 
+        message="Joining Match..."
+        size={56}
       />
     </View>
   );

@@ -30,7 +30,7 @@ const EmptyListComponent = ({ isLight }) => (
 const HeaderComponent = () => (
     <AppHeader 
       title="My Tournaments" 
-      backButton={Platform.OS === 'ios'}
+      backButton={true}
     />
 
 )

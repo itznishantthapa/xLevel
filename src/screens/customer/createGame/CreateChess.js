@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo, useRef, useCallback } from "react"
+import { Text, View, StyleSheet, Keyboard } from "react-native"
 import Toast from "react-native-simple-toast"
 import { useThemeStore } from "../../../store/themeStore"
 import { useNavigation } from "@react-navigation/native"
@@ -16,7 +17,6 @@ import {
   TermsAgreement,
   DividerLine
 } from "../../../component/customer/createGame"
-import { Keyboard } from "react-native"
 
 const CreateChess = ({ route }) => {
   const { isLight } = useThemeStore()
@@ -69,7 +69,7 @@ const CreateChess = ({ route }) => {
   // Calculate winning amount with 10% service fee deduction
   const winningAmount = useMemo(() => {
     const fee = Number.parseFloat(gameSettings.entry_fee) || 0
-    return (fee * 2 * 0.9).toFixed(2)
+    return Math.floor(fee * 2 * 0.9)
   }, [gameSettings.entry_fee])
 
   // Handle option selection for game settings
@@ -243,6 +243,15 @@ const CreateChess = ({ route }) => {
         valueKey="value"
       />
 
+      {/* Free Entry Info Message */}
+      {gameSettings.match_type === "free" && (
+        <View style={styles.infoContainer}>
+          <Text style={[styles.infoText, { color: isLight ? "#666666" : "#cccccc" }]}>
+            You can create and join up to 5 free entry matches per week.
+          </Text>
+        </View>
+      )}
+
       {/* Entry Fee Input - Only show for paid matches */}
       {gameSettings.match_type === "paid" && (
         <EntryFeeInput
@@ -268,5 +277,18 @@ const CreateChess = ({ route }) => {
     </CreateGameLayout>
   )
 }
+
+const styles = StyleSheet.create({
+  infoContainer: {
+    marginTop: -8,
+    marginBottom: 12,
+    paddingHorizontal: 4,
+  },
+  infoText: {
+    fontSize: 12,
+    // fontStyle: "italic",
+    lineHeight: 16,
+  },
+});
 
 export default CreateChess

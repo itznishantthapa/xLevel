@@ -8,6 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useGameRules } from '../../../queries/useGameRules'
 import { useAuthStore } from '../../../store/authStore'
 import AppHeader from '../header/AppHeader'
+import { ScrollView } from 'react-native-gesture-handler'
 
 /**
  * GameRules Component
@@ -37,7 +38,7 @@ const SelectIssue = ({ route }) => {
 
 
 
- 
+
 
 
     return (
@@ -48,144 +49,167 @@ const SelectIssue = ({ route }) => {
 
             <AppHeader
                 backButton={Platform.OS === 'ios' ? true : false}
-                title={'Report Issue'}
+                title={'Report & Refund'}
             />
 
 
-            <View style={{ marginTop: 10, paddingHorizontal: 10 }}>
-
-                <Pressable
-                    style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}
-                    activeOpacity={0.8}
-                    onPress={() => navigation.navigate('dropIssue', { challenge_id, issueType: 'mistake_setting', game_name, game_mode })}  // Pass game_name and game_mode
-                >
-                    <View style={styles.cardContent}>
-
-                        <View style={styles.gameInfo}>
-                            <Text style={[styles.gameName, { color: colors.text }]}>Game Settings</Text>
-                            <Text style={[styles.gameModes, { color: colors.subText }]}>
-                                Report if the game settings metioned by the creator are not matching with the actual game settings.
-                            </Text>
-                        </View>
-                        <MaterialIcons name="chevron-right" size={24} color={colors.subText} />
-                    </View>
-                </Pressable>
+            <ScrollView
+                style={{ flex: 1 }}
+                contentContainerStyle={{ paddingBottom: 20 }}
+                showsVerticalScrollIndicator={false}
+            >
+                <View style={{ marginTop: 10, paddingHorizontal: 10 }}>
 
 
-                {
-                    isCreator && (
-                        <Pressable
-                            style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}
-                            activeOpacity={0.8}
-                            onPress={() => navigation.navigate('dropIssue', { challenge_id, issueType: 'opponent_not_joined', game_name, game_mode })}  // Pass game_name and game_mode
-                        >
-                            <View style={styles.cardContent}>
+                    {
+                        !isCreator && game_mode !== 'Lone Wolf' && (
+                            <Pressable
+                                style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}
+                                activeOpacity={0.8}
+                                onPress={() => navigation.navigate('dropIssue', { challenge_id, issueType: 'mistake_setting', game_name, game_mode })}  // Pass game_name and game_mode
+                            >
+                                <View style={styles.cardContent}>
 
-                                <View style={styles.gameInfo}>
-                                    <Text style={[styles.gameName, { color: colors.text }]}>Didn't Join?</Text>
-                                    <Text style={[styles.gameModes, { color: colors.subText }]}>
-                                        Report issue if confimed opponent didn't join the room/match even after providing game credentials 2 times.
-                                    </Text>
+                                    <View style={styles.gameInfo}>
+                                        <Text style={[styles.gameName, { color: colors.text }]}>Mistake Game Settings / Game Profiles</Text>
+                                        <Text style={[styles.gameModes, { color: colors.subText }]}>
+                                           Game Setting - The creator is only allowed to change the specific game settings mentioned in the app.
+                                            If the creator modifies or adds unfair restrictions, you can provide a screenshot of the game settings as proof.
+                                            If the report is valid and true, you'll receive 60% of the winning amount, and the creator will get 40%.{"\n\n"}
+                                           Game Profile - If your opponent's <Text style={styles.boldText}>game profile</Text> has major mismatches
+                                            (Example: declared Level 50 but actually Level 55, 60, or more),
+                                            you can <Text style={styles.boldText}>report this issue</Text> by selecting it and providing <Text style={styles.boldText}>screenshot evidence</Text>.
+                                            If the report is valid and true, you'll receive 60% of the winning amount, and the creator will get 40%.{"\n\n"}
+                                            <Text style={styles.boldText}>Example:</Text> If the entry fee is 100 and the winning amount is 180, you'll get 108 points and the creator will get 72 points.
+                                        </Text>
+
+                                    </View>
+                                    <MaterialIcons name="chevron-right" size={24} color={colors.subText} />
                                 </View>
-
-                                <MaterialIcons name="chevron-right" size={24} color={colors.subText} />
-                            </View>
-                        </Pressable>
-                    )
-                }
+                            </Pressable>
+                        )
+                    }
 
 
-                {
-                    !isCreator && (
-                        <Pressable
-                            style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}
-                            activeOpacity={0.8}
-                            onPress={() => navigation.navigate('dropIssue', { challenge_id, issueType: 'creator_not_provided', game_name, game_mode })}  // Pass game_name and game_mode
-                        >
-                            <View style={styles.cardContent}>
 
-                                <View style={styles.gameInfo}>
-                                    <Text style={[styles.gameName, { color: colors.text }]}>Didn't Provide?</Text>
-                                    <Text style={[styles.gameModes, { color: colors.subText }]}>
-                                        Report issue if creator didn't provide game credentials even after 10 minutes of confirmation.
-                                    </Text>
+                    {
+                        isCreator && (
+                            <Pressable
+                                style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}
+                                activeOpacity={0.8}
+                                onPress={() => navigation.navigate('dropIssue', { challenge_id, issueType: 'opponent_not_joined', game_name, game_mode })}  // Pass game_name and game_mode
+                            >
+                                <View style={styles.cardContent}>
+
+                                    <View style={styles.gameInfo}>
+                                        <Text style={[styles.gameName, { color: colors.text }]}>Didn't Join?</Text>
+                                        <Text style={[styles.gameModes, { color: colors.subText }]}>
+                                            If your confirmed opponent doesn’t join within 5 minutes after the credentials (ID, password, team code, or URL) are provided, you can report a “Didn’t Join” issue. You will receive 60% of the winning amount.
+                                            Example: If the entry fee is 100 and the winning amount is 180, you’ll get 108 points, and your opponent will get 72 points (40% of the winning amount) (Mutual Agreement Not Required).
+                                        </Text>
+                                    </View>
+
+                                    <MaterialIcons name="chevron-right" size={24} color={colors.subText} />
                                 </View>
-
-                                <MaterialIcons name="chevron-right" size={24} color={colors.subText} />
-                            </View>
-                        </Pressable>
-                    )
-                }
+                            </Pressable>
+                        )
+                    }
 
 
-                <Pressable
-                    style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}
-                    activeOpacity={0.8}
-                    onPress={() => navigation.navigate('dropIssue', { challenge_id, issueType: 'mistake_credentials', game_name, game_mode })}  // Pass game_name and game_mode
-                >
-                    <View style={styles.cardContent}>
+                    {
+                        !isCreator && (
+                            <Pressable
+                                style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}
+                                activeOpacity={0.8}
+                                onPress={() => navigation.navigate('dropIssue', { challenge_id, issueType: 'creator_not_provided', game_name, game_mode })}  // Pass game_name and game_mode
+                            >
+                                <View style={styles.cardContent}>
 
-                        <View style={styles.gameInfo}>
-                            <Text style={[styles.gameName, { color: colors.text }]}>Wrong Credentials?</Text>
-                            <Text style={[styles.gameModes, { color: colors.subText }]}>
-                                {isCreator ? "I've sent the wrong credentials (Mutual Agreement Required)." : "The creator sent the wrong credentials (Mutual Agreement Required)."}
-                            </Text>
-                        </View>
+                                    <View style={styles.gameInfo}>
+                                        <Text style={[styles.gameName, { color: colors.text }]}>Didn't Provide?</Text>
+                                        <Text style={[styles.gameModes, { color: colors.subText }]}>
+                                            If the match creator doesn’t provide the credentials (ID, password, team code, or URL) within 10 minutes after confirming opponent(You), you can report a “Didn’t Provide” issue. You’ll receive 60% of the winning amount, and the creator will get 40%.
+                                            Example: If the entry fee is 100 and the winning amount is 180, you’ll get 108 points, and creator will get 72 points (40% of the winning amount) (Mutual Agreement Not Required).
+                                        </Text>
+                                    </View>
 
-                        <MaterialIcons name="chevron-right" size={24} color={colors.subText} />
-                    </View>
-                </Pressable>
-                <Pressable
-                    style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}
-                    activeOpacity={0.8}
-                    onPress={() => navigation.navigate('dropIssue', { challenge_id, issueType: 'offline', game_name, game_mode })}  // Pass game_name and game_mode
-                >
-                    <View style={styles.cardContent}>
+                                    <MaterialIcons name="chevron-right" size={24} color={colors.subText} />
+                                </View>
+                            </Pressable>
+                        )
+                    }
 
-                        <View style={styles.gameInfo}>
-                            <Text style={[styles.gameName, { color: colors.text }]}>Offline/Connection Lost</Text>
-                            <Text style={[styles.gameModes, { color: colors.subText }]}>
-                                Report issue if opponent went offline or lost connection during the match (Mutual Agreement Required).
-                            </Text>
-                        </View>
 
-                        <MaterialIcons name="chevron-right" size={24} color={colors.subText} />
-                    </View>
-                </Pressable>
-
-                {/* Report & Block User Section - Only show when there's an opponent */}
-                {opponent && (
                     <Pressable
                         style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}
                         activeOpacity={0.8}
-                        onPress={() => {
-                            // Navigate to ReportUser screen with opponent and game info
-                            navigation.navigate('reportUser', {
-                                user: {
-                                    id: opponent.id || opponent.participant_id,
-                                    name: opponent.full_name || opponent.name || 'Unknown User'
-                                },
-                                gameInfo: {
-                                    id: challenge_id,
-                                    name: game_name,
-                                    mode: game_mode
-                                }
-                            });
-                        }}
+                        onPress={() => navigation.navigate('dropIssue', { challenge_id, issueType: 'mistake_credentials', game_name, game_mode })}  // Pass game_name and game_mode
                     >
                         <View style={styles.cardContent}>
+
                             <View style={styles.gameInfo}>
-                                <Text style={[styles.gameName, { color: colors.text }]}>Report & Block User</Text>
+                                <Text style={[styles.gameName, { color: colors.text }]}>Wrong Credentials?</Text>
                                 <Text style={[styles.gameModes, { color: colors.subText }]}>
-                                    Report {isCreator ? 'opponent' : 'creator'} for inappropriate behavior, profile violations, or cheating.
+                                    {isCreator ? "If you’ve sent the wrong credentials even after using both resend attempts, you can report a “Wrong Credentials” issue. We’ll notify your opponent to report the same issue. Once both reports are confirmed, you and your opponent will each get your full entry points back. Example: If the entry point is 100, both players will receive 100 points each (Mutual Agreement Required)." : "If the creator sends the wrong credentials and you’re unable to join, you can report a “Wrong Credentials” issue. We’ll notify the creator to resend or to confirm the same issue. Once both reports are verified, you and the creator will each receive your full entry points back. Example: If the entry point is 100, both players will receive 100 points each (Mutual Agreement Required)."}
                                 </Text>
                             </View>
 
-                             <MaterialIcons name="chevron-right" size={24} color={colors.subText} />
+                            <MaterialIcons name="chevron-right" size={24} color={colors.subText} />
                         </View>
                     </Pressable>
-                )}
-            </View>
+                    <Pressable
+                        style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}
+                        activeOpacity={0.8}
+                        onPress={() => navigation.navigate('dropIssue', { challenge_id, issueType: 'offline', game_name, game_mode })}  // Pass game_name and game_mode
+                    >
+                        <View style={styles.cardContent}>
+
+                            <View style={styles.gameInfo}>
+                                <Text style={[styles.gameName, { color: colors.text }]}>Offline/Connection Lost</Text>
+                                <Text style={[styles.gameModes, { color: colors.subText }]}>
+                                    During the match, if both players are unable to play due to going offline or losing connection, you can report an “Offline/Connection Lost” issue to get 50% of the winning amount.
+                                    Note: After you report this issue, we will notify your opponent to report the same issue so that both of you can get your points back. Both players must report the issue; if only one reports, no refund will be issued (Mutual Agreement Required).
+                                </Text>
+                            </View>
+
+                            <MaterialIcons name="chevron-right" size={24} color={colors.subText} />
+                        </View>
+                    </Pressable>
+
+                    {/* Report & Block User Section - Only show when there's an opponent */}
+                    {opponent && (
+                        <Pressable
+                            style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}
+                            activeOpacity={0.8}
+                            onPress={() => {
+                                // Navigate to ReportUser screen with opponent and game info
+                                navigation.navigate('reportUser', {
+                                    user: {
+                                        id: opponent.id || opponent.participant_id,
+                                        name: opponent.full_name || opponent.name || 'Unknown User'
+                                    },
+                                    gameInfo: {
+                                        id: challenge_id,
+                                        name: game_name,
+                                        mode: game_mode
+                                    }
+                                });
+                            }}
+                        >
+                            <View style={styles.cardContent}>
+                                <View style={styles.gameInfo}>
+                                    <Text style={[styles.gameName, { color: colors.text }]}>Report & Block User</Text>
+                                    <Text style={[styles.gameModes, { color: colors.subText }]}>
+                                        Report {isCreator ? 'opponent' : 'creator'} for inappropriate behavior, profile violations, or cheating.
+                                    </Text>
+                                </View>
+
+                                <MaterialIcons name="chevron-right" size={24} color={colors.subText} />
+                            </View>
+                        </Pressable>
+                    )}
+                </View>
+            </ScrollView>
 
         </SafeAreaView>
     )
@@ -252,5 +276,8 @@ const styles = StyleSheet.create({
     },
     gameModes: {
         fontSize: 14,
+    },
+    boldText: {
+        fontWeight: '700',
     },
 })

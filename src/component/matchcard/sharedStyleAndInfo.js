@@ -12,7 +12,7 @@ export const sharedStyles = StyleSheet.create({
     marginVertical: scaleHeight(8),
     borderRadius: scaleWidth(25),
     backgroundColor: '#ffffff',
-    borderWidth: scaleWidth(1),
+    borderWidth: scaleWidth(1.5),
     borderColor: '#333333',
   },
   cardDark: {
@@ -60,6 +60,14 @@ export const sharedStyles = StyleSheet.create({
   },
   gameInfoTextDark: {
     color: '#eaf4f4',
+  },
+  iconContainer: {
+    width: scaleWidth(24),
+    height: scaleWidth(24),
+    borderRadius: scaleWidth(12),
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: scaleWidth(6),
   },
   verticalDivider: {
     width: scaleWidth(1),

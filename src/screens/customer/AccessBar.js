@@ -19,6 +19,7 @@ import {
 } from '@expo/vector-icons';
 import { useThemeStore } from '../../store/themeStore';
 import { useStatsPreferenceStore } from '../../store/statsPreference';
+import { scaleWidth, scaleHeight } from '../../utils/scaling';
 import AppHeader from './header/AppHeader';
  
 
@@ -78,7 +79,7 @@ const AccessBar = ({ navigation }) => {
    * and reduces risk of crashes in release caused by rapid state updates in quick tap detection.
    */
   const createPanGesture = (index) => {
-    const H_THRESHOLD = 30; // px movement before considering reorder
+    const H_THRESHOLD = scaleWidth(30); // px movement before considering reorder
 
     return Gesture.Pan()
       .activateAfterLongPress(160) // ms before pan activates (allows normal tap before this)
@@ -159,7 +160,7 @@ const AccessBar = ({ navigation }) => {
             style={[
               styles.statItemContent,
               isToggleable && styles.toggleableItem,
-              isToggleable && { borderWidth: 1, borderColor: color, borderRadius: 8, opacity: 0.8 }
+              isToggleable && { borderWidth: 1, borderColor: color, borderRadius: scaleWidth(8), opacity: 0.8 }
             ]}
                         onPress={() => handleToggle(index)}
 
@@ -214,7 +215,7 @@ const AccessBar = ({ navigation }) => {
           <View style={styles.instructionRow}>
             <MaterialCommunityIcons 
               name="drag" 
-              size={20} 
+              size={scaleWidth(20)} 
               color={isLight ? '#666666' : '#CCCCCC'} 
             />
             <Text style={[styles.instructionText, { color: isLight ? '#666666' : '#CCCCCC' }]}>
@@ -224,7 +225,7 @@ const AccessBar = ({ navigation }) => {
           <View style={styles.instructionRow}>
             <MaterialIcons 
               name="touch-app" 
-              size={20} 
+              size={scaleWidth(20)} 
               color={isLight ? '#666666' : '#CCCCCC'} 
             />
             <Text style={[styles.instructionText, { color: isLight ? '#666666' : '#CCCCCC' }]}>
@@ -245,30 +246,30 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingVertical: 20,
+    // paddingHorizontal: scaleWidth(20),
+    paddingVertical: scaleHeight(20),
   },
   description: {
-    fontSize: 14,
+    fontSize: scaleWidth(14),
     textAlign: 'center',
-    marginBottom: 30,
-    lineHeight: 20,
+    marginBottom: scaleHeight(30),
+    lineHeight: scaleHeight(20),
   },
   topCenterContainer: {
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: scaleHeight(20),
   },
   statsPreview: {
     alignItems: 'center',
-    marginVertical: 20,
+    marginVertical: scaleHeight(20),
   },
   statsContainer: {
     flexDirection: 'row',
-    borderRadius: 15,
+    marginHorizontal: 10,
+    marginTop: 10,
+    borderRadius: scaleWidth(15),
     paddingVertical: 15,
-    borderWidth: 1,
-    width: SCREEN_WIDTH - 40,
-    backgroundColor: 'rgba(0,0,0,0.02)',
+    borderWidth: 1.5,
   },
   statItem: {
     flex: 1,
@@ -276,7 +277,7 @@ const styles = StyleSheet.create({
   },
   statItemContent: {
     alignItems: 'center',
-    padding: 8,
+    padding: scaleWidth(8),
     minHeight: 60,
     justifyContent: 'center',
   },
@@ -285,38 +286,39 @@ const styles = StyleSheet.create({
   },
   toggleIndicator: {
     position: 'absolute',
-    top: 2,
-    right: 2,
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+    top: scaleHeight(2),
+    right: scaleWidth(2),
+    width: scaleWidth(6),
+    height: scaleHeight(6),
+    borderRadius: scaleWidth(3),
   },
   statLabel: {
     fontSize: 12,
     fontWeight: '500',
     textAlign: 'center',
-    marginTop: 4,
+    marginTop: scaleHeight(4),
   },
   statDivider: {
     width: 1,
     backgroundColor: 'grey',
     marginVertical: 5,
+    borderRadius: 1.5,
   },
   instructions: {
     alignItems: 'center',
-    gap: 15,
+    gap: scaleHeight(15),
     position: 'absolute',
-    bottom: 40,
+    bottom: scaleHeight(40),
     left: 0,
     right: 0,
   },
   instructionRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: scaleWidth(10),
   },
   instructionText: {
-    fontSize: 14,
+    fontSize: scaleWidth(14),
     fontWeight: '500',
   },
 });

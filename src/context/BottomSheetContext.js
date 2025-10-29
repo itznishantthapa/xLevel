@@ -21,12 +21,13 @@ import Animated, {
 import { runOnJS } from "react-native-worklets"
 import { Gesture, GestureDetector } from "react-native-gesture-handler"
 import { useThemeStore } from "../store/themeStore"
-import { MaterialCommunityIcons, Octicons } from "@expo/vector-icons"
+// Removed unused icon imports
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { NavigationService } from "../service/navigationService"
 import { useQueryClient } from "@tanstack/react-query"
 import OpponentSheetContent from "./component/OpponentSheetContent"
 import { ShakeText } from "../component/customer/animation"
+import { scaleWidth } from "../utils/scaling"
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window")
 
@@ -396,20 +397,31 @@ const JoinSheetContent = React.memo(
           </View>
           {game.created_by.role === "customer" && (
             <>
-              <View style={styles.gameRow}>
-                <View style={[styles.gameItem, { borderColor: isDark ? "#ffffff" : "#333333" }]}>
+              {/* For chess, show only Creator name in a single full-width card */}
+              {game.game?.name?.toLowerCase() === "chess" ? (
+                <View style={[styles.infoRowCompact, { borderColor: isDark ? "#ffffff" : "#333333" }]}>
                   <Text style={[styles.label, { color: isDark ? "#cccccc" : "#666666" }]}>Creator</Text>
                   <Text style={[styles.value, { color: isDark ? "#ffffff" : "#333333" }]} numberOfLines={1}>
                     {game.created_by?.full_name}
                   </Text>
                 </View>
-                <View style={[styles.gameItem, { borderColor: isDark ? "#ffffff" : "#333333" }]}>
-                  <Text style={[styles.label, { color: isDark ? "#cccccc" : "#666666" }]}>UID</Text>
-                  <Text style={[styles.value, { color: isDark ? "#ffffff" : "#333333" }]} numberOfLines={1}>
-                    {game.created_by?.game_uid}
-                  </Text>
+              ) : (
+                // For other games, show Creator and UID side by side
+                <View style={styles.gameRow}>
+                  <View style={[styles.gameItem, { borderColor: isDark ? "#ffffff" : "#333333" }]}>
+                    <Text style={[styles.label, { color: isDark ? "#cccccc" : "#666666" }]}>Creator</Text>
+                    <Text style={[styles.value, { color: isDark ? "#ffffff" : "#333333" }]} numberOfLines={1}>
+                      {game.created_by?.full_name}
+                    </Text>
+                  </View>
+                  <View style={[styles.gameItem, { borderColor: isDark ? "#ffffff" : "#333333" }]}>
+                    <Text style={[styles.label, { color: isDark ? "#cccccc" : "#666666" }]}>UID</Text>
+                    <Text style={[styles.value, { color: isDark ? "#ffffff" : "#333333" }]} numberOfLines={1}>
+                      {game.created_by?.game_uid}
+                    </Text>
+                  </View>
                 </View>
-              </View>
+              )}
 
               {/* <View style={[styles.infoRowCompact, { borderColor: isDark ? "#ffffff" : "#333333" }]}>
                 <Text style={[styles.label, { color: isDark ? "#cccccc" : "#666666" }]}>Fight Type</Text>
@@ -495,28 +507,41 @@ const JoinSheetContent = React.memo(
           }
 
 
-          <View style={styles.rulesContainer}>
-            <View style={styles.checkboxRow}>
-              <Pressable
+          <View style={[styles.rulesContainer, styles.checkboxContainer]}>
+            {/* Make checkbox + terms text both toggleable */}
+            <Pressable
+              onPress={() => setPayload((prev) => ({ ...prev, rulesConfirmed: !prev.rulesConfirmed }))}
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+              style={styles.pressableArea}
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: !!payload.rulesConfirmed }}
+            >
+              <View
                 style={[
-                  styles.checkbox,
-                  { borderColor: isDark ? "#ffffff" : "#333333" },
-                  payload.rulesConfirmed && { backgroundColor: isDark ? "#00C851" : "#00bf63" },
+                  styles.checkboxBox,
+                  {
+                    borderColor: isDark ? '#ffffff' : '#000000',
+                    backgroundColor: payload.rulesConfirmed
+                      ? (isDark ? '#ffffff' : '#000000')
+                      : 'transparent',
+                  },
                 ]}
-                onPress={() => setPayload((prev) => ({ ...prev, rulesConfirmed: !prev.rulesConfirmed }))}
               >
-                {payload.rulesConfirmed && <MaterialCommunityIcons name="check" size={16} color="#ffffff" />}
-              </Pressable>
+                {payload.rulesConfirmed ? (
+                  <Text style={[styles.checkMark, { color: isDark ? '#000000' : '#ffffff' }]}>✓</Text>
+                ) : null}
+              </View>
               <ShakeText ref={shakeTextRef}>
                 <Text
                   style={{
-                    color: isDark ? "#ffffff" : "#333333",
+                    color: isDark ? '#ffffff' : '#000000',
+                    fontSize: scaleWidth(14),
                   }}
                 >
-                  I have read the game rules and regulation
+                  I have read the game rules and regulations.
                 </Text>
               </ShakeText>
-            </View>
+            </Pressable>
             <Pressable
               style={styles.rulesLink}
               onPress={() => {
@@ -771,10 +796,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     flexDirection: "row",
   },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
   checkboxRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
+  },
+  pressableArea: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    flex: 1,
   },
   checkbox: {
     width: 20,
@@ -784,6 +820,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  checkboxBox: {
+    width: 20,
+    height: 20,
+    borderWidth: 2,
+    borderRadius: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkMark: {
+    fontSize: 16,
+    fontWeight: '900',
+    lineHeight: 18,
+  },
   rulesLink: {
     alignSelf: "flex-start",
     paddingVertical: 5,
@@ -791,7 +840,7 @@ const styles = StyleSheet.create({
   },
   rulesLinkText: {
     color: "#00C851",
-    fontSize: 14,
+    fontSize: scaleWidth(14),
     fontWeight: "600",
     textDecorationLine: "underline",
   },

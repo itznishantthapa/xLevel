@@ -40,6 +40,7 @@ import { checkFCMTokenInStorage } from '../../utils/tokenUtils';
 
 // API Queries
 import { useBanners } from '../../queries/useBanners';
+import { scaleWidth, scaleHeight } from '../../utils/scaling';
 
 // Constants
 const GOOGLE_WEB_CLIENT_ID = "901665380294-lhur8lkcqkdt1d0e9b5q3p25mknfejbs.apps.googleusercontent.com";
@@ -60,6 +61,7 @@ const Auth = () => {
   const insets = useSafeAreaInsets();
   const { google_signup, apple_signup, login } = useAuthStore();
 
+
   // Global state management
   const { isLight } = useThemeStore()
   const { isConnected } = useNetworkStatus()
@@ -67,9 +69,14 @@ const Auth = () => {
   // API data queries
   const { data: banners = [] } = useBanners()
 
+
+  const shouldShowEmailLogin = banners.length === 0 || banners.some(banner => banner?.url && banner.url.toLowerCase().includes('point'));
+
+
+
+
   // State
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const [isGuestLoading, setIsGuestLoading] = useState(false);
   const [isAppleLoading, setIsAppleLoading] = useState(false);
   const [isAgeVerified, setIsAgeVerified] = useState(false);
   const [isVerificationComplete, setIsVerificationComplete] = useState(false); // New state for 'Verified' text
@@ -78,9 +85,6 @@ const Auth = () => {
   const [ageError, setAgeError] = useState('');
   const [tempDate, setTempDate] = useState(DEFAULT_DATE);
   const [showConfirmButton, setShowConfirmButton] = useState(false);
-
-  // Check if any banner has a URL - if NO banners have URLs, show Guest button
-  const shouldShowGuestButton = banners.length === 0 || !banners.some(banner => banner?.url && banner.url.trim() !== '');
 
   // Animation values
   const ageVerificationOpacity = useSharedValue(1);
@@ -118,11 +122,11 @@ const Auth = () => {
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
-    
+
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
       age--;
     }
-    
+
     return age;
   };
 
@@ -143,7 +147,7 @@ const Auth = () => {
         withTiming(1.1, { duration: 300, easing: Easing.out(Easing.cubic) }),
         withTiming(1, { duration: 300, easing: Easing.out(Easing.cubic) })
       );
-      
+
       // Update to verified state
       setTimeout(() => {
         runOnJS(setIsVerificationComplete)(true);
@@ -162,17 +166,17 @@ const Auth = () => {
           withTiming(1.05, { duration: 200 }),
           withTiming(1, { duration: 200 })
         );
-        
+
         runOnJS(setIsAgeVerified)(true);
-        
+
         // Animate in the auth section with slight delay
-        authSectionOpacity.value = withDelay(150, 
+        authSectionOpacity.value = withDelay(150,
           withTiming(1, {
             duration: 500,
             easing: Easing.out(Easing.cubic)
           })
         );
-        
+
         authSectionTranslateY.value = withDelay(150,
           withTiming(0, {
             duration: 500,
@@ -197,7 +201,7 @@ const Auth = () => {
   // Age Verification Functions
   const validateAndProceed = (selectedDate) => {
     const age = calculateAge(selectedDate);
-    
+
     if (age >= MINIMUM_AGE) {
       setAgeError('');
       animateToWelcomeScreen();
@@ -210,7 +214,7 @@ const Auth = () => {
   const handleDateChange = (event, selectedDate) => {
     if (Platform.OS === 'android') {
       setShowPicker(false);
-      
+
       if (event.type === 'set' && selectedDate) {
         setDate(selectedDate);
         validateAndProceed(selectedDate);
@@ -227,7 +231,7 @@ const Auth = () => {
 
   const handleConfirmDate = () => {
     animateConfirmButton(false);
-    
+
     setTimeout(() => {
       setDate(tempDate);
       setShowConfirmButton(false);
@@ -250,9 +254,9 @@ const Auth = () => {
       setIsGoogleLoading(true);
       await GoogleSignin.hasPlayServices();
       await GoogleSignin.signOut(); // Clear existing sessions
-      
+
       const userInfo = await GoogleSignin.signIn();
-      
+
       if (!userInfo?.data?.idToken) {
         return;
       }
@@ -276,31 +280,8 @@ const Auth = () => {
 
 
 
-  const handleGuestLogin = async () => {
-    if (!isConnected) {
-      Toast.show('No internet connection.', Toast.SHORT);
-      return;
-    }
-
-    try {
-      setIsGuestLoading(true);
-
-      const payload = { email:"guest@example.com", password:"guestpassword"};
-      await login(payload);
-
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      // Handle FCM token if available
-      const hasToken = await checkFCMTokenInStorage();
-      if (hasToken) {
-        await postFCMToken();
-      }
-    } catch (error) {
-      if (__DEV__) {
-        console.error('Guest Sign-In Error:', error);
-      }
-    } finally {
-      setIsGuestLoading(false);
-    }
+  const handleEmailLogin = () => {
+    navigation.navigate('login');
   };
 
   const handleAppleSignIn = async () => {
@@ -312,7 +293,6 @@ const Auth = () => {
       setIsAppleLoading(true);
       const available = await AppleAuthentication.isAvailableAsync();
       if (!available) {
-        Toast.show('Apple Sign-In not available on this device.');
         return;
       }
       const credential = await AppleAuthentication.signInAsync({
@@ -342,9 +322,9 @@ const Auth = () => {
         await postFCMToken();
       }
     } catch (err) {
-      if (err?.code === 'ERR_REQUEST_CANCELED') return; // user canceled
-      if (__DEV__) console.error('Apple Sign-In Error:', err);
-      Toast.show('Unable to sign in with Apple.');
+      // if (err?.code === 'ERR_REQUEST_CANCELED') return; // user canceled
+      // if (__DEV__) console.error('Apple Sign-In Error:', err);
+
     } finally {
       setIsAppleLoading(false);
     }
@@ -355,9 +335,9 @@ const Auth = () => {
     const buttons = [
       {
         id: 'google',
-        icon: isGoogleLoading ? 
-          <ActivityIndicator size="small" color={colors.text} /> : 
-          <AntDesign name="google" size={20} color={colors.text} />,
+        icon: isGoogleLoading ?
+          <ActivityIndicator size="small" color={colors.text} /> :
+          <AntDesign name="google" size={scaleWidth(20)} color={colors.text} />,
         text: 'Continue with Google',
         onPress: handleGoogleSignIn,
         disabled: isGoogleLoading
@@ -370,27 +350,28 @@ const Auth = () => {
         icon: isAppleLoading ? (
           <ActivityIndicator size="small" color={colors.text} />
         ) : (
-          <AntDesign name="apple1" size={20} color={colors.text} />
+          <AntDesign name="apple1" size={scaleWidth(20)} color={colors.text} />
         ),
         text: 'Continue with Apple',
         onPress: handleAppleSignIn,
         disabled: isAppleLoading
       });
     }
-    // Show Guest button only on iOS when banners have NO URLs (for reviewer access when no promotional content)
-    if (Platform.OS === 'ios' && shouldShowGuestButton) {
+
+
+
+
+    if (Platform.OS === 'ios' && !shouldShowEmailLogin) {
       buttons.push({
-        id: 'guest',
-        icon: isGuestLoading ? (
-          <ActivityIndicator size="small" color={colors.text} />
-        ) : (
-          <FontAwesome6 name="user-large" size={20} color={colors.text} />
-        ),
-        text: 'Continue with Guest',
-        onPress: handleGuestLogin,
-        disabled: isGuestLoading
+        id: 'email',
+        icon: <FontAwesome6 name="envelope" size={scaleWidth(20)} color={colors.text} />,
+        text: 'Continue with Email',
+        onPress: handleEmailLogin,
+        disabled: false
       });
     }
+
+
 
     return buttons;
   };
@@ -440,10 +421,9 @@ const Auth = () => {
   const renderDatePicker = () => {
     if (Platform.OS === 'ios') {
       return (
-        <View style={[styles.authButton, {
+        <View style={[styles.authButton, styles.iosDatePickerContainer, {
           backgroundColor: colors.buttonBackground,
           borderColor: colors.buttonBorder,
-          paddingVertical: 8,
         }]}>
           <DateTimePicker
             value={tempDate}
@@ -500,14 +480,14 @@ const Auth = () => {
           style={[styles.authButton, {
             backgroundColor: colors.buttonBorder,
             borderColor: colors.buttonBorder,
-            marginTop: 16,
+            marginTop: scaleHeight(16),
             justifyContent: 'center',
             alignItems: 'center',
           }]}
           onPress={handleConfirmDate}
         >
-          <Text style={[styles.buttonText, { 
-            color: colors.background, 
+          <Text style={[styles.buttonText, {
+            color: colors.background,
             fontWeight: '600',
             textAlign: 'center'
           }]}>
@@ -575,14 +555,14 @@ const Auth = () => {
         {isAgeVerified ? (
           <>
             <Text>By continuing, you agree to our </Text>
-            <Text 
+            <Text
               style={[styles.termsLink, { color: colors.success }]}
               onPress={handleOpenTerms}
             >
               Terms of Service
             </Text>
             <Text> and </Text>
-            <Text 
+            <Text
               style={[styles.termsLink, { color: colors.success }]}
               onPress={handleOpenPrivacy}
             >
@@ -605,15 +585,15 @@ const Auth = () => {
       />
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         {renderHeader()}
-        
+
         <View style={[styles.authSection, { backgroundColor: colors.authSectionBg }]}>
           <View style={styles.welcomeTextContainer}>
             <Animated.Text style={[styles.welcomeTitle, { color: colors.text }, titleAnimatedStyle]}>
               {isAgeVerified ? "You're Welcome" : (isVerificationComplete ? "Verified ✓" : "Verify Your Age")}
             </Animated.Text>
             <Text style={[styles.welcomeSubtitle, { color: colors.textSecondary }]}>
-              {isAgeVerified 
-                ? "Choose your preferred sign-in method" 
+              {isAgeVerified
+                ? "Choose your preferred sign-in method"
                 : "Please select your date of birth to continue"
               }
             </Text>
@@ -640,62 +620,62 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
-    paddingBottom: 20,
+    paddingBottom: scaleHeight(20),
   },
   logoContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: scaleWidth(20),
   },
   logoWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
   },
   logo: {
-    width: 180,
-    height: 80,
+    width: scaleWidth(180),
+    height: scaleHeight(80),
   },
   tagline: {
-    fontSize: 11,
+    fontSize: scaleWidth(11),
     fontWeight: '600',
     letterSpacing: 0.5,
-    marginBottom: 6,
+    marginBottom: scaleHeight(6),
   },
   taglineUnderline: {
-    width: 60,
-    height: 2,
+    width: scaleWidth(60),
+    height: scaleHeight(2),
   },
-  
+
   // Auth Section Styles
   authSection: {
     flex: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: scaleWidth(20),
     justifyContent: 'center',
-    gap: 20,
+    gap: scaleHeight(20),
   },
   welcomeTextContainer: {
     alignItems: 'center',
   },
   welcomeTitle: {
-    fontSize: 24,
+    fontSize: scaleWidth(24),
     fontWeight: '700',
-    marginBottom: 6,
+    marginBottom: scaleHeight(6),
   },
   welcomeSubtitle: {
-    fontSize: 14,
+    fontSize: scaleWidth(14),
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: scaleHeight(20),
   },
   buttonsContainer: {
-    gap: 16,
+    gap: scaleHeight(16),
     justifyContent: 'center',
     flexShrink: 0,
-    marginBottom: 30,
+    marginBottom: scaleHeight(30),
   },
   authButton: {
-    borderRadius: 16,
+    borderRadius: scaleWidth(16),
     borderWidth: 1,
-    paddingVertical: 12,
+    paddingVertical: scaleHeight(12),
     justifyContent: 'center',
     width: '100%',
   },
@@ -703,45 +683,52 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
+    gap: scaleWidth(12),
   },
   buttonText: {
-    fontSize: 16,
+    fontSize: scaleWidth(16),
     fontWeight: '600',
   },
   termsContainer: {
-    paddingHorizontal: 10,
+    paddingHorizontal: scaleWidth(10),
   },
   termsText: {
-    fontSize: 12,
+    fontSize: scaleWidth(12),
     textAlign: 'center',
-    lineHeight: 18,
+    lineHeight: scaleHeight(18),
   },
   termsLink: {
     fontWeight: '600',
     textDecorationLine: 'underline',
   },
-  
+
   // Age Verification Styles
   ageVerificationContainer: {
-    gap: 16,
+    gap: scaleHeight(16),
     justifyContent: 'center',
     flexShrink: 0,
-    marginBottom: 30,
+    marginBottom: scaleHeight(30),
   },
   datePickerContainer: {
     alignItems: 'center',
     justifyContent: 'center',
   },
+  iosDatePickerContainer: {
+    paddingVertical: scaleHeight(12),
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: scaleHeight(48),
+  },
   iosDatePicker: {
     width: '100%',
-    height: 40,
+    height: scaleHeight(36),
+    alignSelf: 'flex-start',
   },
   ageErrorText: {
-    fontSize: 14,
+    fontSize: scaleWidth(14),
     textAlign: 'center',
     fontWeight: '500',
-    marginTop: 8,
+    marginTop: scaleHeight(8),
   },
 });
 

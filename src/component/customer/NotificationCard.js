@@ -117,29 +117,29 @@ const NotificationCard = ({ notification }) => {
     const notificationConfig = useMemo(() => ({
         [NOTIFICATION_TYPES.GAME]: {
             title: 'Game Invitation',
-            bgColor: isLight ? '#f0f4ff' : 'rgba(255, 255, 255, 0.1)',
+            bgColor: isLight ? '#eef5ff' : 'rgba(46, 81, 255, 0.2)',
             icon: <MaterialCommunityIcons 
                 name="gamepad-variant" 
                 size={16} 
-                color={isLight ? "#667eea" : "#ffffff"} 
+                color={isLight ? "#4263eb" : "#6d8cff"} 
             />
         },
         [NOTIFICATION_TYPES.CREDITED]: {
             title: 'Game Point Update',
-            bgColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)',
+            bgColor: isLight ? '#e6f9ee' : 'rgba(18, 184, 134, 0.2)',
             icon: <MaterialCommunityIcons 
-                name="star-three-points" 
+                name="star-four-points-outline" 
                 size={16} 
-                color={isLight ? "#666666" : "#ffffff"} 
+                color={isLight ? "#12b886" : "#20c997"} 
             />
         },
         [NOTIFICATION_TYPES.NORMAL]: {
             title: 'Notification',
-            bgColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)',
+            bgColor: isLight ? '#fff3e0' : 'rgba(255, 152, 0, 0.2)',
             icon: <Entypo 
                 name="notification" 
                 size={16} 
-                color={isLight ? "#666666" : "#ffffff"} 
+                color={isLight ? "#ff9800" : "#ffb74d"} 
             />
         }
     }), [isLight]);
@@ -205,7 +205,7 @@ const NotificationCard = ({ notification }) => {
                 { 
                     backgroundColor: isLight ? '#ffffff' : '#000000',
                     borderColor: isLight ? '#333333' : '#dadada',
-                    borderWidth: 1 
+                    borderWidth: 1.5
                 }
             ]}>
                 {/* Header Section */}
@@ -244,7 +244,7 @@ const NotificationCard = ({ notification }) => {
 
 const styles = StyleSheet.create({
     cardContainer: {
-        marginHorizontal: 15,
+        marginHorizontal: 10,
         marginVertical: 8,
     },
     card: {
@@ -264,6 +264,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 12,
+ 
     },
     headerContent: {
         flex: 1,

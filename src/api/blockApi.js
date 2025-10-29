@@ -17,3 +17,4 @@ export const getBlockedUsers = async () => {
     const res = await API.post(endpoints.unblockUser, payload);
     return res.data;
 }
+

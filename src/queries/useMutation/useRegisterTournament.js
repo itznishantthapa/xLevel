@@ -8,7 +8,14 @@ export const useRegisterTournament = () => {
     mutationFn: (payload) => ChallengeAPI.join(payload),
 
     onSuccess: (data) => {
-      const joinedChallenge = data.challenge;
+      const joinedChallenge = data?.challenge;
+
+      if (!joinedChallenge) {
+        if (__DEV__) {
+          console.warn("registerTournament: response missing challenge payload", data);
+        }
+        return;
+      }
 
       // Update cached tournaments immediately
       queryClient.setQueryData(["tournaments", 5], (oldData) => {

@@ -280,6 +280,17 @@ const Profile = () => {
 
                 <Pressable
                   style={[styles.actionRow, styles.actionRowBorder, { borderBottomColor: colors.border }]}
+                  onPress={() => navigation.navigate("transaction")}
+                >
+                  <View style={styles.actionContent}>
+                    <MaterialIcons name="receipt-long" size={20} color={colors.text} />
+                    <Text style={[styles.actionText, { color: colors.text }]}>My Transactions</Text>
+                  </View>
+                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
+                </Pressable>
+
+                <Pressable
+                  style={[styles.actionRow, styles.actionRowBorder, { borderBottomColor: colors.border }]}
                   onPress={() => navigation.navigate("issue")}
                 >
                   <View style={styles.actionContent}>
@@ -376,6 +387,13 @@ const Profile = () => {
                 </Pressable>
               </View>
             </View>
+          </View>
+
+          {/* App Version Footer */}
+          <View style={styles.versionFooter}>
+            <Text style={[styles.versionText, { color: colors.textTertiary }]}>
+              Version 3.0.0 
+            </Text>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -569,6 +587,18 @@ const styles = StyleSheet.create({
   },
   actionText: {
     fontSize: 14,
+    fontWeight: "500",
+  },
+
+  // Version Footer
+  versionFooter: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 24,
+ 
+  },
+  versionText: {
+    fontSize: 12,
     fontWeight: "500",
   },
 })

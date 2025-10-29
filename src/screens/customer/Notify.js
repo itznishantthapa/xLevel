@@ -65,7 +65,7 @@ const EmptyListComponent = ({ isLight }) => (
 )
 
 const HeaderComponent = () => (
-    <AppHeader title={'Notifications'} />
+    <AppHeader title={'Notify & Alert'} />
 )
 
 const getItemType = (item) => {
@@ -156,7 +156,7 @@ const Notify = () => {
                             <NotificationCard notification={item} />
                         )
                     }
-                    keyExtractor={(item) => item.isSkeleton ? item.id : item.id.toString()}
+                    keyExtractor={(item, index) => item.isSkeleton ? item.id : `notification-${item.id}-${index}`}
                     ListHeaderComponent={<HeaderComponent />}
                     ListEmptyComponent={isFetching ? null : <EmptyListComponent isLight={isLight} />}
                     refreshControl={
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
     },
     // Skeleton Styles
     skeletonCard: {
-        marginHorizontal: 15,
+        marginHorizontal: 10,
         marginVertical: 8,
         borderRadius: 12,
         paddingHorizontal: 16,

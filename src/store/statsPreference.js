@@ -4,21 +4,32 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Default configuration
 const DEFAULT_STATS = [
-  { id: 'watchads', type: 'watchads', name: 'Watch Ads', icon: 'play-circle-outline', iconLib: 'Ionicons' },
+  { id: 'gamerules', type: 'gamerules', name: 'Game Rules', icon: 'book-outline', iconLib: 'Ionicons' },
   { id: 'leaderboard', type: 'leaderboard', name: 'Leaderboard', icon: 'trophy', iconLib: 'SimpleLineIcons' },
   { id: 'tournament', type: 'tournament', name: 'Tournaments', icon: 'game-controller-outline', iconLib: 'Ionicons' },
   { id: 'matches', type: 'matches', name: 'My Match', icon: 'gamepad-circle-right', iconLib: 'MaterialCommunityIcons' },
 ];
 
+// Configuration when point banner exists (kept visually the same)
+const POINT_BANNER_STATS = [
+  { id: 'transaction', type: 'leaderboard', name: 'Transaction', icon: 'receipt-long', iconLib: 'MaterialIcons' },
+  { id: 'tournament', type: 'tournament', name: 'Tournaments', icon: 'game-controller-outline', iconLib: 'Ionicons' },
+  { id: 'matches', type: 'matches', name: 'My Match', icon: 'gamepad-circle-right', iconLib: 'MaterialCommunityIcons' },
+  // Redeem remains visually the same but aligns the type to 'gamerules' for toggling consistency
+  { id: 'redeem', type: 'gamerules', name: 'Redeem', icon: 'wallet-giftcard', iconLib: 'MaterialCommunityIcons' },
+];
+
 // Toggleable options
 const TOGGLEABLE_OPTIONS = {
-  watchads: {
-    primary: { id: 'watchads', type: 'watchads', name: 'Watch Ads', icon: 'play-circle-outline', iconLib: 'Ionicons' },
-    secondary: { id: 'gameprofile', type: 'watchads', name: 'Game Profiles', icon: 'playlist-add', iconLib: 'MaterialIcons' },
+  // gamerules toggles between Game Rules and Redeem
+  gamerules: {
+    primary: { id: 'gamerules', type: 'gamerules', name: 'Game Rules', icon: 'book-outline', iconLib: 'Ionicons' },
+    secondary: { id: 'redeem', type: 'gamerules', name: 'Redeem', icon: 'wallet-giftcard', iconLib: 'MaterialCommunityIcons' },
   },
+  // leaderboard toggles between Leaderboard and Transaction
   leaderboard: {
     primary: { id: 'leaderboard', type: 'leaderboard', name: 'Leaderboard', icon: 'trophy', iconLib: 'SimpleLineIcons' },
-    secondary: { id: 'gamerules', type: 'leaderboard', name: 'Game Rules', icon: 'book-outline', iconLib: 'Ionicons' },
+    secondary: { id: 'transaction', type: 'leaderboard', name: 'Transaction', icon: 'receipt-long', iconLib: 'MaterialIcons' },
   },
 };
 
@@ -28,10 +39,23 @@ export const useStatsPreferenceStore = create(
       // State
       statsConfig: DEFAULT_STATS,
       isLoading: false,
+      hasPointBanner: false,
 
       // Actions
       updateStatsConfig: (newConfig) => {
         set({ statsConfig: newConfig });
+      },
+
+      setStatsBasedOnPointBanner: (hasPointBanner) => {
+        const currentHasPointBanner = get().hasPointBanner;
+        
+        // Only update if the point banner state has changed
+        if (currentHasPointBanner !== hasPointBanner) {
+          set({ 
+            hasPointBanner,
+            statsConfig: hasPointBanner ? POINT_BANNER_STATS : DEFAULT_STATS 
+          });
+        }
       },
 
       toggleStatsItem: (index) => {
@@ -41,8 +65,22 @@ export const useStatsPreferenceStore = create(
 
         if (toggleOptions) {
           const newConfig = [...currentConfig];
-          const isCurrentPrimary = currentItem.id === toggleOptions.primary.id;
-          const newItem = isCurrentPrimary ? toggleOptions.secondary : toggleOptions.primary;
+          let newItem;
+          
+          // Handle 3-way toggle for leaderboard type
+          if (toggleOptions.tertiary) {
+            if (currentItem.id === toggleOptions.primary.id) {
+              newItem = toggleOptions.secondary;
+            } else if (currentItem.id === toggleOptions.secondary.id) {
+              newItem = toggleOptions.tertiary;
+            } else {
+              newItem = toggleOptions.primary;
+            }
+          } else {
+            // Handle 2-way toggle for other types
+            const isCurrentPrimary = currentItem.id === toggleOptions.primary.id;
+            newItem = isCurrentPrimary ? toggleOptions.secondary : toggleOptions.primary;
+          }
           
           // Preserve the type for future toggles
           newConfig[index] = { ...newItem, type: currentItem.type };
@@ -61,16 +99,44 @@ export const useStatsPreferenceStore = create(
       },
 
       resetToDefault: () => {
-        set({ statsConfig: DEFAULT_STATS });
+        set({ statsConfig: DEFAULT_STATS, hasPointBanner: false });
       },
 
       // Getters/Constants
       getToggleableOptions: () => TOGGLEABLE_OPTIONS,
       getDefaultStats: () => DEFAULT_STATS,
+      getPointBannerStats: () => POINT_BANNER_STATS,
     }),
     {
       name: 'stats-preferences-storage',
       storage: createJSONStorage(() => AsyncStorage),
+      version: 2,
+      migrate: async (persistedState, version) => {
+        try {
+          if (!persistedState || typeof persistedState !== 'object') return persistedState;
+          const next = { ...persistedState };
+          if (Array.isArray(next.statsConfig)) {
+            next.statsConfig = next.statsConfig.map((item) => {
+              if (!item || typeof item !== 'object') return item;
+              // Map any legacy 'watchads' type to the new 'gamerules' type
+              if (item.type === 'watchads') {
+                if (item.id === 'redeem') {
+                  // Keep Redeem visually the same but set type to gamerules
+                  const opt = TOGGLEABLE_OPTIONS.gamerules?.secondary;
+                  return opt ? { ...opt, type: 'gamerules' } : { ...item, type: 'gamerules' };
+                }
+                // Default to Game Rules when migrating from watchads
+                const opt = TOGGLEABLE_OPTIONS.gamerules?.primary;
+                return opt ? { ...opt, type: 'gamerules' } : { ...item, id: 'gamerules', name: 'Game Rules', icon: 'book-outline', iconLib: 'Ionicons', type: 'gamerules' };
+              }
+              return item;
+            });
+          }
+          return next;
+        } catch (e) {
+          return persistedState;
+        }
+      },
       onRehydrateStorage: () => (state) => {
         if (state) {
           state.isLoading = false;

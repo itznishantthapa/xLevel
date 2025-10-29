@@ -3,7 +3,7 @@
 import { useNavigation } from "@react-navigation/native"
 import { FlashList } from "@shopify/flash-list"
 import { useCallback, useEffect, useState } from "react"
-import { Platform, RefreshControl, StatusBar, StyleSheet, View } from "react-native"
+import { Platform, RefreshControl, StatusBar, StyleSheet, View, Linking } from "react-native"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import Toast from "react-native-simple-toast"
 
@@ -34,12 +34,14 @@ import { queryClient } from "../../lib/queryClient"
 // State Management
 import { useAuthStore } from "../../store/authStore"
 import { useThemeStore } from "../../store/themeStore"
+import { useStatsPreferenceStore } from "../../store/statsPreference"
 
 // New import for handleJoinGame
 import { handleJoinGame } from "../../service/homeHandler"
 import { useInfiniteTournaments } from "../../queries/useTournament"
 import { useRegisterTournament } from "../../queries/useMutation/useRegisterTournament"
 import { scaleHeight } from "../../utils/scaling"
+import Loader from "../../component/Loader"
 
 /**
  * ========================================================================
@@ -76,9 +78,11 @@ const Home = () => {
   const { user, get_user } = useAuthStore()
   const { isLight } = useThemeStore()
   const { isConnected } = useNetworkStatus()
+  const { setStatsBasedOnPointBanner } = useStatsPreferenceStore()
 
   // Local component state
   const [refreshing, setRefreshing] = useState(false)
+  const [isJoiningTournament, setIsJoiningTournament] = useState(false)
 
 
   // API data queries
@@ -89,34 +93,56 @@ const Home = () => {
   const { mutateAsync: registerTournament } = useRegisterTournament();
   const { data: upcomingChallenges, isLoading: isUpcomingLoading } = useUpcomingChallenges()
 
- 
-  
+  // Filter out QR image from banners - only show banners that don't have 'qrimage' in url
+  const displayBanners = banners.filter(banner =>
+    !banner?.url?.toLowerCase().includes('qrimage')
+  )
 
- 
- 
+  // Check if any banner has 'point' in its URL
+  const hasPointBanner = banners?.some(banner =>
+    banner?.url && banner.url.toLowerCase().includes('point')
+  )
+
+  /*
+   * ====================================================================
+   * Update Stats Configuration Based on Point Banner
+   * ====================================================================
+   */
+  useEffect(() => {
+    // Update stats configuration when banners data changes
+    if (banners && banners.length > 0) {
+      setStatsBasedOnPointBanner(hasPointBanner)
+    }
+  }, [banners, hasPointBanner, setStatsBasedOnPointBanner])
+
+
+
+
+
+
   /*
    * ====================================================================
    * Mounting User Data & Upcoming Challenges
    * ====================================================================
    */
 
-useEffect(() => {
-  const mountData = async () => {
-    try {
-      // Refresh user data
-      await get_user();
-      
-      // Refresh upcoming challenges
-      await queryClient.invalidateQueries({ queryKey: ["upcomingChallenges"] });
-    } catch (error) {
-      if (__DEV__) {
-        console.error("Mount Data Error:", error);
-      }
-    }
-  };
+  useEffect(() => {
+    const mountData = async () => {
+      try {
+        // Refresh user data
+        await get_user();
 
-  mountData();
-}, []);
+        // Refresh upcoming challenges
+        await queryClient.invalidateQueries({ queryKey: ["upcomingChallenges"] });
+      } catch (error) {
+        if (__DEV__) {
+          console.error("Mount Data Error:", error);
+        }
+      }
+    };
+
+    mountData();
+  }, []);
 
 
 
@@ -146,7 +172,7 @@ useEffect(() => {
 
       // You can add more query invalidations here if needed
     } catch (error) {
-        if (__DEV__) {  
+      if (__DEV__) {
         console.error("Refresh Error:", error);
       }
     } finally {
@@ -179,7 +205,7 @@ useEffect(() => {
     navigation.navigate("profile", { userData: user })
   }
 
- 
+
 
   /*
    * ====================================================================
@@ -203,7 +229,7 @@ useEffect(() => {
     if (!isConnected) {
       return
     }
- 
+
     // Check if user has a profile for this game
     const existingProfile = gameProfiles?.find((profile) => profile.game_id === game.game_id)
 
@@ -252,6 +278,27 @@ useEffect(() => {
   }
 
 
+  const handleHeaderGamePoint = () => {
+
+
+    // Check if any banner has 'point' in its URL
+    const pointBanner = banners?.find(banner =>
+      banner?.url && banner.url.toLowerCase().includes('point')
+    )
+
+    // If no point banner exists, navigate to watchAds
+    if (!pointBanner) {
+      navigation.navigate("watchAds")
+      return
+    }
+
+    // If point banner exists, open the URL
+    if (pointBanner?.url) {
+      navigation.navigate("scanPay")
+    }
+  }
+
+
   /**
    * Handles challenge confirmation
    * Shows the join game sheet with challenge-specific data
@@ -294,21 +341,18 @@ useEffect(() => {
    *
    * @param {string} id - Challenge ID to join
    */
-  
+
 
   const handleRegisterChallenge = async (id, accessCode) => {
     try {
-   
+      setIsJoiningTournament(true);
 
       // TODO: Implement actual registration logic with access code
       await registerTournament({ challenge_id: id, access_code: accessCode });
-      
-      // Invalidate upcoming challenges query to refetch and update the list
-      await queryClient.invalidateQueries({ queryKey: ["upcomingChallenges"] });
-      
+
       // Add a small delay to ensure cache is updated before navigation
       await new Promise(resolve => setTimeout(resolve, 300));
-      
+
       navigation.reset({
         index: 1,
         routes: [{ name: "customerTabs" }, { name: "userTournament" }],
@@ -316,6 +360,8 @@ useEffect(() => {
 
     } catch (error) {
       Toast.show(error?.message || "Failed to join challenge.", Toast.SHORT);
+    } finally {
+      setIsJoiningTournament(false);
     }
   };
 
@@ -342,35 +388,23 @@ useEffect(() => {
    */
   const renderSection = ({ item }) => {
     switch (item.type) {
-      case "header":
-        return (
-          <Header
-            player_name={user?.full_name}
-            wallet_balance={user?.wallet_balance}
-            profile_picture={user?.profile_picture}
-            handleProfile={handleProfile}
-            handleMessenger={handleMessengerWrapper}
-            handleInstagram={handleInstagramWrapper}
-            handleWhatsapp={handleWhatsappWrapper}
-          />
-        )
+      case "banner":
+        return <HomeBanner data={displayBanners} />
 
       case "stats":
         return (
           <StatsContainer
             num_loss={user?.num_loss || 0}
             num_win={user?.num_win || 0}
-            handleGameProfiles={() => navigation.navigate("setupGameInfo")}
+            handleWithdraw={() => navigation.navigate("withDraw")}
             handleTournament={() => navigation.navigate("userTournament")}
             handleGameRules={() => navigation.navigate("gameRules")}
             handleMatches={() => navigation.navigate("match")}
             handleWatchAds={() => navigation.navigate("watchAds")}
             handleLeaderboard={() => navigation.navigate("leaderboard")}
+            handleTransaction={() => navigation.navigate("transaction")}
           />
         )
-
-      case "banner":
-        return <HomeBanner data={banners} />
 
       case "games":
         return <GameCarousel games={games} handleGameCardPress={handleGameCardPress} />
@@ -401,9 +435,21 @@ useEffect(() => {
       {/* Status bar configuration for theme consistency */}
       <StatusBar translucent backgroundColor="transparent" barStyle={isLight ? "dark-content" : "light-content"} />
 
+      {/* Fixed Header at the top */}
+      <Header
+        player_name={user?.full_name}
+        wallet_balance={user?.wallet_balance}
+        profile_picture={user?.profile_picture}
+        handleProfile={handleProfile}
+        handleMessenger={handleMessengerWrapper}
+        handleInstagram={handleInstagramWrapper}
+        handleWhatsapp={handleWhatsappWrapper}
+        handleHeaderGamePoint={handleHeaderGamePoint}
+      />
+
       {/* Main content list with optimized scrolling */}
       <FlashList
-        data={[{ type: "header" }, { type: "stats" }, { type: "banner" }, { type: "games" }, { type: "upcoming" }]}
+        data={[{ type: "banner" }, { type: "stats" }, { type: "games" }, { type: "upcoming" }]}
         renderItem={renderSection}
         estimatedItemSize={200}
         showsVerticalScrollIndicator={false}
@@ -415,12 +461,19 @@ useEffect(() => {
             colors={[isLight ? '#000000' : '#ffffff']}
             tintColor={isLight ? '#000000' : '#ffffff'}
             progressBackgroundColor={isLight ? '#ffffff' : '#000000'}
-            progressViewOffset={insets.top + scaleHeight(50)}
+            // progressViewOffset={insets.top}
           />
         }
       />
 
       {/* Note: Bottom sheet is handled globally by BottomSheetProvider */}
+      
+      {/* Loader for tournament joining */}
+      <Loader 
+        visible={isJoiningTournament} 
+        message="Joining tournament..."
+        size={56}
+      />
     </View>
   )
 }

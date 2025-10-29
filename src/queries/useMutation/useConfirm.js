@@ -9,7 +9,7 @@ export const useConfirm = () => {
         mutationFn: (payload) => ChallengeAPI.confirmOpponent(payload),
 
         onSuccess: (data) => {
-            const confirmedChallenge = data.challenge;
+            const confirmedChallenge = data?.challenge;
 
             // Update cached matches immediately
             queryClient.setQueryData(["myMatch", 5], (oldData) => {

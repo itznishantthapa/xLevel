@@ -9,7 +9,6 @@ import { endpoints } from "./endpoints";
 export const API = axios.create({
   
   baseURL: "https://level-esport-matchmaking-gbfmu.ondigitalocean.app",
-  // baseURL: "http://192.168.1.88:8000", 
   headers: { "Content-Type": "application/json" },
   timeout: 6000,
 });
@@ -47,10 +46,15 @@ API.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // If we somehow receive an error without a request context, surface a safe failure
+    if (!originalRequest) {
+      return Promise.reject({ message: "Something went wrong.", original: error });
+    }
+
     // Skip refresh logic for auth endpoints
     const authEndpoints = ["/api/user/google/auth/", "/api/user/login/", "/api/user/register/"];
     const isAuthEndpoint = authEndpoints.some((endpoint) => {
-      const requestPath = originalRequest.url?.replace(API.defaults.baseURL || '', '');
+      const requestPath = originalRequest?.url?.replace(API.defaults.baseURL || '', '');
       return requestPath === endpoint || requestPath?.endsWith(endpoint);
     });
 

@@ -23,7 +23,8 @@ export default function CustomerTabNavigator() {
                 tabBarInactiveTintColor: isLight ? '#666666' : 'rgba(255, 255, 255, 0.7)',
                 tabBarStyle: {
                       height: 56 + insets.bottom,
-                    borderTopWidth: 1,
+                    borderTopWidth: 0,
+                    borderColor: isLight ? '#ffffff' : '#ffffff',
                     backgroundColor: isLight ? '#ffffff' : '#000000',
                 },
                 tabBarButton: (props) => (
@@ -69,7 +70,7 @@ export default function CustomerTabNavigator() {
                 component={Notify}
                 options={{
                     tabBarLabel: ({ focused, color }) => (
-                        <Text style={{ color, fontSize: 12, fontWeight: focused ? 'bold' : 'normal', marginBottom: 3 }}>Notification</Text>
+                        <Text style={{ color, fontSize: 12, fontWeight: focused ? 'bold' : 'normal', marginBottom: 3 }}>Notify & Alert</Text>
                     ),
                     tabBarIcon: ({ focused, color, size }) => (
                         <View style={styles.tabIconContainer}>

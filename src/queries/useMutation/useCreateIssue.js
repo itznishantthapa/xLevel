@@ -10,7 +10,7 @@ export const useCreateIssue = () => {
     mutationFn: (payload) => IssueAPI.createIssue(payload),
 
     onSuccess: (data) => {
-      const createdIssue = data.issue;
+      const createdIssue = data?.issue;
       // Update cached matches immediately
       queryClient.setQueryData(["issues", 10], (oldData) => {
         if (!oldData) return oldData;
