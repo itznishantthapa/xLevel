@@ -8,8 +8,7 @@ import { endpoints } from "./endpoints";
 // Central API client
 export const API = axios.create({
   
-  // baseURL: "https://level-esport-matchmaking-gbfmu.ondigitalocean.app",
-  baseURL: "http://192.168.1.76:8000", 
+  baseURL: "https://level-esport-matchmaking-gbfmu.ondigitalocean.app",
   headers: { "Content-Type": "application/json" },
   timeout: 6000,
 });
