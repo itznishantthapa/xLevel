@@ -1,7 +1,8 @@
 "use client"
 
 import { Image, Platform, Pressable, StyleSheet, Text, View } from "react-native"
-import { useMemo } from "react"
+import { useMemo, useEffect, useState, useRef } from "react"
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSequence, Easing, runOnJS } from "react-native-reanimated"
 import { Octicons, Entypo, MaterialIcons, Fontisto, MaterialCommunityIcons, Ionicons, FontAwesome6 } from "@expo/vector-icons"
 import { useThemeStore } from "../../store/themeStore"
 import { useSocials } from "../../queries/useSocials"
@@ -20,10 +21,59 @@ const Header = ({
 }) => {
   const { data: socials = [] } = useSocials()
 
- 
-
   const { isLight } = useThemeStore()
-   const { user } = useAuthStore()
+  const { user } = useAuthStore()
+  
+  // Motivational phrases to cycle through with colors
+  const motivationalPhrases = [
+    { text: "Get ready for the battle.", color: "#00bf63" },
+    { text: "Up to 20% discount on enhancements.", color: "#260e26ff" },
+    { text: "Check our latest video.", color: "#e6f110ff" }
+  ]
+  
+  const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0)
+  const flipAnimation = useSharedValue(0)
+
+  // Function to update phrase index (can be called from UI thread via runOnJS)
+  const updatePhraseIndex = () => {
+    setCurrentPhraseIndex((prev) => (prev + 1) % motivationalPhrases.length)
+  }
+
+  // Animated style for flip effect
+  const animatedTextStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ rotateX: `${flipAnimation.value}deg` }],
+      opacity: Math.abs(Math.cos((flipAnimation.value * Math.PI) / 180))
+    }
+  })
+
+  // Set up animation cycle
+  useEffect(() => {
+    const animateText = () => {
+      // Flip out (0 to 90 degrees)
+      flipAnimation.value = withTiming(90, {
+        duration: 300,
+        easing: Easing.inOut(Easing.ease)
+      }, (finished) => {
+        'worklet'
+        if (finished) {
+          // Change text when fully flipped using runOnJS
+          runOnJS(updatePhraseIndex)()
+          
+          // Flip back in (90 to 0 degrees)
+          flipAnimation.value = withTiming(0, {
+            duration: 300,
+            easing: Easing.inOut(Easing.ease)
+          })
+        }
+      })
+    }
+
+    // Cycle every 3 seconds
+    const interval = setInterval(animateText, 5000)
+    return () => clearInterval(interval)
+  }, [])
+
   const { displayName, availableSocials, themeStyles } = useMemo(() => {
     const firstName = player_name ? player_name.split(" ")[0] : ""
     const computedDisplayName = firstName.length > 10 ? `${firstName.slice(0, 10)}...` : firstName
@@ -165,12 +215,17 @@ const Header = ({
             <FontAwesome6 name="hand-peace" size={18} color={themeStyles.iconColor} />
           </View>
 
-          <Text
-            style={[styles.subtitle, { color: themeStyles.textColor }]}
-            accessibilityLabel="Get ready for the battle"
+          <Animated.Text
+            style={[
+              styles.subtitle, 
+              { color: motivationalPhrases[currentPhraseIndex].color },
+              animatedTextStyle
+            ]}
+            numberOfLines={2}
+            accessibilityLabel={motivationalPhrases[currentPhraseIndex].text}
           >
-            Get ready for the battle.
-          </Text>
+            {motivationalPhrases[currentPhraseIndex].text}
+          </Animated.Text>
         </View>
 
       </View>
@@ -281,6 +336,7 @@ const styles = StyleSheet.create({
   userInfo: {
     flex: 1,
     justifyContent: "center",
+    minHeight: 60,
   },
   greeting: {
     fontSize: 16,
@@ -293,6 +349,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     opacity: 0.8,
     lineHeight: 18,
+    minHeight: 36,
   },
   rightSection: {
     alignItems: "flex-end",

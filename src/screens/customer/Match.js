@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react'
-import { StatusBar, StyleSheet, View } from 'react-native'
+import { StatusBar, StyleSheet, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Toast from 'react-native-simple-toast'
 import { useNavigation } from '@react-navigation/native'
@@ -44,7 +44,29 @@ const Match = () => {
     refetch,
     isFetching,
     refreshFirstPage,
+    error,
   } = useMyMatch(5);
+
+  // Show offline message if there's a network error and no cached data
+  if (error && !latestMatches.length && !isConnected) {
+    return (
+      <View style={[styles.container, { backgroundColor: isLight ? '#ffffff' : '#000000', paddingTop: insets.top }]}>
+        <StatusBar
+          translucent
+          backgroundColor="transparent"
+          barStyle={isLight ? "dark-content" : "light-content"}
+        />
+        <View style={styles.errorContainer}>
+          <Text style={[styles.errorText, { color: isLight ? '#000000' : '#ffffff' }]}>
+            No internet connection
+          </Text>
+          <Text style={[styles.errorSubtext, { color: isLight ? '#666666' : '#999999' }]}>
+            Please check your connection and try again
+          </Text>
+        </View>
+      </View>
+    );
+  }
 
 
   const handleDeleteChallenge = useCallback(async (challengeId) => {
@@ -229,7 +251,24 @@ const Match = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  }
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 32,
+  },
+  errorText: {
+    fontSize: 18,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  errorSubtext: {
+    fontSize: 14,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
 });
 
 export default React.memo(Match);

@@ -829,9 +829,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   checkMark: {
-    fontSize: 16,
-    fontWeight: '900',
-    lineHeight: 18,
+    fontSize: 12,
+    fontWeight: '700',
+    lineHeight: 12,
+    marginTop: -1,
   },
   rulesLink: {
     alignSelf: "flex-start",

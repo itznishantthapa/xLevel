@@ -124,9 +124,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   checkMark: {
-    fontSize: 16,
-    fontWeight: '900',
-    lineHeight: 18,
+    fontSize: 14,
+    fontWeight: '700',
+    lineHeight: 14,
+    marginTop: -1,
   },
   termsText: {
     flex: 1,

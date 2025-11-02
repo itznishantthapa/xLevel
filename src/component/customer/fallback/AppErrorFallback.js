@@ -2,8 +2,8 @@ import { View, Text, StyleSheet, StatusBar, Pressable } from "react-native"
 import { __DEV__ } from "react-native"
 import { useThemeStore } from "../../../store/themeStore"
 import { useMemo } from "react"
-import AppHeader from '../../../screens/customer/header/AppHeader'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { MaterialIcons } from '@expo/vector-icons';
 
 // Socials removed per minimal requirement
 
@@ -23,36 +23,128 @@ const AppErrorFallback = ({ error, resetErrorBoundary }) => {
         surface: isLight ? '#ffffff' : '#000000',
         subtle: isLight ? '#e6e6e6' : '#1a1a1a',
         iconColor: textColor,
-        buttonBg: isLight ? '#000' : '#fff',
-        buttonText: isLight ? '#fff' : '#000'
+        buttonBg: isLight ? '#000000' : '#ffffff',
+        buttonText: isLight ? '#ffffff' : '#000000',
+        secondaryText: isLight ? '#666666' : '#999999',
+        iconBg: isLight ? '#f5f5f5' : '#1a1a1a',
       }
     }
   }, [isLight])
 
   return (
-    
-    <Pressable style={[styles.screen, { backgroundColor: themeStyles.surface, paddingTop: insets.top }]} onPress={handleReset} >
+    <View style={[styles.screen, { backgroundColor: themeStyles.surface, paddingTop: insets.top }]}>
       <StatusBar translucent backgroundColor="transparent" barStyle={isLight ? "dark-content" : "light-content"} />
-      <AppHeader backButton={false} title={'Unable to Load'} />
       <View style={styles.centerWrap}>
-        <View accessibilityRole="button" accessibilityLabel="Reset screen" style={styles.tapBox}>
-          <Text style={[styles.simpleMsg, { color: themeStyles.textColor }]}>Something went wrong. Tap to retry.</Text>
+        {/* Icon Container */}
+        <View style={[styles.iconContainer, { backgroundColor: themeStyles.iconBg }]}>
+          <MaterialIcons name="error-outline" size={64} color={themeStyles.iconColor} />
         </View>
-        {__DEV__ && (
-          <Text style={[styles.devHint, { color: themeStyles.textColor }]}>{error?.message}</Text>
+
+        {/* Title */}
+        <Text style={[styles.title, { color: themeStyles.textColor }]}>
+          Oops! Something went wrong
+        </Text>
+
+        {/* Subtitle */}
+        <Text style={[styles.subtitle, { color: themeStyles.secondaryText }]}>
+          We encountered an unexpected error. Don't worry, you can try again.
+        </Text>
+
+        {/* Retry Button */}
+        <Pressable 
+          style={[styles.retryButton, { backgroundColor: themeStyles.buttonBg }]}
+          onPress={handleReset}
+          accessibilityRole="button"
+          accessibilityLabel="Retry"
+        >
+          <MaterialIcons name="refresh" size={18} color={themeStyles.buttonText} />
+          <Text style={[styles.retryButtonText, { color: themeStyles.buttonText }]}>
+            Try Again
+          </Text>
+        </Pressable>
+
+        {/* Dev Error Message */}
+        {__DEV__ && error?.message && (
+          <View style={[styles.devErrorContainer, { backgroundColor: themeStyles.iconBg }]}>
+            <Text style={[styles.devErrorLabel, { color: themeStyles.secondaryText }]}>
+              Debug Info:
+            </Text>
+            <Text style={[styles.devErrorText, { color: themeStyles.textColor }]}>
+              {error.message}
+            </Text>
+          </View>
         )}
       </View>
-    </Pressable>
+    </View>
   )
 }
 
 
 const styles = StyleSheet.create({
-  screen: { flex: 1 },
-  centerWrap: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24, gap: 8 },
-  tapBox: { paddingVertical: 12, paddingHorizontal: 16 },
-  simpleMsg: { fontSize: 16, fontWeight: '500', textAlign: 'center' },
-  devHint: { marginTop: 4, fontSize: 11, opacity: 0.7, textAlign: 'center' },
+  screen: { 
+    flex: 1 
+  },
+  centerWrap: { 
+    flex: 1, 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    paddingHorizontal: 32,
+  },
+  iconContainer: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: 12,
+    letterSpacing: -0.5,
+  },
+  subtitle: {
+    fontSize: 15,
+    fontWeight: '400',
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: 32,
+    paddingHorizontal: 16,
+  },
+  retryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 6,
+    gap: 6,
+  },
+  retryButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  devErrorContainer: {
+    marginTop: 32,
+    padding: 16,
+    borderRadius: 8,
+    maxWidth: '100%',
+  },
+  devErrorLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 8,
+  },
+  devErrorText: {
+    fontSize: 13,
+    fontWeight: '400',
+    lineHeight: 18,
+    fontFamily: 'monospace',
+  },
 })
 
 export default AppErrorFallback
