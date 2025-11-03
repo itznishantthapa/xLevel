@@ -1,38 +1,80 @@
 "use client"
 
-import React from "react"
-import { Pressable, StatusBar, StyleSheet, Text } from "react-native"
+import React, { useState } from "react"
+import { ActivityIndicator, Image, Pressable, StatusBar, StyleSheet, Text, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { MaterialIcons } from "@expo/vector-icons"
 import { useThemeStore } from "../store/themeStore"
 
 /**
- * Minimalist NoConnection screen
- * - Shows a Wi‑Fi icon
- * - One line of text: "No Internet Connection, tap to retry"
- * - Entire screen is tappable; calls onRetry when pressed
+ * Professional NoConnection screen with minimal stylish design
+ * - App logo at center
+ * - Minimal text
+ * - Clean retry button with loading state
  */
 const NoConnection = ({ onRetry }) => {
   const { isLight } = useThemeStore()
+  const [isRetrying, setIsRetrying] = useState(false)
 
-  const bg = isLight ? "#ffffff" : "#000000"
-  const fg = isLight ? "#111111" : "#EAEAEA"
-  const sub = isLight ? "rgba(0,0,0,0.6)" : "rgba(255,255,255,0.7)"
+  const themeStyles = {
+    bg: isLight ? "#ffffff" : "#000000",
+    fg: isLight ? "#000000" : "#ffffff",
+    logoBg: isLight ? "#000000" : "#1a1a1a",
+    subtitleColor: isLight ? "#666666" : "#999999",
+    buttonBg: isLight ? "#000000" : "#ffffff",
+    buttonText: isLight ? "#ffffff" : "#000000",
+  }
+
+  const handleRetry = async () => {
+    setIsRetrying(true)
+    try {
+      await onRetry()
+    } finally {
+      // Reset after a short delay to give feedback
+      setTimeout(() => setIsRetrying(false), 1000)
+    }
+  }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: bg }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeStyles.bg }]}>
       <StatusBar translucent backgroundColor="transparent" barStyle={isLight ? "dark-content" : "light-content"} />
 
-      <Pressable
-        style={styles.center}
-        onPress={onRetry}
-        accessibilityRole="button"
-        accessibilityLabel="No Internet Connection, tap to retry"
-      >
-        <MaterialIcons name="wifi-off" size={72} color={fg} />
-        <Text style={[styles.text, { color: fg }]}>No Internet Connection</Text>
-        <Text style={[styles.subtext, { color: sub }]}>Tap to retry</Text>
-      </Pressable>
+      <View style={styles.content}>
+        {/* App Logo with Background */}
+        <View style={[styles.logoContainer, { backgroundColor: themeStyles.logoBg }]}>
+          <Image
+            source={require("../assets/level.png")}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </View>
+
+        {/* Title */}
+        <Text style={[styles.title, { color: themeStyles.fg }]}>No Connection</Text>
+
+        {/* Subtitle */}
+        <Text style={[styles.subtitle, { color: themeStyles.subtitleColor }]}>
+          Check your internet and try again
+        </Text>
+
+        {/* Retry Button */}
+        <Pressable
+          style={[styles.retryButton, { backgroundColor: themeStyles.buttonBg }]}
+          onPress={handleRetry}
+          disabled={isRetrying}
+          accessibilityRole="button"
+          accessibilityLabel="Retry connection"
+        >
+          {isRetrying ? (
+            <ActivityIndicator size="small" color={themeStyles.buttonText} />
+          ) : (
+            <MaterialIcons name="refresh" size={18} color={themeStyles.buttonText} />
+          )}
+          <Text style={[styles.retryButtonText, { color: themeStyles.buttonText }]}>
+            {isRetrying ? "Retrying..." : "Try Again"}
+          </Text>
+        </Pressable>
+      </View>
     </SafeAreaView>
   )
 }
@@ -43,21 +85,50 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  center: {
+  content: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    gap: 14,
-    paddingHorizontal: 24,
+    paddingHorizontal: 32,
+    gap: 12,
   },
-  text: {
-    fontSize: 16,
+  logoContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 16,
+  },
+  logo: {
+    width: 60,
+    height: 60,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: "700",
+    textAlign: "center",
+    letterSpacing: -0.5,
+  },
+  subtitle: {
+    fontSize: 14,
+    fontWeight: "400",
+    textAlign: "center",
+    lineHeight: 20,
+    marginBottom: 12,
+  },
+  retryButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 6,
+    gap: 6,
+    marginTop: 8,
+  },
+  retryButtonText: {
+    fontSize: 14,
     fontWeight: "600",
-    textAlign: "center",
-  },
-  subtext: {
-    fontSize: 13,
-    fontWeight: "500",
-    textAlign: "center",
   },
 })

@@ -5,8 +5,25 @@ import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persi
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      cacheTime: 1000 * 60 * 60 * 24,
-      staleTime: 0, 
+      gcTime: 1000 * 60 * 60 * 24, // Updated from cacheTime (deprecated)
+      staleTime: 0,
+      retry: 2, // Retry failed requests twice
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
+      // Global error handler to prevent crashes
+      onError: (error) => {
+        if (__DEV__) {
+          console.error('Query error:', error);
+        }
+      },
+    },
+    mutations: {
+      retry: 1, // Retry mutations once
+      // Global error handler for mutations
+      onError: (error) => {
+        if (__DEV__) {
+          console.error('Mutation error:', error);
+        }
+      },
     },
   },
 });

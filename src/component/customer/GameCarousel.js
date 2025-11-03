@@ -12,10 +12,11 @@ import {
 import { Entypo } from "@expo/vector-icons"
 import { useThemeStore } from '../../store/themeStore';
 import { useBanners } from '../../queries/useBanners';
+import { scaleWidth, scaleHeight } from '../../utils/scaling';
 
 const { width } = Dimensions.get('window');
-const CARD_WIDTH = width * 0.45;
-const CARD_HEIGHT = 300;
+const CARD_WIDTH = scaleWidth(100);
+const CARD_HEIGHT = scaleHeight(130);
 
 
 
@@ -37,7 +38,7 @@ const GameCarousel = ({ games, handleGameCardPress }) => {
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContainer}
                 decelerationRate="fast"
-                snapToInterval={CARD_WIDTH + 15}
+                snapToInterval={CARD_WIDTH + scaleWidth(15)}
                 snapToAlignment="start"
             >
                 {games?.map((game, index) => (
@@ -45,7 +46,7 @@ const GameCarousel = ({ games, handleGameCardPress }) => {
                         key={game.game_id}
                         style={[
                             styles.gameCard,
-                            { marginLeft: index === 0 ? 20 : 0 },
+                            { marginLeft: index === 0 ? scaleWidth(20) : 0 },
                             isLight ? {borderColor: '#000000'} : {borderColor: '#EAEAEA'}
                         ]}
                         onPress={() => handleGameCardPress(game)}
@@ -53,14 +54,14 @@ const GameCarousel = ({ games, handleGameCardPress }) => {
                     >
                         <Image 
                             source={{uri: game.game_logo_url}} 
-                            style={{width:100, height:100}}
+                            style={{width: scaleWidth(100), height: scaleHeight(100)}}
                         />
                         <Text style={[
                             styles.gameName,
                             isLight ? {color: '#333333'} : {color: '#EAEAEA'}
                         ]}>
                             {shouldShowLabel ? game.game_name : (
-                                <View style={{width: 50, height: 2, backgroundColor:isLight ? '#000000' : '#EAEAEA',alignItems:"center",justifyContent:'center',borderRadius:10}}></View>
+                                <View style={{width: scaleWidth(50), height: scaleHeight(2), backgroundColor:isLight ? '#000000' : '#EAEAEA',alignItems:"center",justifyContent:'center',borderRadius: scaleWidth(10)}}></View>
                             )}
                         </Text>
                     </Pressable>
@@ -72,43 +73,43 @@ const GameCarousel = ({ games, handleGameCardPress }) => {
 
 const styles = StyleSheet.create({
     container: {
-        marginVertical: 20,
+        marginVertical: scaleHeight(20),
     },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingHorizontal: 20,
-        marginBottom: 15,
+        paddingHorizontal: scaleWidth(20),
+        marginBottom: scaleHeight(15),
     },
 
         title: {
-            fontSize: 16,
+            fontSize: scaleWidth(16),
             fontWeight: 'bold',
     
           },
 
     viewAll: {
-        fontSize: 16,
+        fontSize: scaleWidth(16),
         fontWeight: '600',
         color: '#00ff88',
     },
     scrollContainer: {
-        paddingRight: 20,
+        paddingRight: scaleWidth(20),
     },
     gameCard: {
-        width: 100,
-        height: 130,
-        marginRight: 15,
-        borderRadius: 20,
+        width: scaleWidth(100),
+        height: scaleHeight(130),
+        marginRight: scaleWidth(15),
+        borderRadius: scaleWidth(20),
         overflow: 'hidden',
         borderWidth: 1.5,
         alignItems: 'center',
     },
     gameName: {
-        fontSize: 12,
+        fontSize: scaleWidth(12),
         fontWeight: '600',
-        marginTop: 4,
+        // marginTop: scaleHeight(4),
         textAlign: 'center',
     },
     gameImage: {
@@ -117,12 +118,12 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     imageStyle: {
-        borderRadius: 20,
+        borderRadius: scaleWidth(20),
     },
     pin:{
         position:'absolute',
-        right:10,
-        top:10
+        right: scaleWidth(10),
+        top: scaleHeight(10)
     },
     gradientOverlay: {
         ...StyleSheet.absoluteFillObject,
@@ -130,7 +131,7 @@ const styles = StyleSheet.create({
     },
     gameInfo: {
         flex: 1,
-        padding: 15,
+        padding: scaleWidth(15),
         justifyContent: 'space-between',
     },
     topInfo: {
@@ -140,49 +141,49 @@ const styles = StyleSheet.create({
     },
     categoryBadge: {
         backgroundColor: 'rgba(255, 255, 255, 0.2)',
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 12,
+        paddingHorizontal: scaleWidth(8),
+        paddingVertical: scaleHeight(4),
+        borderRadius: scaleWidth(12),
         backdropFilter: 'blur(10px)',
     },
     categoryText: {
         color: '#fff',
-        fontSize: 10,
+        fontSize: scaleWidth(10),
         fontWeight: '600',
     },
     playersBadge: {
         backgroundColor: 'rgba(0, 255, 136, 0.2)',
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 12,
+        paddingHorizontal: scaleWidth(8),
+        paddingVertical: scaleHeight(4),
+        borderRadius: scaleWidth(12),
     },
     playersText: {
         color: '#00ff88',
-        fontSize: 10,
+        fontSize: scaleWidth(10),
         fontWeight: '600',
     },
     bottomInfo: {
         alignItems: 'flex-start',
     },
     gameTitle: {
-        fontSize: 18,
+        fontSize: scaleWidth(18),
         fontWeight: 'bold',
         color: '#fff',
-        marginBottom: 10,
+        marginBottom: scaleHeight(10),
         textShadowColor: 'rgba(0, 0, 0, 0.5)',
         textShadowOffset: { width: 1, height: 1 },
         textShadowRadius: 3,
     },
     playButton: {
         backgroundColor: 'rgba(255, 255, 255, 0.9)',
-        paddingHorizontal: 20,
-        paddingVertical: 8,
-        borderRadius: 20,
+        paddingHorizontal: scaleWidth(20),
+        paddingVertical: scaleHeight(8),
+        borderRadius: scaleWidth(20),
         alignSelf: 'flex-start',
     },
     playButtonText: {
         color: '#333',
-        fontSize: 12,
+        fontSize: scaleWidth(12),
         fontWeight: 'bold',
     },
 });

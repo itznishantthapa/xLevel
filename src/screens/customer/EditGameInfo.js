@@ -696,7 +696,7 @@ const EditGameInfo = () => {
               ]}
               value={gameProfile.game_username}
               onChangeText={(text) => updateProfile("game_username", text)}
-              placeholder={"Paste Your Game Username Accurately."}
+              placeholder={"Copy & Paste In-Game Name."}
               placeholderTextColor={isLight ? "#666666" : "#999999"}
               maxLength={30}
             />

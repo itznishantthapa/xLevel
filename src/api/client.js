@@ -10,7 +10,7 @@ export const API = axios.create({
   
   baseURL: "https://level-esport-matchmaking-gbfmu.ondigitalocean.app",
   headers: { "Content-Type": "application/json" },
-  timeout: 6000,
+  timeout: 30000, // Increased to 30 seconds to handle slow responses
 });
 
 // Inject bearer token from storage before every request (except auth endpoints)
@@ -48,7 +48,32 @@ API.interceptors.response.use(
 
     // If we somehow receive an error without a request context, surface a safe failure
     if (!originalRequest) {
+      if (__DEV__) {
+        console.error('API Error without request context:', error);
+      }
       return Promise.reject({ message: "Something went wrong.", original: error });
+    }
+
+    // Handle timeout errors specifically
+    if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+      if (__DEV__) {
+        console.error('Request timeout:', originalRequest.url);
+      }
+      return Promise.reject({ 
+        message: "Request is taking longer than expected.", 
+        original: error 
+      });
+    }
+
+    // Handle network errors
+    if (error.message === 'Network Error' || !error.response) {
+      if (__DEV__) {
+        console.error('Network error:', error.message);
+      }
+      return Promise.reject({ 
+        message: "Unable to connect. Please check your internet connection.", 
+        original: error 
+      });
     }
 
     // Skip refresh logic for auth endpoints
@@ -85,7 +110,7 @@ API.interceptors.response.use(
         }
         
         if (!data.access) {
-          return Promise.reject({ message: "Authentication failed. Please log in again." });
+          return Promise.reject({ message: "Authentication failed." });
         }
         
         // Store new access token
@@ -101,15 +126,17 @@ API.interceptors.response.use(
         return API(originalRequest);
       } catch (refreshErr) {
         // Log error but don't expose details to the user
-
+        if (__DEV__) {
+          console.error('Token refresh failed:', refreshErr);
+        }
         
         // Silently clear tokens and perform logout
         try {
           await AsyncStorage.multiRemove(["@access_token", "@refresh_token"]);
         } catch (storageErr) {
-             if (__DEV__) {
-          console.log('Failed to clear auth tokens from storage');
-        }
+          if (__DEV__) {
+            console.error('Failed to clear auth tokens from storage:', storageErr);
+          }
         }
         
         // Return user-friendly message without error details
@@ -118,12 +145,13 @@ API.interceptors.response.use(
     }
 
     // Your error handling messages
-    let message = "Restart your app.";
+    let message = "Something went wrong. Please try again.";
     const backendMessage = error?.response?.data?.message;
     const errorsObj = error?.response?.data?.errors;
 
-    if (backendMessage) message = backendMessage;
-    else if (errorsObj && typeof errorsObj === "object") {
+    if (backendMessage) {
+      message = backendMessage;
+    } else if (errorsObj && typeof errorsObj === "object") {
       const keys = Object.keys(errorsObj);
       if (keys.length > 0) {
         const firstVal = errorsObj[keys[0]];
@@ -133,10 +161,23 @@ API.interceptors.response.use(
           message = firstVal;
         }
       }
-    } else if (!error?.response) {
-      message = "No internet connection.";
-    } else if (error?.code === "ECONNABORTED") {
-      message = "Request timed out. Please try again.";
+    } else if (error?.response?.status === 500) {
+      message = "Please try again later.";
+    } else if (error?.response?.status === 503) {
+      message = "Service temporarily unavailable.";
+    } else if (error?.response?.status >= 400 && error?.response?.status < 500) {
+      message = "Request failed.";
+    }
+
+    // Log the full error in development for debugging
+    if (__DEV__) {
+      console.error('API Error:', {
+        url: originalRequest?.url,
+        method: originalRequest?.method,
+        status: error?.response?.status,
+        message: message,
+        error: error
+      });
     }
 
     return Promise.reject({ message, original: error });
