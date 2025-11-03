@@ -42,6 +42,7 @@ import { useInfiniteTournaments } from "../../queries/useTournament"
 import { useRegisterTournament } from "../../queries/useMutation/useRegisterTournament"
 import { scaleHeight } from "../../utils/scaling"
 import Loader from "../../component/Loader"
+import { useUtils } from "../../queries/useUtils"
 
 /**
  * ========================================================================
@@ -78,7 +79,7 @@ const Home = () => {
   const { user, get_user } = useAuthStore()
   const { isLight } = useThemeStore()
   const { isConnected } = useNetworkStatus()
-  const { setStatsBasedOnPointBanner } = useStatsPreferenceStore()
+  const { setStatsBasedOnQR } = useStatsPreferenceStore()
 
   // Local component state
   const [refreshing, setRefreshing] = useState(false)
@@ -92,29 +93,39 @@ const Home = () => {
   const { data: socials = [] } = useSocials()
   const { mutateAsync: registerTournament } = useRegisterTournament();
   const { data: upcomingChallenges, isLoading: isUpcomingLoading } = useUpcomingChallenges()
+  const {data: utils = []} = useUtils()
 
-  // Filter out QR image from banners - only show banners that don't have 'qrimage' in url
-  const displayBanners = banners.filter(banner =>
-    !banner?.url?.toLowerCase().includes('qrimage')
-  )
+  useEffect(() => {
+    // You can use utils data here if needed
+    if (__DEV__) {
+      console.log("Utils Data:", utils);
+    }
+  }, [utils]);
+  
+  //  LOG  Utils Data: {"phrases": [{"created_at": "2025-11-03T15:05:34.869184Z", "id": 1, "text": "Enhancers up to 20% off.", "updated_at": "2025-11-03T15:05:34.869222Z"}], "qr": {"created_at": "2025-11-03T15:05:54.168746Z", "id": 1, "qr_image": "https://level-esport-matchmaking-bucket.blr1.cdn.digitaloceanspaces.com/qr_images/Screenshot_2025-11-02_at_8.27.49PM.png", "updated_at": "2025-11-03T15:05:54.168805Z"}}
 
-  // Check if any banner has 'point' in its URL
-  const hasPointBanner = banners?.some(banner =>
-    banner?.url && banner.url.toLowerCase().includes('point')
-  )
+  // Show all banners - no filtering needed
+  const displayBanners = banners
+
+  // Check if Utils has QR data
+  const hasQR = !!utils?.qr
 
   /*
    * ====================================================================
-   * Update Stats Configuration Based on Point Banner
+   * Update Stats Configuration Based on QR Availability
    * ====================================================================
    */
   useEffect(() => {
-    // Update stats configuration when banners data changes
-    if (banners && banners.length > 0) {
-      setStatsBasedOnPointBanner(hasPointBanner)
+    // Update stats configuration when utils data changes
+    if (__DEV__) {
+      console.log("Utils effect triggered. Utils:", utils);
+      console.log("Utils keys length:", Object.keys(utils || {}).length);
+      console.log("hasQR:", hasQR);
     }
-  }, [banners, hasPointBanner, setStatsBasedOnPointBanner])
-
+    
+    // Always set stats based on QR availability, even if utils is empty
+    setStatsBasedOnQR(hasQR)
+  }, [utils, hasQR, setStatsBasedOnQR])
 
 
 
@@ -279,23 +290,14 @@ const Home = () => {
 
 
   const handleHeaderGamePoint = () => {
-
-
-    // Check if any banner has 'point' in its URL
-    const pointBanner = banners?.find(banner =>
-      banner?.url && banner.url.toLowerCase().includes('point')
-    )
-
-    // If no point banner exists, navigate to watchAds
-    if (!pointBanner) {
+    // Check if Utils has QR data
+    if (!hasQR) {
       navigation.navigate("watchAds")
       return
     }
 
-    // If point banner exists, open the URL
-    if (pointBanner?.url) {
-      navigation.navigate("scanPay")
-    }
+    // If Utils has QR, navigate to scanPay
+    navigation.navigate("scanPay")
   }
 
 

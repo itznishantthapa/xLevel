@@ -8,7 +8,7 @@ import Header from '../../component/customer/Header';
 import StatsContainer from '../../component/customer/StatsContainer';
 import GameMode from '../../component/customer/GameMode';
 import { useSocials } from '../../queries/useSocials';
-import { useBanners } from '../../queries/useBanners';
+import { useUtils } from '../../queries/useUtils';
 
 
 
@@ -23,7 +23,10 @@ const InCategory = ({ route }) => {
   const { user } = useAuthStore();
   const { isLight } = useThemeStore();
     const { data: socials = [] } = useSocials()
-    const { data: banners = [] } = useBanners()
+    const {data: utils = []} = useUtils()
+
+  // Check if Utils has QR data
+  const hasQR = !!utils?.qr
 
 
 
@@ -99,21 +102,14 @@ const InCategory = ({ route }) => {
   }
 
   const handleHeaderGamePoint = () => {
-    // Check if any banner has 'point' in its URL
-    const pointBanner = banners?.find(banner =>
-      banner?.url && banner.url.toLowerCase().includes('point')
-    )
-
-    // If no point banner exists, navigate to watchAds
-    if (!pointBanner) {
+    // Check if Utils has QR data
+    if (!hasQR) {
       navigation.navigate("watchAds")
       return
     }
 
-    // If point banner exists, open the URL
-    if (pointBanner?.url) {
-      navigation.navigate("scanPay")
-    }
+    // If Utils has QR, navigate to scanPay
+    navigation.navigate("scanPay")
   }
 
 

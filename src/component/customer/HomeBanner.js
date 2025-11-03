@@ -8,14 +8,14 @@ import { useFocusEffect } from '@react-navigation/native';
 
 const BannerPage = ({ data }) => {
   const handlePress = useCallback(() => {
-    if (data?.url && !data.url.toLowerCase().includes('point')) {
+    if (data?.url) {
       Linking.openURL(data.url).catch(err => {
         if (__DEV__) console.error('Error opening URL:', err);
       });
     }
   }, [data?.url]);
 
-  const isPressable = data?.url && !data.url.toLowerCase().includes('point');
+  const isPressable = !!data?.url;
 
   return (
     <Pressable
