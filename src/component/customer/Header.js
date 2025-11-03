@@ -3,6 +3,7 @@
 import { Image, Platform, Pressable, StyleSheet, Text, View } from "react-native"
 import { useMemo, useEffect, useState } from "react"
 import { Octicons, Entypo, MaterialIcons, Fontisto, MaterialCommunityIcons, Ionicons, FontAwesome6 } from "@expo/vector-icons"
+import { LinearGradient } from "expo-linear-gradient"
 import { useThemeStore } from "../../store/themeStore"
 import { useSocials } from "../../queries/useSocials"
 import { useAuthStore } from "../../store/authStore"
@@ -100,7 +101,7 @@ const Header = ({
     const computedThemeStyles = {
       textColor: isLight ? "#333333" : "#EAEAEA",
       iconColor: isLight ? "#333333" : "#EAEAEA",
-      buttonBackground: isLight ? "#fafafa" : "rgba(255, 255, 255, 0.1)",
+      buttonBackground: isLight ? "#f8f9fb" : "rgba(255, 255, 255, 0.1)",
       profileBackground: isLight ? "#dadada" : "#444444",
     }
 
@@ -233,22 +234,27 @@ const Header = ({
       {/* Right Section - Balance and Social Actions */}
       <View style={styles.rightSection}>
         <Pressable
-          style={styles.balanceContainer}
           onPress={handleHeaderGamePoint}
         >
-          <View style={styles.balanceContent}>
-            <MaterialCommunityIcons 
-              name="star-four-points-outline" 
-              size={scaleWidth(16)} 
-              color="#00bf63" 
-            />
+          <LinearGradient
+            colors={['#ffffff', '#f8fbff', '#f0f8ff', '#ffffff']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.balanceContainer}
+          >
+            <View style={styles.balanceContent}>
+              <MaterialCommunityIcons 
+                name="star-four-points-outline" 
+                size={scaleWidth(16)} 
+                color="#00bf63" 
+              />
 
-
-            <Text style={styles.balanceText}>
-              {typeof wallet_balance === "number" ? wallet_balance.toFixed(2) : wallet_balance}
-            </Text>
-          </View>
+              <Text style={styles.balanceText}>
+                {typeof wallet_balance === "number" ? wallet_balance.toFixed(2) : wallet_balance}
+              </Text>
+            </View>
             <Ionicons name="add" size={scaleWidth(14)} color="#00bf63" />
+          </LinearGradient>
         </Pressable>
 
 
@@ -353,20 +359,12 @@ const styles = StyleSheet.create({
     gap: scaleWidth(10),
   },
   balanceContainer: {
-    backgroundColor: "rgba(255, 255, 255, 0.95)",
     paddingHorizontal: scaleWidth(14),
     paddingVertical: scaleHeight(10),
     borderRadius: scaleWidth(24),
     flexDirection: "row",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: scaleHeight(1),
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+   
   },
   balanceContent: {
     flexDirection: "row",
@@ -402,13 +400,13 @@ const styles = StyleSheet.create({
     borderRadius: scaleWidth(21),
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: scaleHeight(1),
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    // shadowColor: "#000",
+    // shadowOffset: {
+    //   width: 0,
+    //   height: scaleHeight(1),
+    // },
+    // shadowOpacity: 0.05,
+    // shadowRadius: 2,
+    // elevation: 1,
   },
 })
