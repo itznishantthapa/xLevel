@@ -40,6 +40,7 @@ import { checkFCMTokenInStorage } from '../../utils/tokenUtils';
 
 // API Queries
 import { useBanners } from '../../queries/useBanners';
+import { useUtils } from '../../queries/useUtils';
 import { scaleWidth, scaleHeight } from '../../utils/scaling';
 
 // Constants
@@ -68,9 +69,9 @@ const Auth = () => {
 
   // API data queries
   const { data: banners = [] } = useBanners()
+  const {data: utils = []} = useUtils()
 
-
-  const shouldShowEmailLogin = banners.length === 0 || banners.some(banner => banner?.url && banner.url.toLowerCase().includes('point'));
+  const shouldShowEmailLogin = !utils?.qr;
 
 
 
@@ -361,7 +362,7 @@ const Auth = () => {
 
 
 
-    if (Platform.OS === 'ios' && !shouldShowEmailLogin) {
+    if (Platform.OS === 'ios' && shouldShowEmailLogin) {
       buttons.push({
         id: 'email',
         icon: <FontAwesome6 name="envelope" size={scaleWidth(20)} color={colors.text} />,

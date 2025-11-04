@@ -22,6 +22,7 @@ import AppHeader from "./header/AppHeader"
 import { useCredit } from "../../queries/useMutation/useCredit"
 import CoolButton from "../../component/customer/common/CoolButton"
 import { useBanners } from "../../queries/useBanners"
+import { useUtils } from "../../queries/useUtils"
 
 
 const ScanPay = () => {
@@ -38,13 +39,10 @@ const ScanPay = () => {
     screenshot: ''
   })
   const { mutateAsync: creditCrown } = useCredit();
-  const { data: banners = [] } = useBanners();
+  const {data: utils = []} = useUtils();
 
-  // Filter banner to get QR image - check if url includes 'qrimage'
-  const qrBanner = banners.find(banner => 
-    banner?.url?.toLowerCase().includes('qrimage')
-  );
-  const qrImageUrl = qrBanner?.image;
+  // Get QR image from utils
+  const qrImageUrl = utils?.qr?.qr_image;
 
  
   const colors = {

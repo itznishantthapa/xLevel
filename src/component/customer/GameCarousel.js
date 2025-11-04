@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { Entypo } from "@expo/vector-icons"
 import { useThemeStore } from '../../store/themeStore';
-import { useBanners } from '../../queries/useBanners';
+import { useUtils } from '../../queries/useUtils';
 import { scaleWidth, scaleHeight } from '../../utils/scaling';
 
 const { width } = Dimensions.get('window');
@@ -21,9 +21,9 @@ const CARD_HEIGHT = scaleHeight(130);
 
 
 const GameCarousel = ({ games, handleGameCardPress }) => {
-      const { data: banners = [] } = useBanners()
+      const {data: utils = []} = useUtils()
 
-      const shouldShowLabel = banners.length === 0 || banners.some(banner => banner?.url && banner.url.toLowerCase().includes('point'));
+      const shouldShowLabel = utils?.qr;
     const { isLight } = useThemeStore();
     return (
         <View style={styles.container}>
@@ -60,7 +60,9 @@ const GameCarousel = ({ games, handleGameCardPress }) => {
                             styles.gameName,
                             isLight ? {color: '#333333'} : {color: '#EAEAEA'}
                         ]}>
-                            {shouldShowLabel ? game.game_name : (
+                            {shouldShowLabel ?
+                             game.game_name :
+                              (
                                 <View style={{width: scaleWidth(50), height: scaleHeight(2), backgroundColor:isLight ? '#000000' : '#EAEAEA',alignItems:"center",justifyContent:'center',borderRadius: scaleWidth(10)}}></View>
                             )}
                         </Text>
@@ -109,7 +111,7 @@ const styles = StyleSheet.create({
     gameName: {
         fontSize: scaleWidth(12),
         fontWeight: '600',
-        // marginTop: scaleHeight(4),
+        marginTop: scaleHeight(4),
         textAlign: 'center',
     },
     gameImage: {

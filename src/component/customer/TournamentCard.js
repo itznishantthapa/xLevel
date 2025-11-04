@@ -1,16 +1,19 @@
-import { View, Text, StyleSheet, Pressable, Image } from "react-native"
+import { View, Text, StyleSheet, Pressable, Image, Dimensions } from "react-native"
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons"
 import { useThemeStore } from "../../store/themeStore"
 import { useAuthStore } from "../../store/authStore"
 import Clipboard from "@react-native-clipboard/clipboard"
 import Toast from "react-native-simple-toast"
 import StampID from "../matchcard/StampID"
+import { scaleHeight } from "../../utils/scaling"
 
 const TournamentCard = ({ game }) => {
   const { user } = useAuthStore()
   const { isLight } = useThemeStore()
 
   const per_kill_amount = (game.entry_fee * 0.8).toFixed(0)
+  const SCREEN_WIDTH = Dimensions.get('window').width
+  const isSmallScreen = SCREEN_WIDTH <= 360
 
  
 
@@ -106,8 +109,8 @@ const TournamentCard = ({ game }) => {
           </View>
           
           {/* Tournament ID Stamp */}
-          <View style={{ flex: 1, alignItems: 'flex-end', position: 'absolute', right: 20,bottom:5 }}>
-            <StampID gameId={game.id} isLight={isLight} />
+          <View style={[styles.stampContainer, isSmallScreen && styles.stampContainerSmall]}>
+            <StampID gameId={game.id} isLight={isLight} compact={isSmallScreen} />
           </View>
         </View>
       </View>
@@ -259,6 +262,8 @@ const styles = StyleSheet.create({
   gameInfoRow: {
     flexDirection: "row",
     gap: 8,
+    flexWrap: 'wrap',
+    alignItems: 'center',
   },
   infoPill: {
     flexDirection: "row",
@@ -289,6 +294,14 @@ const styles = StyleSheet.create({
   },
   pillTextDark: {
     color: "#ffffff",
+  },
+  stampContainer: {
+    marginLeft: 'auto',
+  },
+  stampContainerSmall: {
+    width: '100%',
+    alignItems: 'flex-end',
+    marginTop: scaleHeight(6),
   },
   prizeSection: {
     backgroundColor: "#f8f9fa",

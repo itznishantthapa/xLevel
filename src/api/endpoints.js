@@ -73,6 +73,9 @@ export const endpoints = {
 
   //Guides
   getGuides:"/api/guide/",
+
+  //utils
+  getUtils:"/api/utils/",
   
 };
 

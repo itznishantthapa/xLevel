@@ -1,12 +1,15 @@
 "use client"
 
 import { Image, Platform, Pressable, StyleSheet, Text, View } from "react-native"
-import { useMemo } from "react"
+import { useMemo, useEffect, useState } from "react"
 import { Octicons, Entypo, MaterialIcons, Fontisto, MaterialCommunityIcons, Ionicons, FontAwesome6 } from "@expo/vector-icons"
+import { LinearGradient } from "expo-linear-gradient"
 import { useThemeStore } from "../../store/themeStore"
 import { useSocials } from "../../queries/useSocials"
 import { useAuthStore } from "../../store/authStore"
-import { scaleWidth } from "../../utils/scaling"
+import { useUtils } from "../../queries/useUtils"
+import { scaleWidth, scaleHeight } from "../../utils/scaling"
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing, runOnJS } from "react-native-reanimated"
 
 const Header = ({
   player_name,
@@ -19,6 +22,56 @@ const Header = ({
   handleHeaderGamePoint
 }) => {
   const { data: socials = [] } = useSocials()
+  const { data: utils = {} } = useUtils()
+
+  // Build phrases from Utils API (fallback to default text)
+  const phrases = useMemo(() => {
+    const list = utils?.phrases?.map(p => p?.text).filter(Boolean) || []
+    return list.length ? list : ["Get ready for the battle."]
+  }, [utils])
+
+  const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0)
+  const flipAnimation = useSharedValue(0) // degrees: 0 -> 90 -> 0
+
+  // Reset when phrases change
+  useEffect(() => {
+    setCurrentPhraseIndex(0)
+    flipAnimation.value = 0
+  }, [phrases.length])
+
+  // Update phrase index from UI thread
+  const updatePhraseIndex = () => {
+    setCurrentPhraseIndex(prev => (prev + 1) % phrases.length)
+  }
+
+  // Animated style for simple flip
+  const animatedTextStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ perspective: 800 }, { rotateX: `${flipAnimation.value}deg` }],
+      opacity: Math.abs(Math.cos((flipAnimation.value * Math.PI) / 180)),
+    }
+  })
+
+  // Cycle phrases every 5s with flip out/in
+  useEffect(() => {
+    if (phrases.length <= 1) return
+
+    const animateText = () => {
+      // Flip out (0 -> 90)
+      flipAnimation.value = withTiming(90, { duration: 300, easing: Easing.inOut(Easing.ease) }, (finished) => {
+        'worklet'
+        if (finished) {
+          // Change text at halfway point
+          runOnJS(updatePhraseIndex)()
+          // Flip back in (90 -> 0)
+          flipAnimation.value = withTiming(0, { duration: 300, easing: Easing.inOut(Easing.ease) })
+        }
+      })
+    }
+
+    const interval = setInterval(animateText, 5000)
+    return () => clearInterval(interval)
+  }, [phrases.length])
 
  
 
@@ -48,7 +101,7 @@ const Header = ({
     const computedThemeStyles = {
       textColor: isLight ? "#333333" : "#EAEAEA",
       iconColor: isLight ? "#333333" : "#EAEAEA",
-      buttonBackground: isLight ? "#fafafa" : "rgba(255, 255, 255, 0.1)",
+      buttonBackground: isLight ? "#f8f9fb" : "rgba(255, 255, 255, 0.1)",
       profileBackground: isLight ? "#dadada" : "#444444",
     }
 
@@ -118,7 +171,7 @@ const Header = ({
     return (
       <View style={styles.profileImageContainer}>
         <View style={[styles.profileFallback, { backgroundColor: themeStyles.profileBackground }]}>
-          <Octicons name="feed-person" size={32} color={themeStyles.iconColor} accessibilityLabel="Default profile icon" />
+          <Octicons name="feed-person" size={scaleWidth(32)} color={themeStyles.iconColor} accessibilityLabel="Default profile icon" />
         </View>
         <TagComponent />
       </View>
@@ -151,7 +204,7 @@ const Header = ({
         </Pressable>
 
         <View style={styles.userInfo}>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: scaleWidth(6) }}>
             <Text
               style={[styles.greeting, { color: themeStyles.textColor }]}
               numberOfLines={1}
@@ -162,15 +215,17 @@ const Header = ({
                 displayName ? `Hi, ${displayName}` : "Hi, (⁠◠⁠‿⁠◕⁠)"
               }
             </Text>
-            <FontAwesome6 name="hand-peace" size={18} color={themeStyles.iconColor} />
+            <FontAwesome6 name="hand-peace" size={scaleWidth(18)} color={themeStyles.iconColor} />
           </View>
 
-          <Text
-            style={[styles.subtitle, { color: themeStyles.textColor }]}
-            accessibilityLabel="Get ready for the battle"
+          <Animated.Text
+            style={[styles.subtitle, { color: themeStyles.textColor }, animatedTextStyle]}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            accessibilityLabel={phrases[currentPhraseIndex]}
           >
-            Get ready for the battle.
-          </Text>
+            {phrases[currentPhraseIndex]}
+          </Animated.Text>
         </View>
 
       </View>
@@ -179,22 +234,27 @@ const Header = ({
       {/* Right Section - Balance and Social Actions */}
       <View style={styles.rightSection}>
         <Pressable
-          style={styles.balanceContainer}
           onPress={handleHeaderGamePoint}
         >
-          <View style={styles.balanceContent}>
-            <MaterialCommunityIcons 
-              name="star-four-points-outline" 
-              size={16} 
-              color="#00bf63" 
-            />
+          <LinearGradient
+            colors={['#ffffff', '#f8fbff', '#f0f8ff', '#ffffff']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.balanceContainer}
+          >
+            <View style={styles.balanceContent}>
+              <MaterialCommunityIcons 
+                name="star-four-points-outline" 
+                size={scaleWidth(16)} 
+                color="#00bf63" 
+              />
 
-
-            <Text style={styles.balanceText}>
-              {typeof wallet_balance === "number" ? wallet_balance.toFixed(2) : wallet_balance}
-            </Text>
-          </View>
-            <Ionicons name="add" size={14} color="#00bf63" />
+              <Text style={styles.balanceText}>
+                {typeof wallet_balance === "number" ? wallet_balance.toFixed(2) : wallet_balance}
+              </Text>
+            </View>
+            <Ionicons name="add" size={scaleWidth(14)} color="#00bf63" />
+          </LinearGradient>
         </Pressable>
 
 
@@ -219,7 +279,7 @@ const Header = ({
                     accessibilityRole="button"
                     accessibilityLabel={`Open ${name}`}
                   >
-                    <IconComponent name={icon} size={20} color={themeStyles.iconColor} />
+                    <IconComponent name={icon} size={scaleWidth(20)} color={themeStyles.iconColor} />
                   </Pressable>
                 )
               })}
@@ -242,8 +302,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "flex-start",
     paddingHorizontal: scaleWidth(15),
-    paddingTop: 12,
-    paddingBottom: 12,
+    paddingTop: scaleHeight(12),
+    paddingBottom: scaleHeight(12),
  
  
   },
@@ -253,10 +313,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   profileContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 28,
-    marginRight: 12,
+    width: scaleWidth(50),
+    height: scaleWidth(50),
+    borderRadius: scaleWidth(28),
+    marginRight: scaleWidth(12),
     position: 'relative',
   },
   profileImageContainer: {
@@ -267,15 +327,15 @@ const styles = StyleSheet.create({
   profileImage: {
     width: "100%",
     height: "100%",
-    borderRadius: 28,
+    borderRadius: scaleWidth(28),
   },
   profileFallback: {
     width: "100%",
     height: "100%",
-    borderRadius: 28,
+    borderRadius: scaleWidth(28),
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 2,
+    borderWidth: scaleWidth(2),
     borderColor: "rgba(255, 255, 255, 0.1)",
   },
   userInfo: {
@@ -283,78 +343,63 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   greeting: {
-    fontSize: 16,
+    fontSize: scaleWidth(16),
     fontWeight: "700",
     marginBottom: 2,
-    lineHeight: 24,
+    lineHeight: scaleHeight(24),
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: scaleWidth(14),
     fontWeight: "500",
     opacity: 0.8,
-    lineHeight: 18,
+    lineHeight: scaleHeight(18),
+    paddingVertical: scaleHeight(2),
   },
   rightSection: {
     alignItems: "flex-end",
-    gap: 10,
+    gap: scaleWidth(10),
   },
   balanceContainer: {
-    backgroundColor: "rgba(255, 255, 255, 0.95)",
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 24,
+    paddingHorizontal: scaleWidth(14),
+    paddingVertical: scaleHeight(10),
+    borderRadius: scaleWidth(24),
     flexDirection: "row",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+   
   },
   balanceContent: {
     flexDirection: "row",
     alignItems: "center",
-    marginRight: 8,
+    marginRight: scaleWidth(8),
   },
   balanceText: {
-    fontSize: 14,
+    fontSize: scaleWidth(14),
     fontWeight: "700",
     color: "#000000",
-    marginLeft: 6,
+    marginLeft: scaleWidth(6),
   },
  
   socialSection: {
     alignItems: "flex-end",
-    gap: 6,
+    gap: scaleWidth(6),
 
   },
   contactUsText: {
-    fontSize: 12,
+    fontSize: scaleWidth(12),
     fontWeight: "500",
     opacity: 0.8,
     textAlign: "right",
   },
   socialContainer: {
     flexDirection: "row",
-    gap: 8,
+    gap: scaleWidth(8),
 
   },
   socialButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    width: scaleWidth(42),
+    height: scaleWidth(42),
+    borderRadius: scaleWidth(21),
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
   },
 })

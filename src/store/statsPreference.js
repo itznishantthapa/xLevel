@@ -10,12 +10,11 @@ const DEFAULT_STATS = [
   { id: 'matches', type: 'matches', name: 'My Match', icon: 'gamepad-circle-right', iconLib: 'MaterialCommunityIcons' },
 ];
 
-// Configuration when point banner exists (kept visually the same)
-const POINT_BANNER_STATS = [
+// Configuration when QR exists - shows Transaction, Tournament, MyMatch, Redeem
+const QR_AVAILABLE_STATS = [
   { id: 'transaction', type: 'leaderboard', name: 'Transaction', icon: 'receipt-long', iconLib: 'MaterialIcons' },
   { id: 'tournament', type: 'tournament', name: 'Tournaments', icon: 'game-controller-outline', iconLib: 'Ionicons' },
   { id: 'matches', type: 'matches', name: 'My Match', icon: 'gamepad-circle-right', iconLib: 'MaterialCommunityIcons' },
-  // Redeem remains visually the same but aligns the type to 'gamerules' for toggling consistency
   { id: 'redeem', type: 'gamerules', name: 'Redeem', icon: 'wallet-giftcard', iconLib: 'MaterialCommunityIcons' },
 ];
 
@@ -39,21 +38,21 @@ export const useStatsPreferenceStore = create(
       // State
       statsConfig: DEFAULT_STATS,
       isLoading: false,
-      hasPointBanner: false,
+      hasQR: false,
 
       // Actions
       updateStatsConfig: (newConfig) => {
         set({ statsConfig: newConfig });
       },
 
-      setStatsBasedOnPointBanner: (hasPointBanner) => {
-        const currentHasPointBanner = get().hasPointBanner;
-        
-        // Only update if the point banner state has changed
-        if (currentHasPointBanner !== hasPointBanner) {
+      setStatsBasedOnQR: (hasQR) => {
+        const currentHasQR = get().hasQR;
+        // Only update if the QR state has changed
+        if (currentHasQR !== hasQR) {
+          const newConfig = hasQR ? QR_AVAILABLE_STATS : DEFAULT_STATS;
           set({ 
-            hasPointBanner,
-            statsConfig: hasPointBanner ? POINT_BANNER_STATS : DEFAULT_STATS 
+            hasQR,
+            statsConfig: newConfig 
           });
         }
       },
@@ -99,22 +98,29 @@ export const useStatsPreferenceStore = create(
       },
 
       resetToDefault: () => {
-        set({ statsConfig: DEFAULT_STATS, hasPointBanner: false });
+        set({ statsConfig: DEFAULT_STATS, hasQR: false });
       },
 
       // Getters/Constants
       getToggleableOptions: () => TOGGLEABLE_OPTIONS,
       getDefaultStats: () => DEFAULT_STATS,
-      getPointBannerStats: () => POINT_BANNER_STATS,
+      getQRAvailableStats: () => QR_AVAILABLE_STATS,
     }),
     {
       name: 'stats-preferences-storage',
       storage: createJSONStorage(() => AsyncStorage),
-      version: 2,
+      version: 3,
       migrate: async (persistedState, version) => {
         try {
           if (!persistedState || typeof persistedState !== 'object') return persistedState;
           const next = { ...persistedState };
+          
+          if (version < 3) {
+            // Reset to default stats for version 3 to ensure clean QR-based configuration
+            next.statsConfig = DEFAULT_STATS;
+            next.hasQR = false;
+          }
+          
           if (Array.isArray(next.statsConfig)) {
             next.statsConfig = next.statsConfig.map((item) => {
               if (!item || typeof item !== 'object') return item;
