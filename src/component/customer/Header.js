@@ -400,13 +400,5 @@ const styles = StyleSheet.create({
     borderRadius: scaleWidth(21),
     justifyContent: "center",
     alignItems: "center",
-    // shadowColor: "#000",
-    // shadowOffset: {
-    //   width: 0,
-    //   height: scaleHeight(1),
-    // },
-    // shadowOpacity: 0.05,
-    // shadowRadius: 2,
-    // elevation: 1,
   },
 })

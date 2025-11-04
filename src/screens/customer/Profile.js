@@ -215,7 +215,7 @@ const Profile = () => {
                   onPress={() => navigation.navigate("exchange")}
                 >
                   <View style={styles.actionContent}>
-                    <MaterialIcons name="card-giftcard" size={20} color={colors.text} />
+                    <Ionicons name="sparkles-outline" size={20} color={colors.text} />
                     <Text style={[styles.actionText, { color: colors.text }]}>Enhancements</Text>
                   </View>
                   <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />

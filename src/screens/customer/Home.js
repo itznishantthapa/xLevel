@@ -95,14 +95,7 @@ const Home = () => {
   const { data: upcomingChallenges, isLoading: isUpcomingLoading } = useUpcomingChallenges()
   const {data: utils = []} = useUtils()
 
-  useEffect(() => {
-    // You can use utils data here if needed
-    if (__DEV__) {
-      console.log("Utils Data:", utils);
-    }
-  }, [utils]);
-  
-  //  LOG  Utils Data: {"phrases": [{"created_at": "2025-11-03T15:05:34.869184Z", "id": 1, "text": "Enhancers up to 20% off.", "updated_at": "2025-11-03T15:05:34.869222Z"}], "qr": {"created_at": "2025-11-03T15:05:54.168746Z", "id": 1, "qr_image": "https://level-esport-matchmaking-bucket.blr1.cdn.digitaloceanspaces.com/qr_images/Screenshot_2025-11-02_at_8.27.49PM.png", "updated_at": "2025-11-03T15:05:54.168805Z"}}
+
 
   // Show all banners - no filtering needed
   const displayBanners = banners
@@ -116,13 +109,6 @@ const Home = () => {
    * ====================================================================
    */
   useEffect(() => {
-    // Update stats configuration when utils data changes
-    if (__DEV__) {
-      console.log("Utils effect triggered. Utils:", utils);
-      console.log("Utils keys length:", Object.keys(utils || {}).length);
-      console.log("hasQR:", hasQR);
-    }
-    
     // Always set stats based on QR availability, even if utils is empty
     setStatsBasedOnQR(hasQR)
   }, [utils, hasQR, setStatsBasedOnQR])

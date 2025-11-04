@@ -1,4 +1,4 @@
-import { Text, View } from "react-native"
+import { Text, View, Platform } from "react-native"
 import { Fontisto } from "@expo/vector-icons"
 import { scaleHeight, scaleWidth } from "../../utils/scaling"
 
@@ -6,15 +6,15 @@ import { scaleHeight, scaleWidth } from "../../utils/scaling"
  * StampID Component
  * Displays the challenge/game ID in a stamp sticker style
  */
-const StampID = ({ gameId, isLight }) => {
+const StampID = ({ gameId, isLight, compact = false }) => {
   return (
     <View
       style={{
-        marginTop: scaleHeight(12),
+        marginTop: scaleHeight(compact ? 8 : 12),
         alignSelf: 'center',
-        maxWidth: '90%',
-        paddingHorizontal: scaleWidth(16),
-        paddingVertical: scaleHeight(8),
+        maxWidth: '100%',
+        paddingHorizontal: scaleWidth(compact ? 12 : 16),
+        paddingVertical: scaleHeight(compact ? 6 : 8),
         borderRadius: scaleWidth(12),
         borderWidth: scaleWidth(2),
         borderColor: isLight ? '#333333' : '#eaf4f4',
@@ -31,19 +31,22 @@ const StampID = ({ gameId, isLight }) => {
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: scaleWidth(6) }}>
         <Fontisto
           name="hashtag"
-          size={scaleWidth(20)}
+          size={scaleWidth(compact ? 16 : 20)}
           color={'#FF9500'}
           style={{ flexShrink: 0 }}
         />
         <Text
           style={{
-            fontSize: scaleWidth(14),
+            fontSize: scaleWidth(compact ? 12 : 14),
             fontWeight: '700',
             color: isLight ? '#333333' : '#eaf4f4',
-            letterSpacing: 0.5,
+            letterSpacing: 0.25,
+            fontVariant: ['tabular-nums'],
+            includeFontPadding: false,
+            lineHeight: scaleHeight(compact ? 16 : 18),
             flexShrink: 1,
           }}
-          numberOfLines={2}
+          numberOfLines={1}
           ellipsizeMode="middle"
         >
           {gameId}

@@ -47,19 +47,9 @@ export const useStatsPreferenceStore = create(
 
       setStatsBasedOnQR: (hasQR) => {
         const currentHasQR = get().hasQR;
-        
-        if (__DEV__) {
-          console.log("setStatsBasedOnQR called with:", hasQR);
-          console.log("Current hasQR:", currentHasQR);
-          console.log("Will update stats config:", currentHasQR !== hasQR);
-        }
-        
         // Only update if the QR state has changed
         if (currentHasQR !== hasQR) {
           const newConfig = hasQR ? QR_AVAILABLE_STATS : DEFAULT_STATS;
-          if (__DEV__) {
-            console.log("New stats config:", newConfig);
-          }
           set({ 
             hasQR,
             statsConfig: newConfig 
