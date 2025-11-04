@@ -1,6 +1,6 @@
 "use client"
 import { View, Text, StyleSheet, Pressable, ImageBackground, Dimensions, FlatList, Platform } from "react-native"
-import { Entypo, Ionicons, MaterialIcons } from "@expo/vector-icons"
+import { Entypo, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons"
 import { LinearGradient } from "expo-linear-gradient"
 import { useThemeStore } from "../../store/themeStore"
 import { useNavigation } from "@react-navigation/native"
@@ -79,11 +79,11 @@ const GameMode = ({ game_mode, handleGameMode }) => {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <Pressable style={[styles.header, { paddingHorizontal: Platform.OS === 'ios' ? 10 : 20 }]} onPress={() => { navigation.goBack() }} disabled={Platform.OS === 'android'}>
+      <Pressable style={[styles.header, { paddingHorizontal: 20 }]} onPress={() => { navigation.goBack() }} disabled={Platform.OS === 'android'}>
         {
           Platform.OS === 'ios' && (
             <Pressable onPress={() => navigation.goBack()} style={{ marginRight: 10 }}>
-              <Ionicons name="arrow-back" size={24} color={isLight ? "#000" : "#fff"} />
+              <MaterialCommunityIcons name="backburger" size={24} color={isLight ? "#000" : "#fff"} />
             </Pressable>
           )
         }

@@ -353,6 +353,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     opacity: 0.8,
     lineHeight: scaleHeight(18),
+    paddingVertical: scaleHeight(2),
   },
   rightSection: {
     alignItems: "flex-end",
