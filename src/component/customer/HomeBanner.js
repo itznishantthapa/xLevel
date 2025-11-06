@@ -90,7 +90,6 @@ const HomeBanner = ({ data = [], height }) => {
           width: scaleWidth(10),
           height: scaleWidth(10),
           borderRadius: scaleWidth(5),
-          // Filled dot for active
           backgroundColor: isLight ? '#000000' : '#ffffff',
           borderWidth: 0,
           borderColor: isLight ? '#000000' : '#ffffff',
