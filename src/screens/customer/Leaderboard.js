@@ -249,13 +249,13 @@ const Leaderboard = () => {
         barStyle={isLight ? "dark-content" : "light-content"}
       />
       
+      <HeaderComponent />
       <View style={styles.listWrapper}>
         <FlashList
           {...flashListProps}
           data={isFetching && leaderboardData.length === 0 ? [] : leaderboardData}
           renderItem={renderLeaderboardCard}
           keyExtractor={(item) => item.id.toString()}
-          ListHeaderComponent={<HeaderComponent />}
           ListEmptyComponent={isFetching ? null : <EmptyListComponent isLight={isLight} />}
           refreshControl={
             <RefreshControl

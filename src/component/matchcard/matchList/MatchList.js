@@ -148,13 +148,13 @@ const MatchList = ({
 
   return (
     <View style={styles.container}>
+      {HeaderComponent}
       <View style={styles.listContainer}>
         <FlashList
           {...flashListProps}
           data={dataToShow}
           renderItem={isLoading ? renderSkeletonItem : renderMatchCard}
           keyExtractor={(item, index) => isLoading ? `skeleton-${index}` : `match-${item.id}-${index}`}
-          ListHeaderComponent={HeaderComponent}
           contentContainerStyle={{
             paddingBottom: 40
           }}
@@ -201,7 +201,6 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     flex: 1,
-    height: '100%',
   },
   scrollContent: {
     paddingBottom: 40,
