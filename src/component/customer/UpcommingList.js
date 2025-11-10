@@ -363,10 +363,10 @@ const styles = StyleSheet.create({
   card: {
     marginHorizontal: 15,
     marginVertical: 8,
-    borderRadius: 16,
+    borderRadius: 25,
     backgroundColor: "#ffffff",
     borderWidth: 1.5,
-    borderColor: "#333333",
+    borderColor: "#1A1A1A",
   },
   cardDark: {
     backgroundColor: "#000000",

@@ -34,7 +34,7 @@ const Transaction = () => {
   } = useTransactions(PAGE_SIZE) // Fetch 8 items per page
   // Colors based on theme
   const colors = {
-    background: isLight ? "#ffffff" : "#000000",
+    background: isLight ? "#fefffe" : "#000000",
     text: isLight ? "#333333" : "#ffffff",
     subText: isLight ? "#000000" : "#ffffff",
     card: isLight ? "#ffffff" : "#000000",

@@ -47,7 +47,7 @@ const GameCarousel = ({ games, handleGameCardPress }) => {
                         style={[
                             styles.gameCard,
                             { marginLeft: index === 0 ? scaleWidth(20) : 0 },
-                            isLight ? {borderColor: '#000000'} : {borderColor: '#EAEAEA'}
+                            isLight ? {borderColor: '#1A1A1A'} : {borderColor: '#EAEAEA'}
                         ]}
                         onPress={() => handleGameCardPress(game)}
                         activeOpacity={0.9}

@@ -60,7 +60,7 @@ const LeaderboardCard = React.memo(({ user, isLight, isCurrentUser = false }) =>
         { 
           backgroundColor: isCurrentUser 
             ? (isLight ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.1)') 
-            : (isLight ? '#ffffff' : '#000000'),
+            : (isLight ? '#fefffe' : '#000000'),
           borderColor: isLight ? '#333333' : '#dadada',
           borderWidth: 1
         },

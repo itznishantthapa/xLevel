@@ -116,7 +116,7 @@ const InCategory = ({ route }) => {
 
 
   return (
-    <View style={[styles.container, { backgroundColor: isLight ? '#ffffff' : '#000000' }]}>
+    <View style={[styles.container, { backgroundColor: isLight ? '#fefffe' : '#000000' }]}>
       <StatusBar
         translucent
         backgroundColor="transparent"

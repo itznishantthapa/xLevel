@@ -20,12 +20,12 @@ export default function CustomerTabNavigator() {
             screenOptions={{
                 headerShown: false,
                 tabBarActiveTintColor: '#00bf63',
-                tabBarInactiveTintColor: isLight ? '#666666' : 'rgba(255, 255, 255, 0.7)',
+                tabBarInactiveTintColor: isLight ? '#1A1A1A' : 'rgba(255, 255, 255, 0.7)',
                 tabBarStyle: {
                       height: 56 + insets.bottom,
                     borderTopWidth: 0,
                     borderColor: isLight ? '#ffffff' : '#ffffff',
-                    backgroundColor: isLight ? '#ffffff' : '#000000',
+                    backgroundColor: isLight ? '#fefffe' : '#000000',
                 },
                 tabBarButton: (props) => (
                     <TouchableOpacity
@@ -41,7 +41,7 @@ export default function CustomerTabNavigator() {
                 component={Home}
                 options={{
                     tabBarLabel: ({ focused, color }) => (
-                        <Text style={{ color, fontSize: 12, fontWeight: focused ? 'bold' : 'normal', marginBottom: 3 }}>Home</Text>
+                        <Text style={{ color, fontSize: 12, fontWeight: focused ? 'bold' : '500', marginBottom: 3 }}>Home</Text>
                     ),
                     tabBarIcon: ({ focused, color, size }) => (
                         <View style={styles.tabIconContainer}>
@@ -55,7 +55,7 @@ export default function CustomerTabNavigator() {
                 component={OpenGames}
                 options={{
                     tabBarLabel: ({ focused, color }) => (
-                        <Text style={{ color, fontSize: 12, fontWeight: focused ? 'bold' : 'normal', marginBottom: 3 }}>Open Games</Text>
+                        <Text style={{ color, fontSize: 12,  fontWeight: focused ? 'bold' : '500', marginBottom: 3 }}>Open Games</Text>
                     ),
                     tabBarIcon: ({ focused, color, size }) => (
                         <View style={styles.tabIconContainer}>
@@ -70,7 +70,7 @@ export default function CustomerTabNavigator() {
                 component={Notify}
                 options={{
                     tabBarLabel: ({ focused, color }) => (
-                        <Text style={{ color, fontSize: 12, fontWeight: focused ? 'bold' : 'normal', marginBottom: 3 }}>Notify & Alert</Text>
+                        <Text style={{ color, fontSize: 12, fontWeight: focused ? 'bold' : '500', marginBottom: 3 }}>Notify & Alert</Text>
                     ),
                     tabBarIcon: ({ focused, color, size }) => (
                         <View style={styles.tabIconContainer}>

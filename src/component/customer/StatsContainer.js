@@ -62,11 +62,11 @@ const StatsContainer = ({ handleWithdraw, handleTournament, handleGameRules, han
   }
 
   return (
-    <View style={[styles.statsContainer, isLight ? { borderColor: '#333333' } : { borderColor: '#EAEAEA' }]}>
+    <View style={[styles.statsContainer, isLight ? { borderColor: '#1A1A1A' } : { borderColor: '#EAEAEA' }]}>
       {statsConfig.map((item, index) => (
         <React.Fragment key={item.id}>
           <Pressable style={styles.statItem} onPress={() => handleItemPress(item)}>
-            {renderIcon(item, isLight ? '#333333' : '#EAEAEA')}
+            {renderIcon(item, isLight ? '#000000' : '#EAEAEA')}
             <Text style={[styles.statLabel, isLight ? { color: '#333333' } : { color: '#EAEAEA' }]}>
               {item.name}
             </Text>

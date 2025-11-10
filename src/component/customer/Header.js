@@ -182,7 +182,7 @@ const Header = ({
     <View style={[
       styles.header,
       {
-        backgroundColor: isLight ? '#ffffff' : '#000000',
+        backgroundColor: isLight ? '#fefffe' : '#000000',
         borderColor: isLight ? '#333333' : '#ffffff' ,
         shadowColor: isLight ? '#000' : '#fff',
         // borderBottomWidth:5,

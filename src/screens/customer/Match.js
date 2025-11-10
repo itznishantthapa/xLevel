@@ -221,7 +221,7 @@ const Match = () => {
 
 
   return (
-    <View style={[styles.container, { backgroundColor: isLight ? '#ffffff' : '#000000', paddingTop: insets.top }]}>
+    <View style={[styles.container, { backgroundColor: isLight ? '#fefffe' : '#000000', paddingTop: insets.top }]}>
       <StatusBar
         translucent
         backgroundColor="transparent"
