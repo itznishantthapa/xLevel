@@ -20,7 +20,7 @@ const WithDraw = () => {
   const { mutateAsync: withdrawCrown } = useWithdraw();
 
   const colors = {
-    background: isLight ? "#ffffff" : "#000000",
+    background: isLight ? "#eef0f2" : "#000000",
     text: isLight ? "#000000" : "#ffffff",
     textSecondary: isLight ? "#666666" : "#999999",
     border: isLight ? "#000000" : "#ffffff",

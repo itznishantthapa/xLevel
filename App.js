@@ -32,7 +32,7 @@ export default function App() {
   });
 
   useEffect(() => {
-    SystemNavigationBar.setNavigationColor(isLight ? '#ffffff' : '#000000', isLight ? 'dark' : 'light', 'navigation');
+    SystemNavigationBar.setNavigationColor(isLight ? '#eef0f2' : '#000000', isLight ? 'dark' : 'light', 'navigation');
     // tell the window to apply system insets (status/nav) to the root view
     SystemNavigationBar.setFitsSystemWindows(true);
   }, [isLight]);

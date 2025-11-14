@@ -39,7 +39,7 @@ const HomeBanner = ({ data = [], height }) => {
   const animatedProgress = useDerivedValue(() => progress.value);
   const { isLight } = useThemeStore();
 
-  const wrapperBg = isLight ? '#ffffff' : '#000000';
+  const wrapperBg = isLight ? '#eef0f2' : '#000000';
   const { width } = Dimensions.get('window');
   // Match StatsContainer width (marginHorizontal: 10 on each side)
   const PAGE_WIDTH = width - 20;

@@ -33,7 +33,7 @@ const ReportUser = ({ route }) => {
     ]
 
     const colors = {
-        background: isLight ? "#ffffff" : "#000000",
+        background: isLight ? "#eef0f2" : "#000000",
         cardBackground: isLight ? "rgba(0, 0, 0, 0.05)" : "rgba(255, 255, 255, 0.1)",
         text: isLight ? "#000000" : "#ffffff",
         textSecondary: isLight ? "rgba(51, 51, 51, 0.7)" : "rgba(255, 255, 255, 0.7)",
@@ -259,8 +259,7 @@ const styles = StyleSheet.create({
         padding: 14,
         alignItems: 'flex-start',
         gap: 12,
-        borderTopRightRadius:12,
-        borderTopLeftRadius:12,
+        borderRadius:12,
     },
     warningTextContainer: {
         flex: 1,
@@ -284,7 +283,7 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         padding: 12,
-        // borderRadius: 12,
+        borderRadius: 10,
         alignItems: 'center',
         gap: 10,
         minHeight: 56,

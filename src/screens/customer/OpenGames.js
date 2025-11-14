@@ -92,7 +92,7 @@ const OpenGames = () => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: isLight ? '#fefffe' : '#000', paddingTop: insets.top }]}>
+    <View style={[styles.container, { backgroundColor: isLight ? '#eef0f2' : '#000', paddingTop: insets.top }]}>
       <StatusBar translucent backgroundColor="transparent" barStyle={isLight ? 'dark-content' : 'light-content'} />
 
       {routes.length > 0 ? (

@@ -102,7 +102,7 @@ const UserTournament = () => {
   }), [handleLoadMore])
 
   return (
-    <View style={[styles.container, { backgroundColor: isLight ? '#ffffff' : '#000000', paddingTop: insets.top }]}>
+    <View style={[styles.container, { backgroundColor: isLight ? '#eef0f2' : '#000000', paddingTop: insets.top }]}>
       <StatusBar
         translucent
         backgroundColor="transparent"
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     height: height,
   },
   listContainer: {
-    paddingBottom: 50,
+    // paddingBottom: 50,
   },
   headerContainer: {
     paddingHorizontal: 16,

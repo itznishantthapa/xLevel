@@ -34,10 +34,10 @@ const Transaction = () => {
   } = useTransactions(PAGE_SIZE) // Fetch 8 items per page
   // Colors based on theme
   const colors = {
-    background: isLight ? "#fefffe" : "#000000",
+    background: isLight ? "#eef0f2" : "#000000",
     text: isLight ? "#333333" : "#ffffff",
     subText: isLight ? "#000000" : "#ffffff",
-    card: isLight ? "#ffffff" : "#000000",
+    card: isLight ? "transparent" : "#000000",
     cardBorder: isLight ? "#333333" : "#ffffff",
     success: "#00C851",
     pending: "#FFBB33",
@@ -163,7 +163,13 @@ const Transaction = () => {
             <Text style={[styles.codeLabel, { color: colors.subText }]}>Transaction ID</Text>
             <Text style={[styles.codeValue, { color: colors.text }]}>#{item.id}</Text>
           </View>
-          <Text style={[styles.dateText, { color: colors.subText }]}>{formatDate(item.created_at)}</Text>
+          <Text 
+            style={[styles.dateText, { color: colors.subText }]}
+            numberOfLines={1} 
+            adjustsFontSizeToFit={true}
+          >
+            {formatDate(item.created_at)}
+          </Text>
         </View>
 
         {/* Main transaction details */}
@@ -197,7 +203,11 @@ const Transaction = () => {
         {/* Processed info if available */}
         {item.processed_at && (
           <View style={styles.processedContainer}>
-            <Text style={[styles.processedText, { color: colors.subText }]}>
+            <Text 
+              style={[styles.processedText, { color: colors.subText }]}
+              numberOfLines={1} 
+              adjustsFontSizeToFit={true}
+            >
               Processed on {formatDate(item.processed_at)}
             </Text>
           </View>
@@ -357,6 +367,7 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 12,
     fontWeight: '500',
+    includeFontPadding: false,
   },
   mainDetails: {
     flexDirection: 'row',
@@ -411,6 +422,7 @@ const styles = StyleSheet.create({
   processedText: {
     fontSize: 12,
     // fontStyle: 'italic',
+    includeFontPadding: false,
   },
   bottomLine: {
     width: "100%",

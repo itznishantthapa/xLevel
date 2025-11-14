@@ -59,7 +59,7 @@ const BlockedUserCard = React.memo(({ blockedUser, isLight, onUnblock }) => {
       <View style={[
         styles.card,
         {
-          backgroundColor: isLight ? '#ffffff' : '#000000',
+          backgroundColor: isLight ? 'transparent' : '#000000',
           borderColor: isLight ? '#333333' : '#dadada',
           borderWidth: 1
         }
@@ -209,7 +209,7 @@ const BlockedUserList = () => {
     <View style={[
       styles.container,
       {
-        backgroundColor: isLight ? '#ffffff' : '#000000',
+        backgroundColor: isLight ? '#eef0f2' : '#000000',
         paddingTop: insets.top,
       }
     ]}>

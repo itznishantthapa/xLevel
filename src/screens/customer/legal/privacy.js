@@ -158,7 +158,7 @@ export default Privacy
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#eef0f2',
   },
   scrollView: {
     flex: 1,

@@ -25,7 +25,7 @@ export default function CustomerTabNavigator() {
                       height: 56 + insets.bottom,
                     borderTopWidth: 0,
                     borderColor: isLight ? '#ffffff' : '#ffffff',
-                    backgroundColor: isLight ? '#fefffe' : '#000000',
+                    backgroundColor: isLight ? '#eef0f2' : '#000000',
                 },
                 tabBarButton: (props) => (
                     <TouchableOpacity

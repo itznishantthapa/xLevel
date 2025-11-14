@@ -303,7 +303,7 @@ export const BottomSheetProvider = ({ children }) => {
                   styles.sheetContainer,
                   sheetAnimatedStyle,
                   {
-                    backgroundColor: isDark ? "#1a1a1a" : "#ffffff",
+                    backgroundColor: isDark ? "#1a1a1a" : "#eef0f2",
                     borderColor: isDark ? "#ffffff" : "#333333",
                   },
                 ]}

@@ -415,7 +415,7 @@ const Home = () => {
       style={[
         styles.container,
         {
-          backgroundColor: isLight ? "#fefffe" : "#000000",
+          backgroundColor: isLight ? "#eef0f2" : "#000000",
           paddingTop: insets.top,
         },
       ]}

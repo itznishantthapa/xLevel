@@ -117,29 +117,29 @@ const NotificationCard = ({ notification }) => {
     const notificationConfig = useMemo(() => ({
         [NOTIFICATION_TYPES.GAME]: {
             title: 'Game Invitation',
-            bgColor: isLight ? '#eef5ff' : 'rgba(46, 81, 255, 0.2)',
+            bgColor: isLight ? '#d1e7ff' : 'rgba(46, 81, 255, 0.2)',
             icon: <MaterialCommunityIcons 
                 name="gamepad-variant" 
                 size={16} 
-                color={isLight ? "#4263eb" : "#6d8cff"} 
+                color={isLight ? "#1a56db" : "#6d8cff"} 
             />
         },
         [NOTIFICATION_TYPES.CREDITED]: {
             title: 'Game Point Update',
-            bgColor: isLight ? '#e6f9ee' : 'rgba(18, 184, 134, 0.2)',
+            bgColor: isLight ? '#d4f4dd' : 'rgba(18, 184, 134, 0.2)',
             icon: <MaterialCommunityIcons 
                 name="star-four-points-outline" 
                 size={16} 
-                color={isLight ? "#12b886" : "#20c997"} 
+                color={isLight ? "#0f7b0f" : "#20c997"} 
             />
         },
         [NOTIFICATION_TYPES.NORMAL]: {
             title: 'Notification',
-            bgColor: isLight ? '#fff3e0' : 'rgba(255, 152, 0, 0.2)',
+            bgColor: isLight ? '#ffe8cc' : 'rgba(255, 152, 0, 0.2)',
             icon: <Entypo 
                 name="notification" 
                 size={16} 
-                color={isLight ? "#ff9800" : "#ffb74d"} 
+                color={isLight ? "#cc6600" : "#ffb74d"} 
             />
         }
     }), [isLight]);
@@ -165,7 +165,7 @@ const NotificationCard = ({ notification }) => {
                 <View
                     style={[
                         styles.roomInfoItem,
-                        { backgroundColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)' },
+                        { backgroundColor: isLight ? '#f8f9fa' : 'rgba(255, 255, 255, 0.1)' },
                     ]}
                 >
                     <Text style={{ color: isLight ? '#666666' : '#dadada' }}>{label}</Text>
@@ -193,7 +193,7 @@ const NotificationCard = ({ notification }) => {
                 {room_pass && renderInfoRow('Pass', room_pass, () => copyToClipboard(room_pass))}
 
                 {/* Team Code */}
-                {team_code && renderInfoRow('Code', team_code, () => handleRoomCopy(team_code))}
+                {team_code && renderInfoRow('Teamcode', team_code, () => handleRoomCopy(team_code))}
             </View>
         );
     };
@@ -203,7 +203,7 @@ const NotificationCard = ({ notification }) => {
             <View style={[
                 styles.card,
                 { 
-                    backgroundColor: isLight ? '#ffffff' : '#000000',
+                    backgroundColor: isLight ? '#eef0f2' : '#000000',
                     borderColor: isLight ? '#333333' : '#dadada',
                     borderWidth: 1.5
                 }

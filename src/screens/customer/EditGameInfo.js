@@ -402,7 +402,7 @@ const EditGameInfo = () => {
     const inputStyle = [
       styles.input,
       {
-        backgroundColor: isLight ? "#f5f5f5" : "#1a1a1a",
+        backgroundColor: isLight ? "transparent" : "#1a1a1a",
         borderColor: isLight ? "#cccccc" : "#333333",
         color: isLight ? "#333333" : "#ffffff",
       },
@@ -688,7 +688,7 @@ const EditGameInfo = () => {
       loaderMessage={isEditing ? "Updating..." : "Saving..."}
     >
       {/* Game Info Header */}
-      <View style={[styles.gameHeader, { backgroundColor: isLight ? "#f5f5f5" : "#1a1a1a" }]}>
+      <View style={[styles.gameHeader, { backgroundColor: isLight ? "#rgba(0, 0, 0, 0.05)" : "#1a1a1a" }]}>
         <Image source={{ uri: gameProfile.game_logo_url }} style={styles.gameLogo} />
         <View style={styles.gameInfo}>
           <Text style={[styles.gameName, { color: isLight ? "#333333" : "#ffffff" }]}>{gameProfile.game_name === 'Chess' ? "Chess.com" : gameProfile.game_name}</Text>
@@ -718,7 +718,7 @@ const EditGameInfo = () => {
               style={[
                 styles.input,
                 {
-                  backgroundColor: isLight ? "#f5f5f5" : "#1a1a1a",
+                  backgroundColor: isLight ? "transparent" : "#1a1a1a",
                   borderColor: isLight ? "#cccccc" : "#333333",
                   color: isLight ? "#333333" : "#ffffff",
                 },
@@ -774,6 +774,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 12,
     marginBottom: 16,
+    borderRadius: 12,
   },
   gameLogo: {
     width: 44,

@@ -115,7 +115,7 @@ const OpenGameList = ({
     return (
       <View style={[
         styles.filterChipsContainer, 
-        { backgroundColor: isLight ? '#ffffff' : '#000000', borderBottomColor: isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)' }
+        { backgroundColor: isLight ? 'transparent' : '#000000', borderBottomColor: isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)' }
       ]}>
         <ScrollView
           horizontal
@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
   },
   // Card styles - common for both real and skeleton cards
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: 'transparent',
     borderRadius: 12,
     marginHorizontal: 12,
     marginVertical: 8,
