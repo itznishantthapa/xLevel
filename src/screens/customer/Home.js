@@ -425,7 +425,7 @@ const Home = () => {
 
       {/* Fixed Header at the top */}
       <Header
-        player_name={user?.full_name}
+        player_name={user?.full_name} 
         wallet_balance={user?.wallet_balance}
         profile_picture={user?.profile_picture}
         handleProfile={handleProfile}

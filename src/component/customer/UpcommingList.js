@@ -571,7 +571,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   progressBarFillRed: {
-    backgroundColor: "#dc3545",
+    backgroundColor: "#da1e37",
   },
 
   // Bottom Section
