@@ -282,8 +282,8 @@ const Home = () => {
       return
     }
 
-    // If Utils has QR, navigate to scanPay
-    navigation.navigate("scanPay")
+    // If Utils has QR, navigate to pointsIn
+    navigation.navigate("pointsIn")
   }
 
 
@@ -384,13 +384,13 @@ const Home = () => {
           <StatsContainer
             num_loss={user?.num_loss || 0}
             num_win={user?.num_win || 0}
-            handleWithdraw={() => navigation.navigate("withDraw")}
+            handlePointsOut={() => navigation.navigate("pointsOut")}
             handleTournament={() => navigation.navigate("userTournament")}
             handleGameRules={() => navigation.navigate("gameRules")}
             handleMatches={() => navigation.navigate("match")}
             handleWatchAds={() => navigation.navigate("watchAds")}
             handleLeaderboard={() => navigation.navigate("leaderboard")}
-            handleTransaction={() => navigation.navigate("transaction")}
+            handleGamePoints={() => navigation.navigate("gamePoints")}
           />
         )
 

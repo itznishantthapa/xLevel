@@ -10,9 +10,9 @@ const DEFAULT_STATS = [
   { id: 'matches', type: 'matches', name: 'My Match', icon: 'gamepad-circle-right', iconLib: 'MaterialCommunityIcons' },
 ];
 
-// Configuration when QR exists - shows Transaction, Tournament, MyMatch, Redeem
+// Configuration when QR exists - shows Game Points, Tournament, MyMatch, Redeem
 const QR_AVAILABLE_STATS = [
-  { id: 'transaction', type: 'leaderboard', name: 'Transaction', icon: 'receipt-long', iconLib: 'MaterialIcons' },
+  { id: 'gamepoints', type: 'leaderboard', name: 'Game Points', icon: 'receipt', iconLib: 'Ionicons' },
   { id: 'tournament', type: 'tournament', name: 'Tournaments', icon: 'game-controller-outline', iconLib: 'Ionicons' },
   { id: 'matches', type: 'matches', name: 'My Match', icon: 'gamepad-circle-right', iconLib: 'MaterialCommunityIcons' },
   { id: 'redeem', type: 'gamerules', name: 'Redeem', icon: 'wallet-giftcard', iconLib: 'MaterialCommunityIcons' },
@@ -25,10 +25,10 @@ const TOGGLEABLE_OPTIONS = {
     primary: { id: 'gamerules', type: 'gamerules', name: 'Game Rules', icon: 'book-outline', iconLib: 'Ionicons' },
     secondary: { id: 'redeem', type: 'gamerules', name: 'Redeem', icon: 'wallet-giftcard', iconLib: 'MaterialCommunityIcons' },
   },
-  // leaderboard toggles between Leaderboard and Transaction
+  // leaderboard toggles between Leaderboard and Game Points
   leaderboard: {
     primary: { id: 'leaderboard', type: 'leaderboard', name: 'Leaderboard', icon: 'trophy', iconLib: 'SimpleLineIcons' },
-    secondary: { id: 'transaction', type: 'leaderboard', name: 'Transaction', icon: 'receipt-long', iconLib: 'MaterialIcons' },
+    secondary: { id: 'gamepoints', type: 'leaderboard', name: 'Game Points', icon: 'receipt', iconLib: 'Ionicons' },
   },
 };
 
@@ -39,6 +39,7 @@ export const useStatsPreferenceStore = create(
       statsConfig: DEFAULT_STATS,
       isLoading: false,
       hasQR: false,
+      colorfulIcons: false, // New state for controlling icon colors
 
       // Actions
       updateStatsConfig: (newConfig) => {
@@ -95,6 +96,11 @@ export const useStatsPreferenceStore = create(
         newConfig.splice(toIndex, 0, movedItem);
         
         set({ statsConfig: newConfig });
+      },
+
+      toggleColorfulIcons: () => {
+        const currentColorful = get().colorfulIcons;
+        set({ colorfulIcons: !currentColorful });
       },
 
       resetToDefault: () => {

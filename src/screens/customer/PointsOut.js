@@ -6,18 +6,17 @@ import { useThemeStore } from '../../store/themeStore';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Toast from 'react-native-simple-toast';
 import * as ImagePicker from 'expo-image-picker';
-import { TranscationAPI } from '../../api/transcationApi';
 import { useQueryClient } from '@tanstack/react-query';
 import AppHeader from './header/AppHeader';
-import { useWithdraw } from '../../queries/useMutation/useWithdraw';
+import { usePointsOut } from '../../queries/useMutation/usePointsOut';
 import CoolButton from '../../component/customer/common/CoolButton';
 
-const WithDraw = () => {
+const PointsOut = () => {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
   const { isLight } = useThemeStore();
-  const { mutateAsync: withdrawCrown } = useWithdraw();
+  const { mutateAsync: pointsOut } = usePointsOut();
 
   const colors = {
     background: isLight ? "#eef0f2" : "#000000",
@@ -64,7 +63,7 @@ const WithDraw = () => {
     if (!crownAmount) {
       newErrors.amount = 'Please enter points amount';
     } else if (parseInt(crownAmount) < 100) {
-      newErrors.amount = 'Minimum withdrawal is 100 points';
+      newErrors.amount = 'Minimum 100 points';
     }
 
     if (!qrImage) {
@@ -92,16 +91,16 @@ const WithDraw = () => {
     }
 
     try {
-      await withdrawCrown(formData);
+      await pointsOut(formData);
       navigation.reset({
         index: 1,
         routes: [
           { name: 'customerTabs' },
-          { name: 'transaction' }
+          { name: 'gamePoints' }
         ],
       });
     } catch (err) {
-      Toast.show(err?.message || 'Failed to submit withdrawal request.', Toast.SHORT)
+      Toast.show(err?.message || 'Failed to submit redeem request.', Toast.SHORT)
     } finally {
       setTimeout(() => {
         setdisableBtn(false)
@@ -120,7 +119,7 @@ const WithDraw = () => {
 
         <AppHeader
           backButton={true}
-          title={'Withdraw Points'}
+          title={'Redeem Points'}
         />
 
         <ScrollView
@@ -140,7 +139,7 @@ const WithDraw = () => {
                 <View style={styles.instructionHeader}>
                   <MaterialCommunityIcons name="information" size={20} color={isLight ? "#ffffff" : "#FF9500"} />
                   <Text style={[styles.instructionTitle, { color: isLight ? "#ffffff" : "#FF9500" }]}>
-                    Withdrawal Instructions
+                    Redeem Instructions
                   </Text>
                 </View>
 
@@ -150,7 +149,7 @@ const WithDraw = () => {
                       <Text style={[styles.stepNumber, { color: isLight ? "#ffffff" : "#FF9500" }]}>1</Text>
                     </View>
                     <Text style={[styles.instructionText, { color: isLight ? "#ffffff" : colors.text }]}>
-                      Minimum withdrawal amount is 100 points (100 Points = Rs. 100).
+                      Minimum redeem amount is 100 points (100 Points = Rs. 100).
                     </Text>
                   </View>
 
@@ -214,7 +213,7 @@ const WithDraw = () => {
             {/* Points Amount Input */}
             <View style={styles.inputContainer}>
               <View style={styles.labelCrownContainer}>
-                <Text style={[styles.inputLabel, { color: colors.text }]}>Withdrawal Amount</Text>
+                <Text style={[styles.inputLabel, { color: colors.text }]}>Redeem Amount</Text>
               </View>
               <View style={[styles.inputWrapper, {
                 borderColor: errors.amount ? '#FF4444' : colors.border,
@@ -252,7 +251,7 @@ const WithDraw = () => {
         </ScrollView>
 
         <View style={styles.footer}>
-          <CoolButton handlePress={handleSubmit} disableBtn={disableBtn} title={'Submit Withdrawal'} />
+          <CoolButton handlePress={handleSubmit} disableBtn={disableBtn} title={'Submit'} />
         </View>
 
       </View>
@@ -260,7 +259,7 @@ const WithDraw = () => {
   )
 }
 
-export default WithDraw
+export default PointsOut
 
 const styles = StyleSheet.create({
   container: {

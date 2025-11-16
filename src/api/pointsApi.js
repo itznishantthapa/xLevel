@@ -1,9 +1,10 @@
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import { API } from "./client";
 import { endpoints } from "./endpoints";
 
-export const TranscationAPI = {
-  credit: async (payload) => {
-    const res = await API.post(endpoints.transcationCredit, payload,
+export const GamePointAPI = {
+  getPointsIn: async (payload) => {
+    const res = await API.post(endpoints.getPointsIn, payload,
         {
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -13,8 +14,8 @@ export const TranscationAPI = {
     return res.data;
   },
 
-  withdraw: async (payload) => {
-    const res = await API.post(endpoints.transcationWithdraw, payload,
+  getPointsOut: async (payload) => {
+    const res = await API.post(endpoints.getPointsOut, payload,
         {
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -24,7 +25,7 @@ export const TranscationAPI = {
     return res.data;
   },
 
-  getTransactions: async (params) => {
+  getPointsHistory: async (params) => {
     const { offset = 0, limit = 10 } = params || {};
     const queryParams = new URLSearchParams();
     
@@ -32,7 +33,7 @@ export const TranscationAPI = {
     if (limit !== undefined) queryParams.append('limit', limit);
     
     const queryString = queryParams.toString();
-    const url = `${endpoints.getTransactions}${queryString ? '?' + queryString : ''}`;
+    const url = `${endpoints.getPointsHistory}${queryString ? '?' + queryString : ''}`;
     
     const res = await API.get(url);
     return res.data;
@@ -40,11 +41,4 @@ export const TranscationAPI = {
 };
 
 
-// return Response({
-//     "message": _("Credit transaction created successfully"),
-//     "success": True,
-//     "transaction_id": transaction_obj.id,
-//     "status": transaction_obj.status,
-//     "amount": transaction_obj.amount,
-//     "type": transaction_obj.type,
-// }, status=status.HTTP_201_CREATED)
+ 

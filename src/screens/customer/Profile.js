@@ -280,11 +280,11 @@ const Profile = () => {
 
                 <Pressable
                   style={[styles.actionRow, styles.actionRowBorder, { borderBottomColor: colors.border }]}
-                  onPress={() => navigation.navigate("transaction")}
+                  onPress={() => navigation.navigate("gamePoints")}
                 >
                   <View style={styles.actionContent}>
-                    <MaterialIcons name="receipt-long" size={20} color={colors.text} />
-                    <Text style={[styles.actionText, { color: colors.text }]}>My Transactions</Text>
+                    <MaterialCommunityIcons name="star-four-points-outline" size={20} color={colors.text} />
+                    <Text style={[styles.actionText, { color: colors.text }]}>My Points</Text>
                   </View>
                   <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
                 </Pressable>
@@ -392,7 +392,7 @@ const Profile = () => {
           {/* App Version Footer */}
           <View style={styles.versionFooter}>
             <Text style={[styles.versionText, { color: colors.textTertiary }]}>
-              Version 3.1.0 (7)
+              Version 3.2.0 (19)
             </Text>
           </View>
         </ScrollView>
