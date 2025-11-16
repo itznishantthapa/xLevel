@@ -46,19 +46,23 @@ const GameCarousel = ({ games, handleGameCardPress }) => {
                         key={game.game_id}
                         style={[
                             styles.gameCard,
-                            { marginLeft: index === 0 ? scaleWidth(20) : 0 },
-                            isLight ? { borderColor: '#1A1A1A' } : { borderColor: '#EAEAEA' }
+                            { marginLeft: index === 0 ?  scaleWidth(20)  : 0 },
+                            isLight ? { borderColor: '#1A1A1A' } : { borderColor: '#EAEAEA', backgroundColor: '#000000' },
+                            isLight? { paddingVertical: scaleHeight(0)} : { paddingVertical: scaleHeight(5)}
                         ]}
                         onPress={() => handleGameCardPress(game)}
                         activeOpacity={0.9}
                     >
                         <Image
                             source={{ uri: game.game_logo_url }}
-                            style={{ width: scaleWidth(100), height: scaleHeight(100) }}
+                            style={isLight ? 
+                                { width: scaleWidth(100), height: scaleHeight(100) } :
+                                { width: scaleWidth(100), height: scaleHeight(100), borderRadius: scaleWidth(15), resizeMode: 'cover' }
+                            }
                         />
                         <Text style={[
                             styles.gameName,
-                            isLight ? { color: '#333333' } : { color: '#EAEAEA' }
+                            isLight ? { color: '#333333' } : { color: '#FFFFFF' }
                         ]}>
                             {shouldShowLabel ?
                                 game.game_name :
@@ -107,6 +111,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         borderWidth: 1.5,
         alignItems: 'center',
+       
     },
     gameName: {
         fontSize: scaleWidth(12),
