@@ -9,6 +9,7 @@ import { useThemeStore } from "../../store/themeStore"
 import { useGameProfiles } from "../../queries/useGameProfiles"
 import { useNavigation } from "@react-navigation/native"
 import { useEffect } from "react"
+import { scaleWidth } from "../../utils/scaling"
 
 
 const { width } = Dimensions.get("window")
@@ -85,18 +86,18 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
 
         {/* Game Info Pills */}
         <View style={styles.gameInfoRow}>
-          <View style={[styles.infoPill, !isLight && styles.infoPillDark]}>
-            <View style={[styles.iconWrapper, { backgroundColor: isLight ? 'rgba(66, 99, 235, 0.15)' : 'rgba(109, 140, 255, 0.2)' }]}>
-              <Ionicons name="game-controller" size={14} color={isLight ? '#4263eb' : '#6d8cff'} />
+            <View style={[styles.infoPill, !isLight && styles.infoPillDark]}>
+              <View style={[styles.iconWrapper, { backgroundColor: isLight ? '#d1e7ff' : 'rgba(109, 140, 255, 0.2)' }]}>
+                <Ionicons name="game-controller" size={scaleWidth(14)} color={isLight ? '#1a56db' : '#6d8cff'} />
+              </View>
+              <Text style={[styles.pillText, !isLight && styles.pillTextDark]}>{game.game?.name}</Text>
             </View>
-            <Text style={[styles.pillText, !isLight && styles.pillTextDark]}>{game.game?.name}</Text>
-          </View>
-          <View style={[styles.infoPill, !isLight && styles.infoPillDark]}>
-            <View style={[styles.iconWrapper, { backgroundColor: isLight ? 'rgba(18, 184, 134, 0.15)' : 'rgba(32, 201, 151, 0.2)' }]}>
-              <Ionicons name="people" size={14} color={isLight ? '#12b886' : '#20c997'} />
+            <View style={[styles.infoPill, !isLight && styles.infoPillDark]}>
+              <View style={[styles.iconWrapper, { backgroundColor: isLight ? '#d4f4dd' : 'rgba(32, 201, 151, 0.2)' }]}>
+                <Ionicons name="people" size={scaleWidth(14)} color={isLight ? '#0f7b0f' : '#20c997'} />
+              </View>
+              <Text style={[styles.pillText, !isLight && styles.pillTextDark]}>{game.game?.game_mode}</Text>
             </View>
-            <Text style={[styles.pillText, !isLight && styles.pillTextDark]}>{game.game?.game_mode}</Text>
-          </View>
         </View>
       </View>
 
@@ -363,10 +364,10 @@ const styles = StyleSheet.create({
   card: {
     marginHorizontal: 15,
     marginVertical: 8,
-    borderRadius: 16,
-    backgroundColor: "#ffffff",
+    borderRadius: 25,
+    backgroundColor: "transparent",
     borderWidth: 1.5,
-    borderColor: "#333333",
+    borderColor: "#1A1A1A",
   },
   cardDark: {
     backgroundColor: "#000000",
@@ -571,7 +572,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   progressBarFillRed: {
-    backgroundColor: "#dc3545",
+    backgroundColor: "#da1e37",
   },
 
   // Bottom Section

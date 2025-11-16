@@ -214,7 +214,7 @@ const EditProfile = () => {
                   {
                     backgroundColor: isSelected
                       ? (isLight ? '#000000' : '#ffffff')
-                      : (isLight ? '#f0f0f0' : '#2a2a2a'),
+                      : (isLight ? 'transparent' : '#2a2a2a'),
                     borderColor: isLight ? '#000000' : '#ffffff',
                   }
                 ]}
@@ -252,7 +252,7 @@ const EditProfile = () => {
                       {
                         backgroundColor: isSelected
                           ? (isLight ? '#000000' : '#ffffff')
-                          : (isLight ? '#f0f0f0' : '#2a2a2a'),
+                          : (isLight ? 'transparent' : '#2a2a2a'),
                         borderColor: isLight ? '#000000' : '#ffffff',
                       }
                     ]}
@@ -286,7 +286,7 @@ const EditProfile = () => {
         backgroundColor="transparent"
         barStyle={isLight ? "dark-content" : "light-content"}
       />
-      <SafeAreaView style={[styles.container, { backgroundColor: isLight ? '#ffffff' : '#000000' }]}>
+      <SafeAreaView style={[styles.container, { backgroundColor: isLight ? '#eef0f2' : '#000000' }]}>
 
 
         <AppHeader

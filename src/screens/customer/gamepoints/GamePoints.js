@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View, FlatList, ActivityIndicator, StatusBar, Pressable, RefreshControl } from 'react-native'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useThemeStore } from '../../../store/themeStore'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { MaterialIcons, FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
-import { useTransactions } from '../../../queries/useTransaction'
+import { usePointsHistory } from '../../../queries/usePointsHistory'
 import Loader from '../../../component/Loader'
 import AppHeader from '../header/AppHeader'
 import { queryClient } from '../../../lib/queryClient'
@@ -11,11 +11,11 @@ import { useNetworkStatus } from '../../../hooks/useNetworkStatus'
 import Toast from 'react-native-simple-toast'
 
 
-const Transaction = () => {
+const GamePoints = () => {
   const { isLight } = useThemeStore()
   const insets = useSafeAreaInsets()
 
-  // Use our custom hook for transactions with pagination
+  // Use our custom hook for pointsinout with pagination
   // Add local state to manage refresh state
   const [isManualRefreshing, setIsManualRefreshing] = useState(false);
   const { isConnected } = useNetworkStatus();
@@ -23,7 +23,7 @@ const Transaction = () => {
   const PAGE_SIZE = 8;
 
   const {
-    data: { flat: transactions = [], hasMore = false } = {},
+    data: { flat: pointsinout = [], hasMore = false } = {},
     fetchNextPage,
     isFetchingNextPage,
     isLoading,
@@ -31,20 +31,23 @@ const Transaction = () => {
     error,
     refetch,
     isRefetching
-  } = useTransactions(PAGE_SIZE) // Fetch 8 items per page
+  } = usePointsHistory(PAGE_SIZE) // Fetch 8 items per page
+
+
+ 
   // Colors based on theme
   const colors = {
-    background: isLight ? "#ffffff" : "#000000",
+    background: isLight ? "#eef0f2" : "#000000",
     text: isLight ? "#333333" : "#ffffff",
     subText: isLight ? "#000000" : "#ffffff",
-    card: isLight ? "#ffffff" : "#000000",
+    card: isLight ? "transparent" : "#000000",
     cardBorder: isLight ? "#333333" : "#ffffff",
     success: "#00C851",
     pending: "#FFBB33",
     rejected: "#FF4444",
     processing: "#33B5E5",
-    credit: "#00C851",
-    withdraw: "#FF8800",
+    pointsIn: "#00C851",
+    pointsOut: "#FF8800",
     bottomLine: isLight ? "#e0e0e0" : "rgba(255, 255, 255, 0.1)",
   }
 
@@ -65,7 +68,7 @@ const Transaction = () => {
   }
 
   /**
-   * Get status icon based on transaction status
+   * Get status icon based on pointsinout status
    */
   const getStatusIcon = (status) => {
     switch (status) {
@@ -83,14 +86,14 @@ const Transaction = () => {
   }
 
   /**
-   * Get transaction type icon
+   * Get pointsinout type icon
    */
   const getTypeIcon = (type) => {
     switch (type) {
-      case 'credit':
-        return <FontAwesome name="arrow-circle-down" size={18} color={colors.credit} />
-      case 'withdraw':
-        return <FontAwesome name="arrow-circle-up" size={18} color={colors.withdraw} />
+      case 'pointsin':
+        return <FontAwesome name="arrow-circle-down" size={18} color={colors.pointsIn} />
+      case 'pointsout':
+        return <FontAwesome name="arrow-circle-up" size={18} color={colors.pointsOut} />
       default:
         return null
     }
@@ -104,7 +107,7 @@ const Transaction = () => {
   }
 
   /**
-   * Handle loading more transactions when reaching the end of the list
+   * Handle loading more pointsinout when reaching the end of the list
    */
   const handleLoadMore = useCallback(async () => {
     if (hasMore && !isFetchingNextPage) {
@@ -113,14 +116,14 @@ const Transaction = () => {
       } catch (error) {
         // Handle error silently
         if (__DEV__) {
-          console.error("Error loading more transactions:", error);
+          console.error("Error loading more pointsinout:", error);
         }
       }
     }
   }, [hasMore, isFetchingNextPage, fetchNextPage]);
 
   /**
-   * Handle refresh for transactions list
+   * Handle refresh for pointsinout list
    */
   const handleRefresh = useCallback(async () => {
     if (!isConnected) {
@@ -130,12 +133,12 @@ const Transaction = () => {
 
     setIsManualRefreshing(true);
     try {
-      // Clear the transactions query from cache and refetch
-      queryClient.removeQueries({ queryKey: ["transactions", PAGE_SIZE] });
+      // Clear the points query from cache and refetch
+      queryClient.removeQueries({ queryKey: ["points", PAGE_SIZE] });
       await refetch();
     } catch (error) {
       if (__DEV__) {
-        console.log("Failed to refresh transactions:", error);
+        console.log("Failed to refresh points:", error);
       }
     } finally {
       // Always ensure refreshing state is reset
@@ -144,37 +147,43 @@ const Transaction = () => {
   }, [refetch, isConnected, PAGE_SIZE]);
 
   /**
-   * Render a transaction card
+   * Render a pointsinout card
    */
-  const renderTransactionCard = useCallback(({ item }) => (
-    <View style={styles.transactionCardContainer}>
+  const renderPointsCard = useCallback(({ item }) => (
+    <View style={styles.pointsCardContainer}>
       <View
         style={[
-          styles.transactionCard,
+          styles.pointsCard,
           {
             backgroundColor: colors.card,
             borderColor: colors.cardBorder,
           },
         ]}
       >
-        {/* Header with transaction code and date */}
+        {/* Header with pointsinout code and date */}
         <View style={styles.cardHeader}>
           <View style={styles.codeContainer}>
-            <Text style={[styles.codeLabel, { color: colors.subText }]}>Transaction ID</Text>
+            <Text style={[styles.codeLabel, { color: colors.subText }]}> ID</Text>
             <Text style={[styles.codeValue, { color: colors.text }]}>#{item.id}</Text>
           </View>
-          <Text style={[styles.dateText, { color: colors.subText }]}>{formatDate(item.created_at)}</Text>
+          <Text 
+            style={[styles.dateText, { color: colors.subText }]}
+            numberOfLines={1} 
+            adjustsFontSizeToFit={true}
+          >
+            {formatDate(item.created_at)}
+          </Text>
         </View>
 
-        {/* Main transaction details */}
+        {/* Main pointsinout details */}
         <View style={styles.mainDetails}>
           <View style={styles.amountContainer}>
             <View style={styles.typeIconContainer}>
               {getTypeIcon(item.type)}
             </View>
             <View>
-              <Text style={[styles.amountLabel, { color: colors.subText }]}>{capitalize(item.type)}</Text>
-              <Text style={[styles.amountValue, { color: colors.text }]}>Rs. {item.amount}</Text>
+              <Text style={[styles.amountLabel, { color: colors.subText }]}>{item.type=="pointsin" ? "Load" : item.type=="pointsout" ? "Redeem" : ""}</Text>
+              <Text style={[styles.amountValue, { color: colors.text }]}>{item.amount} points</Text>
             </View>
           </View>
 
@@ -197,7 +206,11 @@ const Transaction = () => {
         {/* Processed info if available */}
         {item.processed_at && (
           <View style={styles.processedContainer}>
-            <Text style={[styles.processedText, { color: colors.subText }]}>
+            <Text 
+              style={[styles.processedText, { color: colors.subText }]}
+              numberOfLines={1} 
+              adjustsFontSizeToFit={true}
+            >
               Processed on {formatDate(item.processed_at)}
             </Text>
           </View>
@@ -215,24 +228,24 @@ const Transaction = () => {
       {/* Header */}
       <AppHeader
         backButton={true}
-        title={'Transaction History'}
+        title={'Game Points'}
       />
 
-      {/* Transaction List */}
+      {/* pointsinout List */}
       {/* Loader for initial loading - don't show during pull-to-refresh */}
-      <Loader visible={isLoading || isManualRefreshing} message="Loading transactions..." />
+      <Loader visible={isLoading || isManualRefreshing} message="Loading ..." />
 
 
       {/* Always show content during manual refresh, otherwise only when not loading */}
-      {!isLoading && !isManualRefreshing && transactions.length === 0 ? (
+      {!isLoading && !isManualRefreshing && pointsinout.length === 0 ? (
         <View style={styles.emptyContainer}>
           <MaterialCommunityIcons  name="star-four-points-outline" size={64} color={colors.subText} />
-          <Text style={[styles.emptyText, { color: colors.text }]}>No transactions done yet</Text>
+          <Text style={[styles.emptyText, { color: colors.text }]}>Points details unavailable.</Text>
         </View>
       ) : (
         <FlatList
-          data={transactions}
-          renderItem={renderTransactionCard}
+          data={pointsinout}
+          renderItem={renderPointsCard}
           keyExtractor={(item) => item.id.toString()}
           contentContainerStyle={[styles.listContainer, { paddingBottom: insets.bottom + 24 }]}
           showsVerticalScrollIndicator={false}
@@ -262,7 +275,7 @@ const Transaction = () => {
   )
 }
 
-export default React.memo(Transaction)
+export default React.memo(GamePoints)
 
 const styles = StyleSheet.create({
   container: {
@@ -327,10 +340,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     gap: 12,
   },
-  transactionCardContainer: {
-    marginBottom: 12,
+  pointsCardContainer: {
+    // marginBottom: 12,
   },
-  transactionCard: {
+  pointsCard: {
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -344,6 +357,9 @@ const styles = StyleSheet.create({
   },
   codeContainer: {
     flex: 1,
+    flexDirection: 'row',  
+      alignItems: 'center',
+    gap: 6,
   },
   codeLabel: {
     fontSize: 12,
@@ -357,6 +373,7 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 12,
     fontWeight: '500',
+    includeFontPadding: false,
   },
   mainDetails: {
     flexDirection: 'row',
@@ -411,6 +428,7 @@ const styles = StyleSheet.create({
   processedText: {
     fontSize: 12,
     // fontStyle: 'italic',
+    includeFontPadding: false,
   },
   bottomLine: {
     width: "100%",

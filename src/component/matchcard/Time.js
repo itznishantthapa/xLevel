@@ -16,9 +16,13 @@ export const Time = ({ time = '2 min ago', isDark = false, forMatch = false }) =
       <MaterialCommunityIcons name="clock-time-two" size={16} color={!isDark ? "#666" : "#999"} />
       {
         forMatch ? (
-          <Text style={[styles.time, { color: colors.timeColor }]}>{`Match Created: ${timeAgo(time)}`}</Text>
+          <Text style={[styles.time, { color: colors.timeColor }]} numberOfLines={1} adjustsFontSizeToFit={true}>
+            {`Match Created: ${timeAgo(time)}`}
+          </Text>
         ) : (
-          <Text style={[styles.time, { color: colors.timeColor }]}>{timeAgo(time)}</Text>
+          <Text style={[styles.time, { color: colors.timeColor }]} numberOfLines={1} adjustsFontSizeToFit={true}>
+            {timeAgo(time)}
+          </Text>
         )
       }
 
@@ -31,13 +35,15 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     backgroundColor: '#d9d9d980',
     paddingHorizontal: scaleWidth(8),
     paddingVertical: scaleHeight(6),
     alignSelf: 'flex-start',
     gap: scaleWidth(10),
     borderRadius: scaleWidth(20),
+    minHeight: scaleHeight(32),
+    flexShrink: 0,
   },
   label: {
     fontSize: scaleWidth(14),
@@ -47,6 +53,8 @@ const styles = StyleSheet.create({
     fontSize: scaleWidth(14),
     color: '#333333',
     fontWeight: 'bold',
+    textAlign: 'left',
+    includeFontPadding: false,
   },
 
 });

@@ -96,14 +96,14 @@ const TournamentCard = ({ game }) => {
         {/* Game Info Pills */}
         <View style={styles.gameInfoRow}>
           <View style={[styles.infoPill, !isLight && styles.infoPillDark]}>
-            <View style={[styles.iconWrapper, { backgroundColor: isLight ? 'rgba(66, 99, 235, 0.15)' : 'rgba(109, 140, 255, 0.2)' }]}>
-              <Ionicons name="game-controller" size={14} color={isLight ? '#4263eb' : '#6d8cff'} />
+            <View style={[styles.iconWrapper, { backgroundColor: isLight ? '#d1e7ff' : 'rgba(109, 140, 255, 0.2)' }]}>
+              <Ionicons name="game-controller" size={14} color={isLight ? '#1a56db' : '#6d8cff'} />
             </View>
             <Text style={[styles.pillText, !isLight && styles.pillTextDark]}>{game.game?.name}</Text>
           </View>
           <View style={[styles.infoPill, !isLight && styles.infoPillDark]}>
-            <View style={[styles.iconWrapper, { backgroundColor: isLight ? 'rgba(18, 184, 134, 0.15)' : 'rgba(32, 201, 151, 0.2)' }]}>
-              <Ionicons name="people" size={14} color={isLight ? '#12b886' : '#20c997'} />
+            <View style={[styles.iconWrapper, { backgroundColor: isLight ? '#d4f4dd' : 'rgba(32, 201, 151, 0.2)' }]}>
+              <Ionicons name="people" size={14} color={isLight ? '#0f7b0f' : '#20c997'} />
             </View>
             <Text style={[styles.pillText, !isLight && styles.pillTextDark]}>{game.game?.game_mode}</Text>
           </View>
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     marginVertical: 8,
     borderRadius: 25,
-    backgroundColor: "#ffffff",
+    backgroundColor: "transparent",
     borderWidth: 1.5,
     borderColor: "#333333",
   },

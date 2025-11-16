@@ -20,7 +20,6 @@ import CreatePubg from "../screens/customer/createGame/CreatePubg";
 import DropIssue from "../screens/customer/issue/DropIssue";
 import SelectIssue from "../screens/customer/issue/SelectIssue";
 import Issue from "../screens/customer/issue/Issue";
-import Privacy from "../screens/customer/legal/privacy";
 import AccountDeletion from "../screens/customer/account/AccountDeletion";
 import Credits from "../screens/customer/legal/Credits";
 import WatchAds from "../screens/customer/WatchAds";
@@ -31,9 +30,9 @@ import BlockedUserList from "../screens/customer/BlockedUserList";
 import Exchange from "../screens/customer/Exchange";
 import AccessBar from "../screens/customer/AccessBar";
 import { Platform } from "react-native";
-import WithDraw from "../screens/customer/WithDraw";
-import ScanPay from "../screens/customer/ScanPay";
-import Transaction from "../screens/customer/transaction/Transaction";
+import PointsOut from "../screens/customer/PointsOut";
+import PointsIn from "../screens/customer/PointsIn";
+import GamePoints from "../screens/customer/gamepoints/GamePoints";
 import Example from "../screens/customer/example/Example";
 
 
@@ -45,14 +44,14 @@ export default function CustomerNavigator(){
         <>
         <Stack.Navigator  screenOptions={{headerShown:false}} >
             <Stack.Screen component={CustomerTabNavigator} name="customerTabs"  />
-            <Stack.Screen component={Profile} name="profile" options={{ animation: Platform.OS === 'ios' ? 'slide_from_left' : 'slide_from_left' }} />
+            <Stack.Screen component={Profile} name="profile" options={{ animation: Platform.OS === 'ios' ? 'slide_from_left' : 'default' }} />
             <Stack.Screen component={EditProfile} name="editProfile"/>
             <Stack.Screen component={InCategory} name="inCategory" options={{ animation: "fade"}}/>
             <Stack.Screen component={CreateGame} name="createGame"/>
             <Stack.Screen component={UserTournament} name="userTournament"/>
-            <Stack.Screen component={WithDraw} name="withDraw"/>
-            <Stack.Screen component={ScanPay} name="scanPay"/>
-            <Stack.Screen component={Transaction} name="transaction"/>
+            <Stack.Screen component={PointsOut} name="pointsOut"/>
+            <Stack.Screen component={PointsIn} name="pointsIn"/>
+            <Stack.Screen component={GamePoints} name="gamePoints"/>
             <Stack.Screen component={Match} name="match"/>
             <Stack.Screen component={Notify} name="notify"/>
             <Stack.Screen component={SetupGameInfo} name="setupGameInfo"/>
@@ -67,7 +66,6 @@ export default function CustomerNavigator(){
             <Stack.Screen component={DropIssue} name="dropIssue"/>
             <Stack.Screen component={SelectIssue} name="selectIssue"/>
             <Stack.Screen component={Issue} name="issue"/>
-            <Stack.Screen component={Privacy} name="privacy"/>
             <Stack.Screen component={AccountDeletion} name="accountDeletion"/>
             <Stack.Screen component={Credits} name="credits"/>
             <Stack.Screen component={WatchAds} name="watchAds"/>

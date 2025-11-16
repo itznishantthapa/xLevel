@@ -3,14 +3,61 @@ import { StyleSheet, Text, Pressable, View, Platform } from 'react-native'
 import { AntDesign, FontAwesome5, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons, SimpleLineIcons } from "@expo/vector-icons"
 import { useThemeStore } from '../../store/themeStore';
 import { useStatsPreferenceStore } from '../../store/statsPreference';
-import { scaleWidth } from '../../utils/scaling';
+import { scaleHeight, scaleWidth } from '../../utils/scaling';
 
 
-const StatsContainer = ({ handleWithdraw, handleTournament, handleGameRules, handleMatches, handleLeaderboard, handleTransaction }) => {
+const StatsContainer = ({ handlePointsOut, handleTournament, handleGameRules, handleMatches, handleLeaderboard, handleGamePoints }) => {
   const { isLight } = useThemeStore();
-  const { statsConfig, isLoading } = useStatsPreferenceStore();
+  const { statsConfig, isLoading, colorfulIcons } = useStatsPreferenceStore();
+  
+  // Function to get subtle background color based on item id
+  const getIconBackgroundColor = (itemId) => {
+    // Only show backgrounds in light mode AND when colorful icons are enabled
+    if (!isLight || !colorfulIcons) return 'transparent';
+    
+    switch (itemId) {
+      case 'gamepoints':
+        return 'rgba(0, 191, 99, 0.1)'; // Green for Game Points
+      case 'tournament':
+        return 'rgba(109, 140, 255, 0.1)'; // Blue for Tournament
+      case 'matches':
+        return 'rgba(255, 68, 68, 0.1)'; // Red for My Match
+      case 'redeem':
+        return 'rgba(255, 149, 0, 0.1)'; // Orange for Redeem
+      case 'leaderboard':
+        return 'rgba(0, 191, 99, 0.1)'; // Green for Leaderboard
+      case 'gamerules':
+        return 'rgba(109, 140, 255, 0.1)'; // Blue for Game Rules
+      default:
+        return 'transparent';
+    }
+  };
+
+  // Function to get icon color based on item id
+  const getIconColor = (itemId) => {
+    // Only show custom colors in light mode AND when colorful icons are enabled
+    if (!isLight || !colorfulIcons) return isLight ? '#000000' : '#EAEAEA';
+    
+    switch (itemId) {
+      case 'gamepoints':
+        return '#00bf63'; // Green for Game Points
+      case 'tournament':
+        return '#6d8cff'; // Blue for Tournament
+      case 'matches':
+        return '#FF4444'; // Red for My Match
+      case 'redeem':
+        return '#FF9500'; // Orange for Redeem
+      case 'leaderboard':
+        return '#00bf63'; // Green for Leaderboard
+      case 'gamerules':
+        return '#6d8cff'; // Blue for Game Rules
+      default:
+        return '#000000';
+    }
+  };
+
   // Function to render icon based on item configuration
-  const renderIcon = (item, color, size = 30) => {
+  const renderIcon = (item, defaultColor) => {
     const IconComponent = {
       Ionicons,
       MaterialIcons,
@@ -21,7 +68,21 @@ const StatsContainer = ({ handleWithdraw, handleTournament, handleGameRules, han
       FontAwesome6,
     }[item.iconLib];
 
-    return <IconComponent name={item.icon} size={size} color={color} />;
+    return (
+      <View style={styles.iconContainer} key={`${item.id}-${colorfulIcons}`}>
+        {/* Absolute positioned background */}
+        <View style={[
+          styles.iconBackground,
+          { backgroundColor: getIconBackgroundColor(item.id) }
+        ]} />
+        <IconComponent 
+          name={item.icon} 
+          size={scaleWidth(35)} 
+          color={getIconColor(item.id)} 
+          style={styles.iconStyle} 
+        />
+      </View>
+    );
   };
 
   // Function to handle item press based on item id
@@ -34,11 +95,11 @@ const StatsContainer = ({ handleWithdraw, handleTournament, handleGameRules, han
         handleGameRules?.();
         break;
       case 'redeem':
-        // Redeem should navigate to Withdraw
-        handleWithdraw?.();
+        // Redeem should navigate to Points Out
+        handlePointsOut?.();
         break;
-      case 'transaction':
-        handleTransaction?.();
+      case 'gamepoints':
+        handleGamePoints?.();
         break;
       case 'tournament':
         handleTournament?.();
@@ -62,11 +123,11 @@ const StatsContainer = ({ handleWithdraw, handleTournament, handleGameRules, han
   }
 
   return (
-    <View style={[styles.statsContainer, isLight ? { borderColor: '#333333' } : { borderColor: '#EAEAEA' }]}>
+    <View style={[styles.statsContainer, isLight ? { borderColor: '#1A1A1A' } : { borderColor: '#EAEAEA' }]}>
       {statsConfig.map((item, index) => (
         <React.Fragment key={item.id}>
           <Pressable style={styles.statItem} onPress={() => handleItemPress(item)}>
-            {renderIcon(item, isLight ? '#333333' : '#EAEAEA')}
+            {renderIcon(item, isLight ? '#000000' : '#EAEAEA')}
             <Text style={[styles.statLabel, isLight ? { color: '#333333' } : { color: '#EAEAEA' }]}>
               {item.name}
             </Text>
@@ -88,12 +149,32 @@ const styles = StyleSheet.create({
     marginHorizontal: scaleWidth(16),
     marginTop: 10,
     borderRadius: scaleWidth(15),
-    paddingVertical: 15,
+    paddingVertical:scaleHeight(12),
     borderWidth: 1.5,
   },
   statItem: {
     flex: 1,
     alignItems: 'center',
+    position: 'relative',
+  },
+  iconContainer: {
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: scaleWidth(45),
+    height: scaleWidth(45),
+  },
+  iconBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: scaleWidth(45),
+    height: scaleWidth(45),
+    borderRadius: scaleWidth(45) / 2,
+    overflow: 'hidden',
+  },
+  iconStyle: {
+    zIndex: 1,
   },
   statNumber: {
     fontSize: 20,

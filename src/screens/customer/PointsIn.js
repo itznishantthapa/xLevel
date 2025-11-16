@@ -16,16 +16,15 @@ import { useThemeStore } from "../../store/themeStore"
 import { useState } from "react"
 import Toast from "react-native-simple-toast"
 import * as ImagePicker from "expo-image-picker"
-import { TranscationAPI } from "../../api/transcationApi"
 import { useQueryClient } from "@tanstack/react-query"
 import AppHeader from "./header/AppHeader"
-import { useCredit } from "../../queries/useMutation/useCredit"
+import { usePointsIn } from "../../queries/useMutation/usePointsIn"
 import CoolButton from "../../component/customer/common/CoolButton"
 import { useBanners } from "../../queries/useBanners"
 import { useUtils } from "../../queries/useUtils"
 
 
-const ScanPay = () => {
+const PointsIn = () => {
   const navigation = useNavigation()
   const insets = useSafeAreaInsets()
   const queryClient = useQueryClient()
@@ -38,7 +37,7 @@ const ScanPay = () => {
     amount: '',
     screenshot: ''
   })
-  const { mutateAsync: creditCrown } = useCredit();
+  const { mutateAsync: pointsIn } = usePointsIn();
   const {data: utils = []} = useUtils();
 
   // Get QR image from utils
@@ -46,7 +45,7 @@ const ScanPay = () => {
 
  
   const colors = {
-    background: isLight ? "#ffffff" : "#000000",
+    background: isLight ? "#eef0f2" : "#000000",
     text: isLight ? "#000000" : "#ffffff",
     textSecondary: isLight ? "#666666" : "#999999",
     border: isLight ? "#000000" : "#ffffff",
@@ -111,14 +110,14 @@ const ScanPay = () => {
     }
 
     try {
-      await creditCrown(formData);
+      await pointsIn(formData);
 
 
       navigation.reset({
         index: 1,
         routes: [
           { name: 'customerTabs' },
-          { name: 'transaction' }
+          { name: 'gamePoints' }
         ],
       });
 
@@ -313,7 +312,7 @@ const ScanPay = () => {
   )
 }
 
-export default ScanPay
+export default PointsIn
 
 const styles = StyleSheet.create({
   container: {

@@ -32,7 +32,7 @@ const Example = ({ route }) => {
   }, [guides, game, guideType]);
 
   // Background and text colors
-  const bgColor = isLight ? '#ffffff' : '#000000';
+  const bgColor = isLight ? '#eef0f2' : '#000000';
   const textColor = isLight ? '#333333' : '#ffffff';
   const secondaryTextColor = isLight ? '#666666' : '#cccccc';
 

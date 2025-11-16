@@ -1,20 +1,20 @@
 import { useMutation} from "@tanstack/react-query";
 import { ChallengeAPI } from "../../api/challengeApi";
 import { queryClient } from "../../lib/queryClient";
-import { TranscationAPI } from "../../api/transcationApi";
+import { GamePointAPI } from "../../api/pointsApi";
 
 
-export const useCredit = () => {
+export const usePointsOut = () => {
 
 
   return useMutation({
-    mutationFn: (payload) => TranscationAPI.credit(payload),
+    mutationFn: (payload) => GamePointAPI.getPointsOut(payload),
 
     onSuccess: (data) => {
-      const creditTransaction = data?.transaction;
+      const pointsOutData = data?.pointsout;
 
       // Update cached matches immediately
-      queryClient.setQueryData(["transactions", 8], (oldData) => {
+      queryClient.setQueryData(["points", 8], (oldData) => {
         if (!oldData) return oldData;
 
                 return {
@@ -23,7 +23,7 @@ export const useCredit = () => {
             if (index === 0) {
               return {
                 ...page,
-                transactions: [creditTransaction, ...(page?.transactions ?? [])],
+                pointsinout: [pointsOutData, ...(page?.pointsinout ?? [])],
               };
             }
             return page;

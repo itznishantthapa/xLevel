@@ -8,7 +8,7 @@ import { scaleHeight, scaleWidth } from "../../../utils/scaling"
  */
 const MatchCardSkeleton = ({ isLight = true }) => {
   const skeletonColor = isLight ? "#d9d9d9" : "#333333"
-  const cardBg = isLight ? "#ffffff" : "#121212"
+  const cardBg = isLight ? "transparent" : "#121212"
   const borderColor = isLight ? "#000000" : "#ffffff"
   const dividerColor = isLight ? "#e0e0e0" : "#333333"
 

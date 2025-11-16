@@ -16,6 +16,32 @@ import Toast from "react-native-simple-toast"
 import { useEditGameProfile } from "../../queries/useMutation/useEditGameProfile"
 import { CreateGameLayout, SectionTitle } from "../../component/customer/createGame"
 import * as yup from 'yup'
+import { vulgarWords } from "../../utils/censored"
+
+// Create a comprehensive list of vulgar words for validation
+const getAllVulgarWords = () => {
+  const words = []
+  vulgarWords.vulgar_words.forEach(item => {
+    if (item.nepali) words.push(item.nepali.toLowerCase())
+    if (item.english) words.push(item.english.toLowerCase())
+  })
+  return words
+}
+
+// Function to check if text contains vulgar words
+const containsVulgarWord = (text) => {
+  if (!text) return false
+  const lowerText = text.toLowerCase()
+  const vulgarList = getAllVulgarWords()
+  
+  // Check if any vulgar word is included in the text
+  return vulgarList.some(vulgarWord => {
+    if (vulgarWord && vulgarWord.trim()) {
+      return lowerText.includes(vulgarWord.toLowerCase())
+    }
+    return false
+  })
+}
 
 // Define validation schemas for different game types
 const baseValidationSchema = yup.object().shape({
@@ -25,6 +51,9 @@ const baseValidationSchema = yup.object().shape({
     .matches(/^[a-zA-Z0-9_\-\s]+$/, 'Only letters, numbers, spaces, underscores and hyphens allowed')
     .min(2, 'Username must be at least 2 characters')
     .max(30, 'Username cannot exceed 30 characters')
+    .test('vulgar-check', 'Inappropriate game name.', function(value) {
+      return !containsVulgarWord(value)
+    })
     .required('Game username is required'),
 })
 
@@ -34,6 +63,9 @@ const relaxedUsernameValidationSchema = yup.object().shape({
     .string()
     .min(2, 'Username must be at least 2 characters')
     .max(30, 'Username cannot exceed 30 characters')
+    .test('vulgar-check', 'Inappropriate game name.', function(value) {
+      return !containsVulgarWord(value)
+    })
     .required('Game username is required'),
 })
 
@@ -370,7 +402,7 @@ const EditGameInfo = () => {
     const inputStyle = [
       styles.input,
       {
-        backgroundColor: isLight ? "#f5f5f5" : "#1a1a1a",
+        backgroundColor: isLight ? "transparent" : "#1a1a1a",
         borderColor: isLight ? "#cccccc" : "#333333",
         color: isLight ? "#333333" : "#ffffff",
       },
@@ -656,7 +688,7 @@ const EditGameInfo = () => {
       loaderMessage={isEditing ? "Updating..." : "Saving..."}
     >
       {/* Game Info Header */}
-      <View style={[styles.gameHeader, { backgroundColor: isLight ? "#f5f5f5" : "#1a1a1a" }]}>
+      <View style={[styles.gameHeader, { backgroundColor: isLight ? "#rgba(0, 0, 0, 0.05)" : "#1a1a1a" }]}>
         <Image source={{ uri: gameProfile.game_logo_url }} style={styles.gameLogo} />
         <View style={styles.gameInfo}>
           <Text style={[styles.gameName, { color: isLight ? "#333333" : "#ffffff" }]}>{gameProfile.game_name === 'Chess' ? "Chess.com" : gameProfile.game_name}</Text>
@@ -686,7 +718,7 @@ const EditGameInfo = () => {
               style={[
                 styles.input,
                 {
-                  backgroundColor: isLight ? "#f5f5f5" : "#1a1a1a",
+                  backgroundColor: isLight ? "transparent" : "#1a1a1a",
                   borderColor: isLight ? "#cccccc" : "#333333",
                   color: isLight ? "#333333" : "#ffffff",
                 },
@@ -742,6 +774,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 12,
     marginBottom: 16,
+    borderRadius: 12,
   },
   gameLogo: {
     width: 44,

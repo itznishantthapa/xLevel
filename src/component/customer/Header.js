@@ -101,7 +101,7 @@ const Header = ({
     const computedThemeStyles = {
       textColor: isLight ? "#333333" : "#EAEAEA",
       iconColor: isLight ? "#333333" : "#EAEAEA",
-      buttonBackground: isLight ? "#f8f9fb" : "rgba(255, 255, 255, 0.1)",
+      buttonBackground: isLight ? "#e8eaed" : "rgba(255, 255, 255, 0.1)",
       profileBackground: isLight ? "#dadada" : "#444444",
     }
 
@@ -182,7 +182,7 @@ const Header = ({
     <View style={[
       styles.header,
       {
-        backgroundColor: isLight ? '#ffffff' : '#000000',
+        backgroundColor: isLight ? '#eef0f2' : '#000000',
         borderColor: isLight ? '#333333' : '#ffffff' ,
         shadowColor: isLight ? '#000' : '#fff',
         // borderBottomWidth:5,

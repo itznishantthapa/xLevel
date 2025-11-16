@@ -17,7 +17,7 @@ const OpponentCard = ({ opponent, game, isLight, showOpponentSheet, handleConfir
       style={[
         sharedStyles.opponentBox,
         {
-          backgroundColor: isLight ? "#ffffff" : "#000000",
+          backgroundColor: isLight ? "transparent" : "#000000",
           borderColor: isLight ? "#000000" : "#ffffff",
         },
         game.status === "in_progress" && {

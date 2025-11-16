@@ -33,7 +33,7 @@ const CreateGameLayout = ({
 }) => {
   const insets = useSafeAreaInsets()
   return (
-    <View style={[styles.mainContainer, { backgroundColor: isLight ? "#ffffff" : "#000000" }]}>
+    <View style={[styles.mainContainer, { backgroundColor: isLight ? "#eef0f2" : "#000000" }]}>
       <Loader visible={isLoading} message={loaderMessage} size={50} />
       <StatusBar translucent backgroundColor="transparent" barStyle={isLight ? "dark-content" : "light-content"} />
 
@@ -51,7 +51,7 @@ const CreateGameLayout = ({
             showsVerticalScrollIndicator={false}
           >
             <View style={[styles.gameCard, { 
-              backgroundColor: isLight ? "#ffffff" : "#000000",
+              backgroundColor: isLight ? "#eef0f2" : "#000000",
               borderColor: isLight ? "#333333" : "#dadada",
               borderWidth: 0,
               marginHorizontal: -2

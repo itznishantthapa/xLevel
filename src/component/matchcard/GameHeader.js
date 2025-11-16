@@ -30,13 +30,13 @@ const GameHeader = ({ game, isLight, isCreator, user, handleDeleteChallenge, han
 
   // Icon configurations with vibrant colors
   const gameIconConfig = {
-    backgroundColor: isLight ? '#eef5ff' : 'rgba(46, 81, 255, 0.2)',
-    iconColor: isLight ? '#4263eb' : '#6d8cff'
+    backgroundColor: isLight ? '#d1e7ff' : 'rgba(46, 81, 255, 0.2)',
+    iconColor: isLight ? '#1a56db' : '#6d8cff'
   }
 
   const modeIconConfig = {
-    backgroundColor: isLight ? '#e6f9ee' : 'rgba(18, 184, 134, 0.2)',
-    iconColor: isLight ? '#12b886' : '#20c997'
+    backgroundColor: isLight ? '#d4f4dd' : 'rgba(18, 184, 134, 0.2)',
+    iconColor: isLight ? '#0f7b0f' : '#20c997'
   }
 
 
@@ -45,7 +45,7 @@ const GameHeader = ({ game, isLight, isCreator, user, handleDeleteChallenge, han
     <View style={sharedStyles.gameInfoHeader}>
       <View style={[sharedStyles.gameInfoItem, !isLight && sharedStyles.gameInfoItemDark]}>
         <View style={[sharedStyles.iconContainer, { backgroundColor: gameIconConfig.backgroundColor }]}>
-          <Ionicons name="game-controller-outline" size={scaleWidth(14)} color={gameIconConfig.iconColor} />
+          <Ionicons name="game-controller" size={scaleWidth(14)} color={gameIconConfig.iconColor} />
         </View>
         <Text style={[sharedStyles.gameInfoText, !isLight && sharedStyles.gameInfoTextDark]}>
           {game.game?.name || "Game"}

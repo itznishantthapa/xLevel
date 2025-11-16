@@ -72,7 +72,7 @@ const Profile = () => {
   };
 
   const colors = {
-    background: isLight ? "#ffffff" : "#000000",
+    background: isLight ? "#eef0f2" : "#000000",
     cardBackground: isLight ? "rgba(0, 0, 0, 0.05)" : "rgba(255, 255, 255, 0.1)",
     text: isLight ? "#000000" : "#ffffff",
     textSecondary: isLight ? "rgba(51, 51, 51, 0.7)" : "rgba(255, 255, 255, 0.7)",
@@ -280,17 +280,6 @@ const Profile = () => {
 
                 <Pressable
                   style={[styles.actionRow, styles.actionRowBorder, { borderBottomColor: colors.border }]}
-                  onPress={() => navigation.navigate("transaction")}
-                >
-                  <View style={styles.actionContent}>
-                    <MaterialIcons name="receipt-long" size={20} color={colors.text} />
-                    <Text style={[styles.actionText, { color: colors.text }]}>My Transactions</Text>
-                  </View>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
-                </Pressable>
-
-                <Pressable
-                  style={[styles.actionRow, styles.actionRowBorder, { borderBottomColor: colors.border }]}
                   onPress={() => navigation.navigate("issue")}
                 >
                   <View style={styles.actionContent}>
@@ -392,7 +381,7 @@ const Profile = () => {
           {/* App Version Footer */}
           <View style={styles.versionFooter}>
             <Text style={[styles.versionText, { color: colors.textTertiary }]}>
-              Version 3.1.0 (7)
+              Version 2.2 (8)
             </Text>
           </View>
         </ScrollView>

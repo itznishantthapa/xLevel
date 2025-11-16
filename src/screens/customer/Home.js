@@ -282,8 +282,8 @@ const Home = () => {
       return
     }
 
-    // If Utils has QR, navigate to scanPay
-    navigation.navigate("scanPay")
+    // If Utils has QR, navigate to pointsIn
+    navigation.navigate("pointsIn")
   }
 
 
@@ -384,13 +384,13 @@ const Home = () => {
           <StatsContainer
             num_loss={user?.num_loss || 0}
             num_win={user?.num_win || 0}
-            handleWithdraw={() => navigation.navigate("withDraw")}
+            handlePointsOut={() => navigation.navigate("pointsOut")}
             handleTournament={() => navigation.navigate("userTournament")}
             handleGameRules={() => navigation.navigate("gameRules")}
             handleMatches={() => navigation.navigate("match")}
             handleWatchAds={() => navigation.navigate("watchAds")}
             handleLeaderboard={() => navigation.navigate("leaderboard")}
-            handleTransaction={() => navigation.navigate("transaction")}
+            handleGamePoints={() => navigation.navigate("gamePoints")}
           />
         )
 
@@ -415,7 +415,7 @@ const Home = () => {
       style={[
         styles.container,
         {
-          backgroundColor: isLight ? "#ffffff" : "#000000",
+          backgroundColor: isLight ? "#eef0f2" : "#000000",
           paddingTop: insets.top,
         },
       ]}
@@ -425,7 +425,7 @@ const Home = () => {
 
       {/* Fixed Header at the top */}
       <Header
-        player_name={user?.full_name}
+        player_name={user?.full_name} 
         wallet_balance={user?.wallet_balance}
         profile_picture={user?.profile_picture}
         handleProfile={handleProfile}

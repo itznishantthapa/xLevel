@@ -102,19 +102,19 @@ const UserTournament = () => {
   }), [handleLoadMore])
 
   return (
-    <View style={[styles.container, { backgroundColor: isLight ? '#ffffff' : '#000000', paddingTop: insets.top }]}>
+    <View style={[styles.container, { backgroundColor: isLight ? '#eef0f2' : '#000000', paddingTop: insets.top }]}>
       <StatusBar
         translucent
         backgroundColor="transparent"
         barStyle={isLight ? "dark-content" : "light-content"}
       />
+      <HeaderComponent />
       <View style={styles.listWrapper}>
         <FlashList
           {...flashListProps}
           data={isFetching && tournaments.length === 0 ? [] : tournaments}
           renderItem={renderTournamentCard}
           keyExtractor={(item) => item.id.toString()}
-          ListHeaderComponent={() => <HeaderComponent />}
           ListEmptyComponent={isFetching ? null : <EmptyListComponent isLight={isLight} />}
           refreshControl={
             <RefreshControl
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     height: height,
   },
   listContainer: {
-    paddingBottom: 50,
+    // paddingBottom: 50,
   },
   headerContainer: {
     paddingHorizontal: 16,
