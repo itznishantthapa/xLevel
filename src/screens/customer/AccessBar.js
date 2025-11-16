@@ -183,7 +183,7 @@ const AccessBar = ({ navigation }) => {
     }[item.iconLib];
 
     return (
-      <View style={styles.previewIconContainer}>
+      <View style={styles.previewIconContainer} key={`${item.id}-${colorfulIcons}`}>
         {/* Show background preview */}
         <View style={[
           styles.previewIconBackground,
@@ -406,7 +406,8 @@ const styles = StyleSheet.create({
     left: 0,
     width: scaleWidth(45),
     height: scaleWidth(45),
-    borderRadius: scaleWidth(22.5),
+    borderRadius: scaleWidth(45) / 2,
+    overflow: 'hidden',
   },
   previewIconStyle: {
     zIndex: 1,

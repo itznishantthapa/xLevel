@@ -57,7 +57,7 @@ const StatsContainer = ({ handlePointsOut, handleTournament, handleGameRules, ha
   };
 
   // Function to render icon based on item configuration
-  const renderIcon = (item, defaultColor, size = 30) => {
+  const renderIcon = (item, defaultColor) => {
     const IconComponent = {
       Ionicons,
       MaterialIcons,
@@ -69,7 +69,7 @@ const StatsContainer = ({ handlePointsOut, handleTournament, handleGameRules, ha
     }[item.iconLib];
 
     return (
-      <View style={styles.iconContainer}>
+      <View style={styles.iconContainer} key={`${item.id}-${colorfulIcons}`}>
         {/* Absolute positioned background */}
         <View style={[
           styles.iconBackground,
@@ -77,7 +77,7 @@ const StatsContainer = ({ handlePointsOut, handleTournament, handleGameRules, ha
         ]} />
         <IconComponent 
           name={item.icon} 
-          size={size} 
+          size={scaleWidth(35)} 
           color={getIconColor(item.id)} 
           style={styles.iconStyle} 
         />
@@ -170,7 +170,8 @@ const styles = StyleSheet.create({
     left: 0,
     width: scaleWidth(45),
     height: scaleWidth(45),
-    borderRadius: scaleWidth(22.5),
+    borderRadius: scaleWidth(45) / 2,
+    overflow: 'hidden',
   },
   iconStyle: {
     zIndex: 1,

@@ -21,15 +21,15 @@ const CARD_HEIGHT = scaleHeight(130);
 
 
 const GameCarousel = ({ games, handleGameCardPress }) => {
-      const {data: utils = []} = useUtils()
+    const { data: utils = [] } = useUtils()
 
-      const shouldShowLabel = utils?.qr;
+    const shouldShowLabel = utils?.qr;
     const { isLight } = useThemeStore();
     return (
         <View style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
-                <Text style={[styles.title,isLight? {color:'#000000'}:{color:'#EAEAEA'}]}>Create Match</Text>
+                <Text style={[styles.title, isLight ? { color: '#000000' } : { color: '#EAEAEA' }]}>Create Match</Text>
             </View>
 
             {/* Games Carousel */}
@@ -47,24 +47,24 @@ const GameCarousel = ({ games, handleGameCardPress }) => {
                         style={[
                             styles.gameCard,
                             { marginLeft: index === 0 ? scaleWidth(20) : 0 },
-                            isLight ? {borderColor: '#1A1A1A'} : {borderColor: '#EAEAEA'}
+                            isLight ? { borderColor: '#1A1A1A' } : { borderColor: '#EAEAEA' }
                         ]}
                         onPress={() => handleGameCardPress(game)}
                         activeOpacity={0.9}
                     >
-                        <Image 
-                            source={{uri: game.game_logo_url}} 
-                            style={{width: scaleWidth(100), height: scaleHeight(100)}}
+                        <Image
+                            source={{ uri: game.game_logo_url }}
+                            style={{ width: scaleWidth(100), height: scaleHeight(100) }}
                         />
                         <Text style={[
                             styles.gameName,
-                            isLight ? {color: '#333333'} : {color: '#EAEAEA'}
+                            isLight ? { color: '#333333' } : { color: '#EAEAEA' }
                         ]}>
                             {shouldShowLabel ?
-                             game.game_name :
-                              (
-                                <View style={{width: scaleWidth(50), height: scaleHeight(2), backgroundColor:isLight ? '#000000' : '#EAEAEA',alignItems:"center",justifyContent:'center',borderRadius: scaleWidth(10)}}></View>
-                            )}
+                                game.game_name :
+                                (
+                                    <View style={{ width: scaleWidth(50), height: scaleHeight(2), backgroundColor: isLight ? '#000000' : '#EAEAEA', alignItems: "center", justifyContent: 'center', borderRadius: scaleWidth(10) }}></View>
+                                )}
                         </Text>
                     </Pressable>
                 ))}
@@ -85,11 +85,11 @@ const styles = StyleSheet.create({
         marginBottom: scaleHeight(15),
     },
 
-        title: {
-            fontSize: scaleWidth(16),
-            fontWeight: 'bold',
-    
-          },
+    title: {
+        fontSize: scaleWidth(16),
+        fontWeight: 'bold',
+
+    },
 
     viewAll: {
         fontSize: scaleWidth(16),
@@ -122,8 +122,8 @@ const styles = StyleSheet.create({
     imageStyle: {
         borderRadius: scaleWidth(20),
     },
-    pin:{
-        position:'absolute',
+    pin: {
+        position: 'absolute',
         right: scaleWidth(10),
         top: scaleHeight(10)
     },

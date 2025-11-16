@@ -280,17 +280,6 @@ const Profile = () => {
 
                 <Pressable
                   style={[styles.actionRow, styles.actionRowBorder, { borderBottomColor: colors.border }]}
-                  onPress={() => navigation.navigate("gamePoints")}
-                >
-                  <View style={styles.actionContent}>
-                    <MaterialCommunityIcons name="star-four-points-outline" size={20} color={colors.text} />
-                    <Text style={[styles.actionText, { color: colors.text }]}>My Points</Text>
-                  </View>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
-                </Pressable>
-
-                <Pressable
-                  style={[styles.actionRow, styles.actionRowBorder, { borderBottomColor: colors.border }]}
                   onPress={() => navigation.navigate("issue")}
                 >
                   <View style={styles.actionContent}>
@@ -392,7 +381,7 @@ const Profile = () => {
           {/* App Version Footer */}
           <View style={styles.versionFooter}>
             <Text style={[styles.versionText, { color: colors.textTertiary }]}>
-              Version 3.2.0 (19)
+              Version 2.2 (8)
             </Text>
           </View>
         </ScrollView>

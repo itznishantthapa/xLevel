@@ -12,7 +12,7 @@ const DEFAULT_STATS = [
 
 // Configuration when QR exists - shows Game Points, Tournament, MyMatch, Redeem
 const QR_AVAILABLE_STATS = [
-  { id: 'gamepoints', type: 'leaderboard', name: 'Game Points', icon: 'receipt', iconLib: 'Ionicons' },
+  { id: 'gamepoints', type: 'leaderboard', name: 'Game Points', icon: 'receipt-long', iconLib: 'MaterialIcons' },
   { id: 'tournament', type: 'tournament', name: 'Tournaments', icon: 'game-controller-outline', iconLib: 'Ionicons' },
   { id: 'matches', type: 'matches', name: 'My Match', icon: 'gamepad-circle-right', iconLib: 'MaterialCommunityIcons' },
   { id: 'redeem', type: 'gamerules', name: 'Redeem', icon: 'wallet-giftcard', iconLib: 'MaterialCommunityIcons' },
@@ -28,7 +28,7 @@ const TOGGLEABLE_OPTIONS = {
   // leaderboard toggles between Leaderboard and Game Points
   leaderboard: {
     primary: { id: 'leaderboard', type: 'leaderboard', name: 'Leaderboard', icon: 'trophy', iconLib: 'SimpleLineIcons' },
-    secondary: { id: 'gamepoints', type: 'leaderboard', name: 'Game Points', icon: 'receipt', iconLib: 'Ionicons' },
+    secondary: { id: 'gamepoints', type: 'leaderboard', name: 'Game Points', icon: 'receipt-long', iconLib: 'MaterialIcons' },
   },
 };
 

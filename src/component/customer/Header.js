@@ -101,7 +101,7 @@ const Header = ({
     const computedThemeStyles = {
       textColor: isLight ? "#333333" : "#EAEAEA",
       iconColor: isLight ? "#333333" : "#EAEAEA",
-      buttonBackground: isLight ? "#f8f9fb" : "rgba(255, 255, 255, 0.1)",
+      buttonBackground: isLight ? "#e8eaed" : "rgba(255, 255, 255, 0.1)",
       profileBackground: isLight ? "#dadada" : "#444444",
     }
 
