@@ -47,41 +47,28 @@ const AccessBar = ({ navigation }) => {
     
     switch (itemId) {
       case 'gamepoints':
-        return 'rgba(0, 191, 99, 0.1)';
+        return '#16A34A'; // Strong Green background for Game Points
       case 'tournament':
-        return 'rgba(109, 140, 255, 0.1)';
+        return '#6366F1'; // Vibrant Indigo background for Tournament
       case 'matches':
-        return 'rgba(255, 68, 68, 0.1)';
+        return '#EF4444'; // Bright Red background for My Match
       case 'redeem':
-        return 'rgba(255, 149, 0, 0.1)';
+        return '#F97316'; // Bold Orange background for Redeem
       case 'leaderboard':
-        return 'rgba(0, 191, 99, 0.1)';
+        return '#A855F7'; // Rich Purple background for Leaderboard
       case 'gamerules':
-        return 'rgba(109, 140, 255, 0.1)';
+        return '#14B8A6'; // Fresh Teal background for Game Rules
       default:
         return 'transparent';
     }
   };
 
   const getIconColor = (itemId) => {
+    // Show white icons on colored backgrounds in light mode when colorful icons are enabled
     if (!isLight || !colorfulIcons) return isLight ? '#000000' : '#EAEAEA';
     
-    switch (itemId) {
-      case 'gamepoints':
-        return '#00bf63';
-      case 'tournament':
-        return '#6d8cff';
-      case 'matches':
-        return '#FF4444';
-      case 'redeem':
-        return '#FF9500';
-      case 'leaderboard':
-        return '#00bf63';
-      case 'gamerules':
-        return '#6d8cff';
-      default:
-        return '#000000';
-    }
+    // All icons are white when colorful backgrounds are enabled
+    return '#FFFFFF';
   };
 
   // Animation values for each item
@@ -187,7 +174,15 @@ const AccessBar = ({ navigation }) => {
         {/* Show background preview */}
         <View style={[
           styles.previewIconBackground,
-          { backgroundColor: getIconBackgroundColor(item.id) }
+          { backgroundColor: getIconBackgroundColor(item.id) },
+          // Add shadow only in light mode when colorful icons are enabled
+          (isLight && colorfulIcons && getIconBackgroundColor(item.id) !== 'transparent') && {
+            elevation: 6,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 3 },
+            shadowOpacity: 0.35,
+            shadowRadius: 4.5,
+          }
         ]} />
         <IconComponent 
           name={item.icon} 
