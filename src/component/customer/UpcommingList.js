@@ -386,7 +386,7 @@ const styles = StyleSheet.create({
   card: {
     marginHorizontal: 15,
     marginVertical: 8,
-    borderRadius: 25,
+    borderRadius: scaleWidth(25),
     backgroundColor: "transparent",
     borderWidth: 1.5,
     borderColor: "#1A1A1A",

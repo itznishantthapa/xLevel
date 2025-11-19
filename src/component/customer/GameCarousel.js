@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
         width: scaleWidth(100),
         height: scaleHeight(130),
         marginRight: scaleWidth(15),
-        borderRadius: scaleWidth(20),
+        borderRadius: scaleWidth(25),
         overflow: 'hidden',
         borderWidth: 1.5,
         alignItems: 'center',

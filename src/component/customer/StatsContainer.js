@@ -141,8 +141,8 @@ const styles = StyleSheet.create({
   statsContainer: {
     flexDirection: 'row',
     marginHorizontal: scaleWidth(16),
-    marginTop: 10,
-    borderRadius: scaleWidth(15),
+    marginTop: scaleHeight(10),
+    borderRadius: scaleWidth(25),
     paddingVertical:scaleHeight(12),
     borderWidth: 1.5,
   },

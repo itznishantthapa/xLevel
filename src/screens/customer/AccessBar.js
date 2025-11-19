@@ -288,35 +288,46 @@ const AccessBar = ({ navigation }) => {
           </View>
         </View>
 
-        {/* Colorful Icons Toggle - Only show in light mode */}
-        {isLight && (
-          <View style={styles.colorToggleContainer}>
-            <Text style={[styles.colorToggleTitle, { color: '#333333' }]}>
-              Colorful Icons
-            </Text>
-            <Text style={[styles.colorToggleDescription, { color: '#666666' }]}>
-              Enable vibrant colors for stats icons
-            </Text>
-            <Pressable
-              style={[
-                styles.toggleButton,
-                { 
-                  backgroundColor: colorfulIcons ? '#00bf63' : '#e0e0e0',
-                  borderColor: '#d0d0d0'
-                }
-              ]}
-              onPress={toggleColorfulIcons}
-            >
-              <View style={[
-                styles.toggleSlider,
-                {
-                  backgroundColor: '#ffffff',
-                  transform: [{ translateX: colorfulIcons ? scaleWidth(24) : 0 }]
-                }
-              ]} />
-            </Pressable>
-          </View>
-        )}
+        {/* Colorful Icons Toggle or Info Message */}
+        <View style={styles.colorToggleContainer}>
+          {isLight ? (
+            <>
+              <Text style={[styles.colorToggleTitle, { color: '#333333' }]}>
+                Colorful Icons
+              </Text>
+              <Text style={[styles.colorToggleDescription, { color: '#666666' }]}>
+                Enable vibrant colors for stats icons
+              </Text>
+              <Pressable
+                style={[
+                  styles.toggleButton,
+                  { 
+                    backgroundColor: colorfulIcons ? '#00bf63' : '#e0e0e0',
+                    borderColor: '#d0d0d0'
+                  }
+                ]}
+                onPress={toggleColorfulIcons}
+              >
+                <View style={[
+                  styles.toggleSlider,
+                  {
+                    backgroundColor: '#ffffff',
+                    transform: [{ translateX: colorfulIcons ? scaleWidth(24) : 0 }]
+                  }
+                ]} />
+              </Pressable>
+            </>
+          ) : (
+            <>
+              <Text style={[styles.colorToggleTitle, { color: '#EAEAEA' }]}>
+                Colorful Icons
+              </Text>
+              <Text style={[styles.colorToggleDescription, { color: '#CCCCCC' }]}>
+                Colorful icons are available in light scheme only
+              </Text>
+            </>
+          )}
+        </View>
       </View>
     </View>
   );
