@@ -17,17 +17,17 @@ const StatsContainer = ({ handlePointsOut, handleTournament, handleGameRules, ha
     
     switch (itemId) {
       case 'gamepoints':
-        return 'rgba(0, 191, 99, 0.1)'; // Green for Game Points
+        return '#16A34A'; // Strong Green background for Game Points
       case 'tournament':
-        return 'rgba(109, 140, 255, 0.1)'; // Blue for Tournament
+        return '#6366F1'; // Vibrant Indigo background for Tournament
       case 'matches':
-        return 'rgba(255, 68, 68, 0.1)'; // Red for My Match
+        return '#EF4444'; // Bright Red background for My Match
       case 'redeem':
-        return 'rgba(255, 149, 0, 0.1)'; // Orange for Redeem
+        return '#F97316'; // Bold Orange background for Redeem
       case 'leaderboard':
-        return 'rgba(0, 191, 99, 0.1)'; // Green for Leaderboard
+        return '#A855F7'; // Rich Purple background for Leaderboard
       case 'gamerules':
-        return 'rgba(109, 140, 255, 0.1)'; // Blue for Game Rules
+        return '#14B8A6'; // Fresh Teal background for Game Rules
       default:
         return 'transparent';
     }
@@ -35,25 +35,11 @@ const StatsContainer = ({ handlePointsOut, handleTournament, handleGameRules, ha
 
   // Function to get icon color based on item id
   const getIconColor = (itemId) => {
-    // Only show custom colors in light mode AND when colorful icons are enabled
+    // Show white icons on colored backgrounds in light mode when colorful icons are enabled
     if (!isLight || !colorfulIcons) return isLight ? '#000000' : '#EAEAEA';
     
-    switch (itemId) {
-      case 'gamepoints':
-        return '#00bf63'; // Green for Game Points
-      case 'tournament':
-        return '#6d8cff'; // Blue for Tournament
-      case 'matches':
-        return '#FF4444'; // Red for My Match
-      case 'redeem':
-        return '#FF9500'; // Orange for Redeem
-      case 'leaderboard':
-        return '#00bf63'; // Green for Leaderboard
-      case 'gamerules':
-        return '#6d8cff'; // Blue for Game Rules
-      default:
-        return '#000000';
-    }
+    // All icons are white when colorful backgrounds are enabled
+    return '#FFFFFF';
   };
 
   // Function to render icon based on item configuration
@@ -68,18 +54,32 @@ const StatsContainer = ({ handlePointsOut, handleTournament, handleGameRules, ha
       FontAwesome6,
     }[item.iconLib];
 
+    const backgroundColor = getIconBackgroundColor(item.id);
+    const hasColorfulBackground = backgroundColor !== 'transparent';
+
     return (
-      <View style={styles.iconContainer} key={`${item.id}-${colorfulIcons}`}>
-        {/* Absolute positioned background */}
-        <View style={[
-          styles.iconBackground,
-          { backgroundColor: getIconBackgroundColor(item.id) }
-        ]} />
+      <View style={[
+        styles.iconContainer,
+        hasColorfulBackground && {
+          backgroundColor: backgroundColor,
+          borderRadius: scaleWidth(45) / 2, // Ensure circular shape
+          // Add shadow only in light mode when colorful icons are enabled
+          ...(isLight && colorfulIcons && Platform.OS === 'ios' && {
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 3 },
+            shadowOpacity: 0.35,
+            shadowRadius: 4.5,
+          }),
+          // Use elevation for Android
+          ...(isLight && colorfulIcons && Platform.OS === 'android' && {
+            elevation: 6,
+          })
+        }
+      ]} key={`${item.id}-${colorfulIcons}`}>
         <IconComponent 
           name={item.icon} 
           size={scaleWidth(35)} 
           color={getIconColor(item.id)} 
-          style={styles.iconStyle} 
         />
       </View>
     );
@@ -147,8 +147,8 @@ const styles = StyleSheet.create({
   statsContainer: {
     flexDirection: 'row',
     marginHorizontal: scaleWidth(16),
-    marginTop: 10,
-    borderRadius: scaleWidth(15),
+    marginTop: scaleHeight(10),
+    borderRadius: scaleWidth(25),
     paddingVertical:scaleHeight(12),
     borderWidth: 1.5,
   },
@@ -158,23 +158,11 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   iconContainer: {
-    position: 'relative',
     alignItems: 'center',
     justifyContent: 'center',
     width: scaleWidth(45),
     height: scaleWidth(45),
-  },
-  iconBackground: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: scaleWidth(45),
-    height: scaleWidth(45),
     borderRadius: scaleWidth(45) / 2,
-    overflow: 'hidden',
-  },
-  iconStyle: {
-    zIndex: 1,
   },
   statNumber: {
     fontSize: 20,

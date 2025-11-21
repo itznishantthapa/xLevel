@@ -97,7 +97,7 @@ const HomeBanner = ({ data = [], height }) => {
         }}
         containerStyle={{
           alignSelf: 'center',
-          gap: 8,
+          gap: scaleWidth(8),
           marginTop: scaleHeight(8),
  
         }}

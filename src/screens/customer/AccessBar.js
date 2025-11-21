@@ -47,41 +47,28 @@ const AccessBar = ({ navigation }) => {
     
     switch (itemId) {
       case 'gamepoints':
-        return 'rgba(0, 191, 99, 0.1)';
+        return '#16A34A'; // Strong Green background for Game Points
       case 'tournament':
-        return 'rgba(109, 140, 255, 0.1)';
+        return '#6366F1'; // Vibrant Indigo background for Tournament
       case 'matches':
-        return 'rgba(255, 68, 68, 0.1)';
+        return '#EF4444'; // Bright Red background for My Match
       case 'redeem':
-        return 'rgba(255, 149, 0, 0.1)';
+        return '#F97316'; // Bold Orange background for Redeem
       case 'leaderboard':
-        return 'rgba(0, 191, 99, 0.1)';
+        return '#A855F7'; // Rich Purple background for Leaderboard
       case 'gamerules':
-        return 'rgba(109, 140, 255, 0.1)';
+        return '#14B8A6'; // Fresh Teal background for Game Rules
       default:
         return 'transparent';
     }
   };
 
   const getIconColor = (itemId) => {
+    // Show white icons on colored backgrounds in light mode when colorful icons are enabled
     if (!isLight || !colorfulIcons) return isLight ? '#000000' : '#EAEAEA';
     
-    switch (itemId) {
-      case 'gamepoints':
-        return '#00bf63';
-      case 'tournament':
-        return '#6d8cff';
-      case 'matches':
-        return '#FF4444';
-      case 'redeem':
-        return '#FF9500';
-      case 'leaderboard':
-        return '#00bf63';
-      case 'gamerules':
-        return '#6d8cff';
-      default:
-        return '#000000';
-    }
+    // All icons are white when colorful backgrounds are enabled
+    return '#FFFFFF';
   };
 
   // Animation values for each item
@@ -182,18 +169,29 @@ const AccessBar = ({ navigation }) => {
       FontAwesome6,
     }[item.iconLib];
 
+    const backgroundColor = getIconBackgroundColor(item.id);
+    const hasColorfulBackground = backgroundColor !== 'transparent';
+
     return (
-      <View style={styles.previewIconContainer} key={`${item.id}-${colorfulIcons}`}>
-        {/* Show background preview */}
-        <View style={[
-          styles.previewIconBackground,
-          { backgroundColor: getIconBackgroundColor(item.id) }
-        ]} />
+      <View style={[
+        styles.previewIconContainer,
+        hasColorfulBackground && {
+          backgroundColor: backgroundColor,
+          borderRadius: scaleWidth(45) / 2, // Ensure circular shape
+          // Add shadow only in light mode when colorful icons are enabled
+          ...(isLight && colorfulIcons && {
+            elevation: 6,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 3 },
+            shadowOpacity: 0.35,
+            shadowRadius: 4.5,
+          })
+        }
+      ]} key={`${item.id}-${colorfulIcons}`}>
         <IconComponent 
           name={item.icon} 
           size={size} 
           color={getIconColor(item.id)}
-          style={styles.previewIconStyle}
         />
       </View>
     );
@@ -293,35 +291,46 @@ const AccessBar = ({ navigation }) => {
           </View>
         </View>
 
-        {/* Colorful Icons Toggle - Only show in light mode */}
-        {isLight && (
-          <View style={styles.colorToggleContainer}>
-            <Text style={[styles.colorToggleTitle, { color: '#333333' }]}>
-              Colorful Icons
-            </Text>
-            <Text style={[styles.colorToggleDescription, { color: '#666666' }]}>
-              Enable vibrant colors for stats icons
-            </Text>
-            <Pressable
-              style={[
-                styles.toggleButton,
-                { 
-                  backgroundColor: colorfulIcons ? '#00bf63' : '#e0e0e0',
-                  borderColor: '#d0d0d0'
-                }
-              ]}
-              onPress={toggleColorfulIcons}
-            >
-              <View style={[
-                styles.toggleSlider,
-                {
-                  backgroundColor: '#ffffff',
-                  transform: [{ translateX: colorfulIcons ? scaleWidth(24) : 0 }]
-                }
-              ]} />
-            </Pressable>
-          </View>
-        )}
+        {/* Colorful Icons Toggle or Info Message */}
+        <View style={styles.colorToggleContainer}>
+          {isLight ? (
+            <>
+              <Text style={[styles.colorToggleTitle, { color: '#333333' }]}>
+                Colorful Icons
+              </Text>
+              <Text style={[styles.colorToggleDescription, { color: '#666666' }]}>
+                Enable vibrant colors for stats icons
+              </Text>
+              <Pressable
+                style={[
+                  styles.toggleButton,
+                  { 
+                    backgroundColor: colorfulIcons ? '#00bf63' : '#e0e0e0',
+                    borderColor: '#d0d0d0'
+                  }
+                ]}
+                onPress={toggleColorfulIcons}
+              >
+                <View style={[
+                  styles.toggleSlider,
+                  {
+                    backgroundColor: '#ffffff',
+                    transform: [{ translateX: colorfulIcons ? scaleWidth(24) : 0 }]
+                  }
+                ]} />
+              </Pressable>
+            </>
+          ) : (
+            <>
+              <Text style={[styles.colorToggleTitle, { color: '#EAEAEA' }]}>
+                Colorful Icons
+              </Text>
+              <Text style={[styles.colorToggleDescription, { color: '#CCCCCC' }]}>
+                Colorful icons are available in light scheme only
+              </Text>
+            </>
+          )}
+        </View>
       </View>
     </View>
   );
@@ -394,23 +403,11 @@ const styles = StyleSheet.create({
     borderRadius: 1.5,
   },
   previewIconContainer: {
-    position: 'relative',
     alignItems: 'center',
     justifyContent: 'center',
     width: scaleWidth(45),
     height: scaleWidth(45),
-  },
-  previewIconBackground: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: scaleWidth(45),
-    height: scaleWidth(45),
     borderRadius: scaleWidth(45) / 2,
-    overflow: 'hidden',
-  },
-  previewIconStyle: {
-    zIndex: 1,
   },
   instructions: {
     alignItems: 'center',

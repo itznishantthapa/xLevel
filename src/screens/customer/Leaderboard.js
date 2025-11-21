@@ -35,11 +35,11 @@ const LeaderboardCard = React.memo(({ user, isLight, isCurrentUser = false }) =>
   const getRankIcon = (rank) => {
     switch (rank) {
       case 1:
-        return <SimpleLineIcons name='trophy' size={24} color="#FFD700" /> // Gold
+        return <MaterialCommunityIcons name='medal-outline' size={24} color="#FFD700" /> // Gold
       case 2:
-        return <SimpleLineIcons name='trophy' size={24} color="#C0C0C0" /> // Silver
+        return <MaterialCommunityIcons name='medal-outline' size={24} color="#C0C0C0" /> // Silver
       case 3:
-        return <SimpleLineIcons name='trophy' size={24} color="#CD7F32" /> // Bronze
+        return <MaterialCommunityIcons name='medal-outline' size={24} color="#CD7F32" /> // Bronze
       default:
         return (
           <View style={[styles.rankBadge, { backgroundColor: isLight ? '#f0f0f0' : 'rgba(255, 255, 255, 0.1)' }]}>
@@ -154,8 +154,8 @@ const LeaderboardCard = React.memo(({ user, isLight, isCurrentUser = false }) =>
  */
 const EmptyListComponent = ({ isLight }) => (
   <View style={styles.emptyContainer}>
-    <SimpleLineIcons 
-      name="trophy" 
+    <MaterialCommunityIcons 
+      name="medal-outline" 
       size={64} 
       color={isLight ? '#cccccc' : 'rgba(255, 255, 255, 0.3)'} 
     />
@@ -375,9 +375,9 @@ const Leaderboard = () => {
                 </View>
               </View>
 
-              {/* Trophy Icon */}
+              {/* Medal Icon */}
               <View style={styles.chevronSection}>
-                <SimpleLineIcons name='trophy' size={24} color={isLight ? '#333333' : '#ffffff'} />
+                <MaterialCommunityIcons name='medal-outline' size={24} color={isLight ? '#333333' : '#ffffff'} />
               </View>
             </View>
           </View>

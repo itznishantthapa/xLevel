@@ -30,13 +30,13 @@ const GameHeader = ({ game, isLight, isCreator, user, handleDeleteChallenge, han
 
   // Icon configurations with vibrant colors
   const gameIconConfig = {
-    backgroundColor: isLight ? '#d1e7ff' : 'rgba(46, 81, 255, 0.2)',
-    iconColor: isLight ? '#1a56db' : '#6d8cff'
+    backgroundColor: isLight ? '#A855F7' : 'rgba(109, 140, 255, 0.2)',
+    iconColor: isLight ? '#ffffff' : '#6d8cff'
   }
 
   const modeIconConfig = {
-    backgroundColor: isLight ? '#d4f4dd' : 'rgba(18, 184, 134, 0.2)',
-    iconColor: isLight ? '#0f7b0f' : '#20c997'
+    backgroundColor: isLight ? '#14B8A6' : 'rgba(32, 201, 151, 0.2)',
+    iconColor: isLight ? '#ffffff' : '#20c997'
   }
 
 
@@ -44,7 +44,18 @@ const GameHeader = ({ game, isLight, isCreator, user, handleDeleteChallenge, han
   return (
     <View style={sharedStyles.gameInfoHeader}>
       <View style={[sharedStyles.gameInfoItem, !isLight && sharedStyles.gameInfoItemDark]}>
-        <View style={[sharedStyles.iconContainer, { backgroundColor: gameIconConfig.backgroundColor }]}>
+        <View style={[
+          sharedStyles.iconContainer, 
+          { backgroundColor: gameIconConfig.backgroundColor },
+          // Add shadow only in light mode
+          isLight && {
+            elevation: 6,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 3 },
+            shadowOpacity: 0.35,
+            shadowRadius: 4.5,
+          }
+        ]}>
           <Ionicons name="game-controller" size={scaleWidth(14)} color={gameIconConfig.iconColor} />
         </View>
         <Text style={[sharedStyles.gameInfoText, !isLight && sharedStyles.gameInfoTextDark]}>
@@ -53,7 +64,18 @@ const GameHeader = ({ game, isLight, isCreator, user, handleDeleteChallenge, han
       </View>
 
       <View style={[sharedStyles.gameInfoItem, !isLight && sharedStyles.gameInfoItemDark]}>
-        <View style={[sharedStyles.iconContainer, { backgroundColor: modeIconConfig.backgroundColor }]}>
+        <View style={[
+          sharedStyles.iconContainer, 
+          { backgroundColor: modeIconConfig.backgroundColor },
+          // Add shadow only in light mode
+          isLight && {
+            elevation: 6,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 3 },
+            shadowOpacity: 0.35,
+            shadowRadius: 4.5,
+          }
+        ]}>
           <Ionicons name="people-outline" size={scaleWidth(14)} color={modeIconConfig.iconColor} />
         </View>
         <Text style={[sharedStyles.gameInfoText, !isLight && sharedStyles.gameInfoTextDark]}>

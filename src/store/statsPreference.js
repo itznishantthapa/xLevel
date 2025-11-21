@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // Default configuration
 const DEFAULT_STATS = [
   { id: 'gamerules', type: 'gamerules', name: 'Game Rules', icon: 'book-outline', iconLib: 'Ionicons' },
-  { id: 'leaderboard', type: 'leaderboard', name: 'Leaderboard', icon: 'trophy', iconLib: 'SimpleLineIcons' },
+  { id: 'leaderboard', type: 'leaderboard', name: 'Leaderboard', icon: 'medal-outline', iconLib: 'MaterialCommunityIcons' },
   { id: 'tournament', type: 'tournament', name: 'Tournaments', icon: 'game-controller-outline', iconLib: 'Ionicons' },
   { id: 'matches', type: 'matches', name: 'My Match', icon: 'gamepad-circle-right', iconLib: 'MaterialCommunityIcons' },
 ];
@@ -27,7 +27,7 @@ const TOGGLEABLE_OPTIONS = {
   },
   // leaderboard toggles between Leaderboard and Game Points
   leaderboard: {
-    primary: { id: 'leaderboard', type: 'leaderboard', name: 'Leaderboard', icon: 'trophy', iconLib: 'SimpleLineIcons' },
+    primary: { id: 'leaderboard', type: 'leaderboard', name: 'Leaderboard', icon: 'medal-outline', iconLib: 'MaterialCommunityIcons' },
     secondary: { id: 'gamepoints', type: 'leaderboard', name: 'Game Points', icon: 'receipt-long', iconLib: 'MaterialIcons' },
   },
 };

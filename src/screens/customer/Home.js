@@ -410,10 +410,11 @@ const Home = () => {
    * MAIN COMPONENT RENDER
    * ====================================================================
    */
+  // eef0f2
   return (
     <View
       style={[
-        styles.container,
+        styles.container, 
         {
           backgroundColor: isLight ? "#eef0f2" : "#000000",
           paddingTop: insets.top,
