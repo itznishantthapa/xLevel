@@ -169,26 +169,29 @@ const AccessBar = ({ navigation }) => {
       FontAwesome6,
     }[item.iconLib];
 
+    const backgroundColor = getIconBackgroundColor(item.id);
+    const hasColorfulBackground = backgroundColor !== 'transparent';
+
     return (
-      <View style={styles.previewIconContainer} key={`${item.id}-${colorfulIcons}`}>
-        {/* Show background preview */}
-        <View style={[
-          styles.previewIconBackground,
-          { backgroundColor: getIconBackgroundColor(item.id) },
+      <View style={[
+        styles.previewIconContainer,
+        hasColorfulBackground && {
+          backgroundColor: backgroundColor,
+          borderRadius: scaleWidth(45) / 2, // Ensure circular shape
           // Add shadow only in light mode when colorful icons are enabled
-          (isLight && colorfulIcons && getIconBackgroundColor(item.id) !== 'transparent') && {
+          ...(isLight && colorfulIcons && {
             elevation: 6,
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 3 },
             shadowOpacity: 0.35,
             shadowRadius: 4.5,
-          }
-        ]} />
+          })
+        }
+      ]} key={`${item.id}-${colorfulIcons}`}>
         <IconComponent 
           name={item.icon} 
           size={size} 
           color={getIconColor(item.id)}
-          style={styles.previewIconStyle}
         />
       </View>
     );
@@ -400,23 +403,11 @@ const styles = StyleSheet.create({
     borderRadius: 1.5,
   },
   previewIconContainer: {
-    position: 'relative',
     alignItems: 'center',
     justifyContent: 'center',
     width: scaleWidth(45),
     height: scaleWidth(45),
-  },
-  previewIconBackground: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: scaleWidth(45),
-    height: scaleWidth(45),
     borderRadius: scaleWidth(45) / 2,
-    overflow: 'hidden',
-  },
-  previewIconStyle: {
-    zIndex: 1,
   },
   instructions: {
     alignItems: 'center',

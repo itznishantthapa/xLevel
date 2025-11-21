@@ -54,26 +54,32 @@ const StatsContainer = ({ handlePointsOut, handleTournament, handleGameRules, ha
       FontAwesome6,
     }[item.iconLib];
 
+    const backgroundColor = getIconBackgroundColor(item.id);
+    const hasColorfulBackground = backgroundColor !== 'transparent';
+
     return (
-      <View style={styles.iconContainer} key={`${item.id}-${colorfulIcons}`}>
-        {/* Absolute positioned background */}
-        <View style={[
-          styles.iconBackground,
-          { backgroundColor: getIconBackgroundColor(item.id) },
+      <View style={[
+        styles.iconContainer,
+        hasColorfulBackground && {
+          backgroundColor: backgroundColor,
+          borderRadius: scaleWidth(45) / 2, // Ensure circular shape
           // Add shadow only in light mode when colorful icons are enabled
-          (isLight && colorfulIcons && getIconBackgroundColor(item.id) !== 'transparent') && {
-            elevation: 6,
+          ...(isLight && colorfulIcons && Platform.OS === 'ios' && {
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 3 },
             shadowOpacity: 0.35,
             shadowRadius: 4.5,
-          }
-        ]} />
+          }),
+          // Use elevation for Android
+          ...(isLight && colorfulIcons && Platform.OS === 'android' && {
+            elevation: 6,
+          })
+        }
+      ]} key={`${item.id}-${colorfulIcons}`}>
         <IconComponent 
           name={item.icon} 
           size={scaleWidth(35)} 
           color={getIconColor(item.id)} 
-          style={styles.iconStyle} 
         />
       </View>
     );
@@ -152,23 +158,11 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   iconContainer: {
-    position: 'relative',
     alignItems: 'center',
     justifyContent: 'center',
     width: scaleWidth(45),
     height: scaleWidth(45),
-  },
-  iconBackground: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: scaleWidth(45),
-    height: scaleWidth(45),
     borderRadius: scaleWidth(45) / 2,
-    overflow: 'hidden',
-  },
-  iconStyle: {
-    zIndex: 1,
   },
   statNumber: {
     fontSize: 20,

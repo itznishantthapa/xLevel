@@ -701,6 +701,12 @@ const EditGameInfo = () => {
 
       {/* Profile Form */}
       <View style={styles.section}>
+        {/* Info Text */}
+        <View style={[styles.infoContainer, { backgroundColor: "transparent", borderColor: isLight ? "#000000" : "#ffffff" }]}>
+          <Text style={[styles.infoText, { color: isLight ? "#000000" : "#ffffff" }]}>
+            Please fill your game details accurately and correctly. Ensure all information matches your in-game profile exactly.
+          </Text>
+        </View>
 
         <View style={styles.form}>
           {/* Game Username Input - Common for all games */}
@@ -743,16 +749,16 @@ const EditGameInfo = () => {
         
         {/* Chess Update Restriction Notice */}
         {gameName === 'chess' && (
-          <View style={[styles.noticeContainer, { backgroundColor: isLight ? "#f8f9fa" : "#1a1a1a", borderColor: isLight ? "#000000" : "#ffffff" }]}>
+          <View style={styles.noticeContainer}>
             <Text style={[styles.noticeText, { color: isLight ? "#000000" : "#ffffff" }]}>
-              You can update your chess profile once every 2 days
+              "You can update your chess profile once every 2 days"
             </Text>
           </View>
         )}
         {gameName === 'efootball' && (
-          <View style={[styles.noticeContainer, { backgroundColor: isLight ? "#f8f9fa" : "#1a1a1a", borderColor: isLight ? "#000000" : "#ffffff" }]}>
+          <View style={styles.noticeContainer}>
             <Text style={[styles.noticeText, { color: isLight ? "#000000" : "#ffffff" }]}>
-              You can update your eFootball profile once every 2 days
+              "You can update your eFootball profile once every 2 days"
             </Text>
           </View>
         )}
@@ -818,13 +824,23 @@ const styles = StyleSheet.create({
   },
   noticeContainer: {
     padding: 12,
-    borderRadius: 6,
-    borderWidth: 1,
     marginTop: 16,
   },
   noticeText: {
     fontSize: 13,
     fontWeight: '500',
     textAlign: 'center',
+  },
+  infoContainer: {
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    marginBottom: 16,
+  },
+  infoText: {
+    fontSize: 13,
+    fontWeight: '500',
+    textAlign: 'center',
+    lineHeight: 18,
   },
 })
