@@ -2152,6 +2152,11 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - RNNotifee (9.1.8):
+    - React-Core
+    - RNNotifee/NotifeeCore (= 9.1.8)
+  - RNNotifee/NotifeeCore (9.1.8):
+    - React-Core
   - RNReanimated (4.0.3):
     - DoubleConversion
     - glog
@@ -2461,6 +2466,7 @@ DEPENDENCIES:
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNGoogleMobileAds (from `../node_modules/react-native-google-mobile-ads`)
   - "RNGoogleSignin (from `../node_modules/@react-native-google-signin/google-signin`)"
+  - "RNNotifee (from `../node_modules/@notifee/react-native`)"
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNWorklets (from `../node_modules/react-native-worklets`)
@@ -2691,6 +2697,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-google-mobile-ads"
   RNGoogleSignin:
     :path: "../node_modules/@react-native-google-signin/google-signin"
+  RNNotifee:
+    :path: "../node_modules/@notifee/react-native"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
@@ -2819,6 +2827,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: 9205e0a9649ef6fcfd71e86992ecfb21eefab3d3
   RNGoogleMobileAds: dc844ce72b48b60354ff06c85feb1377a1a38c89
   RNGoogleSignin: 204d0031895b0b350268f29945571d4bed371beb
+  RNNotifee: 5e3b271e8ea7456a36eec994085543c9adca9168
   RNReanimated: 65883c933bcd8de59e97dbec1768e30bd2e321c6
   RNScreens: 824a29c178e253fe8b08fb0b2903195d35f724f2
   RNWorklets: fbc45399ffcf580ef29df019bf42c3e1382f9036

@@ -15,7 +15,7 @@ import { endpoints } from '../api/endpoints';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-simple-toast';
 import { NavigationService } from './navigationService';
-import * as Notifications from 'expo-notifications';
+import notifee, { AndroidImportance, EventType } from '@notifee/react-native';
 
 
 
@@ -106,23 +106,59 @@ export const setupNotificationListeners = async () => {
     const app = getApp();
     const messaging = getMessaging(app);
 
+    // Setup Notifee foreground event handler
+    const unsubscribeNotifee = notifee.onForegroundEvent(({ type, detail }) => {
+      if (type === EventType.PRESS) {
+        const remoteMessage = {
+          data: detail.notification?.data,
+          notification: {
+            title: detail.notification?.title,
+            body: detail.notification?.body,
+          },
+        };
+        handleNotificationNavigation(remoteMessage);
+      }
+    });
+
     // Foreground message handler
     const unsubscribeOnMessage = onMessage(messaging, async remoteMessage => {
-      if (remoteMessage?.notification) {
-        const { title, body } = remoteMessage.notification;
-        const payloadData = remoteMessage.data || {};
+      const data = remoteMessage?.data;
+      
+      if (data) {
+        const title = data.title || remoteMessage?.notification?.title;
+        const body = data.body || remoteMessage?.notification?.body;
+        const largeIcon = data.largeIcon;
+        const importance = data.importance || 'high';
 
-        // show popup using expo-notifications in foreground
-        await Notifications.scheduleNotificationAsync({
-          content: {
-            title: title,
-            body: body,
-            data: payloadData,
-            channelId: 'high_importance',
+        // Map importance to channel ID
+        const channelId = `${importance}_importance`;
+
+        // Build android config
+        const androidConfig = {
+          channelId: channelId,
+          smallIcon: 'ic_notification',
+          pressAction: {
+            id: 'default',
           },
-          trigger: {
-            type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-            seconds: 1,
+        };
+
+        // Only add largeIcon if it exists
+        if (largeIcon) {
+          androidConfig.largeIcon = largeIcon;
+        }
+
+        // Display notification using Notifee
+        await notifee.displayNotification({
+          title: title,
+          body: body,
+          data: data,
+          android: androidConfig,
+          ios: {
+            foregroundPresentationOptions: {
+              alert: true,
+              badge: true,
+              sound: importance === 'high',
+            },
           },
         });
       }
@@ -143,6 +179,7 @@ export const setupNotificationListeners = async () => {
     return () => {
       unsubscribeOnMessage();
       unsubscribeOnNotificationOpened();
+      unsubscribeNotifee();
     };
   } catch (error) {
     if (__DEV__) console.log(error)
@@ -154,15 +191,42 @@ export const setupNotificationListeners = async () => {
 //========== Setup Notification Channel ============
 export const setupNotificationChannel = async () => {
   if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('high_importance', {
+    // High importance channel - shows as popup/heads-up notification
+    await notifee.createChannel({
+      id: 'high_importance',
       name: 'High Importance Notifications',
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#FF231F7C',
+      importance: AndroidImportance.HIGH,
+      vibration: true,
+      vibrationPattern: [250, 250, 250, 250],
       sound: 'default',
     });
-  }
 
+    // Normal importance channel - shows in notification tray only
+    await notifee.createChannel({
+      id: 'normal_importance',
+      name: 'Normal Notifications',
+      importance: AndroidImportance.DEFAULT,
+      vibration: true,
+      vibrationPattern: [250, 250],
+      sound: 'default',
+    });
+
+    // Low importance channel - shows silently in notification tray
+    await notifee.createChannel({
+      id: 'low_importance',
+      name: 'Low Importance Notifications',
+      importance: AndroidImportance.LOW,
+      vibration: false,
+    });
+
+    // Min importance channel - minimal notification
+    await notifee.createChannel({
+      id: 'min_importance',
+      name: 'Silent Notifications',
+      importance: AndroidImportance.MIN,
+      vibration: false,
+    });
+  }
 };
 
 
