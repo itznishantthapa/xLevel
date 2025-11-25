@@ -1,15 +1,24 @@
+// index.js
 import { registerRootComponent } from 'expo';
-import '@react-native-firebase/app';
-import messaging from '@react-native-firebase/messaging';
+import { getMessaging, setBackgroundMessageHandler } from '@react-native-firebase/messaging';
+import { getApp } from '@react-native-firebase/app';
+import notifee, { EventType } from '@notifee/react-native';
 import App from './App';
 
-// Silence deprecation warnings (optional)
-globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-
-//============ Background Message Handler ============
-messaging().setBackgroundMessageHandler(async remoteMessage => {
-
+// ========= Background FCM Handler =========
+const messaging = getMessaging(getApp());
+setBackgroundMessageHandler(messaging, async remoteMessage => {
+  // Pass message to our service (no display here)
+  const { handleBackgroundMessage } = require('./src/service/notificationService');
+  await handleBackgroundMessage(remoteMessage);
 });
 
-//============ Register Root Component ============
+// ========= Background Notifee Events =========
+notifee.onBackgroundEvent(async ({ type, detail }) => {
+  if (type === EventType.PRESS) {
+    const { handleNotificationPress } = require('./src/service/notificationService');
+    await handleNotificationPress(detail.notification?.data);
+  }
+});
+
 registerRootComponent(App);

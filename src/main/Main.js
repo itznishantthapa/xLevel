@@ -6,7 +6,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Animated } from 'react-native';
 import { useEffect, useRef } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
-import * as Notifications from 'expo-notifications';
 
 
 // Navigation
@@ -39,18 +38,6 @@ import { useNetworkStatus } from '../hooks/useNetworkStatus';
 
 //============ Prevent Auto Hide Splash Screen ============
 SplashScreen.preventAutoHideAsync();
-
-
-//============ Set Notification Handler For Foreground Notifications With Expo Notifications ============
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowBanner: true,   // iOS
-    shouldShowList: true,     // iOS notification center
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-  }),
-});
-
 
 
 export default function RootLayout() {
@@ -211,27 +198,8 @@ export default function RootLayout() {
 
 
   //============ Handle Notification Taps ============
-  useEffect(() => {
-    // Listen for taps on notifications (works for foreground, background, quit)
-    const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
-
-      const data = response.notification.request.content.data;
-      const screen = data?.screen;
-
-      if (screen) NavigationService.navigate(screen, data);
-
-    });
-
-    return () => {
-      responseListener.remove();
-    };
-  }, []);
-
-
-
-
-
-
+  // Notifee handles notification taps via onForegroundEvent and onBackgroundEvent
+  // Navigation is handled in notificationService.js
 
 
 

@@ -71,7 +71,7 @@ const StatsContainer = ({ handlePointsOut, handleTournament, handleGameRules, ha
             shadowRadius: 4.5,
           }),
           // Use elevation for Android
-          ...(isLight && colorfulIcons && Platform.OS === 'android' && {
+          ...(isLight && colorfulIcons && {
             elevation: 6,
           })
         }

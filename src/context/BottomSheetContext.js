@@ -384,6 +384,7 @@ const JoinSheetContent = React.memo(
           style={styles.scrollArea}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          bounces={false}
         >
           <View style={styles.gameRow}>
             <View style={[styles.gameItem, { borderColor: isDark ? "#ffffff" : "#333333" }]}>
@@ -587,12 +588,13 @@ const ConfirmSheetContent = React.memo(({ payload, isDark, insets, handleCancel,
         style={styles.scrollArea}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        bounces={false}
       >
         <Text style={{ color: isDark ? "#cccccc" : "#666666", lineHeight: 18 }}>{payload.message}</Text>
       </ScrollView>
     ) : null}
 
-    <View style={[styles.actionsRow, { paddingBottom: insets.bottom }]}>
+    <View style={[styles.actionsRow, { paddingBottom: Math.max(8, insets.bottom || 0) }]}>
       <Pressable
         style={[styles.btn, styles.cancelBtn, { borderColor: isDark ? "#ffffff" : "#333333" }]}
         onPress={handleCancel}
@@ -620,8 +622,6 @@ const ConfirmSheetContent = React.memo(({ payload, isDark, insets, handleCancel,
 ))
 
 
-
-
 export const useBottomSheet = () => useContext(BottomSheetContext)
 
 const styles = StyleSheet.create({
@@ -644,8 +644,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
-    overflow: "hidden",
-    maxHeight: Math.round(SCREEN_HEIGHT * 0.5),
+    maxHeight: Math.round(SCREEN_HEIGHT * 0.75), // Increased from 0.5 to 0.75
     elevation: 10, // Android shadow
     shadowColor: "#000", // iOS shadow
     shadowOffset: {
@@ -666,11 +665,12 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
-    gap: 12,
     paddingTop: 0, // Reduced since we have drag handle
+    maxHeight: Math.round(SCREEN_HEIGHT * 0.75) - 20, // Account for drag handle
   },
   scrollArea: {
-    flexGrow: 0,
+    flexGrow: 1,
+    flexShrink: 1,
   },
   scrollContent: {
     paddingBottom: 8,
