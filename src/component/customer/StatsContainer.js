@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   statLabel: {
-    fontSize: 12,
+    fontSize: scaleWidth(12),
     fontWeight: '500',
   },
   statDivider: {

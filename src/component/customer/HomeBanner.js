@@ -112,6 +112,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     marginBottom: scaleHeight(15),
     marginTop: scaleHeight(10),
+    
   },
   wrapper: {
     // Height is controlled dynamically via inline style using PAGE_HEIGHT
