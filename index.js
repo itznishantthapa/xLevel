@@ -1,56 +1,24 @@
+// index.js
 import { registerRootComponent } from 'expo';
-import '@react-native-firebase/app';
-import messaging from '@react-native-firebase/messaging';
-import notifee, { EventType, AndroidImportance } from '@notifee/react-native';
+import { getMessaging, setBackgroundMessageHandler } from '@react-native-firebase/messaging';
+import { getApp } from '@react-native-firebase/app';
+import notifee, { EventType } from '@notifee/react-native';
 import App from './App';
 
-// Silence deprecation warnings (optional)
-globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-
-//============ Background Message Handler ============
-messaging().setBackgroundMessageHandler(async remoteMessage => {
-  // Display notification using Notifee for background notifications
-  const data = remoteMessage?.data;
-  
-  if (data) {
-    const title = data.title || remoteMessage?.notification?.title;
-    const body = data.body || remoteMessage?.notification?.body;
-    const largeIcon = data.largeIcon;
-    const importance = data.importance || 'high';
-
-    // Map importance to channel ID
-    const channelId = `${importance}_importance`;
-
-    // Build android config
-    const androidConfig = {
-      channelId: channelId,
-      smallIcon: 'ic_notification',
-      pressAction: {
-        id: 'default',
-      },
-    };
-
-    // Only add largeIcon if it exists
-    if (largeIcon) {
-      androidConfig.largeIcon = largeIcon;
-    }
-
-    await notifee.displayNotification({
-      title: title,
-      body: body,
-      data: data,
-      android: androidConfig,
-    });
-  }
+// ========= Background FCM Handler =========
+const messaging = getMessaging(getApp());
+setBackgroundMessageHandler(messaging, async remoteMessage => {
+  // Pass message to our service (no display here)
+  const { handleBackgroundMessage } = require('./src/service/notificationService');
+  await handleBackgroundMessage(remoteMessage);
 });
 
-//============ Notifee Background Event Handler ============
+// ========= Background Notifee Events =========
 notifee.onBackgroundEvent(async ({ type, detail }) => {
   if (type === EventType.PRESS) {
-    // Handle notification press in background/quit state
-    // Navigation will be handled when app opens via getInitialNotification
+    const { handleNotificationPress } = require('./src/service/notificationService');
+    await handleNotificationPress(detail.notification?.data);
   }
 });
 
-//============ Register Root Component ============
 registerRootComponent(App);
