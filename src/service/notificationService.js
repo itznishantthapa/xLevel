@@ -130,6 +130,9 @@ export const getUserNotificationsOnLoads = async (offset = 0, limit = 7) => {
 export const handleNotificationPress = async (data) => {
   if (!data) return;
 
+  // Add a small delay to ensure app is fully initialized
+  await new Promise(resolve => setTimeout(resolve, 500));
+
   if (data.screen) {
     NavigationService.navigate(data.screen, data);
   } else {
@@ -209,15 +212,24 @@ export const setupNotificationListeners = async () => {
     }
   });
 
-  // Background → App open
-  const openUnsub = onNotificationOpenedApp(messaging, message =>
-    handleNotificationPress(message.data),
-  );
+  // Background → App open (app in background, tapped notification)
+  const openUnsub = onNotificationOpenedApp(messaging, message => {
+    handleNotificationPress(message.data);
+  });
 
-  // Cold start
+  // Check both Firebase and Notifee for initial notification (app completely closed)
   const initial = await getInitialNotification(messaging);
-  if (initial?.notification?.title) {
+
+  
+  if (initial?.data) {
     handleNotificationPress(initial.data);
+  } else {
+    // Also check Notifee's initial notification
+    const notifeeInitial = await notifee.getInitialNotification();
+    
+    if (notifeeInitial?.notification?.data) {
+      handleNotificationPress(notifeeInitial.notification.data);
+    }
   }
 
   return () => {
