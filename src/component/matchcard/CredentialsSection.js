@@ -291,7 +291,7 @@ const CredentialsSection = ({
     return (
       <View style={sharedStyles.credentialsDisplayContainer}>
         <Text style={[sharedStyles.credentialsGuide, { color: isLight ? "#333333" : "#ffffff" }]}>
-          Room ID & Password (ID Must Be Copied)
+          Room ID & Password
         </Text>
         <View style={sharedStyles.inputRow}>
           <View style={sharedStyles.inputWrapper}>

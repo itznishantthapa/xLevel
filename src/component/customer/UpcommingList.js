@@ -23,9 +23,7 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
   const { data: gameProfiles = [] } = useGameProfiles()
   const navigation = useNavigation()
 
-  useEffect(() => {
-     console.log("PerKillPoints",game.per_kill_point)
-  }, [game])
+ 
   
 
 

@@ -546,7 +546,7 @@ const ResultUpload = ({ route }) => {
               styles.warningText,
               { color: isLight ? '#333333' : '#ffffff' }
             ]}>
-              Submitting false results will lead to a permanent account ban.
+            Submitting false results will lead to an account suspension and a 50 point penalty.
             </Text>
           </View>
         </View>
