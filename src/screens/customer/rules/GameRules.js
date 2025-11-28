@@ -75,7 +75,7 @@ const GameRules = () => {
           title={'Game Rules'}
         />
         <Text style={[styles.headerSubtitle, { color: colors.subText, marginLeft: 16 }]}>
-          Check the rules before you play
+          Check the simple rules before you play !
         </Text>
 
 

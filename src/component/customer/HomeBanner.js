@@ -68,7 +68,7 @@ const HomeBanner = ({ data = [], height }) => {
           style={{ width: '100%' }}
           onProgressChange={(_, absoluteProgress) => {
             // Update shared progress without reading during render
-            progress.value = absoluteProgress;
+          progress.value = absoluteProgress;
           }}
           renderItem={({ item }) => <BannerPage data={item} />}
         />
