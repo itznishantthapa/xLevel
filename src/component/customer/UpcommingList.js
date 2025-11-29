@@ -258,7 +258,7 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
           >
             <View style={styles.joinButtonContent}>
               <Text style={[styles.joinButtonText, isLight ? { color: "#ffffff" } : { color: "#000000" }]}>
-                Join  {game.entry_fee}
+                {game.is_free ? 'Join for Free' : `Join ${game.entry_fee}`}
               </Text>
             </View>
           </Pressable>
