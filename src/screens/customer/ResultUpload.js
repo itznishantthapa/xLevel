@@ -457,7 +457,7 @@ const ResultUpload = ({ route }) => {
                 "If you lost the match, you don't need to submit the result.",
                 "If you won the match, you must submit the result within 20 minutes.",
                 "Submissions after 20 minutes may not be reviewed and can be marked as a loss.",
-                "The 20 minute timer starts when both players finish the match, not when it begins."
+                "The 20 minute starts when both players finish the match, not when it begins."
               ].map((rule, index) => (
                 <Text
                   key={index}
@@ -546,7 +546,7 @@ const ResultUpload = ({ route }) => {
               styles.warningText,
               { color: isLight ? '#333333' : '#ffffff' }
             ]}>
-              Submitting false results will lead to a permanent account ban.
+            Submitting false results will lead to an account suspension and a 50 point penalty.
             </Text>
           </View>
         </View>

@@ -11,11 +11,10 @@ const TournamentCard = ({ game }) => {
   const { user } = useAuthStore()
   const { isLight } = useThemeStore()
 
-  const per_kill_amount = (game.entry_fee * 0.8).toFixed(0)
   const SCREEN_WIDTH = Dimensions.get('window').width
   const isSmallScreen = SCREEN_WIDTH <= 360
 
- 
+
 
   // Calculate progress percentage for joined players
   const joinedPercentage = Math.min((game.player_joined / game.max_player) * 100, 100)
@@ -77,7 +76,7 @@ const TournamentCard = ({ game }) => {
     return (
       <View style={[styles.credentialsContainer, { borderColor: isLight ? '#000000' : '#ffffff' }]}>
         <Text style={[styles.credentialsText, { color: isLight ? '#000000' : '#ffffff' }]}>
-        "Get ID & Pass 5 mins early"
+          "Get ID & Pass 5 mins early"
         </Text>
       </View>
     );
@@ -97,7 +96,7 @@ const TournamentCard = ({ game }) => {
         <View style={styles.gameInfoRow}>
           <View style={[styles.infoPill, !isLight && styles.infoPillDark]}>
             <View style={[
-              styles.iconWrapper, 
+              styles.iconWrapper,
               { backgroundColor: isLight ? '#A855F7' : 'rgba(109, 140, 255, 0.2)' },
               // Add shadow only in light mode
               isLight && {
@@ -114,7 +113,7 @@ const TournamentCard = ({ game }) => {
           </View>
           <View style={[styles.infoPill, !isLight && styles.infoPillDark]}>
             <View style={[
-              styles.iconWrapper, 
+              styles.iconWrapper,
               { backgroundColor: isLight ? '#14B8A6' : 'rgba(32, 201, 151, 0.2)' },
               // Add shadow only in light mode
               isLight && {
@@ -129,7 +128,7 @@ const TournamentCard = ({ game }) => {
             </View>
             <Text style={[styles.pillText, !isLight && styles.pillTextDark]}>{game.game?.game_mode}</Text>
           </View>
-          
+
           {/* Tournament ID Stamp */}
           <View style={[styles.stampContainer, isSmallScreen && styles.stampContainerSmall]}>
             <StampID gameId={game.id} isLight={isLight} compact={isSmallScreen} />
@@ -145,7 +144,7 @@ const TournamentCard = ({ game }) => {
             {game.win_type == 'per_kill' ? (
               <View style={styles.prizeDetails}>
                 <View style={styles.perKillContainer}>
-                  <Text style={[styles.perKillAmount, !isLight && styles.perKillAmountDark]}>+{per_kill_amount} Points</Text>
+                  <Text style={[styles.perKillAmount, !isLight && styles.perKillAmountDark]}>+{game?.per_kill_point} Points</Text>
                   <Text style={[styles.perKillText, !isLight && styles.perKillTextDark]}> per kill</Text>
                 </View>
                 {
@@ -185,8 +184,8 @@ const TournamentCard = ({ game }) => {
               </View>
             </View>
           </View>
-        ):(
-                    <View style={styles.bonusInfo}>
+        ) : (
+          <View style={styles.bonusInfo}>
             <View style={[styles.entryFeeDisplay, { backgroundColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)' }]}>
               <Text style={[styles.entryLabel, !isLight && styles.entryLabelDark]}>Entry</Text>
               <View style={styles.entryAmountContainer}>

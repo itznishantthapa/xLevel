@@ -42,8 +42,8 @@ const StatusDisplay = ({ game, isLight, win_pot, user }) => {
     }
 
     return {
-      text: "You lost",
-      amount: `-${win_pot}`,
+      text: "You're defeated",
+      // amount: `-${game.entry_fee}`,
       color: isLight ? "#ffffff" : "#000000",
       amountColor: isLight ? "#ffffff" : "#000000",
       backgroundColor: isLight ? "#000000" : "#eaf4f4",

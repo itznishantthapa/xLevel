@@ -23,7 +23,9 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
   const { data: gameProfiles = [] } = useGameProfiles()
   const navigation = useNavigation()
 
-  const per_kill_amount = (game.entry_fee * 0.8).toFixed(0)
+ 
+  
+
 
   // Calculate progress percentage for joined players
   const joinedPercentage = Math.min((game.player_joined / game.max_player) * 100, 100)
@@ -132,7 +134,7 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
               game.win_type == 'per_kill' ? (
                 <View style={styles.prizeDetails}>
                   <View style={styles.perKillContainer}>
-                    <Text style={[styles.perKillAmount, !isLight && styles.perKillAmountDark]}>+{per_kill_amount} Points</Text>
+                    <Text style={[styles.perKillAmount, !isLight && styles.perKillAmountDark]}>+{game?.per_kill_point} Points</Text>
 
                     <Text style={[styles.perKillText, !isLight && styles.perKillTextDark]}> per kill</Text>
                   </View>
@@ -256,7 +258,7 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
           >
             <View style={styles.joinButtonContent}>
               <Text style={[styles.joinButtonText, isLight ? { color: "#ffffff" } : { color: "#000000" }]}>
-                Join  {game.entry_fee}
+                {game.is_free ? 'Join for Free' : `Join ${game.entry_fee}`}
               </Text>
             </View>
           </Pressable>
