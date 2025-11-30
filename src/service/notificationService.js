@@ -9,7 +9,8 @@ import {
   registerDeviceForRemoteMessages,
   onMessage,
   onNotificationOpenedApp,
-  getInitialNotification
+  getInitialNotification,
+  onTokenRefresh
 } from '@react-native-firebase/messaging';
 
 import notifee, { AndroidImportance, EventType } from '@notifee/react-native';
@@ -232,10 +233,27 @@ export const setupNotificationListeners = async () => {
     }
   }
 
+  // Listen for FCM token rotation and sync with backend
+  const tokenUnsub = onTokenRefresh(messaging, async (newToken) => {
+    try {
+      const prev = await AsyncStorage.getItem('@fcm_token');
+      if (prev === newToken) return;
+      await AsyncStorage.setItem('@fcm_token', newToken);
+
+      // Post the updated token to backend
+      const { API } = await import('../api/client');
+      const { endpoints } = await import('../api/endpoints');
+      await API.post(endpoints.postFCMToken, { token: newToken });
+    } catch (err) {
+      if (__DEV__) console.log('FCM onTokenRefresh error:', err);
+    }
+  });
+
   return () => {
     fgUnsub();
     notifeeUnsub();
     openUnsub();
+    tokenUnsub();
   };
 };
 
