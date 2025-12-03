@@ -8,7 +8,7 @@ export default function Credits() {
     const insets = useSafeAreaInsets()
 
     const colors = {
-        background: isLight ? "#eef0f2" : "#000000",
+        background: isLight ? "#ffffff" : "#000000",
         text: isLight ? "#000000" : "#ffffff",
         link: "#1E90FF",
         textSecondary: isLight ? "#666666" : "#999999",

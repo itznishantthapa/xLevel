@@ -286,7 +286,7 @@ const EditProfile = () => {
         backgroundColor="transparent"
         barStyle={isLight ? "dark-content" : "light-content"}
       />
-      <SafeAreaView style={[styles.container, { backgroundColor: isLight ? '#eef0f2' : '#000000' }]}>
+      <SafeAreaView style={[styles.container, { backgroundColor: isLight ? '#ffffff' : '#000000' }]}>
 
 
         <AppHeader

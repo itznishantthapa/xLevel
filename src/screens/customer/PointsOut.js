@@ -10,6 +10,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import AppHeader from './header/AppHeader';
 import { usePointsOut } from '../../queries/useMutation/usePointsOut';
 import CoolButton from '../../component/customer/common/CoolButton';
+import { scaleWidth, scaleHeight } from '../../utils/scaling';
 
 const PointsOut = () => {
   const navigation = useNavigation();
@@ -19,12 +20,14 @@ const PointsOut = () => {
   const { mutateAsync: pointsOut } = usePointsOut();
 
   const colors = {
-    background: isLight ? "#eef0f2" : "#000000",
+    background: isLight ? "#ffffff" : "#000000",
     text: isLight ? "#000000" : "#ffffff",
     textSecondary: isLight ? "#666666" : "#999999",
-    border: isLight ? "#000000" : "#ffffff",
-    inputBg: isLight ? "#ffffff" : "#1a1a1a",
-    qrBg: isLight ? "#f8f9fa" : "#1a1a1a",
+    border: isLight ? "#e0e0e0" : "#333333",
+    inputBorder: isLight ? "#000000" : "#ffffff",
+    inputBg: isLight ? "#f8f9fa" : "#1a1a1a",
+    qrBg: isLight ? "#ffffff" : "#0a0a0a",
+    cardBg: isLight ? "#f8f9fa" : "#0f0f0f",
   };
 
   const [crownAmount, setCrownAmount] = useState('');
@@ -129,81 +132,78 @@ const PointsOut = () => {
         >
 
           {/* Pocket Design with Instructions */}
-          <View style={styles.pocketWrapper}>
-            <View style={[styles.pocketContainer, {
-              backgroundColor: isLight ? '#FF9500' : '#1a1a1a',
-              borderColor: '#FF9500'
-            }]}>
-              {/* Pocket Content - Instructions */}
-              <View style={styles.pocketContent}>
-                <View style={styles.instructionHeader}>
-                  <MaterialCommunityIcons name="information" size={20} color={isLight ? "#ffffff" : "#FF9500"} />
-                  <Text style={[styles.instructionTitle, { color: isLight ? "#ffffff" : "#FF9500" }]}>
-                    Redeem Instructions
-                  </Text>
+          <View style={styles.instructionsSection}>
+            <Text style={[styles.instructionsTitle, { color: colors.text }]}>
+              Redemption Guide
+            </Text>
+            <View style={styles.instructionsContainer}>
+              <View style={styles.instructionRow}>
+                <View style={[styles.stepBadge, { backgroundColor: isLight ? '#000000' : '#ffffff' }]}>
+                  <Text style={[styles.stepNumber, { color: isLight ? '#ffffff' : '#000000' }]}>1</Text>
                 </View>
-
-                <View style={styles.instructionsContainer}>
-                  <View style={styles.instructionRow}>
-                    <View style={[styles.stepBadge, { backgroundColor: isLight ? "rgba(255,255,255,0.2)" : "rgba(255,149,0,0.2)" }]}>
-                      <Text style={[styles.stepNumber, { color: isLight ? "#ffffff" : "#FF9500" }]}>1</Text>
-                    </View>
-                    <Text style={[styles.instructionText, { color: isLight ? "#ffffff" : colors.text }]}>
-                      Minimum redeem amount is 100 points (100 Points = Rs. 100).
-                    </Text>
-                  </View>
-
-                  <View style={styles.instructionRow}>
-                    <View style={[styles.stepBadge, { backgroundColor: isLight ? "rgba(255,255,255,0.2)" : "rgba(255,149,0,0.2)" }]}>
-                      <Text style={[styles.stepNumber, { color: isLight ? "#ffffff" : "#FF9500" }]}>2</Text>
-                    </View>
-                    <Text style={[styles.instructionText, { color: isLight ? "#ffffff" : colors.text }]}>
-                      Upload your payment QR code (Esewa, Khalti, etc.) below.
-                    </Text>
-                  </View>
-                </View>
+                <Text style={[styles.instructionText, { color: colors.text }]}>
+                  Minimum redeem amount is 100 points (100 Points = Rs. 100).
+                </Text>
               </View>
-            </View>
 
-            {/* QR Upload overlapping the pocket bottom */}
-            <View style={styles.qrOverlapContainer}>
-              <Pressable
-                style={[styles.qrContainer, {
-                  backgroundColor: colors.qrBg,
-                  borderColor: qrImage ? colors.border : '#FF9500',
-                }]}
-                onPress={pickImage}
-              >
-                {qrImage ? (
-                  <Image
-                    source={{ uri: qrImage }}
-                    style={styles.qrImage}
-                    resizeMode="contain"
-                  />
-                ) : (
-                  <View style={styles.qrPlaceholder}>
-                    <Ionicons name="qr-code-outline" size={80} color="#FF9500" />
-                    <Text style={[styles.qrPlaceholderText, { color: colors.textSecondary }]}>
-                      Tap to upload your QR
-                    </Text>
-                  </View>
-                )}
-              </Pressable>
-              {qrImage && (
-                <Pressable
-                  style={styles.changeQRButton}
-                  onPress={pickImage}
-                >
-                  <Ionicons name="refresh" size={16} color="#ffffff" />
-                  <Text style={styles.changeQRText}>Change QR</Text>
-                </Pressable>
-              )}
+              <View style={styles.instructionRow}>
+                <View style={[styles.stepBadge, { backgroundColor: isLight ? '#000000' : '#ffffff' }]}>
+                  <Text style={[styles.stepNumber, { color: isLight ? '#ffffff' : '#000000' }]}>2</Text>
+                </View>
+                <Text style={[styles.instructionText, { color: colors.text }]}>
+                  Upload your payment QR code (Esewa, Khalti, etc.) below.
+                </Text>
+              </View>
+
+              <View style={styles.instructionRow}>
+                <View style={[styles.stepBadge, { backgroundColor: isLight ? '#000000' : '#ffffff' }]}>
+                  <Text style={[styles.stepNumber, { color: isLight ? '#ffffff' : '#000000' }]}>3</Text>
+                </View>
+                <Text style={[styles.instructionText, { color: colors.text }]}>
+                  Enter the amount you wish to redeem and submit your request.
+                </Text>
+              </View>
             </View>
           </View>
 
+          {/* QR Code Section */}
+          <View style={styles.qrSection}>
+            <View style={[styles.qrContainer, {
+              backgroundColor: colors.qrBg,
+              borderColor: colors.border
+            }]}>
+              {qrImage ? (
+                <Image 
+                  source={{ uri: qrImage }} 
+                  style={styles.qrImage} 
+                  resizeMode="contain" 
+                />
+              ) : (
+                <Pressable 
+                  style={styles.qrPlaceholder}
+                  onPress={pickImage}
+                >
+                  <Ionicons name="qr-code-outline" size={scaleWidth(120)} color={colors.textSecondary} />
+                  <Text style={[styles.qrPlaceholderText, { color: colors.textSecondary }]}>
+                    Tap to upload your QR
+                  </Text>
+                </Pressable>
+              )}
+            </View>
+            {qrImage && (
+              <Pressable
+                style={styles.changeQRButton}
+                onPress={pickImage}
+              >
+                <Ionicons name="refresh" size={scaleWidth(16)} color="#ffffff" />
+                <Text style={styles.changeQRText}>Change QR</Text>
+              </Pressable>
+            )}
+          </View>
+
           {errors.qr ? (
-            <View style={[styles.errorContainer, { paddingHorizontal: 15 }]}>
-              <Ionicons name="alert-circle" size={14} color="#FF4444" />
+            <View style={[styles.errorContainer, { paddingHorizontal: scaleWidth(20), marginTop: scaleHeight(-20), marginBottom: scaleHeight(20) }]}>
+              <Ionicons name="alert-circle" size={scaleWidth(14)} color="#FF4444" />
               <Text style={styles.errorText}>{errors.qr}</Text>
             </View>
           ) : null}
@@ -212,19 +212,28 @@ const PointsOut = () => {
           <View style={styles.formContainer}>
             {/* Points Amount Input */}
             <View style={styles.inputContainer}>
-              <View style={styles.labelCrownContainer}>
-                <Text style={[styles.inputLabel, { color: colors.text }]}>Redeem Amount</Text>
-              </View>
+              <Text style={[styles.inputLabel, { color: colors.text }]}>Redeem Amount</Text>
               <View style={[styles.inputWrapper, {
-                borderColor: errors.amount ? '#FF4444' : colors.border,
-                backgroundColor: colors.inputBg,
+                borderColor: errors.amount ? '#FF4444' : colors.inputBorder,
+                backgroundColor: 'transparent',
               }]}>
-                <MaterialCommunityIcons
-                  name="star-four-points-outline"
-                  size={20}
-                  color={colors.textSecondary}
-                  style={styles.inputIcon}
-                />
+                <View style={[
+                  styles.pointsIconContainer,
+                  { backgroundColor: isLight ? '#14B8A6' : 'rgba(32, 201, 151, 0.2)' },
+                  isLight && {
+                    elevation: 6,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 3 },
+                    shadowOpacity: 0.35,
+                    shadowRadius: 4.5,
+                  }
+                ]}>
+                  <MaterialCommunityIcons
+                    name="star-four-points-outline"
+                    size={scaleWidth(16)}
+                    color={isLight ? "#ffffff" : "#20c997"}
+                  />
+                </View>
                 <TextInput
                   style={[styles.input, { color: colors.text }]}
                   placeholder="Enter amount (e.g., 100)"
@@ -241,7 +250,7 @@ const PointsOut = () => {
               </View>
               {errors.amount ? (
                 <View style={styles.errorContainer}>
-                  <Ionicons name="alert-circle" size={14} color="#FF4444" />
+                  <Ionicons name="alert-circle" size={scaleWidth(14)} color="#FF4444" />
                   <Text style={styles.errorText}>{errors.amount}</Text>
                 </View>
               ) : null}
@@ -251,7 +260,7 @@ const PointsOut = () => {
         </ScrollView>
 
         <View style={styles.footer}>
-          <CoolButton handlePress={handleSubmit} disableBtn={disableBtn} title={'Submit'} />
+          <CoolButton handlePress={handleSubmit} disableBtn={disableBtn} title={'Redeem'} />
         </View>
 
       </View>
@@ -267,127 +276,96 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   footer: {
-    paddingHorizontal: 20,
-    paddingBottom: 10,
+    paddingHorizontal: scaleWidth(20),
+    paddingBottom: scaleHeight(10),
   },
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: 40,
+    paddingBottom: scaleHeight(40),
   },
-  pocketWrapper: {
-    width: "100%",
-    position: 'relative',
+  instructionsSection: {
+    paddingLeft: scaleWidth(20),
+    paddingRight: scaleWidth(30),
+    paddingTop: scaleHeight(10),
+    paddingBottom: scaleHeight(24),
   },
-  pocketContainer: {
-    width: "100%",
-    borderBottomLeftRadius: 80,
-    borderBottomRightRadius: 80,
-    borderWidth: 2,
-    paddingTop: 20,
-    paddingBottom: 120,
-    paddingHorizontal: 20,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 5,
-  },
-  pocketContent: {
-    width: "100%",
-  },
-  instructionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    marginBottom: 16,
-  },
-  instructionTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    letterSpacing: 0.5,
+  instructionsTitle: {
+    fontSize: scaleWidth(22),
+    fontWeight: '600',
+    marginBottom: scaleHeight(18),
   },
   instructionsContainer: {
-    gap: 12,
-    paddingHorizontal: 5,
-    marginBottom: 10,
+    gap: scaleHeight(12),
   },
   instructionRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 10,
+    gap: scaleWidth(12),
   },
   stepBadge: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
+    width: scaleWidth(22),
+    height: scaleWidth(22),
+    borderRadius: scaleWidth(11),
     alignItems: 'center',
     justifyContent: 'center',
+    flexShrink: 0,
+    marginTop: scaleHeight(1),
   },
   stepNumber: {
-    fontSize: 13,
+    fontSize: scaleWidth(11),
     fontWeight: '700',
   },
   instructionText: {
     flex: 1,
-    fontSize: 13,
-    fontWeight: '500',
-    lineHeight: 18,
-    paddingTop: 4,
+    fontSize: scaleWidth(13),
+    fontWeight: '400',
+    lineHeight: scaleHeight(19),
   },
-  qrOverlapContainer: {
-    position: 'absolute',
-    bottom: -220,
-    left: 0,
-    right: 0,
+  qrSection: {
     alignItems: 'center',
-    zIndex: 10,
+    paddingBottom: scaleHeight(28),
+    paddingHorizontal: scaleWidth(20),
   },
   qrContainer: {
-    width: '90%',
-    height: 340,
-    borderRadius: 20,
-    borderWidth: 3,
-    padding: 20,
+    width: scaleWidth(300),
+    height: scaleWidth(280),
+    borderRadius: scaleWidth(16),
+    borderWidth: scaleWidth(1),
+    padding: scaleWidth(10),
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: scaleHeight(2),
     },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 10,
+    shadowOpacity: 0.05,
+    shadowRadius: scaleWidth(8),
+    elevation: 3,
   },
   qrImage: {
     height: "100%",
     width: "100%",
-    borderRadius: 12,
   },
   qrPlaceholder: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
+    gap: scaleHeight(12),
   },
   qrPlaceholderText: {
-    fontSize: 14,
+    fontSize: scaleWidth(14),
     fontWeight: '500',
   },
   changeQRButton: {
-    position: 'absolute',
-    bottom: 10,
-    right: '8%',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 20,
+    gap: scaleWidth(6),
+    paddingVertical: scaleHeight(8),
+    paddingHorizontal: scaleWidth(12),
+    borderRadius: scaleWidth(20),
     backgroundColor: '#FF9500',
+    marginTop: scaleHeight(12),
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -399,51 +377,48 @@ const styles = StyleSheet.create({
   },
   changeQRText: {
     color: '#ffffff',
-    fontSize: 12,
+    fontSize: scaleWidth(12),
     fontWeight: '600',
   },
   formContainer: {
-    marginBottom: 20,
-    marginTop: 230,
-    paddingHorizontal: 15,
+    paddingHorizontal: scaleWidth(20),
   },
   inputContainer: {
-    marginBottom: 20,
-  },
-  labelCrownContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    gap: 6,
-    marginBottom: 10,
+    marginBottom: scaleHeight(20),
   },
   inputLabel: {
-    fontSize: 15,
+    fontSize: scaleWidth(15),
     fontWeight: "600",
+    marginBottom: scaleHeight(10),
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1.5,
-    borderRadius: 10,
-    paddingHorizontal: 12,
+    borderWidth: scaleWidth(1.5),
+    borderRadius: scaleWidth(25),
+    paddingHorizontal: scaleWidth(8),
+    gap: scaleWidth(12),
   },
-  inputIcon: {
-    marginRight: 8,
+  pointsIconContainer: {
+    width: scaleWidth(32),
+    height: scaleWidth(32),
+    borderRadius: scaleWidth(16),
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   input: {
     flex: 1,
-    paddingVertical: 12,
-    fontSize: 16,
+    paddingVertical: scaleHeight(14),
+    fontSize: scaleWidth(16),
   },
   errorContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    marginTop: 6,
+    gap: scaleWidth(4),
+    marginTop: scaleHeight(6),
   },
   errorText: {
-    fontSize: 12,
+    fontSize: scaleWidth(12),
     fontWeight: '500',
     color: '#FF4444',
   }

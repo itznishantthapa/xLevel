@@ -2,6 +2,7 @@ import { View, TextInput, Text, StyleSheet, Platform } from 'react-native';
 import React from 'react';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import SectionTitle from './SectionTitle';
+import { scaleWidth, scaleHeight } from '../../../utils/scaling';
 
 /**
  * EntryFeeInput component for game entry fee input with winning calculation
@@ -24,11 +25,35 @@ const EntryFeeInput = ({ value, onChangeText, winningAmount, isLight, gameName, 
 
   const minimumPoints = getMinimumPoints();
   const placeholder = `Enter Points (Min. ${minimumPoints})`;
+  
   return (
     <View style={styles.section}>
       <SectionTitle title="Game Points" isLight={isLight} />
       <View style={styles.potContainer}>
-        <View style={[styles.potInputContainer, { borderColor: isLight ? "#000000" : "#ffffff" }]}>
+        <View style={[
+          styles.potInputContainer, 
+          { 
+            borderColor: isLight ? "#000000" : "#ffffff",
+            backgroundColor: 'transparent',
+          }
+        ]}>
+          <View style={[
+            styles.pointsIconContainer,
+            { backgroundColor: isLight ? '#14B8A6' : 'rgba(32, 201, 151, 0.2)' },
+            isLight && {
+              elevation: 6,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 3 },
+              shadowOpacity: 0.35,
+              shadowRadius: 4.5,
+            }
+          ]}>
+            <MaterialCommunityIcons
+              name="star-four-points-outline"
+              size={scaleWidth(16)}
+              color={isLight ? "#ffffff" : "#20c997"}
+            />
+          </View>
           <TextInput
             style={[styles.potInput, { color: isLight ? "#333333" : "#ffffff" }]}
             value={value}
@@ -45,7 +70,6 @@ const EntryFeeInput = ({ value, onChangeText, winningAmount, isLight, gameName, 
             </Text>
           )
         }
-
       </View>
     </View>
   );
@@ -59,18 +83,24 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   potInputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderRadius: 0,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginBottom: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: scaleWidth(1.5),
+    borderRadius: scaleWidth(25),
+    paddingHorizontal: scaleWidth(8),
+    gap: scaleWidth(12),
+  },
+  pointsIconContainer: {
+    width: scaleWidth(32),
+    height: scaleWidth(32),
+    borderRadius: scaleWidth(16),
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   potInput: {
     flex: 1,
-    fontSize: 14,
-    marginLeft: 8,
+    paddingVertical: scaleHeight(14),
+    fontSize: scaleWidth(16),
     padding: 0,
   },
   winningText: {

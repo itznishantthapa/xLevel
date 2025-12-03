@@ -99,12 +99,12 @@ const Auth = () => {
 
   // Theme colors
   const colors = {
-    background: isLight ? "#eef0f2" : "#000000",
+    background: isLight ? "#ffffff" : "#000000",
     text: isLight ? "#000000" : "#ffffff",
     textSecondary: isLight ? "#555555" : "#999999",
     buttonBackground: 'transparent',
     buttonBorder: isLight ? '#000000' : '#ffffff',
-    authSectionBg: isLight ? '#eef0f2' : '#1e1e1e',
+    authSectionBg: isLight ? '#ffffff' : '#1e1e1e',
     error: '#FF4444',
     success: '#00C851',
     headerBg: '#000000'

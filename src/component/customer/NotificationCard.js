@@ -203,7 +203,7 @@ const NotificationCard = ({ notification }) => {
             <View style={[
                 styles.card,
                 { 
-                    backgroundColor: isLight ? '#eef0f2' : '#000000',
+                    backgroundColor: isLight ? '#ffffff' : '#000000',
                     borderColor: isLight ? '#333333' : '#dadada',
                     borderWidth: 1.5
                 }

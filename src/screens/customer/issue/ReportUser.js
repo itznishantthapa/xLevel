@@ -33,7 +33,7 @@ const ReportUser = ({ route }) => {
     ]
 
     const colors = {
-        background: isLight ? "#eef0f2" : "#000000",
+        background: isLight ? "#ffffff" : "#000000",
         cardBackground: isLight ? "rgba(0, 0, 0, 0.05)" : "rgba(255, 255, 255, 0.1)",
         text: isLight ? "#000000" : "#ffffff",
         textSecondary: isLight ? "rgba(51, 51, 51, 0.7)" : "rgba(255, 255, 255, 0.7)",

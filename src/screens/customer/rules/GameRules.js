@@ -23,7 +23,7 @@ const GameRules = () => {
   // Only log when we have data or when loading is complete
   // Colors based on theme
   const colors = {
-    background: isLight ? '#eef0f2' : '#000000',
+    background: isLight ? '#ffffff' : '#000000',
     text: isLight ? '#333333' : '#ffffff',
     subText: isLight ? '#666666' : '#cccccc',
     card: isLight ? 'transparent' : '#000000',

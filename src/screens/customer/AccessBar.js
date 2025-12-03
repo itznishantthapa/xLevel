@@ -235,7 +235,7 @@ const AccessBar = ({ navigation }) => {
 
   return (
     <View style={[styles.container, { 
-      backgroundColor: isLight ? '#eef0f2' : '#000000',
+      backgroundColor: isLight ? '#ffffff' : '#000000',
       paddingTop: insets.top,
       paddingBottom: insets.bottom 
     }]}>

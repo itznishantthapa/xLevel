@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Home from '../screens/customer/Home';
 import OpenGames from '../screens/customer/OpenGames';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import {  Octicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import {  MaterialCommunityIcons, Feather, Entypo } from "@expo/vector-icons";
 import { useThemeStore } from '../store/themeStore';
 import Notify from '../screens/customer/Notify';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,20 +20,24 @@ export default function CustomerTabNavigator() {
             screenOptions={{
                 headerShown: false,
                 tabBarActiveTintColor: '#00bf63',
-                tabBarInactiveTintColor: isLight ? '#1A1A1A' : 'rgba(255, 255, 255, 0.7)',
+                tabBarInactiveTintColor: isLight ? '#000000' : 'rgba(255, 255, 255, 0.6)',
                 tabBarStyle: {
-                      height: 56 + insets.bottom,
+                    height: 70 + insets.bottom,
+                    paddingTop: 8,
+                    paddingBottom: insets.bottom + 8,
                     borderTopWidth: 0,
-                    borderColor: isLight ? '#ffffff' : '#ffffff',
-                    backgroundColor: isLight ? '#eef0f2' : '#000000',
+                    backgroundColor: isLight ? '#ffffff' : '#000000',
                 },
                 tabBarButton: (props) => (
                     <TouchableOpacity
                         {...props}
-                        activeOpacity={1}
+                        activeOpacity={0.7}
                         style={props.style}
                     />
                 ),
+                tabBarItemStyle: {
+                    paddingVertical: 4,
+                },
             }}
         >
             <Tab.Screen
@@ -41,11 +45,21 @@ export default function CustomerTabNavigator() {
                 component={Home}
                 options={{
                     tabBarLabel: ({ focused, color }) => (
-                        <Text style={{ color, fontSize: 12, fontWeight: focused ? 'bold' : '500', marginBottom: 3 }}>Home</Text>
+                        <Text style={{ 
+                            color, 
+                            fontSize: 11, 
+                            fontWeight: focused ? '600' : '500', 
+                            marginTop: 4 
+                        }}>
+                            Home
+                        </Text>
                     ),
-                    tabBarIcon: ({ focused, color, size }) => (
-                        <View style={styles.tabIconContainer}>
-                            <MaterialCommunityIcons name="home-roof" size={size} color={color} />
+                    tabBarIcon: ({ focused, color }) => (
+                        <View style={[
+                            styles.tabIconContainer,
+                            focused && styles.focusedIconContainer
+                        ]}>
+                            <Feather name="home" size={22} color={color} /> 
                         </View>
                     ),
                 }}
@@ -55,11 +69,25 @@ export default function CustomerTabNavigator() {
                 component={OpenGames}
                 options={{
                     tabBarLabel: ({ focused, color }) => (
-                        <Text style={{ color, fontSize: 12,  fontWeight: focused ? 'bold' : '500', marginBottom: 3 }}>Open Games</Text>
+                        <Text style={{ 
+                            color, 
+                            fontSize: 11,
+                            fontWeight: focused ? '600' : '500', 
+                            marginTop: 4,
+                        }}>
+                            Open Games
+                        </Text>
                     ),
-                    tabBarIcon: ({ focused, color, size }) => (
-                        <View style={styles.tabIconContainer}>
-                            <MaterialCommunityIcons name="gamepad-variant-outline" size={size} color={color} />
+                    tabBarIcon: ({ focused, color }) => (
+                        <View style={[
+                            styles.tabIconContainer,
+                            focused && styles.focusedIconContainer
+                        ]}>
+                            <MaterialCommunityIcons 
+                                name={focused ? "gamepad-variant" : "gamepad-variant-outline"} 
+                                size={28} 
+                                color={color} 
+                            />
                         </View>
                     ),
                 }}
@@ -70,11 +98,21 @@ export default function CustomerTabNavigator() {
                 component={Notify}
                 options={{
                     tabBarLabel: ({ focused, color }) => (
-                        <Text style={{ color, fontSize: 12, fontWeight: focused ? 'bold' : '500', marginBottom: 3 }}>Notify & Alert</Text>
+                        <Text style={{ 
+                            color, 
+                            fontSize: 11, 
+                            fontWeight: focused ? '600' : '500', 
+                            marginTop: 4 
+                        }}>
+                            Notify
+                        </Text>
                     ),
-                    tabBarIcon: ({ focused, color, size }) => (
-                        <View style={styles.tabIconContainer}>
-                            <Octicons name="bell" size={20} color={color} />
+                    tabBarIcon: ({ focused, color }) => (
+                        <View style={[
+                            styles.tabIconContainer,
+                            focused && styles.focusedIconContainer
+                        ]}>
+                            <Entypo name="notification" size={21} color={color} />
                         </View>
                     ),
                 }}
@@ -87,7 +125,10 @@ const styles = StyleSheet.create({
     tabIconContainer: {
         alignItems: 'center',
         justifyContent: 'center',
-        width: 25,
-        height: 25,
-    }
+        width: 28,
+        height: 28,
+    },
+    focusedIconContainer: {
+        transform: [{ scale: 1.1 }],
+    },
 });

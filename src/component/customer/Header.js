@@ -100,8 +100,8 @@ const Header = ({
 
     const computedThemeStyles = {
       textColor: isLight ? "#333333" : "#EAEAEA",
-      iconColor: isLight ? "#333333" : "#EAEAEA",
-      buttonBackground: isLight ? "#e8eaed" : "rgba(255, 255, 255, 0.1)",
+      iconColor: isLight ? "#000000" : "#EAEAEA",
+      buttonBackground: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.1)",
       profileBackground: isLight ? "#dadada" : "#444444",
     }
 
@@ -182,7 +182,7 @@ const Header = ({
     <View style={[
       styles.header,
       {
-        backgroundColor: isLight ? '#eef0f2' : '#000000',
+        backgroundColor: isLight ? '#ffffff' : '#000000',
         borderColor: isLight ? '#333333' : '#ffffff' ,
         shadowColor: isLight ? '#000' : '#fff',
         // borderBottomWidth:5,
@@ -274,7 +274,7 @@ const Header = ({
                 return (
                   <Pressable
                     key={name}
-                    style={[styles.socialButton, { backgroundColor: themeStyles.buttonBackground }]}
+                    style={[styles.socialButton, { backgroundColor: themeStyles.buttonBackground, shadowColor: isLight ? '#38b000' : '#000' }]}
                     onPress={handler}
                     accessibilityRole="button"
                     accessibilityLabel={`Open ${name}`}
@@ -401,5 +401,12 @@ const styles = StyleSheet.create({
     borderRadius: scaleWidth(21),
     justifyContent: "center",
     alignItems: "center",
+    shadowOffset: {
+      width: 0,
+      height: scaleHeight(2),
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: scaleWidth(8),
+    elevation: 3,
   },
 })

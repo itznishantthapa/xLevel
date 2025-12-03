@@ -61,7 +61,7 @@ const Exchange = () => {
   //  LOG  Enhancements: [{"discount": 0, "id": 1, "price": 400, "type": "pro_tag"}]
 
   const colors = {
-    background: isLight ? "#eef0f2" : "#000000",
+    background: isLight ? "#ffffff" : "#000000",
     cardBackground: isLight ? "rgba(0, 0, 0, 0.05)" : "rgba(255, 255, 255, 0.1)",
     text: isLight ? "#000000" : "#ffffff",
     textSecondary: isLight ? "rgba(51, 51, 51, 0.7)" : "rgba(255, 255, 255, 0.7)",
@@ -183,7 +183,7 @@ const Exchange = () => {
     <Animated.View 
       entering={FadeIn.delay(index * 50).duration(400)}
       style={[styles.productCard, {
-        backgroundColor: isLight ? "#eef0f2" : "#000000",
+        backgroundColor: isLight ? "#ffffff" : "#000000",
         borderColor: isLight ? "#333333" : "#ffffff"
       }]}
     >
@@ -246,7 +246,7 @@ const Exchange = () => {
     <Animated.View 
       entering={FadeIn.delay(index * 150).duration(800)}
       style={[styles.productCard, {
-        backgroundColor: isLight ? "#eef0f2" : "#000000",
+        backgroundColor: isLight ? "#ffffff" : "#000000",
         borderColor: isLight ? "#333333" : "#ffffff"
       }]}
     >

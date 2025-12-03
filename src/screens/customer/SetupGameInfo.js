@@ -14,7 +14,7 @@ const SetupGameInfo = () => {
   const { data: games = [] } = useGames();
 
   return (
-    <View style={[styles.container, { backgroundColor: isLight ? '#eef0f2' : '#000000' }]}>
+    <View style={[styles.container, { backgroundColor: isLight ? '#ffffff' : '#000000' }]}>
       <StatusBar
         translucent
         backgroundColor="transparent"

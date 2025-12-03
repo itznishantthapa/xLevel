@@ -30,7 +30,7 @@ const RulesList = () => {
 
   // Colors based on theme
   const colors = {
-    background: isLight ? "#eef0f2" : "#000000",
+    background: isLight ? "#ffffff" : "#000000",
     text: isLight ? "#333333" : "#dadada",
     subText: isLight ? "#000000" : "#ffffff",
     card: isLight ? "transparent" : "#000000",
