@@ -22,8 +22,7 @@ export default function CustomerTabNavigator() {
                 tabBarActiveTintColor: '#00bf63',
                 tabBarInactiveTintColor: isLight ? '#000000' : 'rgba(255, 255, 255, 0.6)',
                 tabBarStyle: {
-                    height: 70 + insets.bottom,
-                    paddingTop: 8,
+                    height: 60,
                     paddingBottom: insets.bottom + 8,
                     borderTopWidth: 0,
                     backgroundColor: isLight ? '#ffffff' : '#000000',
@@ -104,7 +103,7 @@ export default function CustomerTabNavigator() {
                             fontWeight: focused ? '600' : '500', 
                             marginTop: 4 
                         }}>
-                            Notify
+                            Notifications
                         </Text>
                     ),
                     tabBarIcon: ({ focused, color }) => (

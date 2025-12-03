@@ -645,7 +645,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   joinButtonLight: {
-    backgroundColor: "#1a1a1a",
+    backgroundColor: "#000000",
   },
   joinButtonDark: {
     backgroundColor: "#eaf4f4",

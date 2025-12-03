@@ -182,7 +182,7 @@ const Header = ({
     <View style={[
       styles.header,
       {
-        backgroundColor: isLight ? '#ffffff' : '#000000',
+        backgroundColor: isLight ? 'transparent' : '#000000',
         borderColor: isLight ? '#333333' : '#ffffff' ,
         shadowColor: isLight ? '#000' : '#fff',
         // borderBottomWidth:5,
@@ -274,7 +274,7 @@ const Header = ({
                 return (
                   <Pressable
                     key={name}
-                    style={[styles.socialButton, { backgroundColor: themeStyles.buttonBackground, shadowColor: isLight ? '#38b000' : '#000' }]}
+                    style={[styles.socialButton, { backgroundColor: themeStyles.buttonBackground, shadowColor: isLight ? '#000' : '#000' }]}
                     onPress={handler}
                     accessibilityRole="button"
                     accessibilityLabel={`Open ${name}`}
@@ -407,6 +407,6 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.05,
     shadowRadius: scaleWidth(8),
-    elevation: 3,
+    elevation: 1.5,
   },
 })
