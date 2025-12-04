@@ -378,12 +378,7 @@ const Profile = () => {
             </View>
           </View>
 
-          {/* App Version Footer */}
-          <View style={styles.versionFooter}>
-            <Text style={[styles.versionText, { color: colors.textTertiary }]}>
-              Version 3.4.0 (31)
-            </Text>
-          </View>
+       
         </ScrollView>
       </SafeAreaView>
     </View>

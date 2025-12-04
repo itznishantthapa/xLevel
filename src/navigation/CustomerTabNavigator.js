@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Home from '../screens/customer/Home';
 import OpenGames from '../screens/customer/OpenGames';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import {  MaterialCommunityIcons, Feather, Entypo } from "@expo/vector-icons";
+import { MaterialCommunityIcons, Feather, Entypo, Octicons, Foundation } from "@expo/vector-icons";
 import { useThemeStore } from '../store/themeStore';
 import Notify from '../screens/customer/Notify';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -44,11 +44,11 @@ export default function CustomerTabNavigator() {
                 component={Home}
                 options={{
                     tabBarLabel: ({ focused, color }) => (
-                        <Text style={{ 
-                            color, 
-                            fontSize: 11, 
-                            fontWeight: focused ? '600' : '500', 
-                            marginTop: 4 
+                        <Text style={{
+                            color,
+                            fontSize: 11,
+                            fontWeight: focused ? '600' : '500',
+                            marginTop: 4
                         }}>
                             Home
                         </Text>
@@ -58,7 +58,16 @@ export default function CustomerTabNavigator() {
                             styles.tabIconContainer,
                             focused && styles.focusedIconContainer
                         ]}>
-                            <Feather name="home" size={22} color={color} /> 
+                            {
+                                focused ? (
+                                    <Foundation name="home" size={22} color={color} />
+                                ) : (
+                                    <Feather name="home" size={22} color={color} />
+                                )
+                            }
+
+
+
                         </View>
                     ),
                 }}
@@ -68,10 +77,10 @@ export default function CustomerTabNavigator() {
                 component={OpenGames}
                 options={{
                     tabBarLabel: ({ focused, color }) => (
-                        <Text style={{ 
-                            color, 
+                        <Text style={{
+                            color,
                             fontSize: 11,
-                            fontWeight: focused ? '600' : '500', 
+                            fontWeight: focused ? '600' : '500',
                             marginTop: 4,
                         }}>
                             Open Games
@@ -82,26 +91,26 @@ export default function CustomerTabNavigator() {
                             styles.tabIconContainer,
                             focused && styles.focusedIconContainer
                         ]}>
-                            <MaterialCommunityIcons 
-                                name={focused ? "gamepad-variant" : "gamepad-variant-outline"} 
-                                size={28} 
-                                color={color} 
+                            <MaterialCommunityIcons
+                                name={focused ? "gamepad-variant" : "gamepad-variant-outline"}
+                                size={28}
+                                color={color}
                             />
                         </View>
                     ),
                 }}
             />
- 
+
             <Tab.Screen
                 name="Notification"
                 component={Notify}
                 options={{
                     tabBarLabel: ({ focused, color }) => (
-                        <Text style={{ 
-                            color, 
-                            fontSize: 11, 
-                            fontWeight: focused ? '600' : '500', 
-                            marginTop: 4 
+                        <Text style={{
+                            color,
+                            fontSize: 11,
+                            fontWeight: focused ? '600' : '500',
+                            marginTop: 4
                         }}>
                             Notifications
                         </Text>
@@ -111,7 +120,9 @@ export default function CustomerTabNavigator() {
                             styles.tabIconContainer,
                             focused && styles.focusedIconContainer
                         ]}>
-                            <Entypo name="notification" size={21} color={color} />
+                            <Octicons
+                                name={focused ? "bell-fill" : "bell"}
+                                size={21} color={color} />
                         </View>
                     ),
                 }}

@@ -154,41 +154,48 @@ const PointsIn = () => {
           showsVerticalScrollIndicator={false}
         >
 
-          {/* Payment Instructions Section */}
-          <View style={styles.instructionsSection}>
-            <Text style={[styles.instructionsTitle, { color: colors.text }]}>Important Instructions</Text>
+          {/* U-Shaped Pocket Design */}
+          <View style={[styles.pocketContainer, {
+            backgroundColor: colors.cardBg,
+            borderColor: colors.border
+          }]}>
             
-            <View style={styles.instructionsContainer}>
-              <View style={styles.instructionRow}>
-                <View style={[styles.stepBadge, { backgroundColor: isLight ? "#000000" : "#ffffff" }]}>
-                  <Text style={[styles.stepNumber, { color: isLight ? "#ffffff" : "#000000" }]}>1</Text>
+            {/* Instructions at the center of the pocket */}
+            <View style={styles.instructionsSection}>
+              <Text style={[styles.instructionsTitle, { color: colors.text }]}>Important Instructions</Text>
+              
+              <View style={styles.instructionsContainer}>
+                <View style={styles.instructionRow}>
+                  <View style={[styles.stepBadge, { backgroundColor: isLight ? "#000000" : "#ffffff" }]}>
+                    <Text style={[styles.stepNumber, { color: isLight ? "#ffffff" : "#000000" }]}>1</Text>
+                  </View>
+                  <Text style={[styles.instructionText, { color: colors.textSecondary }]}>
+                    Payment must be between Rs. 10 and Rs. 10,000  {"\n"} (Rs. 1 = 1 Point)
+                  </Text>
                 </View>
-                <Text style={[styles.instructionText, { color: colors.textSecondary }]}>
-                  Payment must be between Rs. 10 and Rs. 10,000  {"\n"} (Rs. 1 = 1 Point)
-                </Text>
-              </View>
 
-              <View style={styles.instructionRow}>
-                <View style={[styles.stepBadge, { backgroundColor: isLight ? "#000000" : "#ffffff" }]}>
-                  <Text style={[styles.stepNumber, { color: isLight ? "#ffffff" : "#000000" }]}>2</Text>
+                <View style={styles.instructionRow}>
+                  <View style={[styles.stepBadge, { backgroundColor: isLight ? "#000000" : "#ffffff" }]}>
+                    <Text style={[styles.stepNumber, { color: isLight ? "#ffffff" : "#000000" }]}>2</Text>
+                  </View>
+                  <Text style={[styles.instructionText, { color: colors.textSecondary }]}>
+                    Write your app's email in the payment remarks (Important).
+                  </Text>
                 </View>
-                <Text style={[styles.instructionText, { color: colors.textSecondary }]}>
-                  Write your app's email in the payment remarks (Important).
-                </Text>
-              </View>
 
-              <View style={styles.instructionRow}>
-                <View style={[styles.stepBadge, { backgroundColor: isLight ? "#000000" : "#ffffff" }]}>
-                  <Text style={[styles.stepNumber, { color: isLight ? "#ffffff" : "#000000" }]}>3</Text>
+                <View style={styles.instructionRow}>
+                  <View style={[styles.stepBadge, { backgroundColor: isLight ? "#000000" : "#ffffff" }]}>
+                    <Text style={[styles.stepNumber, { color: isLight ? "#ffffff" : "#000000" }]}>3</Text>
+                  </View>
+                  <Text style={[styles.instructionText, { color: colors.textSecondary }]}>
+                    Upload payment screenshot below
+                  </Text>
                 </View>
-                <Text style={[styles.instructionText, { color: colors.textSecondary }]}>
-                  Upload payment screenshot below
-                </Text>
               </View>
             </View>
           </View>
 
-          {/* QR Code Section */}
+          {/* QR Code positioned at the bottom border of the pocket */}
           <View style={styles.qrSection}>
             <View style={[styles.qrContainer, {
               backgroundColor: colors.qrBg,
@@ -323,19 +330,43 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingBottom: scaleHeight(40),
   },
+  pocketContainer: {
+    marginHorizontal: scaleWidth(10),
+    marginTop: scaleHeight(10),
+    marginBottom: scaleHeight(0), // Reduced to allow QR to sit at the border
+    borderRadius: scaleWidth(30),
+    borderWidth: scaleWidth(2),
+    paddingTop: scaleHeight(30),
+    paddingBottom: scaleHeight(150), // Significantly increased bottom padding for more space
+    paddingHorizontal: scaleWidth(20),
+    minHeight: scaleHeight(280), // Added minimum height to make it longer
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: scaleHeight(4),
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: scaleWidth(12),
+    elevation: 8,
+    // U-shaped design with much more curved bottom
+    borderBottomLeftRadius: scaleWidth(100), // Increased curve
+    borderBottomRightRadius: scaleWidth(100), // Increased curve
+    position: 'relative',
+  },
   instructionsSection: {
-    paddingLeft: scaleWidth(20),
-    paddingRight: scaleWidth(30),
-    paddingTop: scaleHeight(10),
-    paddingBottom: scaleHeight(24),
+    paddingHorizontal: scaleWidth(10),
+    paddingBottom: scaleHeight(0), // Removed bottom padding since QR is outside now
+    alignItems: 'center',
   },
   instructionsTitle: {
     fontSize: scaleWidth(22),
     fontWeight: '600',
     marginBottom: scaleHeight(18),
+    textAlign: 'center',
   },
   instructionsContainer: {
     gap: scaleHeight(12),
+    width: '100%',
   },
   instructionRow: {
     flexDirection: 'row',
@@ -363,13 +394,16 @@ const styles = StyleSheet.create({
   },
   qrSection: {
     alignItems: 'center',
-    paddingBottom: scaleHeight(28),
-    paddingHorizontal: scaleWidth(20),
+    // Position QR overlapping the bottom border of the pocket
+    marginTop: scaleHeight(-120), // Negative margin to position at border
+    marginBottom: scaleHeight(20),
+    elevation: 15, // Higher elevation for Android instead of zIndex
+    zIndex: 15, // Keep zIndex for iOS
   },
   qrContainer: {
-    width: scaleWidth(300),
-    height: scaleWidth(280),
-    borderRadius: scaleWidth(16),
+    width: scaleWidth(280),
+    height: scaleWidth(260),
+    borderRadius: scaleWidth(20),
     borderWidth: scaleWidth(1),
     padding: scaleWidth(10),
     alignItems: "center",
@@ -379,9 +413,9 @@ const styles = StyleSheet.create({
       width: 0,
       height: scaleHeight(2),
     },
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.08,
     shadowRadius: scaleWidth(8),
-    elevation: 3,
+    elevation: 12, // Higher elevation than parent container
   },
   qrLogo: {
     height: "100%",

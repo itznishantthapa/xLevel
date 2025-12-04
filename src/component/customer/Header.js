@@ -185,11 +185,6 @@ const Header = ({
         backgroundColor: isLight ? 'transparent' : '#000000',
         borderColor: isLight ? '#333333' : '#ffffff' ,
         shadowColor: isLight ? '#000' : '#fff',
-        // borderBottomWidth:5,
-        // borderRightWidth:1,
-        // borderLeftWidth:1,
-        // borderBottomRightRadius:15,
-        // borderBottomLeftRadius:15,
       }
     ]}>
       {/* Left Section - Profile and User Info */}
@@ -274,7 +269,7 @@ const Header = ({
                 return (
                   <Pressable
                     key={name}
-                    style={[styles.socialButton, { backgroundColor: themeStyles.buttonBackground, shadowColor: isLight ? '#000' : '#000' }]}
+                    style={[styles.socialButton, { backgroundColor: themeStyles.buttonBackground}]}
                     onPress={handler}
                     accessibilityRole="button"
                     accessibilityLabel={`Open ${name}`}
@@ -405,6 +400,7 @@ const styles = StyleSheet.create({
       width: 0,
       height: scaleHeight(2),
     },
+     shadowColor: '#000',
     shadowOpacity: 0.05,
     shadowRadius: scaleWidth(8),
     elevation: 1.5,
