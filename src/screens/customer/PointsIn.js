@@ -157,7 +157,7 @@ const PointsIn = () => {
           {/* U-Shaped Pocket Design */}
           <View style={[styles.pocketContainer, {
             backgroundColor: colors.cardBg,
-            borderColor: colors.border
+            borderColor: isLight ? colors.border : colors.inputBorder
           }]}>
             
             {/* Instructions at the center of the pocket */}
@@ -199,7 +199,7 @@ const PointsIn = () => {
           <View style={styles.qrSection}>
             <View style={[styles.qrContainer, {
               backgroundColor: colors.qrBg,
-              borderColor: colors.border
+              borderColor: isLight ? colors.border : colors.inputBorder
             }]}>
               {qrImageUrl ? (
                 <Image 
@@ -274,7 +274,7 @@ const PointsIn = () => {
                   styles.uploadButton,
                   screenshot && styles.uploadButtonWithImage,
                   {
-                    borderColor: errors.screenshot ? '#FF4444' : colors.border,
+                    borderColor: errors.screenshot ? '#FF4444' : isLight ? "#000000" : "#ffffff",
                     backgroundColor: colors.inputBg,
                   }
                 ]}
@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
     marginHorizontal: scaleWidth(10),
     marginTop: scaleHeight(10),
     marginBottom: scaleHeight(0), // Reduced to allow QR to sit at the border
-    borderRadius: scaleWidth(30),
+    borderRadius: scaleWidth(0),
     borderWidth: scaleWidth(2),
     paddingTop: scaleHeight(30),
     paddingBottom: scaleHeight(150), // Significantly increased bottom padding for more space
@@ -349,8 +349,8 @@ const styles = StyleSheet.create({
     shadowRadius: scaleWidth(12),
     elevation: 8,
     // U-shaped design with much more curved bottom
-    borderBottomLeftRadius: scaleWidth(100), // Increased curve
-    borderBottomRightRadius: scaleWidth(100), // Increased curve
+    // borderBottomLeftRadius: scaleWidth(100),  
+    // borderBottomRightRadius: scaleWidth(100), 
     position: 'relative',
   },
   instructionsSection: {
@@ -403,7 +403,7 @@ const styles = StyleSheet.create({
   qrContainer: {
     width: scaleWidth(280),
     height: scaleWidth(260),
-    borderRadius: scaleWidth(20),
+    borderRadius: scaleWidth(0),
     borderWidth: scaleWidth(1),
     padding: scaleWidth(10),
     alignItems: "center",
@@ -472,7 +472,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: scaleWidth(1),
+    borderWidth: scaleWidth(1.5),
     borderRadius: scaleWidth(25),
     paddingVertical: scaleHeight(20),
     paddingHorizontal: scaleWidth(16),
