@@ -321,7 +321,7 @@ const UpcommingList = ({ games, handleConfirmChallenge }) => {
               <Text style={[styles.title, isLight ? { color: "#000000" } : { color: "#EAEAEA" }]}> {'Tournaments'}</Text>
 
             ) : (
-              <Text style={[styles.title, isLight ? { color: "#000000" } : { color: "#EAEAEA" }]}> {'Today\'s Tournaments'}</Text>
+              <Text style={[styles.title, isLight ? { color: "#000000" } : { color: "#EAEAEA" }]}> {'Official Tournaments'}</Text>
             )
 
           }
