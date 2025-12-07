@@ -39,12 +39,12 @@ const PointsIn = () => {
     screenshot: ''
   })
   const { mutateAsync: pointsIn } = usePointsIn();
-  const {data: utils = []} = useUtils();
+  const { data: utils = [] } = useUtils();
 
   // Get QR image from utils
   const qrImageUrl = utils?.qr?.qr_image;
 
- 
+
   const colors = {
     background: isLight ? "#ffffff" : "#000000",
     text: isLight ? "#000000" : "#ffffff",
@@ -159,11 +159,11 @@ const PointsIn = () => {
             backgroundColor: colors.cardBg,
             borderColor: isLight ? colors.border : colors.inputBorder
           }]}>
-            
+
             {/* Instructions at the center of the pocket */}
             <View style={styles.instructionsSection}>
               <Text style={[styles.instructionsTitle, { color: colors.text }]}>Important Instructions</Text>
-              
+
               <View style={styles.instructionsContainer}>
                 <View style={styles.instructionRow}>
                   <View style={[styles.stepBadge, { backgroundColor: isLight ? "#000000" : "#ffffff" }]}>
@@ -202,10 +202,10 @@ const PointsIn = () => {
               borderColor: isLight ? colors.border : colors.inputBorder
             }]}>
               {qrImageUrl ? (
-                <Image 
-                  source={{ uri: qrImageUrl }} 
-                  style={styles.qrLogo} 
-                  resizeMode="contain" 
+                <Image
+                  source={{ uri: qrImageUrl }}
+                  style={styles.qrLogo}
+                  resizeMode="contain"
                 />
               ) : (
                 <View style={styles.qrPlaceholder}>
@@ -216,6 +216,9 @@ const PointsIn = () => {
                 </View>
               )}
             </View>
+            <Text style={[styles.companyName, { color: colors.text }]}>
+              Level Pvt. Ltd.
+            </Text>
           </View>
 
           {/* Form Fields */}
@@ -523,5 +526,11 @@ const styles = StyleSheet.create({
     fontSize: scaleWidth(12),
     fontWeight: '500',
     color: '#FF4444',
+  },
+  companyName: {
+    marginTop: scaleHeight(12),
+    fontSize: scaleWidth(16),
+    fontWeight: '600',
+    letterSpacing: 0.5,
   }
 })
