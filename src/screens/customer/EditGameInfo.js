@@ -272,7 +272,7 @@ const EditGameInfo = () => {
           transformed = value.replace(/[^0-9]/g,'').slice(0,12)
           break
         case 'pubg':
-          transformed = value.replace(/[^0-9]/g,'').slice(0,12)
+          transformed = value.replace(/[^0-9]/g,'').slice(0,15)
           break
         default:
           transformed = value.replace(/[^A-Za-z0-9]/g,'')
@@ -295,7 +295,7 @@ const EditGameInfo = () => {
         })
       case 'pubg':
         return freeFirePubgValidationSchema.shape({
-          uid: freeFirePubgValidationSchema.fields.uid.clone().test('pubg-length','PUBG UID must be 8-10 digits', v => !!v && /^[0-9]{8,10}$/.test(v))
+          uid: freeFirePubgValidationSchema.fields.uid.clone().test('pubg-length','PUBG UID must be 8-15 digits', v => !!v && /^[0-9]{8,15}$/.test(v))
         })
       case 'efootball':
         return efootballValidationSchema
@@ -747,21 +747,12 @@ const EditGameInfo = () => {
           {renderGameSpecificFields()}
         </View>
         
-        {/* Chess Update Restriction Notice */}
-        {gameName === 'chess' && (
-          <View style={styles.noticeContainer}>
-            <Text style={[styles.noticeText, { color: isLight ? "#000000" : "#ffffff" }]}>
-              "You can update your chess profile once every 2 days"
-            </Text>
-          </View>
-        )}
-        {gameName === 'efootball' && (
-          <View style={styles.noticeContainer}>
-            <Text style={[styles.noticeText, { color: isLight ? "#000000" : "#ffffff" }]}>
-              "You can update your eFootball profile once every 2 days"
-            </Text>
-          </View>
-        )}
+        {/* Game Profile Update Restriction Notice */}
+        <View style={styles.noticeContainer}>
+          <Text style={[styles.noticeText, { color: isLight ? "#000000" : "#ffffff" }]}>
+            "You can update your {gameProfile.game_name} profile once every 7 days"
+          </Text>
+        </View>
       </View>
     </CreateGameLayout>
   )
