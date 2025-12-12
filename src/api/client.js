@@ -9,7 +9,7 @@ import { endpoints } from "./endpoints";
 export const API = axios.create({
   
   baseURL: "https://level-esport-matchmaking-gbfmu.ondigitalocean.app",
-  // baseURL: "http://192.168.1.94:8000",
+  // baseURL: "http://192.168.1.97:8000",
   headers: { "Content-Type": "application/json" },
   timeout: 30000, // Increased to 30 seconds to handle slow responses
 });
