@@ -13,7 +13,7 @@ import {
   onTokenRefresh
 } from '@react-native-firebase/messaging';
 
-import notifee, { AndroidImportance, EventType } from '@notifee/react-native';
+import notifee, { AndroidImportance, AndroidStyle, EventType } from '@notifee/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationService } from './navigationService';
 
@@ -173,6 +173,18 @@ const displayNotification = async (data) => {
     channelId,
     smallIcon: 'ic_notification',
     pressAction: { id: 'default' },
+    // Enable expandable notifications.
+    // - If `data.bigImage` exists, show a banner image (BigPicture style)
+    // - Otherwise fall back to BigText for long bodies
+    style: data.bigImage
+      ? {
+          type: AndroidStyle.BIGPICTURE,
+          picture: data.bigImage,
+        }
+      : {
+          type: AndroidStyle.BIGTEXT,
+          text: data.body || '',
+        },
   };
 
   // Only add largeIcon if it exists
