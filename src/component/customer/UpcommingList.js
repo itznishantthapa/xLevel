@@ -9,7 +9,8 @@ import { useThemeStore } from "../../store/themeStore"
 import { useGameProfiles } from "../../queries/useGameProfiles"
 import { useNavigation } from "@react-navigation/native"
 import { useEffect } from "react"
-import { scaleWidth } from "../../utils/scaling"
+import { scaleHeight, scaleWidth } from "../../utils/scaling"
+import StampID from "../matchcard/StampID"
 
 
 const { width } = Dimensions.get("window")
@@ -22,6 +23,9 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
   const { isLight } = useThemeStore()
   const { data: gameProfiles = [] } = useGameProfiles()
   const navigation = useNavigation()
+
+  const SCREEN_WIDTH = Dimensions.get('window').width
+  const isSmallScreen = SCREEN_WIDTH <= 360
 
  
   
@@ -122,6 +126,13 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
               </View>
               <Text style={[styles.pillText, !isLight && styles.pillTextDark]}>{game.game?.game_mode}</Text>
             </View>
+
+              {/* Tournament ID Stamp */}
+              {!forFiller && (
+                <View style={[styles.stampContainer, isSmallScreen && styles.stampContainerSmall]}>
+                  <StampID gameId={game.id} isLight={isLight} compact={isSmallScreen} />
+                </View>
+              )}
         </View>
       </View>
 
@@ -176,18 +187,21 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
             }
           </View>
         </View>
-        {
-          !forFiller && !game?.is_free && (
-            <View style={styles.bonusInfo}>
-              <View style={styles.entryFeeDisplay}>
-                <Text style={[styles.entryLabel, !isLight && styles.entryLabelDark]}>Entry:</Text>
-                <View style={styles.entryAmountContainer}>
-                  <Text style={[styles.entryAmount, !isLight && styles.entryAmountDark]}>{game.entry_fee} Points</Text>
-                </View>
+        {!forFiller && (
+          <View style={styles.bonusInfo}>
+            <View style={[
+              styles.entryFeeDisplay,
+              { backgroundColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)' }
+            ]}>
+              <Text style={[styles.entryLabel, !isLight && styles.entryLabelDark]}>Entry</Text>
+              <View style={styles.entryAmountContainer}>
+                <Text style={[styles.entryAmount, !isLight && styles.entryAmountDark]}>
+                  {game?.is_free || !game?.entry_fee || game.entry_fee <= 0 ? 'Free' : `${game.entry_fee} Points`}
+                </Text>
               </View>
             </View>
-          )
-        }
+          </View>
+        )}
 
 
       </View>
@@ -435,6 +449,8 @@ const styles = StyleSheet.create({
   gameInfoRow: {
     flexDirection: "row",
     gap: 8,
+    flexWrap: 'wrap',
+    alignItems: 'center',
   },
   infoPill: {
     flexDirection: "row",
@@ -465,6 +481,15 @@ const styles = StyleSheet.create({
   },
   pillTextDark: {
     color: "#ffffff",
+  },
+
+  stampContainer: {
+    marginLeft: 'auto',
+  },
+  stampContainerSmall: {
+    width: '100%',
+    alignItems: 'flex-end',
+    marginTop: scaleHeight(6),
   },
 
   // Prize Section
@@ -543,11 +568,13 @@ const styles = StyleSheet.create({
   entryFeeDisplay: {
     flexDirection: "row",
     alignItems: "center",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
   },
   entryLabel: {
     fontSize: 14,
     color: "#666",
-    marginRight: 6,
   },
   entryLabelDark: {
     color: "#ccc",
@@ -556,6 +583,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: "#1a1a1a",
+    marginLeft: 8,
   },
   entryAmountDark: {
     color: "#fff",

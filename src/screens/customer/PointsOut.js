@@ -3,7 +3,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import { useState } from 'react';
 import { useThemeStore } from '../../store/themeStore';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { FontAwesome6, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Toast from 'react-native-simple-toast';
 import * as ImagePicker from 'expo-image-picker';
 import { useQueryClient } from '@tanstack/react-query';
@@ -155,7 +155,7 @@ const PointsOut = () => {
                 </View>
               ) : (
                 <View style={styles.uploadButtonContent}>
-                  <Ionicons name="cloud-upload-outline" size={scaleWidth(32)} color={colors.textSecondary} />
+                  <FontAwesome6 name="qrcode" size={scaleWidth(32)} color={colors.textSecondary} />
                   <Text style={[styles.uploadButtonText, { color: colors.textSecondary }]}>Tap to upload your QR</Text>
                 </View>
               )}

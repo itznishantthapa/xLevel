@@ -50,6 +50,12 @@ const UserTournament = () => {
   } = useInfiniteTournaments(5)
 
 
+  useEffect(() => {
+  console.log("Tournaments:", tournaments);
+  }, [tournaments])
+  
+
+
  
   
 

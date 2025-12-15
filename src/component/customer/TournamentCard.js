@@ -5,6 +5,7 @@ import { useAuthStore } from "../../store/authStore"
 import Clipboard from "@react-native-clipboard/clipboard"
 import Toast from "react-native-simple-toast"
 import StampID from "../matchcard/StampID"
+import SlotStamp from "../matchcard/SlotStamp"
 import { scaleHeight, scaleWidth } from "../../utils/scaling"
 
 const TournamentCard = ({ game }) => {
@@ -224,6 +225,12 @@ const TournamentCard = ({ game }) => {
             Start Time: {game.start_time}
           </Text>
         </View>
+        {/* Player Slot Stamp - only show if slot_number exists */}
+        {game?.slot_number && (
+          <View style={styles.slotStampContainer}>
+            <SlotStamp slotNumber={game.slot_number} isLight={isLight} compact={isSmallScreen} />
+          </View>
+        )}
       </View>
 
       {/* Room Credentials Section */}
@@ -447,7 +454,7 @@ const styles = StyleSheet.create({
   },
   bottomSection: {
     flexDirection: "row",
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -455,6 +462,9 @@ const styles = StyleSheet.create({
   timeInfo: {
     flexDirection: "row",
     alignItems: "center",
+  },
+  slotStampContainer: {
+    marginLeft: 'auto',
   },
   timeText: {
     fontSize: 12,

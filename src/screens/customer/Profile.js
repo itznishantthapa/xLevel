@@ -379,7 +379,7 @@ const Profile = () => {
           </View>
 
           <View style={styles.versionFooter}>
-            <Text style={[styles.versionText, { color: colors.textTertiary }]}>Version 3.7.2 (36)</Text>
+            <Text style={[styles.versionText, { color: colors.textTertiary }]}>Version 3.8.0 (37)</Text>
           </View>
 
        

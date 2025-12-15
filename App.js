@@ -10,6 +10,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetProvider } from './src/context/BottomSheetContext';
 import { StatusBar } from 'react-native';
 import { useThemeStore } from './src/store/themeStore';
+import { checkAppUpdate } from './src/service/appUpdateService';
 import {
   configureReanimatedLogger,
   ReanimatedLogLevel,
@@ -36,6 +37,10 @@ export default function App() {
     // tell the window to apply system insets (status/nav) to the root view
     SystemNavigationBar.setFitsSystemWindows(true);
   }, [isLight]);
+
+  useEffect(() => {
+    checkAppUpdate({ mode: 'flexible' });
+  }, []);
 
   return (
     <GestureHandlerRootView style={{ flex: 1,backgroundColor: isLight ? '#ffffff' : '#000000'}}>

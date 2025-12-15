@@ -37,6 +37,7 @@
     "react-native": "0.79.5",
     "react-native-gesture-handler": "^2.27.1",
     "react-native-google-mobile-ads": "^15.7.0",
+    "react-native-in-app-updates": "^0.2.2",
     "react-native-loader-kit": "^3.0.0",
     "react-native-pager-view": "6.7.1",
     "react-native-reanimated": "^4.0.3",
