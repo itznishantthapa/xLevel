@@ -7,6 +7,7 @@ import { MaterialCommunityIcons, Feather, Entypo, Octicons, Foundation } from "@
 import { useThemeStore } from '../store/themeStore';
 import Notify from '../screens/customer/Notify';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Store from '../screens/customer/store/Store';
 
 const Tab = createBottomTabNavigator();
 
@@ -93,6 +94,34 @@ export default function CustomerTabNavigator() {
                         ]}>
                             <MaterialCommunityIcons
                                 name={focused ? "gamepad-variant" : "gamepad-variant-outline"}
+                                size={28}
+                                color={color}
+                            />
+                        </View>
+                    ),
+                }}
+            />
+            <Tab.Screen
+                name="StoreTab"
+                component={Store}
+                options={{
+                    tabBarLabel: ({ focused, color }) => (
+                        <Text style={{
+                            color,
+                            fontSize: 11,
+                            fontWeight: focused ? '600' : '500',
+                            marginTop: 4,
+                        }}>
+                           My Store
+                        </Text>
+                    ),
+                    tabBarIcon: ({ focused, color }) => (
+                        <View style={[
+                            styles.tabIconContainer,
+                            focused && styles.focusedIconContainer
+                        ]}>
+                            <MaterialCommunityIcons
+                                name={focused ? "store-plus" : "store-plus-outline"}
                                 size={28}
                                 color={color}
                             />

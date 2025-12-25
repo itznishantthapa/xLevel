@@ -173,6 +173,7 @@ const displayNotification = async (data) => {
     channelId,
     smallIcon: 'ic_notification',
     pressAction: { id: 'default' },
+    sound: 'custom_sound',
     // Enable expandable notifications.
     // - If `data.bigImage` exists, show a banner image (BigPicture style)
     // - Otherwise fall back to BigText for long bodies
@@ -288,7 +289,7 @@ export const setupNotificationChannel = async () => {
     importance: AndroidImportance.HIGH,
     vibration: true,
     vibrationPattern: [250, 250, 250, 250],
-    sound: 'default',
+    sound: 'custom_sound',
   });
 
   await notifee.createChannel({
@@ -297,7 +298,7 @@ export const setupNotificationChannel = async () => {
     importance: AndroidImportance.DEFAULT,
     vibration: true,
     vibrationPattern: [250, 250],
-    sound: 'default',
+    sound: 'custom_sound',
   });
 
   await notifee.createChannel({
