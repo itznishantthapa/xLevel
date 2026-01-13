@@ -83,7 +83,7 @@ const GameMode = ({ game_mode, handleGameMode }) => {
         {
           Platform.OS === 'ios' && (
             <Pressable onPress={() => navigation.goBack()} style={{ marginRight: 10 }}>
-              <MaterialCommunityIcons name="backburger" size={24} color={isLight ? "#000" : "#fff"} />
+              <MaterialCommunityIcons name="backburger" size={24} color={"#00ff88"} />
             </Pressable>
           )
         }

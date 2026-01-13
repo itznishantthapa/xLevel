@@ -70,7 +70,7 @@ const PointsOut = () => {
     }
 
     if (!qrImage) {
-      newErrors.qr = 'Please upload your payment QR code';
+      newErrors.qr = 'Please upload your QR code';
     }
 
     setErrors(newErrors);

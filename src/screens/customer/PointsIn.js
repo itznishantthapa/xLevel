@@ -53,7 +53,7 @@ const PointsIn = () => {
     inputBorder: isLight ? "#000000" : "#ffffff",
     inputBg: isLight ? "#f8f9fa" : "#1a1a1a",
     qrBg: isLight ? "#ffffff" : "#0a0a0a",
-    cardBg: isLight ? "#f8f9fa" : "#0f0f0f",
+    cardBg: isLight ? "#ffffff" : "#0f0f0f",
   }
 
   // Image picker function
@@ -87,7 +87,7 @@ const PointsIn = () => {
     }
 
     if (!screenshot) {
-      newErrors.screenshot = 'Please upload payment screenshot';
+      newErrors.screenshot = 'Please upload screenshot';
     }
 
     setErrors(newErrors);
@@ -170,7 +170,7 @@ const PointsIn = () => {
                     <Text style={[styles.stepNumber, { color: isLight ? "#ffffff" : "#000000" }]}>1</Text>
                   </View>
                   <Text style={[styles.instructionText, { color: colors.textSecondary }]}>
-                    Payment must be between Rs. 10 and Rs. 10,000  {"\n"} (Rs. 1 = 1 Point)
+                    Request must be between 10 and 10,000  {"\n"} (Rs. 1 = 1 Point)
                   </Text>
                 </View>
 
@@ -179,7 +179,7 @@ const PointsIn = () => {
                     <Text style={[styles.stepNumber, { color: isLight ? "#ffffff" : "#000000" }]}>2</Text>
                   </View>
                   <Text style={[styles.instructionText, { color: colors.textSecondary }]}>
-                    Write your app's email in the payment remarks (Important).
+                    Write your app's email in the remarks (Important).
                   </Text>
                 </View>
 
@@ -188,7 +188,7 @@ const PointsIn = () => {
                     <Text style={[styles.stepNumber, { color: isLight ? "#ffffff" : "#000000" }]}>3</Text>
                   </View>
                   <Text style={[styles.instructionText, { color: colors.textSecondary }]}>
-                    Upload payment screenshot below
+                    Upload screenshot below.
                   </Text>
                 </View>
               </View>
@@ -271,7 +271,7 @@ const PointsIn = () => {
 
             {/* Upload Screenshot Section */}
             <View style={styles.uploadContainer}>
-              <Text style={[styles.inputLabel, { color: colors.text }]}>Payment Screenshot</Text>
+              <Text style={[styles.inputLabel, { color: colors.text }]}>Upload Screenshot</Text>
               <Pressable
                 style={[
                   styles.uploadButton,
