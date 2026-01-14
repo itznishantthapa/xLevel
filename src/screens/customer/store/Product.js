@@ -18,6 +18,7 @@ import { useThemeStore } from '../../../store/themeStore'
 import { useAuthStore } from '../../../store/authStore'
 import { scaleWidth, scaleHeight } from '../../../utils/scaling'
 import { useBottomSheet } from '../../../context/BottomSheetContext'
+import { useNavigation } from '@react-navigation/native'
 
 const { width } = Dimensions.get('window')
 const CARD_WIDTH = (width - 48) / 2 // 2 columns with padding
@@ -211,7 +212,7 @@ const EmptyListComponent = ({ isLight }) => (
   </View>
 )
 
-const ProductHeader = ({ isLight, walletBalance }) => (
+const ProductHeader = ({ isLight, walletBalance, onWalletPress }) => (
   <View style={styles.header}>
     <View>
       <Text style={[styles.headerTitle, { color: isLight ? '#000' : '#fff' }]}>
@@ -220,23 +221,26 @@ const ProductHeader = ({ isLight, walletBalance }) => (
       <View style={[styles.headingUnderline, { backgroundColor: isLight ? '#000000' : '#ffffff' }]} />
     </View>
 
-    <LinearGradient
-      colors={['#ffffff', '#f8fbff', '#f0f8ff', '#ffffff']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.walletBadge}
-    >
-      <View style={styles.walletContent}>
-        <MaterialCommunityIcons
-          name="star-four-points-outline"
-          size={scaleWidth(16)}
-          color="#00bf63"
-        />
-        <Text style={styles.walletText}>
-          {typeof walletBalance === 'number' ? walletBalance.toFixed(2) : walletBalance}
-        </Text>
-      </View>
-    </LinearGradient>
+    <Pressable onPress={onWalletPress}>
+      <LinearGradient
+        colors={['#ffffff', '#f8fbff', '#f0f8ff', '#ffffff']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.walletBadge}
+      >
+        <View style={styles.walletContent}>
+          <MaterialCommunityIcons
+            name="star-four-points-outline"
+            size={scaleWidth(16)}
+            color="#00bf63"
+          />
+          <Text style={styles.walletText}>
+            {typeof walletBalance === 'number' ? walletBalance.toFixed(2) : walletBalance}
+          </Text>
+        </View>
+        <Ionicons name="add" size={scaleWidth(14)} color="#00bf63" />
+      </LinearGradient>
+    </Pressable>
   </View>
 )
 
@@ -244,12 +248,17 @@ const Product = () => {
   const { isLight } = useThemeStore()
   const { user } = useAuthStore()
   const { showConfirmSheet } = useBottomSheet()
+  const navigation = useNavigation()
   const insets = useSafeAreaInsets()
   const [refreshing, setRefreshing] = useState(false)
   const [products, setProducts] = useState(MOCK_PRODUCTS)
 
   // Get wallet balance from user store (fallback to mock value)
   const walletBalance = user?.wallet_balance ?? 12500
+
+  const handleWalletPress = useCallback(() => {
+    navigation.navigate('pointsIn')
+  }, [navigation])
 
   const handleOrderPress = useCallback((product) => {
     showConfirmSheet({
@@ -296,7 +305,7 @@ const Product = () => {
         barStyle={isLight ? 'dark-content' : 'light-content'}
       />
 
-      <ProductHeader isLight={isLight} walletBalance={walletBalance} />
+      <ProductHeader isLight={isLight} walletBalance={walletBalance} onWalletPress={handleWalletPress} />
 
       {/* Products Grid */}
       <View style={styles.listWrapper}>
@@ -348,21 +357,22 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   walletBadge: {
+    paddingHorizontal: scaleWidth(14),
+    paddingVertical: scaleHeight(10),
+    borderRadius: scaleWidth(24),
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: scaleWidth(10),
-    paddingVertical: scaleHeight(6),
-    borderRadius: scaleWidth(20),
   },
   walletContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: scaleWidth(4),
+    marginRight: scaleWidth(8),
   },
   walletText: {
     fontSize: scaleWidth(14),
     fontWeight: '700',
-    color: '#1a1a1a',
+    color: '#000000',
+    marginLeft: scaleWidth(6),
   },
   listWrapper: {
     flex: 1,

@@ -1,13 +1,13 @@
 import React from 'react'
 import Product from './Product'
 import Subscription from './Subscription'
-
-// Toggle this flag to switch between Product and Subscription views
-// TODO: Replace with actual API/config value
-const is_subscription = true
+import { useUtils } from '../../../queries/useUtils'
 
 const Store = () => {
-  if (is_subscription) {
+  const { data: utils = [] } = useUtils()
+  const isIOSActive = !!utils?.is_ios_active
+
+  if (isIOSActive) {
     return <Subscription />
   }
 

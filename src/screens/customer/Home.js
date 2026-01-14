@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/native"
 import { FlashList } from "@shopify/flash-list"
 import { useCallback, useEffect, useState } from "react"
 import { Platform, RefreshControl, StatusBar, StyleSheet, View, Linking } from "react-native"
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
+import { SafeAreaView, useSafeAreaInsets, initialWindowMetrics } from "react-native-safe-area-context"
 import Toast from "react-native-simple-toast"
 
 // Custom Components
@@ -402,6 +402,9 @@ const Home = () => {
    * MAIN COMPONENT RENDER
    * ====================================================================
    */
+  // Use initialWindowMetrics for immediate inset values to prevent layout shift
+  const topInset = insets.top || initialWindowMetrics?.insets?.top || 0
+  
   // eef0f2
   return (
     <View
@@ -409,7 +412,7 @@ const Home = () => {
         styles.container, 
         {
           backgroundColor: isLight ? "#ffffff" : "#000000",
-          paddingTop: insets.top,
+          paddingTop: topInset,
         },
       ]}
     >

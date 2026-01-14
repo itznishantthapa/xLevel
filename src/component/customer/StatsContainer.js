@@ -171,7 +171,8 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: scaleWidth(12),
-    fontWeight: '500',
+    fontWeight: 'bold',
+    marginTop: 6,
   },
   statDivider: {
     width: 1,

@@ -11,7 +11,6 @@ import {
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
-import { AntDesign } from '@expo/vector-icons'
 import { useThemeStore } from '../../../store/themeStore'
 
 const { width } = Dimensions.get('window')
@@ -55,7 +54,7 @@ const SubscriptionCard = ({ item, onPress }) => {
       onPress={() => onPress(item)}
     >
       <ImageBackground
-        source={require('../../../assets/bgForSubscriptions.png')}
+        source={{ uri: item.bgImage }}
         style={styles.cardBackground}
         imageStyle={styles.cardImageStyle}
         resizeMode="cover"
@@ -75,24 +74,6 @@ const SubscriptionHeader = ({ isLight }) => (
   </View>
 )
 
-const SubscriptionFooter = ({ isLight }) => (
-  <View style={styles.footer}>
-    <AntDesign
-      name="dingding"
-      size={20}
-      color={isLight ? '#666666' : 'rgba(255, 255, 255, 0.6)'}
-    />
-    <Text style={[styles.footerText, { color: isLight ? '#666666' : 'rgba(255, 255, 255, 0.6)' }]}>
-     Contact Us For Other Subscription & Topups
-    </Text>
-    <AntDesign
-      name="dingding"
-      size={20}
-      color={isLight ? '#666666' : 'rgba(255, 255, 255, 0.6)'}
-      style={{ transform: [{ scaleX: -1 }] }}
-    />
-  </View>
-)
 
 const Subscription = () => {
   const { isLight } = useThemeStore()
@@ -133,7 +114,6 @@ const Subscription = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContainer}
         ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
-        ListFooterComponent={<SubscriptionFooter isLight={isLight} />}
       />
     </View>
   )
@@ -188,16 +168,5 @@ const styles = StyleSheet.create({
   },
   cardImageStyle: {
     borderRadius: 20,
-  },
-  footer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 24,
-    gap: 8,
-  },
-  footerText: {
-    fontSize: 14,
-    fontWeight: 'bold',
   },
 })
