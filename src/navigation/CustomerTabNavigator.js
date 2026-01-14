@@ -2,7 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Home from '../screens/customer/Home';
 import OpenGames from '../screens/customer/OpenGames';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Platform } from 'react-native';
 import { MaterialCommunityIcons, Feather, Entypo, Octicons, Foundation } from "@expo/vector-icons";
 import { useThemeStore } from '../store/themeStore';
 import Notify from '../screens/customer/Notify';
@@ -104,7 +104,7 @@ export default function CustomerTabNavigator() {
                     ),
                 }}
             />
-            {!isIOSActive && (
+            {!isIOSActive && Platform.OS === 'ios' && (
                 <Tab.Screen
                     name="StoreTab"
                     component={Store}

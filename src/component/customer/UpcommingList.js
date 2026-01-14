@@ -152,7 +152,7 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
                   {
                     game?.prize ? (
                       <View style={styles.winnerTakesContainer}>
-                        <Text style={[styles.winnerTakesLabel, !isLight && styles.winnerTakesLabelDark]}>Winner Takes Additional {game?.prize}</Text>
+                        <Text style={[styles.winnerTakesLabel, !isLight && styles.winnerTakesLabelDark]}>{game?.prize}</Text>
                       </View>
                     ) : (
                       <View style={styles.winnerTakesContainer}>
@@ -175,7 +175,7 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
                     
 
                         <View style={styles.winnerTakesContainer}>
-                          <Text style={[styles.winnerTakesLabel, !isLight && styles.winnerTakesLabelDark]}>Winner Takes Additional {game?.prize}</Text>
+                          <Text style={[styles.winnerTakesLabel, !isLight && styles.winnerTakesLabelDark]}>{game?.prize}</Text>
                         </View>
 
                     

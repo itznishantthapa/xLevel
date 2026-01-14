@@ -27,33 +27,33 @@ const CARD_WIDTH = (width - 48) / 2 // 2 columns with padding
 const MOCK_PRODUCTS = [
   {
     id: '1',
-    name: 'Gaming Headphones Pro',
+    name: 'VersionTECH. G2000 Gaming Headset',
     price: 2500,
-    image: 'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=400&q=80',
+    image: 'https://m.media-amazon.com/images/I/61CGHv6kmWL._AC_SL1000_.jpg',
     category: 'Audio',
     inStock: true,
   },
   {
     id: '2',
-    name: 'Mechanical Keyboard RGB',
+    name: 'ZIFRIEND T62 Mechanical Keyboard',
     price: 3200,
-    image: 'https://images.unsplash.com/photo-1595225476474-87563907a212?w=400&q=80',
+    image: 'https://bestdealsnepal.com.np/wp-content/uploads/2024/02/zifriend-t62.jpg',
     category: 'Peripherals',
     inStock: true,
   },
   {
     id: '3',
-    name: 'Wireless Earbuds',
+    name: 'Redcolurful G9 Gaming Headset Gamer Earphone',
     price: 1800,
-    image: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400&q=80',
+    image: 'https://img.drz.lazcdn.com/g/kf/S62dd2e1eaf1a40278e4de1969d11ebb3L.jpg_720x720q80.jpg',
     category: 'Audio',
     inStock: true,
   },
   {
     id: '4',
-    name: 'Gaming Mouse Pro',
+    name: 'Trust Gxt108 Rava Gaming Mouse',
     price: 1500,
-    image: 'https://images.unsplash.com/photo-1527814050087-3793815479db?w=400&q=80',
+    image: 'https://digitalcontent.api.tesco.com/v2/media/ghs/c0753ac0-7ab3-4877-82f7-b243b1808426/99d2a447-8d59-428c-8100-6ef166d7aa35_2005573386.jpeg?h=960&w=960',
     category: 'Peripherals',
     inStock: true,
   },
@@ -75,17 +75,17 @@ const MOCK_PRODUCTS = [
   },
   {
     id: '7',
-    name: 'Gaming Controller',
+    name: 'Smartomni Ipega Wireless Telescopic Bluetooth Controller Ipega Pg-9023 Joystick Gamepad ',
     price: 2800,
-    image: 'https://images.unsplash.com/photo-1592840496694-26d035b52b48?w=400&q=80',
+    image: 'https://static-01.daraz.com.np/p/edb7db88b672c4e95397bb6481138112.jpg',
     category: 'Controllers',
     inStock: true,
   },
   {
     id: '8',
-    name: 'Webcam HD 1080p',
-    price: 1200,
-    image: 'https://images.unsplash.com/photo-1587826080692-f439cd0b70da?w=400&q=80',
+    name: 'Rapoo C200 720P HD Webcam with Mic',
+    price: 4500,
+    image: 'https://infotechsnepal.com.np/wp-content/uploads/2025/11/rapoo-c200-webcam-in-nepal-side-1024x1024.jpg',
     category: 'Accessories',
     inStock: true,
   },
@@ -110,7 +110,6 @@ const ProductCard = ({ product, index, isLight, onOrderPress }) => {
         <Image
           source={{ uri: product.image }}
           style={styles.productImage}
-          resizeMode="cover"
         />
         {!product.inStock && (
           <View style={styles.outOfStockOverlay}>
@@ -390,12 +389,14 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     width: '100%',
-    height: 120,
+    height: 160,
     position: 'relative',
   },
   productImage: {
     width: '100%',
     height: '100%',
+    resizeMode: 'contain',
+    backgroundColor: '#f8f8f8',
   },
   outOfStockOverlay: {
     position: 'absolute',
