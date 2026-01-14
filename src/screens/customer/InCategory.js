@@ -9,6 +9,7 @@ import StatsContainer from '../../component/customer/StatsContainer';
 import GameMode from '../../component/customer/GameMode';
 import { useSocials } from '../../queries/useSocials';
 import { useUtils } from '../../queries/useUtils';
+import { useEffect } from 'react';
 
 
 
@@ -25,8 +26,13 @@ const InCategory = ({ route }) => {
     const { data: socials = [] } = useSocials()
     const {data: utils = []} = useUtils()
 
-  // Check if Utils has QR data
-  const hasQR = !!utils?.qr
+  // Check if iOS is active
+  const isIOSActive = !!utils?.is_ios_active
+
+  useEffect(() => {
+    console.log("Utils data in InCategory:", utils);
+  }, [utils])
+  
 
 
 
@@ -102,13 +108,6 @@ const InCategory = ({ route }) => {
   }
 
   const handleHeaderGamePoint = () => {
-    // Check if Utils has QR data
-    if (!hasQR) {
-      navigation.navigate("watchAds")
-      return
-    }
-
-    // If Utils has QR, navigate to pointsIn
     navigation.navigate("pointsIn")
   }
 
@@ -146,7 +145,6 @@ const InCategory = ({ route }) => {
             handleTournament={() => navigation.navigate("userTournament")}
             handleGameRules={() => navigation.navigate("gameRules")}
             handleMatches={() => navigation.navigate("match")}
-            handleWatchAds={() => navigation.navigate("watchAds")}
             handleLeaderboard={() => navigation.navigate("leaderboard")}
             handleGamePoints={() => navigation.navigate("gamePoints")}
           />

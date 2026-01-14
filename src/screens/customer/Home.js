@@ -100,8 +100,8 @@ const Home = () => {
   // Show all banners - no filtering needed
   const displayBanners = banners
 
-  // Check if Utils has QR data
-  const hasQR = !!utils?.qr
+  // Check if iOS is active
+  const isIOSActive = !!utils?.is_ios_active
 
   /*
    * ====================================================================
@@ -109,9 +109,9 @@ const Home = () => {
    * ====================================================================
    */
   useEffect(() => {
-    // Always set stats based on QR availability, even if utils is empty
-    setStatsBasedOnQR(hasQR)
-  }, [utils, hasQR, setStatsBasedOnQR])
+    // Always set stats based on iOS active status, even if utils is empty
+    setStatsBasedOnQR(isIOSActive)
+  }, [utils, isIOSActive, setStatsBasedOnQR])
 
 
 
@@ -276,13 +276,6 @@ const Home = () => {
 
 
   const handleHeaderGamePoint = () => {
-    // Check if Utils has QR data
-    if (!hasQR) {
-      navigation.navigate("watchAds")
-      return
-    }
-
-    // If Utils has QR, navigate to pointsIn
     navigation.navigate("pointsIn")
   }
 
@@ -388,7 +381,6 @@ const Home = () => {
             handleTournament={() => navigation.navigate("userTournament")}
             handleGameRules={() => navigation.navigate("gameRules")}
             handleMatches={() => navigation.navigate("match")}
-            handleWatchAds={() => navigation.navigate("watchAds")}
             handleLeaderboard={() => navigation.navigate("leaderboard")}
             handleGamePoints={() => navigation.navigate("gamePoints")}
           />

@@ -1536,11 +1536,6 @@
   dependencies:
     "@hapi/hoek" "^9.0.0"
 
-"@iabtcf/core@^1.5.3":
-  version "1.5.6"
-  resolved "https://registry.yarnpkg.com/@iabtcf/core/-/core-1.5.6.tgz#92568d89252fbf205aa65836703cb0a52e812382"
-  integrity sha512-u2q9thI9vLurYZdGtyJsDYOqoeLc4EgQsYGSc+UVibYII61B/ENJPZS6eFlML1F0hSoTR/goptpo5nGRDkKd2w==
-
 "@isaacs/cliui@^8.0.2":
   version "8.0.2"
   resolved "https://registry.yarnpkg.com/@isaacs/cliui/-/cliui-8.0.2.tgz#b37667b7bc181c168782259bab42474fbf52b550"
@@ -3255,11 +3250,6 @@ depd@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/depd/-/depd-2.0.0.tgz#b696163cc757560d09cf22cc8fad1571b79e76df"
   integrity sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw==
-
-dequal@^2.0.2:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/dequal/-/dequal-2.0.3.tgz#2644214f1997d39ed0ee0ece72335490a7ac67be"
-  integrity sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==
 
 destroy@1.2.0:
   version "1.2.0"
@@ -5364,14 +5354,6 @@ react-native-gesture-handler@^2.27.1:
     hoist-non-react-statics "^3.3.0"
     invariant "^2.2.4"
 
-react-native-google-mobile-ads@^15.7.0:
-  version "15.7.0"
-  resolved "https://registry.yarnpkg.com/react-native-google-mobile-ads/-/react-native-google-mobile-ads-15.7.0.tgz#db7ac99995c2b058c44fdbbd09363bb7d02733ce"
-  integrity sha512-VAskkfiK/ct9jer0XlASclgpiDLYnaLf4RPCcoenneZ3wVGfPwOtQ2T/HVZ6ZNc42BmRIRefqQSCWZPqIA2Drg==
-  dependencies:
-    "@iabtcf/core" "^1.5.3"
-    use-deep-compare-effect "^1.8.1"
-
 react-native-in-app-updates@^0.2.2:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/react-native-in-app-updates/-/react-native-in-app-updates-0.2.2.tgz#7c0304d6b3ff82c8b8c8d7ccd119015eec9123cc"
@@ -6310,14 +6292,6 @@ update-browserslist-db@^1.1.3:
   dependencies:
     escalade "^3.2.0"
     picocolors "^1.1.1"
-
-use-deep-compare-effect@^1.8.1:
-  version "1.8.1"
-  resolved "https://registry.yarnpkg.com/use-deep-compare-effect/-/use-deep-compare-effect-1.8.1.tgz#ef0ce3b3271edb801da1ec23bf0754ef4189d0c6"
-  integrity sha512-kbeNVZ9Zkc0RFGpfMN3MNfaKNvcLNyxOAAd9O4CBZ+kCBXXscn9s/4I+8ytUER4RDpEYs5+O6Rs4PqiZ+rHr5Q==
-  dependencies:
-    "@babel/runtime" "^7.12.5"
-    dequal "^2.0.2"
 
 use-latest-callback@^0.2.4:
   version "0.2.4"

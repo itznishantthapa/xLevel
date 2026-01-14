@@ -22,7 +22,6 @@ import SelectIssue from "../screens/customer/issue/SelectIssue";
 import Issue from "../screens/customer/issue/Issue";
 import AccountDeletion from "../screens/customer/account/AccountDeletion";
 import Credits from "../screens/customer/legal/Credits";
-import WatchAds from "../screens/customer/WatchAds";
 import Leaderboard from "../screens/customer/Leaderboard";
 import ReportUser from "../screens/customer/issue/ReportUser";
 import Thanks from "../screens/customer/issue/Thanks";
@@ -68,7 +67,6 @@ export default function CustomerNavigator(){
             <Stack.Screen component={Issue} name="issue"/>
             <Stack.Screen component={AccountDeletion} name="accountDeletion"/>
             <Stack.Screen component={Credits} name="credits"/>
-            <Stack.Screen component={WatchAds} name="watchAds"/>
             <Stack.Screen component={Leaderboard} name="leaderboard"/>
             <Stack.Screen component={ReportUser} name="reportUser"/>
             <Stack.Screen component={Thanks} name="thanks"/>

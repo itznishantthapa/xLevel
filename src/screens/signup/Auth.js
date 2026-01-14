@@ -71,7 +71,7 @@ const Auth = () => {
   const { data: banners = [] } = useBanners()
   const {data: utils = []} = useUtils()
 
-  const shouldShowEmailLogin = !utils?.qr;
+  const shouldShowEmailLogin = !utils?.is_ios_active;
 
 
 

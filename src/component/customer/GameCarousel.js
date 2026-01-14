@@ -23,7 +23,7 @@ const CARD_HEIGHT = scaleHeight(130);
 const GameCarousel = ({ games, handleGameCardPress }) => {
     const { data: utils = [] } = useUtils()
 
-    const shouldShowLabel = utils?.qr;
+    const shouldShowLabel = utils?.is_ios_active;
     const { isLight } = useThemeStore();
     return (
         <View style={styles.container}>
