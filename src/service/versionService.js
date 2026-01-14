@@ -1,12 +1,21 @@
+import { Platform } from 'react-native';
 import { getApp } from '@react-native-firebase/app';
 import { getFirestore, doc, getDoc } from '@react-native-firebase/firestore';
 
-// Current app version - Update this when releasing new versions
-export const CURRENT_APP_VERSION = 1.2;
+// Current app versions - Update these when releasing new versions for each platform
+export const CURRENT_IOS_VERSION = 3.8;
+export const CURRENT_ANDROID_VERSION = 2.2;
+
+// Get current version based on platform
+const getCurrentAppVersion = () => {
+  return Platform.OS === 'ios' ? CURRENT_IOS_VERSION : CURRENT_ANDROID_VERSION;
+};
 
 // Firestore collection and document IDs
 const VERSION_COLLECTION = 'version';
 const VERSION_DOC_ID = '8K4k2WbhUMy7arYHv8CJ';
+const APP_URL_COLLECTION = 'appUrl';
+const APP_URL_DOC_ID = 'NrBVu3mUd1u6S1CC5i5M';
 
 /**
  * Fetches the required app version from Firebase Firestore
@@ -21,7 +30,9 @@ export const getRequiredAppVersion = async () => {
 
     if (versionDoc.exists()) {
       const data = versionDoc.data();
-      return data?.appVersion ?? null;
+      // Get platform-specific version
+      const versionField = Platform.OS === 'ios' ? 'iosVersion' : 'androidVersion';
+      return data?.[versionField] ?? null;
     }
 
     return null;
@@ -47,12 +58,49 @@ export const checkIfUpdateRequired = async () => {
     }
 
     // Update is required if current version is less than required version
-    return CURRENT_APP_VERSION < requiredVersion;
+    const currentVersion = getCurrentAppVersion();
+    return currentVersion < requiredVersion;
   } catch (error) {
     if (__DEV__) {
       console.error('Error checking app version:', error);
     }
     // On error, don't block the user
     return false;
+  }
+};
+
+/**
+ * Fetches the app store URLs from Firebase Firestore
+ * @returns {Promise<{appstoreUrl: string, playstoreUrl: string}|null>} The store URLs or null if fetch fails
+ */
+export const getAppStoreUrls = async () => {
+  try {
+    const app = getApp();
+    const db = getFirestore(app);
+    const urlRef = doc(db, APP_URL_COLLECTION, APP_URL_DOC_ID);
+    const urlDoc = await getDoc(urlRef);
+
+    if (urlDoc.exists()) {
+      const data = urlDoc.data();
+      return {
+        appstoreUrl: data?.appstoreUrl ?? 'https://apps.apple.com/np/app/level-esport-matchmaking/id6753664292',
+        playstoreUrl: data?.playstoreUrl ?? 'https://play.google.com/store/apps/details?id=com.blackonedevs.levelesportmatchmaking',
+      };
+    }
+
+    // Fallback URLs if document doesn't exist
+    return {
+      appstoreUrl: 'https://apps.apple.com/np/app/level-esport-matchmaking/id6753664292',
+      playstoreUrl: 'https://play.google.com/store/apps/details?id=com.blackonedevs.levelesportmatchmaking',
+    };
+  } catch (error) {
+    if (__DEV__) {
+      console.error('Error fetching app store URLs from Firestore:', error);
+    }
+    // Return fallback URLs on error
+    return {
+      appstoreUrl: 'https://apps.apple.com/np/app/level-esport-matchmaking/id6753664292',
+      playstoreUrl: 'https://play.google.com/store/apps/details?id=com.blackonedevs.levelesportmatchmaking',
+    };
   }
 };

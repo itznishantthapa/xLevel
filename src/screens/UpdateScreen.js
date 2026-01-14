@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -8,13 +8,26 @@ import {
     Platform,
     StatusBar,
 } from 'react-native';
-
-const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.blackonedevs.levelesportmatchmaking';
-const APP_STORE_URL = 'https://apps.apple.com/app/id123456789'; // Replace with actual App Store ID
+import { getAppStoreUrls } from '../service/versionService';
 
 const UpdateScreen = () => {
+    const [storeUrls, setStoreUrls] = useState({
+        appstoreUrl: 'https://apps.apple.com/np/app/level-esport-matchmaking/id6753664292',
+        playstoreUrl: 'https://play.google.com/store/apps/details?id=com.blackonedevs.levelesportmatchmaking',
+    });
+
+    useEffect(() => {
+        const fetchUrls = async () => {
+            const urls = await getAppStoreUrls();
+            if (urls) {
+                setStoreUrls(urls);
+            }
+        };
+        fetchUrls();
+    }, []);
+
     const handleUpdate = () => {
-        const storeUrl = Platform.OS === 'ios' ? APP_STORE_URL : PLAY_STORE_URL;
+        const storeUrl = Platform.OS === 'ios' ? storeUrls.appstoreUrl : storeUrls.playstoreUrl;
         Linking.openURL(storeUrl).catch(() => { });
     };
 
