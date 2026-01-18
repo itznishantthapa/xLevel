@@ -11,7 +11,7 @@
       }
     },
     "ios": {
-      "bundleIdentifier": "com.blackonedevs.levelesportmatchmaking"
+      "bundleIdentifier": "com.blackonedevs.levelesportmatchmaking.v1"
     }
   }
 }
