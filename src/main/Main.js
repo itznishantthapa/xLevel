@@ -4,9 +4,8 @@ import AppErrorFallback from '../component/customer/fallback/AppErrorFallback';
 import { navigationRef, NavigationService } from '../service/navigationService';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Animated } from 'react-native';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
-import * as Notifications from 'expo-notifications';
 
 
 // Navigation
@@ -35,22 +34,12 @@ import { useSocials } from '../queries/useSocials';
 import { useGames } from '../queries/useGames';
 // import { useAppQueries } from '../hooks/useAppQueries';
 import NoConnection from '../screens/NoConnection';
+import UpdateScreen from '../screens/UpdateScreen';
 import { useNetworkStatus } from '../hooks/useNetworkStatus';
+import { checkIfUpdateRequired } from '../service/versionService';
 
 //============ Prevent Auto Hide Splash Screen ============
 SplashScreen.preventAutoHideAsync();
-
-
-//============ Set Notification Handler For Foreground Notifications With Expo Notifications ============
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowBanner: true,   // iOS
-    shouldShowList: true,     // iOS notification center
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-  }),
-});
-
 
 
 export default function RootLayout() {
@@ -75,6 +64,9 @@ export default function RootLayout() {
   // Network
   const { isConnected } = useNetworkStatus();
 
+  // Version check
+  const [updateRequired, setUpdateRequired] = useState(false);
+
 
   //============ Notification Unsubscribe Ref ============
   const notificationUnsubscribeRef = useRef(null);
@@ -92,6 +84,7 @@ export default function RootLayout() {
   useEffect(() => {
     const init = async () => {
       // Initialize theme from saved preferences
+      await  checkVersion();
       await initializeTheme();
 
       // Initialize authentication
@@ -109,7 +102,22 @@ export default function RootLayout() {
     init();
   }, []);
 
+  // //============ Check App Version ============
+  // useEffect(() => {
 
+  //   checkVersion();
+  // }, []);
+
+    const checkVersion = async () => {
+      try {
+        const needsUpdate = await checkIfUpdateRequired();
+        setUpdateRequired(needsUpdate);
+      } catch (error) {
+        if (__DEV__) {
+          console.log('Version check error:', error);
+        }
+      }
+    };
 
 
 
@@ -211,27 +219,8 @@ export default function RootLayout() {
 
 
   //============ Handle Notification Taps ============
-  useEffect(() => {
-    // Listen for taps on notifications (works for foreground, background, quit)
-    const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
-
-      const data = response.notification.request.content.data;
-      const screen = data?.screen;
-
-      if (screen) NavigationService.navigate(screen, data);
-
-    });
-
-    return () => {
-      responseListener.remove();
-    };
-  }, []);
-
-
-
-
-
-
+  // Notifee handles notification taps via onForegroundEvent and onBackgroundEvent
+  // Navigation is handled in notificationService.js
 
 
 
@@ -257,7 +246,9 @@ export default function RootLayout() {
   //============ Main Render ============
   return (
 
-    isConnected ? (
+    updateRequired ? (
+      <UpdateScreen />
+    ) : isConnected ? (
       <NavigationContainer
         ref={navigationRef}
         onReady={() => {

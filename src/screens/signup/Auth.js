@@ -71,7 +71,7 @@ const Auth = () => {
   const { data: banners = [] } = useBanners()
   const {data: utils = []} = useUtils()
 
-  const shouldShowEmailLogin = !utils?.qr;
+  const shouldShowEmailLogin = !utils?.is_ios_active;
 
 
 
@@ -589,10 +589,18 @@ const Auth = () => {
 
         <View style={[styles.authSection, { backgroundColor: colors.authSectionBg }]}>
           <View style={styles.welcomeTextContainer}>
-            <Animated.Text style={[styles.welcomeTitle, { color: colors.text }, titleAnimatedStyle]}>
+            <Animated.Text 
+              style={[styles.welcomeTitle, { color: colors.text }, titleAnimatedStyle]}
+              numberOfLines={1} 
+              adjustsFontSizeToFit={true}
+            >
               {isAgeVerified ? "You're Welcome" : (isVerificationComplete ? "Verified ✓" : "Verify Your Age")}
             </Animated.Text>
-            <Text style={[styles.welcomeSubtitle, { color: colors.textSecondary }]}>
+            <Text 
+              style={[styles.welcomeSubtitle, { color: colors.textSecondary }]}
+              numberOfLines={2} 
+              adjustsFontSizeToFit={true}
+            >
               {isAgeVerified
                 ? "Choose your preferred sign-in method"
                 : "Please select your date of birth to continue"
@@ -656,16 +664,22 @@ const styles = StyleSheet.create({
   },
   welcomeTextContainer: {
     alignItems: 'center',
+    minHeight: scaleHeight(60), // Fixed height to prevent collapse
   },
   welcomeTitle: {
     fontSize: scaleWidth(24),
     fontWeight: '700',
     marginBottom: scaleHeight(6),
+    includeFontPadding: false,
+    textAlign: 'center',
+    minHeight: scaleHeight(30), // Fixed height for stable animation
+    textAlignVertical: 'center',
   },
   welcomeSubtitle: {
     fontSize: scaleWidth(14),
     textAlign: 'center',
     lineHeight: scaleHeight(20),
+    includeFontPadding: false,
   },
   buttonsContainer: {
     gap: scaleHeight(16),
@@ -675,7 +689,7 @@ const styles = StyleSheet.create({
   },
   authButton: {
     borderRadius: scaleWidth(16),
-    borderWidth: 1,
+    borderWidth: 1.5,
     paddingVertical: scaleHeight(12),
     justifyContent: 'center',
     width: '100%',

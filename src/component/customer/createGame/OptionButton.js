@@ -43,6 +43,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: "center",
     minWidth: 80,
+    // borderRadius: 10,
   },
   optionButtonSelected: {
     borderWidth: 1,

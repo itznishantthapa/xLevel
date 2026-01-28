@@ -32,12 +32,44 @@ const AccessBar = ({ navigation }) => {
     statsConfig, 
     toggleStatsItem, 
     reorderStatsItems, 
-    getToggleableOptions 
+    getToggleableOptions,
+    colorfulIcons,
+    toggleColorfulIcons
   } = useStatsPreferenceStore();
   const [draggedIndex, setDraggedIndex] = useState(-1); // index currently being dragged
   const [isDragging, setIsDragging] = useState(false);
 
   const TOGGLEABLE_OPTIONS = getToggleableOptions();
+
+  // Color functions for preview (same as StatsContainer)
+  const getIconBackgroundColor = (itemId) => {
+    if (!isLight || !colorfulIcons) return 'transparent';
+    
+    switch (itemId) {
+      case 'gamepoints':
+        return '#16A34A'; // Strong Green background for Game Points
+      case 'tournament':
+        return '#6366F1'; // Vibrant Indigo background for Tournament
+      case 'matches':
+        return '#EF4444'; // Bright Red background for My Match
+      case 'redeem':
+        return '#F97316'; // Bold Orange background for Redeem
+      case 'leaderboard':
+        return '#A855F7'; // Rich Purple background for Leaderboard
+      case 'gamerules':
+        return '#14B8A6'; // Fresh Teal background for Game Rules
+      default:
+        return 'transparent';
+    }
+  };
+
+  const getIconColor = (itemId) => {
+    // Show white icons on colored backgrounds in light mode when colorful icons are enabled
+    if (!isLight || !colorfulIcons) return isLight ? '#000000' : '#EAEAEA';
+    
+    // All icons are white when colorful backgrounds are enabled
+    return '#FFFFFF';
+  };
 
   // Animation values for each item
   const animatedValues = useRef(
@@ -126,7 +158,7 @@ const AccessBar = ({ navigation }) => {
 
 
 
-  const renderIcon = (item, color, size = 30) => {
+  const renderIcon = (item, defaultColor, size = 30) => {
     const IconComponent = {
       Ionicons,
       MaterialIcons,
@@ -137,7 +169,32 @@ const AccessBar = ({ navigation }) => {
       FontAwesome6,
     }[item.iconLib];
 
-    return <IconComponent name={item.icon} size={size} color={color} />;
+    const backgroundColor = getIconBackgroundColor(item.id);
+    const hasColorfulBackground = backgroundColor !== 'transparent';
+
+    return (
+      <View style={[
+        styles.previewIconContainer,
+        hasColorfulBackground && {
+          backgroundColor: backgroundColor,
+          borderRadius: scaleWidth(45) / 2, // Ensure circular shape
+          // Add shadow only in light mode when colorful icons are enabled
+          ...(isLight && colorfulIcons && {
+            elevation: 6,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 3 },
+            shadowOpacity: 0.35,
+            shadowRadius: 4.5,
+          })
+        }
+      ]} key={`${item.id}-${colorfulIcons}`}>
+        <IconComponent 
+          name={item.icon} 
+          size={size} 
+          color={getIconColor(item.id)}
+        />
+      </View>
+    );
   };
 
   const renderStatItem = (item, index) => {
@@ -233,6 +290,47 @@ const AccessBar = ({ navigation }) => {
             </Text>
           </View>
         </View>
+
+        {/* Colorful Icons Toggle or Info Message */}
+        <View style={styles.colorToggleContainer}>
+          {isLight ? (
+            <>
+              <Text style={[styles.colorToggleTitle, { color: '#333333' }]}>
+                Colorful Icons
+              </Text>
+              <Text style={[styles.colorToggleDescription, { color: '#666666' }]}>
+                Enable vibrant colors for stats icons
+              </Text>
+              <Pressable
+                style={[
+                  styles.toggleButton,
+                  { 
+                    backgroundColor: colorfulIcons ? '#00bf63' : '#e0e0e0',
+                    borderColor: '#d0d0d0'
+                  }
+                ]}
+                onPress={toggleColorfulIcons}
+              >
+                <View style={[
+                  styles.toggleSlider,
+                  {
+                    backgroundColor: '#ffffff',
+                    transform: [{ translateX: colorfulIcons ? scaleWidth(24) : 0 }]
+                  }
+                ]} />
+              </Pressable>
+            </>
+          ) : (
+            <>
+              <Text style={[styles.colorToggleTitle, { color: '#EAEAEA' }]}>
+                Colorful Icons
+              </Text>
+              <Text style={[styles.colorToggleDescription, { color: '#CCCCCC' }]}>
+                Colorful icons are available in light scheme only
+              </Text>
+            </>
+          )}
+        </View>
       </View>
     </View>
   );
@@ -304,6 +402,13 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     borderRadius: 1.5,
   },
+  previewIconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: scaleWidth(45),
+    height: scaleWidth(45),
+    borderRadius: scaleWidth(45) / 2,
+  },
   instructions: {
     alignItems: 'center',
     gap: scaleHeight(15),
@@ -320,5 +425,47 @@ const styles = StyleSheet.create({
   instructionText: {
     fontSize: scaleWidth(14),
     fontWeight: '500',
+  },
+  colorToggleContainer: {
+    position: 'absolute',
+    bottom: scaleHeight(120),
+    left: scaleWidth(20),
+    right: scaleWidth(20),
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    borderRadius: scaleWidth(12),
+    padding: scaleWidth(16),
+    alignItems: 'center',
+  },
+  colorToggleTitle: {
+    fontSize: scaleWidth(16),
+    fontWeight: '600',
+    marginBottom: scaleHeight(4),
+  },
+  colorToggleDescription: {
+    fontSize: scaleWidth(12),
+    textAlign: 'center',
+    marginBottom: scaleHeight(16),
+    lineHeight: scaleHeight(16),
+  },
+  toggleButton: {
+    width: scaleWidth(50),
+    height: scaleHeight(26),
+    borderRadius: scaleHeight(13),
+    borderWidth: 1,
+    justifyContent: 'center',
+    paddingHorizontal: scaleWidth(2),
+  },
+  toggleSlider: {
+    width: scaleWidth(22),
+    height: scaleHeight(22),
+    borderRadius: scaleHeight(11),
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
   },
 });

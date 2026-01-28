@@ -16,6 +16,32 @@ import Toast from "react-native-simple-toast"
 import { useEditGameProfile } from "../../queries/useMutation/useEditGameProfile"
 import { CreateGameLayout, SectionTitle } from "../../component/customer/createGame"
 import * as yup from 'yup'
+import { vulgarWords } from "../../utils/censored"
+
+// Create a comprehensive list of vulgar words for validation
+const getAllVulgarWords = () => {
+  const words = []
+  vulgarWords.vulgar_words.forEach(item => {
+    if (item.nepali) words.push(item.nepali.toLowerCase())
+    if (item.english) words.push(item.english.toLowerCase())
+  })
+  return words
+}
+
+// Function to check if text contains vulgar words
+const containsVulgarWord = (text) => {
+  if (!text) return false
+  const lowerText = text.toLowerCase()
+  const vulgarList = getAllVulgarWords()
+  
+  // Check if any vulgar word is included in the text
+  return vulgarList.some(vulgarWord => {
+    if (vulgarWord && vulgarWord.trim()) {
+      return lowerText.includes(vulgarWord.toLowerCase())
+    }
+    return false
+  })
+}
 
 // Define validation schemas for different game types
 const baseValidationSchema = yup.object().shape({
@@ -25,6 +51,9 @@ const baseValidationSchema = yup.object().shape({
     .matches(/^[a-zA-Z0-9_\-\s]+$/, 'Only letters, numbers, spaces, underscores and hyphens allowed')
     .min(2, 'Username must be at least 2 characters')
     .max(30, 'Username cannot exceed 30 characters')
+    .test('vulgar-check', 'Inappropriate game name.', function(value) {
+      return !containsVulgarWord(value)
+    })
     .required('Game username is required'),
 })
 
@@ -34,6 +63,9 @@ const relaxedUsernameValidationSchema = yup.object().shape({
     .string()
     .min(2, 'Username must be at least 2 characters')
     .max(30, 'Username cannot exceed 30 characters')
+    .test('vulgar-check', 'Inappropriate game name.', function(value) {
+      return !containsVulgarWord(value)
+    })
     .required('Game username is required'),
 })
 
@@ -240,7 +272,7 @@ const EditGameInfo = () => {
           transformed = value.replace(/[^0-9]/g,'').slice(0,12)
           break
         case 'pubg':
-          transformed = value.replace(/[^0-9]/g,'').slice(0,12)
+          transformed = value.replace(/[^0-9]/g,'').slice(0,15)
           break
         default:
           transformed = value.replace(/[^A-Za-z0-9]/g,'')
@@ -263,7 +295,7 @@ const EditGameInfo = () => {
         })
       case 'pubg':
         return freeFirePubgValidationSchema.shape({
-          uid: freeFirePubgValidationSchema.fields.uid.clone().test('pubg-length','PUBG UID must be 8-10 digits', v => !!v && /^[0-9]{8,10}$/.test(v))
+          uid: freeFirePubgValidationSchema.fields.uid.clone().test('pubg-length','PUBG UID must be 8-15 digits', v => !!v && /^[0-9]{8,15}$/.test(v))
         })
       case 'efootball':
         return efootballValidationSchema
@@ -370,7 +402,7 @@ const EditGameInfo = () => {
     const inputStyle = [
       styles.input,
       {
-        backgroundColor: isLight ? "#f5f5f5" : "#1a1a1a",
+        backgroundColor: isLight ? "transparent" : "#1a1a1a",
         borderColor: isLight ? "#cccccc" : "#333333",
         color: isLight ? "#333333" : "#ffffff",
       },
@@ -656,7 +688,7 @@ const EditGameInfo = () => {
       loaderMessage={isEditing ? "Updating..." : "Saving..."}
     >
       {/* Game Info Header */}
-      <View style={[styles.gameHeader, { backgroundColor: isLight ? "#f5f5f5" : "#1a1a1a" }]}>
+      <View style={[styles.gameHeader, { backgroundColor: isLight ? "#rgba(0, 0, 0, 0.05)" : "#1a1a1a" }]}>
         <Image source={{ uri: gameProfile.game_logo_url }} style={styles.gameLogo} />
         <View style={styles.gameInfo}>
           <Text style={[styles.gameName, { color: isLight ? "#333333" : "#ffffff" }]}>{gameProfile.game_name === 'Chess' ? "Chess.com" : gameProfile.game_name}</Text>
@@ -669,6 +701,12 @@ const EditGameInfo = () => {
 
       {/* Profile Form */}
       <View style={styles.section}>
+        {/* Info Text */}
+        <View style={[styles.infoContainer, { backgroundColor: "transparent", borderColor: isLight ? "#000000" : "#ffffff" }]}>
+          <Text style={[styles.infoText, { color: isLight ? "#000000" : "#ffffff" }]}>
+            Please fill your game details accurately and correctly. Ensure all information matches your in-game profile exactly.
+          </Text>
+        </View>
 
         <View style={styles.form}>
           {/* Game Username Input - Common for all games */}
@@ -686,7 +724,7 @@ const EditGameInfo = () => {
               style={[
                 styles.input,
                 {
-                  backgroundColor: isLight ? "#f5f5f5" : "#1a1a1a",
+                  backgroundColor: isLight ? "transparent" : "#1a1a1a",
                   borderColor: isLight ? "#cccccc" : "#333333",
                   color: isLight ? "#333333" : "#ffffff",
                 },
@@ -709,21 +747,12 @@ const EditGameInfo = () => {
           {renderGameSpecificFields()}
         </View>
         
-        {/* Chess Update Restriction Notice */}
-        {gameName === 'chess' && (
-          <View style={[styles.noticeContainer, { backgroundColor: isLight ? "#f8f9fa" : "#1a1a1a", borderColor: isLight ? "#000000" : "#ffffff" }]}>
-            <Text style={[styles.noticeText, { color: isLight ? "#000000" : "#ffffff" }]}>
-              You can update your chess profile once every 2 days
-            </Text>
-          </View>
-        )}
-        {gameName === 'efootball' && (
-          <View style={[styles.noticeContainer, { backgroundColor: isLight ? "#f8f9fa" : "#1a1a1a", borderColor: isLight ? "#000000" : "#ffffff" }]}>
-            <Text style={[styles.noticeText, { color: isLight ? "#000000" : "#ffffff" }]}>
-              You can update your eFootball profile once every 2 days
-            </Text>
-          </View>
-        )}
+        {/* Game Profile Update Restriction Notice */}
+        <View style={styles.noticeContainer}>
+          <Text style={[styles.noticeText, { color: isLight ? "#000000" : "#ffffff" }]}>
+            "You can update your {gameProfile.game_name} profile once every 7 days"
+          </Text>
+        </View>
       </View>
     </CreateGameLayout>
   )
@@ -742,6 +771,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 12,
     marginBottom: 16,
+    borderRadius: 12,
   },
   gameLogo: {
     width: 44,
@@ -785,13 +815,23 @@ const styles = StyleSheet.create({
   },
   noticeContainer: {
     padding: 12,
-    borderRadius: 6,
-    borderWidth: 1,
     marginTop: 16,
   },
   noticeText: {
     fontSize: 13,
     fontWeight: '500',
     textAlign: 'center',
+  },
+  infoContainer: {
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    marginBottom: 16,
+  },
+  infoText: {
+    fontSize: 13,
+    fontWeight: '500',
+    textAlign: 'center',
+    lineHeight: 18,
   },
 })

@@ -26,7 +26,7 @@ const GameRules = () => {
     background: isLight ? '#ffffff' : '#000000',
     text: isLight ? '#333333' : '#ffffff',
     subText: isLight ? '#666666' : '#cccccc',
-    card: isLight ? '#ffffff' : '#000000',
+    card: isLight ? 'transparent' : '#000000',
     cardBorder: isLight ? '#333333' : '#ffffff',
     iconBg: isLight ? '#d9d9d9' : 'rgba(255, 255, 255, 0.2)',
   }
@@ -75,7 +75,7 @@ const GameRules = () => {
           title={'Game Rules'}
         />
         <Text style={[styles.headerSubtitle, { color: colors.subText, marginLeft: 16 }]}>
-          Check the rules before you play
+          Check the simple rules before you play !
         </Text>
 
 

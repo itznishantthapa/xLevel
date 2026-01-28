@@ -24,8 +24,8 @@ const CreatorInfo = ({ game, isLight, isCreator, user }) => {
       case "chess":
         return {
           showUID: false,
+          gameUsername: createdBy?.game_username,
           stats: [
-            { key: "game_username", label: "G-Name", value: createdBy?.game_username, needMoreWidth: true },
             { key: "total_games", label: "Games Played", value: createdBy?.total_games_played + "+" || 0 },
             { key: "rapid_rating", label: "Rapid Rating", value: createdBy?.rapid_rating || 0 },
             { key: "blitz_rating", label: "Blitz Rating", value: createdBy?.blitz_rating || 0 },
@@ -38,8 +38,8 @@ const CreatorInfo = ({ game, isLight, isCreator, user }) => {
         return {
           showUID: true,
           uid: createdBy?.game_uid,
+          gameUsername: createdBy?.game_username,
           stats: [
-            { key: "game_username", label: "G-Name", value: createdBy?.game_username, needMoreWidth: true },
             { key: "level", label: "Level", value: createdBy?.level || createdBy?.game_level || 0 },
           ].filter((stat) => stat.value),
         }
@@ -48,8 +48,8 @@ const CreatorInfo = ({ game, isLight, isCreator, user }) => {
         return {
           showUID: true,
           uid: createdBy?.game_uid,
+          gameUsername: createdBy?.game_username,
           stats: [
-            { key: "game_username", label: "G-Name", value: createdBy?.game_username, needMoreWidth: true },
             { key: "current_division", label: "Current Division", value: createdBy?.current_division || 0 },
             { key: "highest_division", label: "Highest Division", value: createdBy?.highest_division || 0 },
             { key: "courtesy_rating", label: "Courtesy Rating", value: createdBy?.courtesy_rating },
@@ -60,8 +60,8 @@ const CreatorInfo = ({ game, isLight, isCreator, user }) => {
         return {
           showUID: true,
           uid: createdBy?.game_uid,
+          gameUsername: createdBy?.game_username,
           stats: [
-            { key: "game_username", label: "G-Name", value: createdBy?.game_username, needMoreWidth: true },
             { key: "game_level", label: "Game Level", value: createdBy?.game_level || 0 },
           ].filter((stat) => stat.value),
         }
@@ -238,6 +238,34 @@ const CreatorInfo = ({ game, isLight, isCreator, user }) => {
       )}
 
       <View style={sharedStyles.rightInfoContainer}>
+        {gameData.gameUsername && (
+          <View style={{
+            backgroundColor: isLight ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.08)',
+            paddingVertical: scaleWidth(10),
+            paddingHorizontal: scaleWidth(14),
+            marginBottom: scaleWidth(8),
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderWidth: 1,
+            borderColor: isLight ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.1)',
+          }}>
+            <Text 
+              style={{
+                color: isLight ? '#1a1a1a' : '#f5f5f5',
+                fontSize: scaleWidth(14),
+                fontWeight: '600',
+                textAlign: 'center',
+                letterSpacing: 0.3,
+              }}
+              numberOfLines={2}
+              adjustsFontSizeToFit
+              minimumFontScale={0.7}
+            >
+              {gameData.gameUsername}
+            </Text>
+          </View>
+        )}
+
         {gameData.stats.map((stat) => (
           <InfoRow
             key={stat.key}

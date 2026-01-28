@@ -3,10 +3,6 @@
     "name": "Level",
     "slug": "Level",
     "version": "1.3.0",
-    "react-native-google-mobile-ads": {
-      "android_app_id": "ca-app-pub-3488447190245589~1297601654",
-      "ios_app_id": "ca-app-pub-xxxxxxxxxxxxxxxx~xxxxxxxxxx"
-    },
     "android": {
       "package": "com.blackonedevs.levelesportmatchmaking",
        "notification": {
@@ -15,7 +11,7 @@
       }
     },
     "ios": {
-      "bundleIdentifier": "com.blackonedevs.levelesportmatchmaking"
+      "bundleIdentifier": "com.blackonedevs.levelesportmatchmaking.v1"
     }
   }
 }

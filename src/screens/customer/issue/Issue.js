@@ -42,7 +42,7 @@ const Issue = () => {
     background: isLight ? "#ffffff" : "#000000",
     text: isLight ? "#333333" : "#ffffff",
     subText: isLight ? "#000000" : "#ffffff",
-    card: isLight ? "#ffffff" : "#000000",
+    card: isLight ? "transparent" : "#000000",
     cardBorder: isLight ? "#333333" : "#ffffff",
     pending: isLight ? "#0000000" : "#ffffff",
     resolved: "#00C851",

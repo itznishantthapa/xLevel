@@ -68,7 +68,7 @@ const HomeBanner = ({ data = [], height }) => {
           style={{ width: '100%' }}
           onProgressChange={(_, absoluteProgress) => {
             // Update shared progress without reading during render
-            progress.value = absoluteProgress;
+          progress.value = absoluteProgress;
           }}
           renderItem={({ item }) => <BannerPage data={item} />}
         />
@@ -97,7 +97,7 @@ const HomeBanner = ({ data = [], height }) => {
         }}
         containerStyle={{
           alignSelf: 'center',
-          gap: 8,
+          gap: scaleWidth(8),
           marginTop: scaleHeight(8),
  
         }}
@@ -112,6 +112,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     marginBottom: scaleHeight(15),
     marginTop: scaleHeight(10),
+    
   },
   wrapper: {
     // Height is controlled dynamically via inline style using PAGE_HEIGHT

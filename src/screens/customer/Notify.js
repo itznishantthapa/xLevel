@@ -20,7 +20,7 @@ const NotificationCardSkeleton = ({ index, isLight }) => (
     <Animated.View 
         entering={FadeIn.delay(index * 100).duration(600)}
         style={[styles.skeletonCard, {
-            backgroundColor: isLight ? '#ffffff' : '#000000',
+            backgroundColor: isLight ? 'transparent' : '#000000',
             borderColor: isLight ? '#333333' : '#dadada',
         }]}
     >
@@ -145,6 +145,7 @@ const Notify = () => {
                 backgroundColor="transparent"
                 barStyle={isLight ? "dark-content" : "light-content"}
             />
+            <HeaderComponent />
             <View style={styles.listWrapper}>
                 <FlashList
                     {...flashListProps}
@@ -157,7 +158,6 @@ const Notify = () => {
                         )
                     }
                     keyExtractor={(item, index) => item.isSkeleton ? item.id : `notification-${item.id}-${index}`}
-                    ListHeaderComponent={<HeaderComponent />}
                     ListEmptyComponent={isFetching ? null : <EmptyListComponent isLight={isLight} />}
                     refreshControl={
                         <RefreshControl

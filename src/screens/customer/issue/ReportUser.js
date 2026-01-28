@@ -259,8 +259,7 @@ const styles = StyleSheet.create({
         padding: 14,
         alignItems: 'flex-start',
         gap: 12,
-        borderTopRightRadius:12,
-        borderTopLeftRadius:12,
+        borderRadius:12,
     },
     warningTextContainer: {
         flex: 1,
@@ -284,7 +283,7 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         padding: 12,
-        // borderRadius: 12,
+        borderRadius: 10,
         alignItems: 'center',
         gap: 10,
         minHeight: 56,

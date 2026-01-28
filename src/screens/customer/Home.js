@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/native"
 import { FlashList } from "@shopify/flash-list"
 import { useCallback, useEffect, useState } from "react"
 import { Platform, RefreshControl, StatusBar, StyleSheet, View, Linking } from "react-native"
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
+import { SafeAreaView, useSafeAreaInsets, initialWindowMetrics } from "react-native-safe-area-context"
 import Toast from "react-native-simple-toast"
 
 // Custom Components
@@ -100,8 +100,8 @@ const Home = () => {
   // Show all banners - no filtering needed
   const displayBanners = banners
 
-  // Check if Utils has QR data
-  const hasQR = !!utils?.qr
+  // Check if iOS is active
+  const isIOSActive = !!utils?.is_ios_active
 
   /*
    * ====================================================================
@@ -109,9 +109,9 @@ const Home = () => {
    * ====================================================================
    */
   useEffect(() => {
-    // Always set stats based on QR availability, even if utils is empty
-    setStatsBasedOnQR(hasQR)
-  }, [utils, hasQR, setStatsBasedOnQR])
+    // Always set stats based on iOS active status, even if utils is empty
+    setStatsBasedOnQR(isIOSActive)
+  }, [utils, isIOSActive, setStatsBasedOnQR])
 
 
 
@@ -276,14 +276,7 @@ const Home = () => {
 
 
   const handleHeaderGamePoint = () => {
-    // Check if Utils has QR data
-    if (!hasQR) {
-      navigation.navigate("watchAds")
-      return
-    }
-
-    // If Utils has QR, navigate to scanPay
-    navigation.navigate("scanPay")
+    navigation.navigate("pointsIn")
   }
 
 
@@ -384,13 +377,12 @@ const Home = () => {
           <StatsContainer
             num_loss={user?.num_loss || 0}
             num_win={user?.num_win || 0}
-            handleWithdraw={() => navigation.navigate("withDraw")}
+            handlePointsOut={() => navigation.navigate("pointsOut")}
             handleTournament={() => navigation.navigate("userTournament")}
             handleGameRules={() => navigation.navigate("gameRules")}
             handleMatches={() => navigation.navigate("match")}
-            handleWatchAds={() => navigation.navigate("watchAds")}
             handleLeaderboard={() => navigation.navigate("leaderboard")}
-            handleTransaction={() => navigation.navigate("transaction")}
+            handleGamePoints={() => navigation.navigate("gamePoints")}
           />
         )
 
@@ -410,13 +402,17 @@ const Home = () => {
    * MAIN COMPONENT RENDER
    * ====================================================================
    */
+  // Use initialWindowMetrics for immediate inset values to prevent layout shift
+  const topInset = insets.top || initialWindowMetrics?.insets?.top || 0
+  
+  // eef0f2
   return (
     <View
       style={[
-        styles.container,
+        styles.container, 
         {
           backgroundColor: isLight ? "#ffffff" : "#000000",
-          paddingTop: insets.top,
+          paddingTop: topInset,
         },
       ]}
     >
@@ -425,7 +421,7 @@ const Home = () => {
 
       {/* Fixed Header at the top */}
       <Header
-        player_name={user?.full_name}
+        player_name={user?.full_name} 
         wallet_balance={user?.wallet_balance}
         profile_picture={user?.profile_picture}
         handleProfile={handleProfile}

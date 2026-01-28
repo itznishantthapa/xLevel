@@ -5,17 +5,17 @@ import { useAuthStore } from "../../store/authStore"
 import Clipboard from "@react-native-clipboard/clipboard"
 import Toast from "react-native-simple-toast"
 import StampID from "../matchcard/StampID"
-import { scaleHeight } from "../../utils/scaling"
+import SlotStamp from "../matchcard/SlotStamp"
+import { scaleHeight, scaleWidth } from "../../utils/scaling"
 
 const TournamentCard = ({ game }) => {
   const { user } = useAuthStore()
   const { isLight } = useThemeStore()
 
-  const per_kill_amount = (game.entry_fee * 0.8).toFixed(0)
   const SCREEN_WIDTH = Dimensions.get('window').width
   const isSmallScreen = SCREEN_WIDTH <= 360
 
- 
+
 
   // Calculate progress percentage for joined players
   const joinedPercentage = Math.min((game.player_joined / game.max_player) * 100, 100)
@@ -77,7 +77,7 @@ const TournamentCard = ({ game }) => {
     return (
       <View style={[styles.credentialsContainer, { borderColor: isLight ? '#000000' : '#ffffff' }]}>
         <Text style={[styles.credentialsText, { color: isLight ? '#000000' : '#ffffff' }]}>
-        "Get ID & Pass 5 mins early"
+          "Get ID & Pass 5 mins early"
         </Text>
       </View>
     );
@@ -96,18 +96,40 @@ const TournamentCard = ({ game }) => {
         {/* Game Info Pills */}
         <View style={styles.gameInfoRow}>
           <View style={[styles.infoPill, !isLight && styles.infoPillDark]}>
-            <View style={[styles.iconWrapper, { backgroundColor: isLight ? 'rgba(66, 99, 235, 0.15)' : 'rgba(109, 140, 255, 0.2)' }]}>
-              <Ionicons name="game-controller" size={14} color={isLight ? '#4263eb' : '#6d8cff'} />
+            <View style={[
+              styles.iconWrapper,
+              { backgroundColor: isLight ? '#A855F7' : 'rgba(109, 140, 255, 0.2)' },
+              // Add shadow only in light mode
+              isLight && {
+                elevation: 6,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 3 },
+                shadowOpacity: 0.35,
+                shadowRadius: 4.5,
+              }
+            ]}>
+              <Ionicons name="game-controller" size={scaleWidth(14)} color={isLight ? '#ffffff' : '#6d8cff'} />
             </View>
             <Text style={[styles.pillText, !isLight && styles.pillTextDark]}>{game.game?.name}</Text>
           </View>
           <View style={[styles.infoPill, !isLight && styles.infoPillDark]}>
-            <View style={[styles.iconWrapper, { backgroundColor: isLight ? 'rgba(18, 184, 134, 0.15)' : 'rgba(32, 201, 151, 0.2)' }]}>
-              <Ionicons name="people" size={14} color={isLight ? '#12b886' : '#20c997'} />
+            <View style={[
+              styles.iconWrapper,
+              { backgroundColor: isLight ? '#14B8A6' : 'rgba(32, 201, 151, 0.2)' },
+              // Add shadow only in light mode
+              isLight && {
+                elevation: 6,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 3 },
+                shadowOpacity: 0.35,
+                shadowRadius: 4.5,
+              }
+            ]}>
+              <Ionicons name="people" size={scaleWidth(14)} color={isLight ? '#ffffff' : '#20c997'} />
             </View>
             <Text style={[styles.pillText, !isLight && styles.pillTextDark]}>{game.game?.game_mode}</Text>
           </View>
-          
+
           {/* Tournament ID Stamp */}
           <View style={[styles.stampContainer, isSmallScreen && styles.stampContainerSmall]}>
             <StampID gameId={game.id} isLight={isLight} compact={isSmallScreen} />
@@ -123,13 +145,13 @@ const TournamentCard = ({ game }) => {
             {game.win_type == 'per_kill' ? (
               <View style={styles.prizeDetails}>
                 <View style={styles.perKillContainer}>
-                  <Text style={[styles.perKillAmount, !isLight && styles.perKillAmountDark]}>+{per_kill_amount} Points</Text>
+                  <Text style={[styles.perKillAmount, !isLight && styles.perKillAmountDark]}>+{game?.per_kill_point} Points</Text>
                   <Text style={[styles.perKillText, !isLight && styles.perKillTextDark]}> per kill</Text>
                 </View>
                 {
                   game?.prize ? (
                     <View style={styles.winnerTakesContainer}>
-                      <Text style={[styles.winnerTakesLabel, !isLight && styles.winnerTakesLabelDark]}>Winner Takes Additional {game?.prize}</Text>
+                      <Text style={[styles.winnerTakesLabel, !isLight && styles.winnerTakesLabelDark]}>{game?.prize}</Text>
                     </View>
                   ) : (
                     <View style={styles.winnerTakesContainer}>
@@ -145,7 +167,7 @@ const TournamentCard = ({ game }) => {
                   <Text style={[styles.perKillText, !isLight && styles.perKillTextDark]}>for top {game.prize_position_upto} players</Text>
                 </View>
                 <View style={styles.winnerTakesContainer}>
-                  <Text style={[styles.winnerTakesLabel, !isLight && styles.winnerTakesLabelDark]}>Winner Takes Additional {game?.prize}</Text>
+                  <Text style={[styles.winnerTakesLabel, !isLight && styles.winnerTakesLabelDark]}>{game?.prize}</Text>
                 </View>
               </View>
             ) : (
@@ -163,8 +185,8 @@ const TournamentCard = ({ game }) => {
               </View>
             </View>
           </View>
-        ):(
-                    <View style={styles.bonusInfo}>
+        ) : (
+          <View style={styles.bonusInfo}>
             <View style={[styles.entryFeeDisplay, { backgroundColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)' }]}>
               <Text style={[styles.entryLabel, !isLight && styles.entryLabelDark]}>Entry</Text>
               <View style={styles.entryAmountContainer}>
@@ -203,6 +225,12 @@ const TournamentCard = ({ game }) => {
             Start Time: {game.start_time}
           </Text>
         </View>
+        {/* Player Slot Stamp - only show if slot_number exists */}
+        {game?.slot_number && (
+          <View style={styles.slotStampContainer}>
+            <SlotStamp slotNumber={game.slot_number} isLight={isLight} compact={isSmallScreen} />
+          </View>
+        )}
       </View>
 
       {/* Room Credentials Section */}
@@ -217,7 +245,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     marginVertical: 8,
     borderRadius: 25,
-    backgroundColor: "#ffffff",
+    backgroundColor: "transparent",
     borderWidth: 1.5,
     borderColor: "#333333",
   },
@@ -347,14 +375,14 @@ const styles = StyleSheet.create({
   winnerTakesContainer: {
     flexDirection: "row",
     alignItems: "center",
-    opacity: 0.7,
   },
   winnerTakesLabel: {
     fontSize: 14,
-    color: "#666666",
+    color: "#000000",
+    fontWeight: "600",
   },
   winnerTakesLabelDark: {
-    color: "#cccccc",
+    color: "#ffffff",
   },
   bonusInfo: {
     flexDirection: "row",
@@ -422,11 +450,11 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   progressBarFillRed: {
-    backgroundColor: "#dc3545",
+    backgroundColor: "#4CAF50",
   },
   bottomSection: {
     flexDirection: "row",
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -434,6 +462,9 @@ const styles = StyleSheet.create({
   timeInfo: {
     flexDirection: "row",
     alignItems: "center",
+  },
+  slotStampContainer: {
+    marginLeft: 'auto',
   },
   timeText: {
     fontSize: 12,

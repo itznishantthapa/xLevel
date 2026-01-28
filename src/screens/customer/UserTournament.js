@@ -50,6 +50,12 @@ const UserTournament = () => {
   } = useInfiniteTournaments(5)
 
 
+  useEffect(() => {
+  console.log("Tournaments:", tournaments);
+  }, [tournaments])
+  
+
+
  
   
 
@@ -108,13 +114,13 @@ const UserTournament = () => {
         backgroundColor="transparent"
         barStyle={isLight ? "dark-content" : "light-content"}
       />
+      <HeaderComponent />
       <View style={styles.listWrapper}>
         <FlashList
           {...flashListProps}
           data={isFetching && tournaments.length === 0 ? [] : tournaments}
           renderItem={renderTournamentCard}
           keyExtractor={(item) => item.id.toString()}
-          ListHeaderComponent={() => <HeaderComponent />}
           ListEmptyComponent={isFetching ? null : <EmptyListComponent isLight={isLight} />}
           refreshControl={
             <RefreshControl
@@ -149,7 +155,7 @@ const styles = StyleSheet.create({
     height: height,
   },
   listContainer: {
-    paddingBottom: 50,
+    // paddingBottom: 50,
   },
   headerContainer: {
     paddingHorizontal: 16,

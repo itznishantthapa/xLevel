@@ -291,7 +291,7 @@ const CredentialsSection = ({
     return (
       <View style={sharedStyles.credentialsDisplayContainer}>
         <Text style={[sharedStyles.credentialsGuide, { color: isLight ? "#333333" : "#ffffff" }]}>
-          Room ID & Password (ID Must Be Copied)
+          Room ID & Password
         </Text>
         <View style={sharedStyles.inputRow}>
           <View style={sharedStyles.inputWrapper}>
@@ -335,7 +335,7 @@ const CredentialsSection = ({
     return (
       <View style={sharedStyles.credentialsDisplayContainer}>
         <Text style={[sharedStyles.credentialsGuide, { color: isLight ? "#333333" : "#ffffff" }]}>
-         Teamcode (Copy & Join – Required)
+         Teamcode (Copy & Join)
         </Text>
         <View style={sharedStyles.inputRow}>
           <View style={sharedStyles.inputWrapper}>
@@ -362,11 +362,11 @@ const CredentialsSection = ({
   if (isChessGame && game.join_url && game.status === "in_progress") {
     const handlePressURL = () => {
 
-      //if game is_accepted is true, then don't open the URL
-      if (game.isAccepted) {
-        Toast.show("URL Expired", Toast.SHORT);
-        return;
-      }
+      // //if game is_accepted is true, then don't open the URL
+      // if (game.isAccepted) {
+      //   Toast.show("URL Expired", Toast.SHORT);
+      //   return;
+      // }
 
       // Open URL
       const url = game.join_url;
@@ -394,7 +394,7 @@ const CredentialsSection = ({
     return (
       <View style={sharedStyles.credentialsDisplayContainer}>
         <Text style={[sharedStyles.credentialsGuide, { color: isLight ? "#333333" : "#ffffff" }]}>
-         URL (Click & Join – Required)
+         URL (Click & Join)
         </Text>
         <View style={sharedStyles.inputRow}>
           <View style={sharedStyles.inputWrapper}>

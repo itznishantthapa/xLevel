@@ -117,29 +117,29 @@ const NotificationCard = ({ notification }) => {
     const notificationConfig = useMemo(() => ({
         [NOTIFICATION_TYPES.GAME]: {
             title: 'Game Invitation',
-            bgColor: isLight ? '#eef5ff' : 'rgba(46, 81, 255, 0.2)',
+            bgColor: isLight ? '#A855F7' : 'rgba(109, 140, 255, 0.2)',
             icon: <MaterialCommunityIcons 
                 name="gamepad-variant" 
                 size={16} 
-                color={isLight ? "#4263eb" : "#6d8cff"} 
+                color={isLight ? "#ffffff" : "#6d8cff"} 
             />
         },
         [NOTIFICATION_TYPES.CREDITED]: {
             title: 'Game Point Update',
-            bgColor: isLight ? '#e6f9ee' : 'rgba(18, 184, 134, 0.2)',
+            bgColor: isLight ? '#14B8A6' : 'rgba(32, 201, 151, 0.2)',
             icon: <MaterialCommunityIcons 
                 name="star-four-points-outline" 
                 size={16} 
-                color={isLight ? "#12b886" : "#20c997"} 
+                color={isLight ? "#ffffff" : "#20c997"} 
             />
         },
         [NOTIFICATION_TYPES.NORMAL]: {
             title: 'Notification',
-            bgColor: isLight ? '#fff3e0' : 'rgba(255, 152, 0, 0.2)',
+            bgColor: isLight ? '#F97316' : 'rgba(255, 152, 0, 0.2)',
             icon: <Entypo 
                 name="notification" 
                 size={16} 
-                color={isLight ? "#ff9800" : "#ffb74d"} 
+                color={isLight ? "#ffffff" : "#ffb74d"} 
             />
         }
     }), [isLight]);
@@ -165,7 +165,7 @@ const NotificationCard = ({ notification }) => {
                 <View
                     style={[
                         styles.roomInfoItem,
-                        { backgroundColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)' },
+                        { backgroundColor: isLight ? '#f8f9fa' : 'rgba(255, 255, 255, 0.1)' },
                     ]}
                 >
                     <Text style={{ color: isLight ? '#666666' : '#dadada' }}>{label}</Text>
@@ -193,7 +193,7 @@ const NotificationCard = ({ notification }) => {
                 {room_pass && renderInfoRow('Pass', room_pass, () => copyToClipboard(room_pass))}
 
                 {/* Team Code */}
-                {team_code && renderInfoRow('Code', team_code, () => handleRoomCopy(team_code))}
+                {team_code && renderInfoRow('Teamcode', team_code, () => handleRoomCopy(team_code))}
             </View>
         );
     };
@@ -210,7 +210,18 @@ const NotificationCard = ({ notification }) => {
             ]}>
                 {/* Header Section */}
                 <View style={styles.header}>
-                    <View style={[styles.iconContainer, { backgroundColor: config.bgColor }]}>
+                    <View style={[
+                        styles.iconContainer, 
+                        { backgroundColor: config.bgColor },
+                        // Add shadow only in light mode
+                        isLight && {
+                            elevation: 6,
+                            shadowColor: '#000',
+                            shadowOffset: { width: 0, height: 3 },
+                            shadowOpacity: 0.35,
+                            shadowRadius: 4.5,
+                        }
+                    ]}>
                         {config.icon}
                     </View>
                     <View style={styles.headerContent}>

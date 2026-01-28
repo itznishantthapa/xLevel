@@ -9,6 +9,8 @@ import { useThemeStore } from "../../store/themeStore"
 import { useGameProfiles } from "../../queries/useGameProfiles"
 import { useNavigation } from "@react-navigation/native"
 import { useEffect } from "react"
+import { scaleHeight, scaleWidth } from "../../utils/scaling"
+import StampID from "../matchcard/StampID"
 
 
 const { width } = Dimensions.get("window")
@@ -22,7 +24,12 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
   const { data: gameProfiles = [] } = useGameProfiles()
   const navigation = useNavigation()
 
-  const per_kill_amount = (game.entry_fee * 0.8).toFixed(0)
+  const SCREEN_WIDTH = Dimensions.get('window').width
+  const isSmallScreen = SCREEN_WIDTH <= 360
+
+ 
+  
+
 
   // Calculate progress percentage for joined players
   const joinedPercentage = Math.min((game.player_joined / game.max_player) * 100, 100)
@@ -85,18 +92,47 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
 
         {/* Game Info Pills */}
         <View style={styles.gameInfoRow}>
-          <View style={[styles.infoPill, !isLight && styles.infoPillDark]}>
-            <View style={[styles.iconWrapper, { backgroundColor: isLight ? 'rgba(66, 99, 235, 0.15)' : 'rgba(109, 140, 255, 0.2)' }]}>
-              <Ionicons name="game-controller" size={14} color={isLight ? '#4263eb' : '#6d8cff'} />
+            <View style={[styles.infoPill, !isLight && styles.infoPillDark]}>
+              <View style={[
+                styles.iconWrapper, 
+                { backgroundColor: isLight ? '#A855F7' : 'rgba(109, 140, 255, 0.2)' },
+                // Add shadow only in light mode
+                isLight && {
+                  elevation: 6,
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 3 },
+                  shadowOpacity: 0.35,
+                  shadowRadius: 4.5,
+                }
+              ]}>
+                <Ionicons name="game-controller" size={scaleWidth(14)} color={isLight ? '#ffffff' : '#6d8cff'} />
+              </View>
+              <Text style={[styles.pillText, !isLight && styles.pillTextDark]}>{game.game?.name}</Text>
             </View>
-            <Text style={[styles.pillText, !isLight && styles.pillTextDark]}>{game.game?.name}</Text>
-          </View>
-          <View style={[styles.infoPill, !isLight && styles.infoPillDark]}>
-            <View style={[styles.iconWrapper, { backgroundColor: isLight ? 'rgba(18, 184, 134, 0.15)' : 'rgba(32, 201, 151, 0.2)' }]}>
-              <Ionicons name="people" size={14} color={isLight ? '#12b886' : '#20c997'} />
+            <View style={[styles.infoPill, !isLight && styles.infoPillDark]}>
+              <View style={[
+                styles.iconWrapper, 
+                { backgroundColor: isLight ? '#14B8A6' : 'rgba(32, 201, 151, 0.2)' },
+                // Add shadow only in light mode
+                isLight && {
+                  elevation: 6,
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 3 },
+                  shadowOpacity: 0.35,
+                  shadowRadius: 4.5,
+                }
+              ]}>
+                <Ionicons name="people" size={scaleWidth(14)} color={isLight ? '#ffffff' : '#20c997'} />
+              </View>
+              <Text style={[styles.pillText, !isLight && styles.pillTextDark]}>{game.game?.game_mode}</Text>
             </View>
-            <Text style={[styles.pillText, !isLight && styles.pillTextDark]}>{game.game?.game_mode}</Text>
-          </View>
+
+              {/* Tournament ID Stamp */}
+              {!forFiller && (
+                <View style={[styles.stampContainer, isSmallScreen && styles.stampContainerSmall]}>
+                  <StampID gameId={game.id} isLight={isLight} compact={isSmallScreen} />
+                </View>
+              )}
         </View>
       </View>
 
@@ -109,14 +145,14 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
               game.win_type == 'per_kill' ? (
                 <View style={styles.prizeDetails}>
                   <View style={styles.perKillContainer}>
-                    <Text style={[styles.perKillAmount, !isLight && styles.perKillAmountDark]}>+{per_kill_amount} Points</Text>
+                    <Text style={[styles.perKillAmount, !isLight && styles.perKillAmountDark]}>+{game?.per_kill_point} Points</Text>
 
                     <Text style={[styles.perKillText, !isLight && styles.perKillTextDark]}> per kill</Text>
                   </View>
                   {
                     game?.prize ? (
                       <View style={styles.winnerTakesContainer}>
-                        <Text style={[styles.winnerTakesLabel, !isLight && styles.winnerTakesLabelDark]}>Winner Takes Additional {game?.prize}</Text>
+                        <Text style={[styles.winnerTakesLabel, !isLight && styles.winnerTakesLabelDark]}>{game?.prize}</Text>
                       </View>
                     ) : (
                       <View style={styles.winnerTakesContainer}>
@@ -139,7 +175,7 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
                     
 
                         <View style={styles.winnerTakesContainer}>
-                          <Text style={[styles.winnerTakesLabel, !isLight && styles.winnerTakesLabelDark]}>Winner Takes Additional {game?.prize}</Text>
+                          <Text style={[styles.winnerTakesLabel, !isLight && styles.winnerTakesLabelDark]}>{game?.prize}</Text>
                         </View>
 
                     
@@ -151,18 +187,21 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
             }
           </View>
         </View>
-        {
-          !forFiller && !game?.is_free && (
-            <View style={styles.bonusInfo}>
-              <View style={styles.entryFeeDisplay}>
-                <Text style={[styles.entryLabel, !isLight && styles.entryLabelDark]}>Entry:</Text>
-                <View style={styles.entryAmountContainer}>
-                  <Text style={[styles.entryAmount, !isLight && styles.entryAmountDark]}>{game.entry_fee} Points</Text>
-                </View>
+        {!forFiller && (
+          <View style={styles.bonusInfo}>
+            <View style={[
+              styles.entryFeeDisplay,
+              { backgroundColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)' }
+            ]}>
+              <Text style={[styles.entryLabel, !isLight && styles.entryLabelDark]}>Entry</Text>
+              <View style={styles.entryAmountContainer}>
+                <Text style={[styles.entryAmount, !isLight && styles.entryAmountDark]}>
+                  {game?.is_free || !game?.entry_fee || game.entry_fee <= 0 ? 'Free' : `${game.entry_fee} Points`}
+                </Text>
               </View>
             </View>
-          )
-        }
+          </View>
+        )}
 
 
       </View>
@@ -233,7 +272,7 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
           >
             <View style={styles.joinButtonContent}>
               <Text style={[styles.joinButtonText, isLight ? { color: "#ffffff" } : { color: "#000000" }]}>
-                Join  {game.entry_fee}
+                {game.is_free ? 'Join for Free' : `Join ${game.entry_fee}`}
               </Text>
             </View>
           </Pressable>
@@ -296,7 +335,7 @@ const UpcommingList = ({ games, handleConfirmChallenge }) => {
               <Text style={[styles.title, isLight ? { color: "#000000" } : { color: "#EAEAEA" }]}> {'Tournaments'}</Text>
 
             ) : (
-              <Text style={[styles.title, isLight ? { color: "#000000" } : { color: "#EAEAEA" }]}> {'Today\'s Tournaments'}</Text>
+              <Text style={[styles.title, isLight ? { color: "#000000" } : { color: "#EAEAEA" }]}> {'Official Tournaments'}</Text>
             )
 
           }
@@ -363,10 +402,10 @@ const styles = StyleSheet.create({
   card: {
     marginHorizontal: 15,
     marginVertical: 8,
-    borderRadius: 16,
-    backgroundColor: "#ffffff",
+    borderRadius: scaleWidth(25),
+    backgroundColor: "transparent",
     borderWidth: 1.5,
-    borderColor: "#333333",
+    borderColor: "#1A1A1A",
   },
   cardDark: {
     backgroundColor: "#000000",
@@ -410,6 +449,8 @@ const styles = StyleSheet.create({
   gameInfoRow: {
     flexDirection: "row",
     gap: 8,
+    flexWrap: 'wrap',
+    alignItems: 'center',
   },
   infoPill: {
     flexDirection: "row",
@@ -440,6 +481,15 @@ const styles = StyleSheet.create({
   },
   pillTextDark: {
     color: "#ffffff",
+  },
+
+  stampContainer: {
+    marginLeft: 'auto',
+  },
+  stampContainerSmall: {
+    width: '100%',
+    alignItems: 'flex-end',
+    marginTop: scaleHeight(6),
   },
 
   // Prize Section
@@ -487,14 +537,14 @@ const styles = StyleSheet.create({
   winnerTakesContainer: {
     flexDirection: "row",
     alignItems: "center",
-    opacity: 0.7,
   },
   winnerTakesLabel: {
     fontSize: 14,
-    color: "#666666",
+    color: "#000000",
+    fontWeight: "600",
   },
   winnerTakesLabelDark: {
-    color: "#cccccc",
+    color: "#ffffff",
   },
   winnerTakesAmount: {
     fontSize: 14,
@@ -518,11 +568,13 @@ const styles = StyleSheet.create({
   entryFeeDisplay: {
     flexDirection: "row",
     alignItems: "center",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
   },
   entryLabel: {
     fontSize: 14,
     color: "#666",
-    marginRight: 6,
   },
   entryLabelDark: {
     color: "#ccc",
@@ -531,6 +583,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: "#1a1a1a",
+    marginLeft: 8,
   },
   entryAmountDark: {
     color: "#fff",
@@ -571,7 +624,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   progressBarFillRed: {
-    backgroundColor: "#dc3545",
+    backgroundColor: "#4CAF50",
   },
 
   // Bottom Section
@@ -620,7 +673,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   joinButtonLight: {
-    backgroundColor: "#1a1a1a",
+    backgroundColor: "#000000",
   },
   joinButtonDark: {
     backgroundColor: "#eaf4f4",

@@ -11,7 +11,7 @@ export const sharedStyles = StyleSheet.create({
     marginHorizontal: scaleWidth(8),
     marginVertical: scaleHeight(8),
     borderRadius: scaleWidth(25),
-    backgroundColor: '#ffffff',
+    backgroundColor: 'transparent',
     borderWidth: scaleWidth(1.5),
     borderColor: '#333333',
   },

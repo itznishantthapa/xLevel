@@ -33,7 +33,7 @@ const RulesList = () => {
     background: isLight ? "#ffffff" : "#000000",
     text: isLight ? "#333333" : "#dadada",
     subText: isLight ? "#000000" : "#ffffff",
-    card: isLight ? "#ffffff" : "#000000",
+    card: isLight ? "transparent" : "#000000",
     cardBorder: isLight ? "#333333" : "#dadada",
     activeTab: isLight ? "#000000" : "#000000",
     inactiveTab: isLight ? "#d9d9d980" : "rgba(255, 255, 255, 0.05)",

@@ -100,8 +100,8 @@ const Header = ({
 
     const computedThemeStyles = {
       textColor: isLight ? "#333333" : "#EAEAEA",
-      iconColor: isLight ? "#333333" : "#EAEAEA",
-      buttonBackground: isLight ? "#f8f9fb" : "rgba(255, 255, 255, 0.1)",
+      iconColor: isLight ? "#000000" : "#EAEAEA",
+      buttonBackground: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.1)",
       profileBackground: isLight ? "#dadada" : "#444444",
     }
 
@@ -182,14 +182,9 @@ const Header = ({
     <View style={[
       styles.header,
       {
-        backgroundColor: isLight ? '#ffffff' : '#000000',
+        backgroundColor: isLight ? 'transparent' : '#000000',
         borderColor: isLight ? '#333333' : '#ffffff' ,
         shadowColor: isLight ? '#000' : '#fff',
-        // borderBottomWidth:5,
-        // borderRightWidth:1,
-        // borderLeftWidth:1,
-        // borderBottomRightRadius:15,
-        // borderBottomLeftRadius:15,
       }
     ]}>
       {/* Left Section - Profile and User Info */}
@@ -274,7 +269,7 @@ const Header = ({
                 return (
                   <Pressable
                     key={name}
-                    style={[styles.socialButton, { backgroundColor: themeStyles.buttonBackground }]}
+                    style={[styles.socialButton, { backgroundColor: themeStyles.buttonBackground}]}
                     onPress={handler}
                     accessibilityRole="button"
                     accessibilityLabel={`Open ${name}`}
@@ -401,5 +396,13 @@ const styles = StyleSheet.create({
     borderRadius: scaleWidth(21),
     justifyContent: "center",
     alignItems: "center",
+    shadowOffset: {
+      width: 0,
+      height: scaleHeight(2),
+    },
+     shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: scaleWidth(8),
+    elevation: 1.5,
   },
 })

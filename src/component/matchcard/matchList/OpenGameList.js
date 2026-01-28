@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -17,7 +17,6 @@ import { useThemeStore } from '../../../store/themeStore';
 import AppHeader from '../../../screens/customer/header/AppHeader';
 import OpenGameCard from '../cards/OpenGameCard';
 import { scaleHeight, scaleWidth } from '../../../utils/scaling';
-import { AntDesign } from '@expo/vector-icons';
 
 // Constants
 const { width, height } = Dimensions.get('window');
@@ -60,8 +59,6 @@ const OpenGameList = ({
   const hasUserScrolledRef = React.useRef(false);
   const [isEndDelay, setIsEndDelay] = React.useState(false);
   const [selectedFilter, setSelectedFilter] = React.useState("All");
-  const [showButton, setShowButton] = useState(false);
-  const listRef = useRef(null);
 
   // Create skeleton data for loading state
   const skeletonData = useMemo(() => 
@@ -115,7 +112,7 @@ const OpenGameList = ({
     return (
       <View style={[
         styles.filterChipsContainer, 
-        { backgroundColor: isLight ? '#ffffff' : '#000000', borderBottomColor: isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)' }
+        { backgroundColor: isLight ? 'transparent' : '#000000', borderBottomColor: isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)' }
       ]}>
         <ScrollView
           horizontal
@@ -229,16 +226,10 @@ const OpenGameList = ({
       <View style={styles.listContainer}>
         <FlashList
           {...flashListProps}
-          ref={listRef}
           data={dataToShow}
           renderItem={isLoading ? renderSkeletonItem : renderMatchCard}
           keyExtractor={(item, index) => isLoading ? `skeleton-${index}` : `match-${item.id}-${index}`}
           ListHeaderComponent={FilterChips}
-          onScroll={(e) => {
-            const y = e.nativeEvent.contentOffset.y;
-            setShowButton(y > 400); // show button after scrolling down 200px
-          }}
-          scrollEventThrottle={16}
           ListFooterComponent={
             (!isLoading && games?.length > 0 && (hasMore || isLoadingMore || isEndDelay))? (
               <View style={styles.footerContainer}>
@@ -266,14 +257,6 @@ const OpenGameList = ({
             />
           }
         />
-         {showButton && (
-        <Pressable
-          style={styles.fab}
-          onPress={() => listRef.current?.scrollToOffset({ offset: 0, animated: true })}
-        >
-          <AntDesign name="arrowup" size={24} color="white" />
-        </Pressable>
-      )}
       </View>
     </View>
   );
@@ -352,7 +335,7 @@ const styles = StyleSheet.create({
   },
   // Card styles - common for both real and skeleton cards
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: 'transparent',
     borderRadius: 12,
     marginHorizontal: 12,
     marginVertical: 8,
@@ -412,15 +395,6 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 8,
     marginTop: 8,
-  },
-  fab: {
-    position: "absolute",
-    bottom: 30,
-    left: '45%',
-    backgroundColor: "black",
-    borderRadius: 30,
-    padding: 15,
-    elevation: 5,
   },
 });
 

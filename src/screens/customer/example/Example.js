@@ -178,7 +178,7 @@ const Example = ({ route }) => {
               style={styles.warningIcon}
             />
             <Text style={[styles.warningText, { color: isLight ? '#333333' : '#ffffff' }]}>
-              Your screenshots should match this format. Submitting incorrect or fake screenshots may result in account ban.
+              Your screenshots should match this format. Submitting incorrect or fake screenshots may result in account suspension and a 50 point penalty.
             </Text>
           </View>
         </ScrollView>

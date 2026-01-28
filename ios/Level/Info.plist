@@ -19,7 +19,7 @@
 	<key>CFBundlePackageType</key>
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
-	<string>3.1</string>
+	<string>1.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -29,7 +29,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.blackonedevs.levelesportmatchmaking</string>
+				<string>com.blackonedevs.levelesportmatchmaking.v1</string>
 			</array>
 		</dict>
 		<dict>
@@ -37,12 +37,12 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.901665380294-181g13prhku15lmhou5c5n47rje1lqru</string>
+				<string>com.googleusercontent.apps.901665380294-3ia2oj91ncrf6opt9the6r5agu1ijo19</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>7</string>
+	<string>1</string>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-3488447190245589~1297601654</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
