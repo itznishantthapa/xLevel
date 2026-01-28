@@ -404,7 +404,7 @@
 					"FB_SONARKIT_ENABLED=1",
 				);
 				INFOPLIST_FILE = Level/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = level;
+				INFOPLIST_KEY_CFBundleDisplayName = Level;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -442,7 +442,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 4ZCCVXT8S5;
 				INFOPLIST_FILE = Level/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = level;
+				INFOPLIST_KEY_CFBundleDisplayName = Level;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
