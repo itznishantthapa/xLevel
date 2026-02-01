@@ -3,7 +3,7 @@ import { getApp } from '@react-native-firebase/app';
 import { getFirestore, doc, getDoc } from '@react-native-firebase/firestore';
 
 // Current app versions - Update these when releasing new versions for each platform
-export const CURRENT_IOS_VERSION = 1.0;
+export const CURRENT_IOS_VERSION = 1.1;
 export const CURRENT_ANDROID_VERSION = 4.0;
 
 // Get current version based on platform
@@ -83,14 +83,14 @@ export const getAppStoreUrls = async () => {
     if (urlDoc.exists()) {
       const data = urlDoc.data();
       return {
-        appstoreUrl: data?.appstoreUrl ?? 'https://apps.apple.com/np/app/level-esport-matchmaking/id6753664292',
+        appstoreUrl: data?.appstoreUrl ?? 'https://apps.apple.com/us/app/level-esport-matchmaking/id6757985105',
         playstoreUrl: data?.playstoreUrl ?? 'https://play.google.com/store/apps/details?id=com.blackonedevs.levelesportmatchmaking',
       };
     }
 
     // Fallback URLs if document doesn't exist
     return {
-      appstoreUrl: 'https://apps.apple.com/np/app/level-esport-matchmaking/id6753664292',
+      appstoreUrl: 'https://apps.apple.com/us/app/level-esport-matchmaking/id6757985105',
       playstoreUrl: 'https://play.google.com/store/apps/details?id=com.blackonedevs.levelesportmatchmaking',
     };
   } catch (error) {
@@ -99,7 +99,7 @@ export const getAppStoreUrls = async () => {
     }
     // Return fallback URLs on error
     return {
-      appstoreUrl: 'https://apps.apple.com/np/app/level-esport-matchmaking/id6753664292',
+      appstoreUrl: 'https://apps.apple.com/us/app/level-esport-matchmaking/id6757985105',
       playstoreUrl: 'https://play.google.com/store/apps/details?id=com.blackonedevs.levelesportmatchmaking',
     };
   }

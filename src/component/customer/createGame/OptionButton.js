@@ -16,7 +16,7 @@ const OptionButton = ({ isSelected, label, onPress, isLight }) => (
       isSelected && styles.optionButtonSelected,
       {
         backgroundColor: isSelected ? (isLight ? "#000000" : "#ffffff") : isLight ? "#f5f5f5" : "#1a1a1a",
-        borderColor: isLight ? "#333333" : "#ffffff",
+        borderColor: isSelected ? (isLight ? "#333333" : "#ffffff") : isLight ? "#cccccc" : "#333333",
       },
     ]}
     onPress={onPress}
