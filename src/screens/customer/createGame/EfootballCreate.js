@@ -72,10 +72,23 @@ const CreateEFootball = ({ route }) => {
 
   // Handle option selection for game settings
   const handleOptionSelect = (key, value) => {
-    setGameSettings((prev) => ({
-      ...prev,
-      [key]: value,
-    }))
+    setGameSettings((prev) => {
+      const updates = { [key]: value }
+      
+      // Auto-set match time to 6 when Authentic team type is selected
+      if (key === "team_type" && value === "Authentic") {
+        updates.match_time = 6
+      }
+      // Reset to default 15 when switching back to Dream
+      else if (key === "team_type" && value === "Dream" && prev.match_time === 6) {
+        updates.match_time = 15
+      }
+      
+      return {
+        ...prev,
+        ...updates,
+      }
+    })
   }
 
   // Handle entry fee change with validation
@@ -205,11 +218,15 @@ const CreateEFootball = ({ route }) => {
       {/* Match Time Selection */}
       <OptionsSection
         title="Match Time"
-        options={[
-          { value: 5, label: "5 min" },
-          { value: 10, label: "10 min" },
-          { value: 15, label: "15 min" }
-        ]}
+        options={
+          gameSettings.team_type === "Authentic"
+            ? [{ value: 6, label: "6 min" }]
+            : [
+                { value: 5, label: "5 min" },
+                { value: 10, label: "10 min" },
+                { value: 15, label: "15 min" }
+              ]
+        }
         selectedValue={gameSettings.match_time}
         onSelect={(value) => handleOptionSelect("match_time", value)}
         isLight={isLight}
