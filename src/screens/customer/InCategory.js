@@ -29,9 +29,7 @@ const InCategory = ({ route }) => {
   // Check if iOS is active
   const isIOSActive = !!utils?.is_ios_active
 
-  useEffect(() => {
-    console.log("Utils data in InCategory:", utils);
-  }, [utils])
+
   
 
 
