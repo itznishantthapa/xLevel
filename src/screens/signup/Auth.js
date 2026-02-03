@@ -410,7 +410,7 @@ const Auth = () => {
               resizeMode="contain"
             />
             <Text style={[styles.tagline, { color: colors.success }]}>
-              level: eSport Matchmaking...
+              Verssa
             </Text>
             <View style={[styles.taglineUnderline, { backgroundColor: colors.success }]} />
           </View>

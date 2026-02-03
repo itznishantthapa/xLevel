@@ -216,9 +216,6 @@ const PointsIn = () => {
                 </View>
               )}
             </View>
-            <Text style={[styles.companyName, { color: colors.text }]}>
-              Level Pvt. Ltd.
-            </Text>
           </View>
 
           {/* Form Fields */}
