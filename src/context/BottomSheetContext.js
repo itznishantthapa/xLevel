@@ -23,6 +23,7 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler"
 import { useThemeStore } from "../store/themeStore"
 // Removed unused icon imports
 import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { NavigationService } from "../service/navigationService"
 import { useQueryClient } from "@tanstack/react-query"
 import OpponentSheetContent from "./component/OpponentSheetContent"
@@ -376,10 +377,6 @@ const JoinSheetContent = React.memo(
   }) => {
     return (
       <View style={styles.content}>
-        <View style={styles.headerRow}>
-          <Text style={[styles.title, { color: isDark ? "#ffffff" : "#333333" }]}>Join Match</Text>
- 
-        </View>
         <ScrollView
           style={styles.scrollArea}
           contentContainerStyle={styles.scrollContent}
@@ -387,37 +384,37 @@ const JoinSheetContent = React.memo(
           bounces={false}
         >
           <View style={styles.gameRow}>
-            <View style={[styles.gameItem, { borderColor: isDark ? "#ffffff" : "#333333" }]}>
-              <Text style={[styles.label, { color: isDark ? "#cccccc" : "#666666" }]}>Game</Text>
-              <Text style={[styles.value, { color: isDark ? "#ffffff" : "#333333" }]}>{game.game?.name}</Text>
+            <View style={[styles.gameItem, { backgroundColor: isDark ? "#2a2a2a" : "#e5e5e5", borderColor: isDark ? "#3a3a3a" : "#d0d0d0" }]}>
+              <Text style={[styles.label, { color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }]}>GAME</Text>
+              <Text style={[styles.value, { color: isDark ? "#ffffff" : "#000000" }]}>{game.game?.name}</Text>
             </View>
-            <View style={[styles.gameItem, { borderColor: isDark ? "#ffffff" : "#333333" }]}>
-              <Text style={[styles.label, { color: isDark ? "#cccccc" : "#666666" }]}>Mode</Text>
-              <Text style={[styles.value, { color: isDark ? "#ffffff" : "#333333" }]}>{game.game?.game_mode}</Text>
+            <View style={[styles.gameItem, { backgroundColor: isDark ? "#2a2a2a" : "#e5e5e5", borderColor: isDark ? "#3a3a3a" : "#d0d0d0" }]}>
+              <Text style={[styles.label, { color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }]}>MODE</Text>
+              <Text style={[styles.value, { color: isDark ? "#ffffff" : "#000000" }]}>{game.game?.game_mode}</Text>
             </View>
           </View>
           {game.created_by.role === "customer" && (
             <>
               {/* For chess, show only Creator name in a single full-width card */}
               {game.game?.name?.toLowerCase() === "chess" ? (
-                <View style={[styles.infoRowCompact, { borderColor: isDark ? "#ffffff" : "#333333" }]}>
-                  <Text style={[styles.label, { color: isDark ? "#cccccc" : "#666666" }]}>Creator</Text>
-                  <Text style={[styles.value, { color: isDark ? "#ffffff" : "#333333" }]} numberOfLines={1}>
+                <View style={[styles.infoRowCompact, { backgroundColor: isDark ? "#2a2a2a" : "#e5e5e5", borderColor: isDark ? "#3a3a3a" : "#d0d0d0" }]}>
+                  <Text style={[styles.label, { color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }]}>CREATOR</Text>
+                  <Text style={[styles.value, { color: isDark ? "#ffffff" : "#000000" }]} numberOfLines={1}>
                     {game.created_by?.full_name}
                   </Text>
                 </View>
               ) : (
                 // For other games, show Creator and UID side by side
                 <View style={styles.gameRow}>
-                  <View style={[styles.gameItem, { borderColor: isDark ? "#ffffff" : "#333333" }]}>
-                    <Text style={[styles.label, { color: isDark ? "#cccccc" : "#666666" }]}>Creator</Text>
-                    <Text style={[styles.value, { color: isDark ? "#ffffff" : "#333333" }]} numberOfLines={1}>
+                  <View style={[styles.gameItem, { backgroundColor: isDark ? "#2a2a2a" : "#e5e5e5", borderColor: isDark ? "#3a3a3a" : "#d0d0d0" }]}>
+                    <Text style={[styles.label, { color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }]}>CREATOR</Text>
+                    <Text style={[styles.value, { color: isDark ? "#ffffff" : "#000000" }]} numberOfLines={1}>
                       {game.created_by?.full_name}
                     </Text>
                   </View>
-                  <View style={[styles.gameItem, { borderColor: isDark ? "#ffffff" : "#333333" }]}>
-                    <Text style={[styles.label, { color: isDark ? "#cccccc" : "#666666" }]}>UID</Text>
-                    <Text style={[styles.value, { color: isDark ? "#ffffff" : "#333333" }]} numberOfLines={1}>
+                  <View style={[styles.gameItem, { backgroundColor: isDark ? "#2a2a2a" : "#e5e5e5", borderColor: isDark ? "#3a3a3a" : "#d0d0d0" }]}>
+                    <Text style={[styles.label, { color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }]}>UID</Text>
+                    <Text style={[styles.value, { color: isDark ? "#ffffff" : "#000000" }]} numberOfLines={1}>
                       {game.created_by?.game_uid}
                     </Text>
                   </View>
@@ -443,15 +440,26 @@ const JoinSheetContent = React.memo(
           
           
           {!payload.hasAccessCode && !game.is_free ? (
-            <View style={[styles.infoRowCompact, { borderColor: isDark ? "#ffffff" : "#333333" }]}>
-              <Text style={[styles.label, { color: isDark ? "#cccccc" : "#666666" }]}>Entry Points</Text>
-              <View style={styles.feeBox}>
-                <Text style={styles.feeText}>{game.entry_fee} (Points)</Text>
+            <View style={styles.entryPointsCard}>
+              <View style={[styles.entryGlowBorder, { borderColor: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)" }]}>
+                <View style={styles.entryInner}>
+                  <View style={[styles.entryCorner, styles.entryCornerTL, { borderColor: isDark ? "#ffffff" : "#000000" }]} />
+                  <View style={[styles.entryCorner, styles.entryCornerTR, { borderColor: isDark ? "#ffffff" : "#000000" }]} />
+                  <View style={[styles.entryCorner, styles.entryCornerBL, { borderColor: isDark ? "#ffffff" : "#000000" }]} />
+                  <View style={[styles.entryCorner, styles.entryCornerBR, { borderColor: isDark ? "#ffffff" : "#000000" }]} />
+                  <MaterialCommunityIcons name="star-four-points-outline" size={18} color={isDark ? "#00bf63" : "#00bf63"} />
+                  <Text style={[styles.entryAmount, { color: isDark ? "#ffffff" : "#000000" }]}>{game.entry_fee}</Text>
+                </View>
+              </View>
+              <View style={styles.entryTagLine}>
+                <View style={[styles.entryDash, { backgroundColor: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)" }]} />
+                <Text style={[styles.entryTagText, { color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }]}>ENTRY POINTS</Text>
+                <View style={[styles.entryDash, { backgroundColor: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)" }]} />
               </View>
             </View>
           ) : !game.is_free && (
-            <View style={[styles.infoRowCompact, { borderColor: isDark ? "#ffffff" : "#333333" }]}>
-              <Text style={[styles.label, { color: isDark ? "#cccccc" : "#666666" }]}>Access Code</Text>
+            <View style={[styles.infoRowCompact, { backgroundColor: isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)", borderColor: isDark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.1)" }]}>
+              <Text style={[styles.label, { color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }]}>ACCESS CODE</Text>
               <Pressable
                 style={[
                   styles.accessCodeInput,
@@ -500,8 +508,8 @@ const JoinSheetContent = React.memo(
                   accessCode: prev.hasAccessCode ? "" : prev.accessCode
                 }))}
               >
-                <Text style={[styles.toggleLinkText, { color: "#00C851" }]}>
-                  {payload.hasAccessCode ? "I don't have access code" : "I have access code"}
+                <Text style={[styles.toggleLinkText, { color: isDark ? "#ffffff" : "#000000" }]}>
+                  {payload.hasAccessCode ? "// USE POINTS" : "// USE ACCESS CODE"}
                 </Text>
               </Pressable>
             )
@@ -553,7 +561,7 @@ const JoinSheetContent = React.memo(
                 }, true)
               }}
             >
-              <Text style={styles.rulesLinkText}>Read rules</Text>
+              <Text style={[styles.rulesLinkText, { color: "#00bf63" }]}>[ GO TO RULES ]</Text>
             </Pressable>
           </View>
         </ScrollView>
@@ -695,26 +703,29 @@ const styles = StyleSheet.create({
   },
   gameItem: {
     flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 2,
     borderWidth: 1,
   },
   label: {
-    fontSize: 12,
-    marginBottom: 2,
+    fontSize: 9,
+    fontWeight: "700",
+    letterSpacing: 2,
+    marginBottom: 4,
   },
   value: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: "600",
+    letterSpacing: 0.5,
   },
   infoRowCompact: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 2,
     borderWidth: 1,
   },
   feeBox: {
@@ -725,6 +736,82 @@ const styles = StyleSheet.create({
   feeText: {
     color: "#00bf63",
     fontWeight: "700",
+  },
+  entryPointsCard: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 12,
+    gap: 8,
+  },
+  entryGlowBorder: {
+    borderWidth: 1,
+    borderRadius: 0,
+    paddingVertical: 14,
+    paddingHorizontal: 32,
+    position: "relative",
+  },
+  entryInner: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+  },
+  entryCorner: {
+    position: "absolute",
+    width: 8,
+    height: 8,
+  },
+  entryCornerTL: {
+    top: -1,
+    left: -1,
+    borderTopWidth: 2,
+    borderLeftWidth: 2,
+  },
+  entryCornerTR: {
+    top: -1,
+    right: -1,
+    borderTopWidth: 2,
+    borderRightWidth: 2,
+  },
+  entryCornerBL: {
+    bottom: -1,
+    left: -1,
+    borderBottomWidth: 2,
+    borderLeftWidth: 2,
+  },
+  entryCornerBR: {
+    bottom: -1,
+    right: -1,
+    borderBottomWidth: 2,
+    borderRightWidth: 2,
+  },
+  entryHeading: {
+    fontSize: 13,
+    fontWeight: "700",
+  },
+  entryAmount: {
+    fontSize: 24,
+    fontWeight: "900",
+    letterSpacing: 2,
+  },
+  entryUnit: {
+    fontSize: 11,
+    fontWeight: "800",
+    letterSpacing: 2,
+  },
+  entryTagLine: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  entryDash: {
+    width: 20,
+    height: 1,
+  },
+  entryTagText: {
+    fontSize: 9,
+    fontWeight: "700",
+    letterSpacing: 3,
   },
   fightTypePill: {
     borderWidth: 1,
@@ -840,20 +927,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   rulesLinkText: {
-    color: "#00C851",
-    fontSize: scaleWidth(14),
-    fontWeight: "600",
-    textDecorationLine: "underline",
+    fontSize: scaleWidth(12),
+    fontWeight: "700",
+    letterSpacing: 1,
   },
   toggleTextButton: {
     alignSelf: "flex-start",
-    paddingVertical: 8,
-    paddingHorizontal: 4,
+    paddingVertical: 6,
+    paddingHorizontal: 0,
   },
   toggleLinkText: {
-    fontSize: 14,
+    fontSize: 11,
     fontWeight: "600",
-    textDecorationLine: "underline",
+    letterSpacing: 1,
   },
   accessCodeInput: {
     flex: 1,

@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "2.png",
+      "filename" : "splashforios.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "2 1.png",
+      "filename" : "splashforios 1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "2 2.png",
+      "filename" : "splashforios 2.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
