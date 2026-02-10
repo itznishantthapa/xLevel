@@ -37,7 +37,7 @@ const CreateEFootball = ({ route }) => {
     match_type: "free", // "free" or "paid"
     team_type: "Authentic",
     match_type_game: "Standard",
-    match_time: 15,
+    match_time: 6,
     injuries: true,
     extra_time: true,
     penalties: true,
