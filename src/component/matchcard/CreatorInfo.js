@@ -240,26 +240,40 @@ const CreatorInfo = ({ game, isLight, isCreator, user }) => {
       <View style={sharedStyles.rightInfoContainer}>
         {gameData.gameUsername && (
           <View style={{
-            backgroundColor: isLight ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.08)',
+            position: 'relative',
             paddingVertical: scaleWidth(10),
             paddingHorizontal: scaleWidth(14),
             marginBottom: scaleWidth(8),
             alignItems: 'center',
             justifyContent: 'center',
-            borderWidth: 1,
-            borderColor: isLight ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.1)',
           }}>
+            {/* Top-left corner bracket */}
+            <View style={{ position: 'absolute', top: 0, left: 0, width: scaleWidth(14), height: scaleWidth(2), backgroundColor: isLight ? '#333333' : '#ffffff' }} />
+            <View style={{ position: 'absolute', top: 0, left: 0, width: scaleWidth(2), height: scaleWidth(14), backgroundColor: isLight ? '#333333' : '#ffffff' }} />
+            
+            {/* Top-right corner bracket */}
+            <View style={{ position: 'absolute', top: 0, right: 0, width: scaleWidth(14), height: scaleWidth(2), backgroundColor: isLight ? '#333333' : '#ffffff' }} />
+            <View style={{ position: 'absolute', top: 0, right: 0, width: scaleWidth(2), height: scaleWidth(14), backgroundColor: isLight ? '#333333' : '#ffffff' }} />
+            
+            {/* Bottom-left corner bracket */}
+            <View style={{ position: 'absolute', bottom: 0, left: 0, width: scaleWidth(14), height: scaleWidth(2), backgroundColor: isLight ? '#333333' : '#ffffff' }} />
+            <View style={{ position: 'absolute', bottom: 0, left: 0, width: scaleWidth(2), height: scaleWidth(14), backgroundColor: isLight ? '#333333' : '#ffffff' }} />
+            
+            {/* Bottom-right corner bracket */}
+            <View style={{ position: 'absolute', bottom: 0, right: 0, width: scaleWidth(14), height: scaleWidth(2), backgroundColor: isLight ? '#333333' : '#ffffff' }} />
+            <View style={{ position: 'absolute', bottom: 0, right: 0, width: scaleWidth(2), height: scaleWidth(14), backgroundColor: isLight ? '#333333' : '#ffffff' }} />
+
             <Text 
               style={{
-                color: isLight ? '#1a1a1a' : '#f5f5f5',
-                fontSize: scaleWidth(14),
-                fontWeight: '600',
+                color: isLight ? '#1a1a1a' : '#ffffff',
+                fontSize: scaleWidth(15),
+                fontWeight: '700',
                 textAlign: 'center',
                 letterSpacing: 0.3,
               }}
-              numberOfLines={2}
+              numberOfLines={1}
               adjustsFontSizeToFit
-              minimumFontScale={0.7}
+              minimumFontScale={0.6}
             >
               {gameData.gameUsername}
             </Text>

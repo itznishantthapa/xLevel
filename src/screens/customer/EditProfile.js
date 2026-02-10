@@ -29,7 +29,9 @@ import { EnhancerAPI } from '../../api/enhancerApi'
 const editProfileSchema = yup.object().shape({
   full_name: yup
     .string()
+    .trim()
     .matches(/^[a-zA-Z\s]+$/, 'Only letters and spaces allowed')
+    .test('has-letters', 'Name must contain at least one letter', value => value && /[a-zA-Z]/.test(value))
     .min(2, 'Name must be at least 2 characters')
     .max(50, 'Name cannot exceed 50 characters')
     .required('Full name is required'),
@@ -66,7 +68,7 @@ const EditProfile = () => {
 
   //============Change Detection Functions============
   const hasProfileChanges = () => {
-    const nameChanged = profileData.full_name !== user?.full_name
+    const nameChanged = profileData.full_name.trim() !== (user?.full_name || '').trim()
     const imageChanged = imageResult !== null
     return nameChanged || imageChanged
   }
@@ -109,7 +111,7 @@ const EditProfile = () => {
   //============Form Data Preparation For Backend============
   const prepareFormData = () => {
     const formData = new FormData()
-    formData.append('full_name', profileData.full_name)
+    formData.append('full_name', profileData.full_name.trim())
 
     if (imageResult) {
       formData.append('profile_picture', {
@@ -165,7 +167,7 @@ const EditProfile = () => {
       
       // Only validate and update profile if profile data changed
       if (profileChanged) {
-        await editProfileSchema.validate({ full_name: profileData.full_name })
+        await editProfileSchema.validate({ full_name: profileData.full_name.trim() })
         Keyboard.dismiss()
         await handleUpdateUser()
       }
