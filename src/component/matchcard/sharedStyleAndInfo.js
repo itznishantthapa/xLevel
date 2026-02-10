@@ -20,11 +20,11 @@ export const sharedStyles = StyleSheet.create({
     borderColor: '#ffffff',
   },
   cardContent: {
-    padding: scaleWidth(16),
+    padding: scaleWidth(12),
   },
   mainSection: {
     flexDirection: 'row',
-    marginBottom: scaleHeight(16),
+    marginBottom: scaleHeight(10),
   },
   leftSection: {
     flex: 1,
@@ -38,7 +38,7 @@ export const sharedStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     gap: scaleWidth(8),
-    marginBottom: scaleHeight(12),
+    marginBottom: scaleHeight(8),
   },
   gameInfoItem: {
     flexDirection: 'row',
@@ -120,10 +120,10 @@ export const sharedStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#d9d9d980',
-    padding: scaleWidth(12),
+    padding: scaleWidth(10),
     borderTopRightRadius: scaleWidth(12),
     borderTopLeftRadius: scaleWidth(12),
-    marginBottom: scaleHeight(12),
+    marginBottom: scaleHeight(8),
   },
   creatorHeaderDark: {
     backgroundColor: '#1a1a1a',
@@ -183,12 +183,11 @@ export const sharedStyles = StyleSheet.create({
     gap: scaleHeight(4),
   },
   statusContainer: {
-    paddingVertical: scaleHeight(8),
-    paddingHorizontal: scaleWidth(16),
-    borderBottomRightRadius: scaleWidth(12),
-    borderBottomLeftRadius: scaleWidth(12),
+    paddingVertical: scaleHeight(6),
+    paddingHorizontal: scaleWidth(12),
+    borderRadius: 0,
     alignItems: 'center',
-    marginTop: scaleHeight(12),
+    marginTop: scaleHeight(8),
     flexDirection: 'row',
     justifyContent: 'center',
     gap: scaleWidth(6),
@@ -325,7 +324,7 @@ export const sharedStyles = StyleSheet.create({
   buttonLine: {
     width: '100%',
     height: 1,
-    marginVertical: scaleHeight(12),
+    marginVertical: scaleHeight(8),
   },
   profileFallback: {
     width: scaleWidth(40),
