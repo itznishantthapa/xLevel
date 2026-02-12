@@ -7,7 +7,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-export const FadingText = ({ text, color }) => {
+export const FadingText = ({ text, color, fontWeight = 'normal' }) => {
   const opacity = useSharedValue(1);
 
   useEffect(() => {
@@ -24,7 +24,7 @@ export const FadingText = ({ text, color }) => {
 
   return (
     <Animated.Text
-      style={[{ color, fontSize: 14}, animatedStyle]}
+      style={[{ color, fontSize: 14, fontWeight }, animatedStyle]}
     >
       {text}
     </Animated.Text>

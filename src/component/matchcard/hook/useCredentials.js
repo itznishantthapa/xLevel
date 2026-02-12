@@ -22,6 +22,10 @@ const teamCodeSchema = yup.string()
   .required('Team code is required')
   .min(1, 'Team code must be at least 1 character')
 
+const lobbyIdSchema = yup.string()
+  .required('Lobby ID is required')
+  .min(1, 'Lobby ID must be at least 1 character')
+
 const roomIdSchema = yup.string()
   .required('Room ID is required')
   .min(1, 'Room ID must be at least 1 character')
@@ -35,6 +39,7 @@ export const useCredentials = (gameId) => {
   const [password, setPassword] = useState("")
   const [teamCode, setTeamCode] = useState("")
   const [joinUrl, setJoinUrl] = useState("")
+  const [lobbyId, setLobbyId] = useState("")
   const [isSent, setIsSent] = useState(false)
   const [showResendInputs, setShowResendInputs] = useState(false)
   const [resendCount, setResendCount] = useState(0)
@@ -63,12 +68,14 @@ export const useCredentials = (gameId) => {
     setPassword("")
     setTeamCode("")
     setJoinUrl("")
+    setLobbyId("")
   }
 
   // Validate credentials based on game mode
   const validateCredentials = async (game) => {
     try {
       const gameMode = game.game?.game_mode?.toLowerCase() || "";
+      const gameName = game.game?.name?.toLowerCase() || "";
       
       // Chess games (Blitz, Bullet only)
       if (gameMode.includes("blitz") || gameMode.includes("bullet")) {
@@ -91,6 +98,18 @@ export const useCredentials = (gameId) => {
             challenge_id: game?.id,
             post_type: "provided",
             team_code: teamCode.trim(),
+          }
+        };
+      }
+      // MLBB games - use lobby_id
+      else if (gameName.includes("mlbb")) {
+        await lobbyIdSchema.validate(lobbyId.trim());
+        return {
+          isValid: true,
+          payload: {
+            challenge_id: game?.id,
+            post_type: "provided",
+            lobby_id: lobbyId.trim(),
           }
         };
       } 
@@ -183,6 +202,8 @@ export const useCredentials = (gameId) => {
     setTeamCode,
     joinUrl,
     setJoinUrl,
+    lobbyId,
+    setLobbyId,
     isSent,
     setIsSent,
     showResendInputs,

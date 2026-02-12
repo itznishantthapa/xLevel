@@ -153,7 +153,7 @@ const NotificationCard = ({ notification }) => {
     const RoomDetails = () => {
         if (!notification?.room) return null;
 
-        const { room_id, room_pass, team_code } = notification.room;
+        const { room_id, room_pass, team_code, lobby_id } = notification.room;
 
         // Helper to render a single info row
         const renderInfoRow = (label, value, onPressFn) => (
@@ -194,6 +194,9 @@ const NotificationCard = ({ notification }) => {
 
                 {/* Team Code */}
                 {team_code && renderInfoRow('Teamcode', team_code, () => handleRoomCopy(team_code))}
+
+                {/* Lobby ID (for MLBB) */}
+                {lobby_id && renderInfoRow('Lobby ID', lobby_id, () => handleRoomCopy(lobby_id))}
             </View>
         );
     };

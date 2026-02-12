@@ -71,11 +71,14 @@ const CredentialsSection = ({
   // Helper function to determine credential type based on game mode
   const getCredentialType = () => {
     const gameMode = game.game?.game_mode?.toLowerCase() || "";
+    const gameName = game.game?.name?.toLowerCase() || "";
 
     if (gameMode.includes("blitz") || gameMode.includes("bullet")) {
       return "join_url";
     } else if (gameMode.includes("lone wolf")) {
       return "team_code";
+    } else if (gameName.includes("mlbb")) {
+      return "lobby_id"; // MLBB uses lobby ID (stored as team_code in backend)
     } else {
       // Team Death Match, WOW, Clash Squad, eFootball Friend Match etc.
       return "room_credentials";
@@ -85,6 +88,7 @@ const CredentialsSection = ({
   const credentialType = getCredentialType();
   const isChessGame = credentialType === "join_url";
   const isLoneWolf = credentialType === "team_code";
+  const isMLBB = credentialType === "lobby_id";
   const isRoomCredentials = credentialType === "room_credentials";
 
   // Creator view - show input fields or sent credentials
@@ -98,7 +102,8 @@ const CredentialsSection = ({
     // Check if credentials are already sent
     const hasCredentials = isChessGame ? !!game.join_url :
       isLoneWolf ? !!game.team_code :
-        (!!game.room_id && !!game.room_pass);
+        isMLBB ? !!game.lobby_id :
+          (!!game.room_id && !!game.room_pass);
 
     // Show resend button when credentials are sent but resend limit allows
     const shouldShowResendButton =
@@ -119,7 +124,8 @@ const CredentialsSection = ({
             <Text style={[sharedStyles.credentialsGuide, { color: isLight ? "#333333" : "#ffffff" }]}>
               {isRoomCredentials ? "Send Room ID & Password" :
                 isLoneWolf ? "Send Teamcode" :
-                  "Send Join URL"}
+                  isMLBB ? "Send Lobby ID" :
+                    "Send Join URL"}
             </Text>
           )}
 
@@ -179,6 +185,25 @@ const CredentialsSection = ({
 
 
 
+                  />
+                </View>
+              </View>
+            </View>
+          ) : isMLBB ? (
+            <View style={sharedStyles.inputRow}>
+              <View style={sharedStyles.inputWrapper}>
+                <View
+                  style={[
+                    sharedStyles.potInputContainer,
+                    { borderColor: isLight ? "#000000" : "#ffffff" }
+                  ]}
+                >
+                  <TextInput
+                    style={[sharedStyles.potInput, { color: isLight ? "#333333" : "#ffffff" }]}
+                    placeholder={`${game.lobby_id ? game.lobby_id : "Lobby ID"}`}
+                    placeholderTextColor={isLight ? "#666666" : "#cccccc"}
+                    value={credentials.lobbyId}
+                    onChangeText={credentials.setLobbyId}
                   />
                 </View>
               </View>
@@ -358,6 +383,34 @@ const CredentialsSection = ({
     )
   }
 
+  // Lobby ID (for MLBB Classic and Brawl modes)
+  if (isMLBB && game.lobby_id && game.status === "in_progress") {
+    return (
+      <View style={sharedStyles.credentialsDisplayContainer}>
+        <Text style={[sharedStyles.credentialsGuide, { color: isLight ? "#333333" : "#ffffff" }]}>
+         Lobby ID (Copy & Join)
+        </Text>
+        <View style={sharedStyles.inputRow}>
+          <View style={sharedStyles.inputWrapper}>
+            <Pressable
+              onPress={() => copyToClipboard(game.lobby_id, true)}
+              style={[
+                sharedStyles.potInputContainer,
+                { borderColor: isLight ? "#000000" : "#ffffff" }
+              ]}
+            >
+              <Text style={[{ color: isLight ? "#666666" : "#cccccc", fontSize: scaleWidth(12), marginRight: scaleWidth(8) }]}>Lobby ID:</Text>
+              <Text style={[{ flex: 1, color: isLight ? "#333333" : "#ffffff", fontWeight: '500' }]}>
+                {game.lobby_id}
+              </Text>
+              <MaterialIcons name="content-copy" size={scaleWidth(14)} color={isLight ? "#666666" : "#dadada"} />
+            </Pressable>
+          </View>
+        </View>
+      </View>
+    )
+  }
+
   // Join URL (for Chess Blitz, Bullet only)
   if (isChessGame && game.join_url && game.status === "in_progress") {
     const handlePressURL = () => {
@@ -437,10 +490,11 @@ const CredentialsSection = ({
   if (game.created_by.role === "customer" && game.status !== "expired" && game.status !== "resolved") {
     return (
       <View style={sharedStyles.credentialsDisplayContainer}>
-        <View style={[sharedStyles.waitingContainer, { borderColor: isLight ? "#000000" : "#ffffff" }]}>
+        <View style={[sharedStyles.waitingContainer, { borderWidth: 0, backgroundColor: isLight ? "#000000" : "#ffffff" }]}>
           <FadingText
-            text={game.status === "in_progress" ? "You are confirmed as opponent !" : "Waiting for the response..."}
-            color={isLight ? "#333333" : "#ffffff"}
+            text={game.status === "in_progress" ? "YOU'RE CONFIRMED" : "REQUESTING ..."}
+            color={isLight ? "#ffffff" : "#000000"}
+            fontWeight="bold"
           />
         </View>
       </View>

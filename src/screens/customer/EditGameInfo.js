@@ -140,6 +140,52 @@ const efootballValidationSchema = relaxedUsernameValidationSchema.shape({
     .required('Courtesy rating is required'),
 })
 
+const mlbbValidationSchema = relaxedUsernameValidationSchema.shape({
+  uid: yup
+    .string()
+    .matches(/^[0-9]+$/, 'UID must contain only digits')
+    .test('mlbb-length', 'MLBB UID must be 6-12 digits', v => !!v && /^[0-9]{6,12}$/.test(v))
+    .required('Game UID is required'),
+  current_rank: yup
+    .string()
+    .test('valid-rank', 'Invalid rank. Must be exactly: Warrior, Elite, Master, Grandmaster, Epic, Legend, Mythic, Mythical Honor, Mythical Glory, or Mythical Immortal', function(value) {
+      if (!value) return false
+      const validRanks = [
+        'Warrior',
+        'Elite',
+        'Master',
+        'Grandmaster',
+        'Epic',
+        'Legend',
+        'Mythic',
+        'Mythical Honor',
+        'Mythical Glory',
+        'Mythical Immortal'
+      ]
+      return validRanks.includes(value)
+    })
+    .required('Current rank is required'),
+  highest_rank: yup
+    .string()
+    .test('valid-rank', 'Invalid rank. Must be exactly: Warrior, Elite, Master, Grandmaster, Epic, Legend, Mythic, Mythical Honor, Mythical Glory, or Mythical Immortal', function(value) {
+      if (!value) return false
+      const validRanks = [
+        'Warrior',
+        'Elite',
+        'Master',
+        'Grandmaster',
+        'Epic',
+        'Legend',
+        'Mythic',
+        'Mythical Honor',
+        'Mythical Glory',
+        'Mythical Immortal'
+      ]
+      return validRanks.includes(value)
+    })
+    .required('Highest rank is required'),
+})
+
 const defaultGameValidationSchema = baseValidationSchema.shape({
   game_uid: yup
     .string()
@@ -175,6 +221,11 @@ const EditGameInfo = () => {
   const { game, profile } = route.params
   const isEditing = !!profile
   const gameName = (profile?.game_name || game?.game_name || "").toLowerCase()
+
+  useEffect(() => {
+   console.log("Loaded profile for editing:", profile)
+  }, [route.params])
+  
 
   // Initialize game profile form state based on game type
   const getInitialProfileState = () => {
@@ -215,6 +266,14 @@ const EditGameInfo = () => {
           current_division: profile?.current_division?.toString() || profile?.game_level?.toString() || "",
           highest_division: profile?.highest_division?.toString() || "",
           courtesy_rating: profile?.courtesy_rating || "",
+        }
+
+      case "mlbb":
+        return {
+          ...baseState,
+          uid: profile?.uid || profile?.game_uid || "",
+          current_rank: profile?.current_rank || "",
+          highest_rank: profile?.highest_rank || "",
         }
 
       default:
@@ -274,6 +333,9 @@ const EditGameInfo = () => {
         case 'pubg':
           transformed = value.replace(/[^0-9]/g,'').slice(0,15)
           break
+        case 'mlbb':
+          transformed = value.replace(/[^0-9]/g,'').slice(0,12)
+          break
         default:
           transformed = value.replace(/[^A-Za-z0-9]/g,'')
       }
@@ -299,6 +361,8 @@ const EditGameInfo = () => {
         })
       case 'efootball':
         return efootballValidationSchema
+      case 'mlbb':
+        return mlbbValidationSchema
       default:
         return defaultGameValidationSchema
     }
@@ -375,6 +439,10 @@ const EditGameInfo = () => {
         case "efootball":
           apiData.current_division = Number.parseInt(gameProfile.current_division)
           apiData.highest_division = Number.parseInt(gameProfile.highest_division)
+          break
+        
+        case "mlbb":
+          // MLBB ranks are strings, no conversion needed
           break
         
         default:
@@ -623,6 +691,72 @@ const EditGameInfo = () => {
               />
               {errors.courtesy_rating ? (
                 <Text style={styles.errorText}>{errors.courtesy_rating}</Text>
+              ) : null}
+            </View>
+          </>
+        )
+
+      case "mlbb":
+        return (
+          <>
+            <View style={styles.inputGroup}>
+              <Text style={[styles.fieldLabel, { color: isLight ? "#333333" : "#ffffff" }]}>Game UID *</Text>
+              <TextInput
+                style={[
+                  inputStyle,
+                  errors.uid && {
+                    borderColor: "#FF4444",
+                  }
+                ]}
+                value={gameProfile.uid}
+                onChangeText={(text) => updateProfile("uid", text)}
+                placeholder="Paste Your MLBB UID Accurately (Not Server ID)."
+                placeholderTextColor={isLight ? "#666666" : "#999999"}
+                keyboardType="numeric"
+                maxLength={20}
+              />
+              {errors.uid ? (
+                <Text style={styles.errorText}>{errors.uid}</Text>
+              ) : null}
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={[styles.fieldLabel, { color: isLight ? "#333333" : "#ffffff" }]}>Current Rank *</Text>
+              <TextInput
+                style={[
+                  inputStyle,
+                  errors.current_rank && {
+                    borderColor: "#FF4444",
+                  }
+                ]}
+                value={gameProfile.current_rank}
+                onChangeText={(text) => updateProfile("current_rank", text)}
+                placeholder="Ex. Mythic, Legend, Epic"
+                placeholderTextColor={isLight ? "#666666" : "#999999"}
+                maxLength={50}
+              />
+              {errors.current_rank ? (
+                <Text style={styles.errorText}>{errors.current_rank}</Text>
+              ) : null}
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={[styles.fieldLabel, { color: isLight ? "#333333" : "#ffffff" }]}>Highest Rank *</Text>
+              <TextInput
+                style={[
+                  inputStyle,
+                  errors.highest_rank && {
+                    borderColor: "#FF4444",
+                  }
+                ]}
+                value={gameProfile.highest_rank}
+                onChangeText={(text) => updateProfile("highest_rank", text)}
+                placeholder="Ex. Mythical Glory"
+                placeholderTextColor={isLight ? "#666666" : "#999999"}
+                maxLength={50}
+              />
+              {errors.highest_rank ? (
+                <Text style={styles.errorText}>{errors.highest_rank}</Text>
               ) : null}
             </View>
           </>

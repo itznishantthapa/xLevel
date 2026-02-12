@@ -29,6 +29,14 @@ const OpponentSheetContent = React.memo(({ payload, isDark, insets, handleConfir
                     { label: "Courtesy Rating", value: opponent.courtesy_rating || "0" },
                 ]
 
+            case "mlbb":
+                return [
+                    { label: "UID", value: opponent.game_uid },
+                    { label: "Game Name", value: opponent.game_name },
+                    { label: "Current Rank", value: opponent.current_rank || "N/A" },
+                    { label: "Highest Rank", value: opponent.highest_rank || "N/A" },
+                ]
+
             case "free fire":
             case "pubg":
             default:
@@ -67,7 +75,7 @@ const OpponentSheetContent = React.memo(({ payload, isDark, insets, handleConfir
                         </Text>
                         <Text style={[styles.gameLabel, { color: isDark ? "#888888" : "#666666" }]}>
                             {/* {theGame ? theGame.charAt(0).toUpperCase() + theGame.slice(1) : "Game"} */}
-                            {theGame === 'chess' ? 'Chess.com' : theGame === 'efootball' ? 'eFootball' : theGame === 'free fire' ? 'Free Fire' : theGame === 'pubg' ? 'PUBG' : 'Game'}
+                            {theGame === 'chess' ? 'Chess.com' : theGame === 'efootball' ? 'eFootball' : theGame === 'free fire' ? 'Free Fire' : theGame === 'pubg' ? 'PUBG' : theGame === 'mlbb' ? 'MLBB' : 'Game'}
                         </Text>
                     </View>
                 </View>

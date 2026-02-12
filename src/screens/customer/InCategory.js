@@ -63,6 +63,15 @@ const InCategory = ({ route }) => {
       });
     } 
     
+    else if (game.game_name.toLowerCase().includes('mlbb') && 
+      (selectedGameMode.toLowerCase() === 'classic' || selectedGameMode.toLowerCase() === 'brawl')) {
+      navigation.navigate('createMLBB', {
+        game_id: game.game_id,
+        game_name: game.game_name,
+        game_mode: selectedGameMode
+      });
+    } 
+    
     else {
       // Default to regular createGame for other games (like Free Fire)
       navigation.navigate('createGame', {

@@ -124,6 +124,49 @@ const GameDetails = ({ game, isLight }) => {
     )
   }
 
+  if (game.game.name.toLowerCase().includes("mlbb")) {
+    const gameMode = game.game?.game_mode?.toLowerCase()
+    
+    // Brawl mode - only show fight type
+    if (gameMode === "brawl") {
+      return (
+        <View style={sharedStyles.gameDetails}>
+          <InfoRow 
+            label="Fight Type" 
+            value={game.settings.fight_type} 
+            isDark={!isLight} 
+            curveOnBottom={true}
+          />
+        </View>
+      )
+    }
+    
+    // Classic mode - show fight type, lane, and hero class
+    return (
+      <View style={sharedStyles.gameDetails}>
+        <InfoRow 
+          label="Fight Type" 
+          value={game.settings.fight_type} 
+          isDark={!isLight} 
+          needMoreWidth={true}
+        />
+        <InfoRow 
+          label="Lane" 
+          value={game.settings.lane} 
+          isDark={!isLight} 
+            needMoreWidth={true}
+        />
+        <InfoRow 
+          label="Hero Class" 
+          value={game.settings.hero_class} 
+          isDark={!isLight} 
+          curveOnBottom={true}
+          needMoreWidth={true}
+        />
+      </View>
+    )
+  }
+
 
 }
 

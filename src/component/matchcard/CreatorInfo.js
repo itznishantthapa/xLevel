@@ -56,6 +56,17 @@ const CreatorInfo = ({ game, isLight, isCreator, user }) => {
           ].filter((stat) => stat.value),
         }
 
+      case "mlbb":
+        return {
+          showUID: true,
+          uid: createdBy?.game_uid,
+          gameUsername: createdBy?.game_username,
+          stats: [
+            { key: "current_rank", label: "Current Rank", value: createdBy?.current_rank, needMoreWidth: true },
+            { key: "highest_rank", label: "Highest Rank", value: createdBy?.highest_rank, needMoreWidth: true },
+          ].filter((stat) => stat.value),
+        }
+
       default:
         return {
           showUID: true,

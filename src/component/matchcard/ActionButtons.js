@@ -6,7 +6,7 @@ import CoolButton from "../customer/common/CoolButton"
 
 const ActionButtons = ({ game, isLight, isCreator, user, handleResultUpload, forOpenGames = false, handleConfirmChallenge }) => {
 
-  const hasCredentials = (game?.room_id && game?.room_pass) || game?.join_url || game?.team_code
+  const hasCredentials = (game?.room_id && game?.room_pass) || game?.join_url || game?.team_code || game?.lobby_id
 
   if (game.status === "cancelled") {
     return (
@@ -64,10 +64,19 @@ const ActionButtons = ({ game, isLight, isCreator, user, handleResultUpload, for
         activeOpacity={0.8}
       >
         <View style={styles.joinButtonContent}>
-          <Text style={[styles.joinButtonText, isLight ? { color: "#ffffff" } : { color: "#000000" }]}>Join {game.is_free ? null : game.entry_fee}</Text>
-          <View style={styles.entryFeeContainer}>
- 
-          </View>
+          <Text style={[styles.joinButtonText, isLight ? { color: "#ffffff" } : { color: "#000000" }]}>Join</Text>
+          {!game.is_free && (
+            <View style={styles.entryFeeContainer}>
+              <Text style={[styles.entryFeeText, isLight ? { color: "#ffffff" } : { color: "#000000" }]}>
+                {game.entry_fee}
+              </Text>
+              <MaterialCommunityIcons 
+                name="star-four-points-outline" 
+                size={14} 
+                color={isLight ? "#00bf63" : "#000000"} 
+              />
+            </View>
+          )}
         </View>
       </Pressable>
 
@@ -98,12 +107,12 @@ const styles = StyleSheet.create({
   entryFeeContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 2,
   },
   entryFeeText: {
     color: '#ffffff',
     fontSize: 12,
     fontWeight: '600',
-    marginLeft: 4,
   },
 })
 

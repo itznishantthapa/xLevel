@@ -95,10 +95,11 @@ const OpponentsList = ({ game, isLight, handleConfirmedOpponent }) => {
   if (!hasOpponents && isGameActive) {
     return (
       <View style={sharedStyles.opponentsRow}>
-        <View style={[sharedStyles.waitingContainer, { borderColor: isLight ? "#000000" : "#ffffff" }]}>
+        <View style={[sharedStyles.waitingContainer, { borderWidth: 0, backgroundColor: isLight ? "#000000" : "#ffffff" }]}>
           <FadingText
-            text="Waiting for opponents to join..."
-            color={isLight ? "#666" : "#ccc"}
+            text="WAITING FOR OPPONENT"
+            color={isLight ? "#ffffff" : "#000000"}
+            fontWeight="bold"
           />
         </View>
       </View>
