@@ -209,17 +209,25 @@ export const sharedStyles = StyleSheet.create({
     color: '#00bf63'
   },
   sendButton: {
-    paddingVertical: scaleHeight(12),
+    paddingVertical: scaleHeight(14),
     borderRadius: scaleWidth(12),
     marginTop: scaleHeight(8),
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
+    elevation: 4,
   },
   sendButtonContent: {
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
   sendButtonText: {
     color: '#ffffff',
     fontSize: scaleWidth(14),
-    fontWeight: 'bold',
+    fontWeight: '700',
+    letterSpacing: 0.5,
     textAlign:'center'
   },
   credentialInput:{
@@ -236,17 +244,18 @@ export const sharedStyles = StyleSheet.create({
     marginBottom: scaleHeight(8),
   },
   credentialsGuide: {
-    fontSize: scaleWidth(14),
-    fontWeight: 'bold',
-    color: "#00C851",
-    marginBottom: scaleHeight(12),
-    marginTop: scaleHeight(12),
+    fontSize: scaleWidth(13),
+    fontWeight: '700',
+    letterSpacing: 0.5,
+    marginBottom: scaleHeight(16),
+    marginTop: scaleHeight(8),
     textAlign: "center",
+    textTransform: 'uppercase',
   },
   inputRow: {
     flexDirection: 'row',
-    gap: scaleWidth(12),
-    marginBottom: scaleHeight(8),
+    gap: scaleWidth(10),
+    marginBottom: scaleHeight(4),
   },
   inputWrapper: {
     flex: 1,
@@ -254,18 +263,22 @@ export const sharedStyles = StyleSheet.create({
   potInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: scaleWidth(1),
-    paddingHorizontal: scaleWidth(12),
-    paddingVertical: scaleHeight(12),
-    borderRadius: scaleWidth(8),
+    borderWidth: scaleWidth(1.5),
+    paddingHorizontal: scaleWidth(14),
+    paddingVertical: scaleHeight(14),
+    borderRadius: scaleWidth(12),
     marginBottom: scaleHeight(8),
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
   },
   potInput: {
     flex: 1,
-    fontSize: scaleWidth(12),
+    fontSize: scaleWidth(13),
     fontWeight: '600',
     padding: 0,
-
   },
   errorText: {
     color: '#dc2626',
@@ -284,6 +297,12 @@ export const sharedStyles = StyleSheet.create({
   credentialsDisplayContainer: {
     marginTop: scaleHeight(16),
     marginBottom: scaleHeight(8),
+    paddingHorizontal: scaleWidth(4),
+  },
+  credentialsInputContainer: {
+    marginTop: scaleHeight(16),
+    marginBottom: scaleHeight(8),
+    paddingHorizontal: scaleWidth(4),
   },
   credentialsRow: {
     flexDirection: 'row',

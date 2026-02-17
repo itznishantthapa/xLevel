@@ -17,7 +17,7 @@ const StatsContainer = ({ handlePointsOut, handleTournament, handleGameRules, ha
     
     switch (itemId) {
       case 'gamepoints':
-        return '#16A34A'; // Strong Green background for Game Points
+        return '#16A34A'; // Strong Green background for Requests
       case 'tournament':
         return '#6366F1'; // Vibrant Indigo background for Tournament
       case 'matches':

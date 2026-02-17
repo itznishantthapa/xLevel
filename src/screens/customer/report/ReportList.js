@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, FlatList, StatusBar, RefreshControl, ActivityIndicator } from 'react-native';
-import React, { useCallback, useState, useMemo, useEffect } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import { useThemeStore } from '../../../store/themeStore';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
@@ -22,27 +22,14 @@ const ReportList = () => {
     fetchNextPage,
     isFetchingNextPage,
     isLoading: reportsLoading,
+    isFetching,
     isError,
     error,
-    refetch,
-    isRefetching
+    refetch
   } = useReports(PAGE_SIZE);
 
   // Filter out any undefined or null items
   const validReports = reports.filter(item => item && item.id);
-
-  // Debug logging
-  useEffect(() => {
-    if (__DEV__ && reports.length > 0) {
-      console.log('Reports data:', {
-        totalReports: reports.length,
-        validReports: validReports.length,
-        hasMore,
-        isFetchingNextPage,
-        sampleReport: reports[0]
-      });
-    }
-  }, [reports.length, validReports.length, hasMore, isFetchingNextPage]);
 
   const [isManualRefreshing, setIsManualRefreshing] = useState(false);
 
@@ -149,7 +136,6 @@ const ReportList = () => {
         console.log("Failed to refresh reports:", error);
       }
     } finally {
-      // Always ensure refreshing state is reset
       setIsManualRefreshing(false);
     }
   }, [refetch, isConnected, PAGE_SIZE]);
@@ -158,10 +144,10 @@ const ReportList = () => {
    * Handle loading more reports when scrolling to the bottom
    */
   const handleLoadMore = useCallback(() => {
-    if (hasMore && !isFetchingNextPage && !reportsLoading && isConnected) {
+    if (hasMore && !isFetchingNextPage && !isFetching && isConnected) {
       fetchNextPage();
     }
-  }, [hasMore, isFetchingNextPage, reportsLoading, isConnected, fetchNextPage]);
+  }, [hasMore, isFetchingNextPage, isFetching, isConnected, fetchNextPage]);
 
   /**
    * Render a report card
@@ -264,7 +250,7 @@ const ReportList = () => {
   }, [colors, isLight]);
 
   const listEmptyComponent = useMemo(() => {
-    if (reportsLoading || isManualRefreshing) {
+    if (isFetching && validReports.length === 0) {
       return null;
     }
 
@@ -285,7 +271,7 @@ const ReportList = () => {
         <Text style={[styles.pullText, { color: colors.subText }]}>Pull down to refresh</Text>
       </View>
     );
-  }, [reportsLoading, isManualRefreshing, isError, colors]);
+  }, [isFetching, validReports.length, isError, colors]);
 
   /**
    * Footer component showing loading indicator when fetching more
@@ -310,8 +296,6 @@ const ReportList = () => {
         title={'My Reports'}
       />
       
-      <Loader visible={reportsLoading || isManualRefreshing} message="Loading reports..." />
-      
       <FlatList
         data={validReports}
         renderItem={renderReportCard}
@@ -321,7 +305,7 @@ const ReportList = () => {
         ListEmptyComponent={listEmptyComponent}
         ListFooterComponent={listFooterComponent}
         onEndReached={handleLoadMore}
-        onEndReachedThreshold={0.5}
+        onEndReachedThreshold={0.1}
         refreshControl={
           <RefreshControl
             refreshing={false}
@@ -334,6 +318,9 @@ const ReportList = () => {
           />
         }
       />
+
+      {/* Loading indicator for initial load */}
+      <Loader visible={reportsLoading && validReports.length === 0} />
     </View>
   );
 };

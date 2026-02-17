@@ -42,7 +42,6 @@ const MatchList = ({
   handleDeleteChallenge,
   handleConfirmedOpponent,
   handleLeaveChallenge,
-  handleIssue,
   handleReport
 }) => {
   const { isLight } = useThemeStore();
@@ -113,7 +112,6 @@ const MatchList = ({
       handleResultUpload={handleResultUpload}
       handleDeleteChallenge={handleDeleteChallenge}
       handleConfirmedOpponent={handleConfirmedOpponent}
-      handleIssue={handleIssue}
       handleReport={handleReport}
     />
     ):(
@@ -126,7 +124,6 @@ const MatchList = ({
           handleAcceptChallengeOnCopy={handleAcceptChallengeOnCopy}
           handleDeleteChallenge={handleDeleteChallenge}
           handleLeaveChallenge={handleLeaveChallenge}
-          handleIssue={handleIssue}
           handleReport={handleReport}
         />
     )

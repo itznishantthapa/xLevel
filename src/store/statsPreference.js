@@ -10,9 +10,9 @@ const DEFAULT_STATS = [
   { id: 'matches', type: 'matches', name: 'My Match', icon: 'gamepad-circle-right', iconLib: 'MaterialCommunityIcons' },
 ];
 
-// Configuration when QR exists - shows Game Points, Tournament, MyMatch, Redeem
+// Configuration when QR exists - shows Requests, Tournament, MyMatch, Redeem
 const QR_AVAILABLE_STATS = [
-  { id: 'gamepoints', type: 'leaderboard', name: 'Game Points', icon: 'receipt-long', iconLib: 'MaterialIcons' },
+  { id: 'gamepoints', type: 'leaderboard', name: 'Requests', icon: 'receipt-long', iconLib: 'MaterialIcons' },
   { id: 'tournament', type: 'tournament', name: 'Tournaments', icon: 'game-controller-outline', iconLib: 'Ionicons' },
   { id: 'matches', type: 'matches', name: 'My Match', icon: 'gamepad-circle-right', iconLib: 'MaterialCommunityIcons' },
   { id: 'redeem', type: 'gamerules', name: 'Redeem', icon: 'wallet-giftcard', iconLib: 'MaterialCommunityIcons' },
@@ -25,10 +25,10 @@ const TOGGLEABLE_OPTIONS = {
     primary: { id: 'gamerules', type: 'gamerules', name: 'Game Rules', icon: 'book-outline', iconLib: 'Ionicons' },
     secondary: { id: 'redeem', type: 'gamerules', name: 'Redeem', icon: 'wallet-giftcard', iconLib: 'MaterialCommunityIcons' },
   },
-  // leaderboard toggles between Leaderboard and Game Points
+  // leaderboard toggles between Leaderboard and Requests
   leaderboard: {
     primary: { id: 'leaderboard', type: 'leaderboard', name: 'Leaderboard', icon: 'medal-outline', iconLib: 'MaterialCommunityIcons' },
-    secondary: { id: 'gamepoints', type: 'leaderboard', name: 'Game Points', icon: 'receipt-long', iconLib: 'MaterialIcons' },
+    secondary: { id: 'gamepoints', type: 'leaderboard', name: 'Requests', icon: 'receipt-long', iconLib: 'MaterialIcons' },
   },
 };
 

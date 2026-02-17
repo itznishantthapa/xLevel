@@ -1,11 +1,10 @@
-import { View, Text, Pressable, TouchableOpacity } from "react-native"
-import { Entypo, FontAwesome5, Ionicons, MaterialIcons, Octicons } from "@expo/vector-icons"
+import { View, Text, Pressable, TouchableOpacity, StyleSheet } from "react-native"
+import { Entypo, FontAwesome5, Ionicons } from "@expo/vector-icons"
 import { scaleHeight, scaleWidth } from "../../utils/scaling"
 import { sharedStyles } from "./sharedStyleAndInfo"
-import PulseAnimation from "../PulseAnimation"
 import { useBottomSheet } from "../../context/BottomSheetContext"
 
-const GameHeader = ({ game, isLight, isCreator, user, handleDeleteChallenge, handleLeaveChallenge, handleReportUser, forOpenGames,handleIssue }) => {
+const GameHeader = ({ game, isLight, isCreator, user, handleDeleteChallenge, handleLeaveChallenge, handleReportUser, forOpenGames }) => {
   const { showConfirmSheet } = useBottomSheet()
 
   const handleDelete = () => {
@@ -86,20 +85,19 @@ const GameHeader = ({ game, isLight, isCreator, user, handleDeleteChallenge, han
       {!game.isAccepted && game.status !== "cancelled" && game.status !== "expired" && game.status !== "completed" && game.status !== "in_progress"&& ( */}
       <View style={{ flexDirection: "row", alignItems: "center", gap: scaleWidth(20), marginLeft: "auto", paddingRight: forOpenGames ? scaleWidth(10) : 0 }}>
         {
-          ((game.status === 'in_progress' || game.status === 'not_started' ) && !game.is_free) && (
-            <View>
-              <PulseAnimation size={scaleWidth(10)} color="#00C851" />
-            </View>
-          )
-        }
-
-
-
-        {
           !game.isAccepted && game.status !== "cancelled" && game.status !== "expired" && game.status !== "completed" && game.status !== "in_progress" && game.status !== "resolved" && !forOpenGames && !game.is_free && (
-            <Pressable onPress={handleDelete}>
-
-             <Entypo name="squared-cross" size={scaleWidth(18)} color={isLight ? "#000000" : "#fff"} />
+            <Pressable 
+              style={[
+                localStyles.cancelButton,
+                { backgroundColor: isLight ? '#000000' : '#ffffff' }
+              ]}
+              onPress={handleDelete}
+              activeOpacity={0.85}
+            >
+              <View style={localStyles.cancelButtonContent}>
+                <Entypo name="cross" size={scaleWidth(16)} color={isLight ? "#ffffff" : "#000000"} />
+                <Text style={[localStyles.cancelButtonText, { color: isLight ? '#ffffff' : '#000000' }]}>{isCreator ? "Cancel" : "Leave"}</Text>
+              </View>
             </Pressable>
           )
         }
@@ -111,13 +109,19 @@ const GameHeader = ({ game, isLight, isCreator, user, handleDeleteChallenge, han
           )
         }
         {
-          game.status === 'in_progress' && !game.is_free ? (
-            <TouchableOpacity  onPress={() => handleIssue(game?.id, isCreator, game?.game?.name, game?.game?.game_mode, game)}>
-                <FontAwesome5 name="exclamation-circle" size={scaleWidth(18)} color={isLight ? "#000000" : "#fff"} />
-            </TouchableOpacity>
-          ) : game.status !== "cancelled" && game.is_free && !forOpenGames && game.status !== "completed"  &&  (
-             <Pressable onPress={handleDelete}>
-             <Entypo name="squared-cross" size={scaleWidth(18)} color={isLight ? "#000000" : "#fff"} />
+          game.status !== "cancelled" && game.is_free && !forOpenGames && game.status !== "completed"  &&  (
+            <Pressable 
+              style={[
+                localStyles.cancelButton,
+                { backgroundColor: isLight ? '#000000' : '#ffffff' }
+              ]}
+              onPress={handleDelete}
+              activeOpacity={0.85}
+            >
+              <View style={localStyles.cancelButtonContent}>
+                <Entypo name="cross" size={scaleWidth(16)} color={isLight ? "#ffffff" : "#000000"} />
+                <Text style={[localStyles.cancelButtonText, { color: isLight ? '#ffffff' : '#000000' }]}>{isCreator ? "Cancel" : "Leave"}</Text>
+              </View>
             </Pressable>
           )
         }
@@ -128,5 +132,35 @@ const GameHeader = ({ game, isLight, isCreator, user, handleDeleteChallenge, han
     </View>
   )
 }
+
+const localStyles = StyleSheet.create({
+  cancelButton: {
+    paddingHorizontal: scaleWidth(16),
+    paddingVertical: scaleHeight(9),
+    borderRadius: scaleWidth(24),
+    minHeight: scaleHeight(36),
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 6,
+  },
+  cancelButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: scaleWidth(6),
+  },
+  cancelButtonText: {
+    fontSize: scaleWidth(13),
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
+});
 
 export default GameHeader

@@ -117,11 +117,11 @@ const CredentialsSection = ({
       return (
         <View style={sharedStyles.credentialsInputContainer}>
           {hasCredentials ? (
-            <Text style={[sharedStyles.credentialsGuide, { color: isLight ? "#333333" : "#ffffff" }]}>
-              Credentials sent successfully. Opponent is joining...
+            <Text style={[sharedStyles.credentialsGuide, { color: isLight ? "#495057" : "#adb5bd" }]}>
+              Credentials sent successfully
             </Text>
           ) : (
-            <Text style={[sharedStyles.credentialsGuide, { color: isLight ? "#333333" : "#ffffff" }]}>
+            <Text style={[sharedStyles.credentialsGuide, { color: isLight ? "#495057" : "#adb5bd" }]}>
               {isRoomCredentials ? "Send Room ID & Password" :
                 isLoneWolf ? "Send Teamcode" :
                   isMLBB ? "Send Lobby ID" :
@@ -130,82 +130,93 @@ const CredentialsSection = ({
           )}
 
           {isRoomCredentials ? (
-            <View style={sharedStyles.inputRow}>
-              <View style={sharedStyles.inputWrapper}>
-                <View
-                  style={[
-                    sharedStyles.potInputContainer,
-                    { borderColor: isLight ? "#000000" : "#ffffff" }
-                  ]}
-                >
-                  <TextInput
-                    style={[sharedStyles.potInput, { color: isLight ? "#333333" : "#ffffff" }]}
-                    placeholder={`${game.room_id ? game.room_id : "Room ID"}`}
-                    placeholderTextColor={isLight ? "#666666" : "#cccccc"}
-                    value={credentials.roomId}
-                    onChangeText={credentials.setRoomId}
-
-                  />
-                </View>
+            <View>
+              <View
+                style={[
+                  sharedStyles.potInputContainer,
+                  { 
+                    borderColor: isLight ? "#000000" : "#ffffff",
+                    backgroundColor: isLight ? "#f8f9fa" : "#1a1a1a"
+                  }
+                ]}
+              >
+                <TextInput
+                  style={[sharedStyles.potInput, { color: isLight ? "#212529" : "#ffffff" }]}
+                  placeholder={`${game.room_id ? game.room_id : "Room ID"}`}
+                  placeholderTextColor={isLight ? "#868e96" : "#6c757d"}
+                  value={credentials.roomId}
+                  onChangeText={credentials.setRoomId}
+                  autoComplete="off"
+                  textContentType="none"
+                  importantForAutofill="no"
+                />
               </View>
 
-              <View style={sharedStyles.inputWrapper}>
-                <View
-                  style={[
-                    sharedStyles.potInputContainer,
-                    { borderColor: isLight ? "#000000" : "#ffffff" }
-                  ]}
-                >
-                  <TextInput
-                    style={[sharedStyles.potInput, { color: isLight ? "#333333" : "#ffffff" }]}
-                    placeholder={`${game.room_pass ?  game.room_pass : "Room Password"}`}
-                    placeholderTextColor={isLight ? "#666666" : "#cccccc"}
-                    value={credentials.password}
-                    onChangeText={credentials.setPassword}
-
-                  />
-                </View>
+              <View
+                style={[
+                  sharedStyles.potInputContainer,
+                  { 
+                    borderColor: isLight ? "#000000" : "#ffffff",
+                    backgroundColor: isLight ? "#f8f9fa" : "#1a1a1a"
+                  }
+                ]}
+              >
+                <TextInput
+                  style={[sharedStyles.potInput, { color: isLight ? "#212529" : "#ffffff" }]}
+                  placeholder={`${game.room_pass ?  game.room_pass : "Room Password"}`}
+                  placeholderTextColor={isLight ? "#868e96" : "#6c757d"}
+                  value={credentials.password}
+                  onChangeText={credentials.setPassword}
+                  autoComplete="off"
+                  textContentType="none"
+                  importantForAutofill="no"
+                />
               </View>
             </View>
           ) : isLoneWolf ? (
-            <View style={sharedStyles.inputRow}>
-              <View style={sharedStyles.inputWrapper}>
-                <View
-                  style={[
-                    sharedStyles.potInputContainer,
-                    { borderColor: isLight ? "#000000" : "#ffffff" }
-                  ]}
-                >
-                  <TextInput
-                    style={[sharedStyles.potInput, { color: isLight ? "#333333" : "#ffffff" }]}
-                    placeholder={`${game.team_code ?  + game.team_code : "Team Code"}`}
-                    placeholderTextColor={isLight ? "#666666" : "#cccccc"}
-                    value={credentials.teamCode}
-                    onChangeText={credentials.setTeamCode}
-
-
-
-                  />
-                </View>
+            <View>
+              <View
+                style={[
+                  sharedStyles.potInputContainer,
+                  { 
+                    borderColor: isLight ? "#000000" : "#ffffff",
+                    backgroundColor: isLight ? "#f8f9fa" : "#1a1a1a"
+                  }
+                ]}
+              >
+                <TextInput
+                  style={[sharedStyles.potInput, { color: isLight ? "#212529" : "#ffffff" }]}
+                  placeholder={`${game.team_code ? game.team_code : "Team Code"}`}
+                  placeholderTextColor={isLight ? "#868e96" : "#6c757d"}
+                  value={credentials.teamCode}
+                  onChangeText={credentials.setTeamCode}
+                  autoComplete="off"
+                  textContentType="none"
+                  importantForAutofill="no"
+                />
               </View>
             </View>
           ) : isMLBB ? (
-            <View style={sharedStyles.inputRow}>
-              <View style={sharedStyles.inputWrapper}>
-                <View
-                  style={[
-                    sharedStyles.potInputContainer,
-                    { borderColor: isLight ? "#000000" : "#ffffff" }
-                  ]}
-                >
-                  <TextInput
-                    style={[sharedStyles.potInput, { color: isLight ? "#333333" : "#ffffff" }]}
-                    placeholder={`${game.lobby_id ? game.lobby_id : "Lobby ID"}`}
-                    placeholderTextColor={isLight ? "#666666" : "#cccccc"}
-                    value={credentials.lobbyId}
-                    onChangeText={credentials.setLobbyId}
-                  />
-                </View>
+            <View>
+              <View
+                style={[
+                  sharedStyles.potInputContainer,
+                  { 
+                    borderColor: isLight ? "#000000" : "#ffffff",
+                    backgroundColor: isLight ? "#f8f9fa" : "#1a1a1a"
+                  }
+                ]}
+              >
+                <TextInput
+                  style={[sharedStyles.potInput, { color: isLight ? "#212529" : "#ffffff" }]}
+                  placeholder={`${game.lobby_id ? game.lobby_id : "Lobby ID"}`}
+                  placeholderTextColor={isLight ? "#868e96" : "#6c757d"}
+                  value={credentials.lobbyId}
+                  onChangeText={credentials.setLobbyId}
+                  autoComplete="off"
+                  textContentType="none"
+                  importantForAutofill="no"
+                />
               </View>
             </View>
           ) : (
@@ -214,16 +225,21 @@ const CredentialsSection = ({
                 <View
                   style={[
                     sharedStyles.potInputContainer,
-                    { borderColor: isLight ? "#000000" : "#ffffff" }
+                    { 
+                      borderColor: isLight ? "#000000" : "#ffffff",
+                      backgroundColor: isLight ? "#f8f9fa" : "#1a1a1a"
+                    }
                   ]}
                 >
                   <TextInput
-                    style={[sharedStyles.potInput, { color: isLight ? "#333333" : "#ffffff" }]}
+                    style={[sharedStyles.potInput, { color: isLight ? "#212529" : "#ffffff" }]}
                     placeholder={`${game.join_url ? game.join_url : "Join URL"}`}
-                    placeholderTextColor={isLight ? "#666666" : "#cccccc"}
+                    placeholderTextColor={isLight ? "#868e96" : "#6c757d"}
                     value={credentials.joinUrl}
                     onChangeText={credentials.setJoinUrl}
-
+                    autoComplete="off"
+                    textContentType="none"
+                    importantForAutofill="no"
                   />
                 </View>
               </View>
@@ -261,7 +277,7 @@ const CredentialsSection = ({
       return (
         <View style={sharedStyles.credentialsInputContainer}>
           <Text style={[sharedStyles.credentialsGuide, { color: isLight ? "#333333" : "#ffffff" }]}>
-            Credentials sent successfully. Opponent is joining...
+            Credentials sent successfully
           </Text>
 
           <Pressable
@@ -315,41 +331,87 @@ const CredentialsSection = ({
   if (isRoomCredentials && game.room_id && game.room_pass &&  game.status === "in_progress") {
     return (
       <View style={sharedStyles.credentialsDisplayContainer}>
-        <Text style={[sharedStyles.credentialsGuide, { color: isLight ? "#333333" : "#ffffff" }]}>
+        <Text style={[sharedStyles.credentialsGuide, { color: isLight ? "#495057" : "#adb5bd" }]}>
           Room ID & Password
         </Text>
-        <View style={sharedStyles.inputRow}>
-          <View style={sharedStyles.inputWrapper}>
-            <Pressable
-              onPress={() => copyToClipboard(game.room_id, true)}
-              style={[
-                sharedStyles.potInputContainer,
-                { borderColor: isLight ? "#000000" : "#ffffff" }
-              ]}
+        <View>
+          <Pressable
+            onPress={() => copyToClipboard(game.room_id, true)}
+            style={[
+              sharedStyles.potInputContainer,
+              { 
+                borderColor: isLight ? "#000000" : "#ffffff",
+                backgroundColor: isLight ? "#f8f9fa" : "#1a1a1a"
+              }
+            ]}
+          >
+            <View style={[
+              { 
+                paddingHorizontal: scaleWidth(8),
+                paddingVertical: scaleHeight(4),
+                borderRadius: scaleWidth(6),
+                backgroundColor: isLight ? "#e9ecef" : "#2a2a2a",
+                marginRight: scaleWidth(10)
+              }
+            ]}>
+              <Text style={[{ color: isLight ? "#495057" : "#adb5bd", fontSize: scaleWidth(10), fontWeight: '700', letterSpacing: 0.5 }]}>ID</Text>
+            </View>
+            <Text 
+              style={[{ flex: 1, color: isLight ? "#212529" : "#ffffff", fontWeight: '600', fontSize: scaleWidth(13) }]}
+              numberOfLines={1}
+              ellipsizeMode="middle"
             >
-              <Text style={[{ color: isLight ? "#666666" : "#cccccc", fontSize: scaleWidth(12), marginRight: scaleWidth(8) }]}>ID:</Text>
-              <Text style={[{ flex: 1, color: isLight ? "#333333" : "#ffffff", fontWeight: '500' }]}>
-                {game.room_id}
-              </Text>
-              <MaterialIcons name="content-copy" size={scaleWidth(14)} color={isLight ? "#666666" : "#dadada"} />
-            </Pressable>
-          </View>
+              {game.room_id}
+            </Text>
+            <View style={[
+              {
+                padding: scaleWidth(6),
+                borderRadius: scaleWidth(8),
+                backgroundColor: isLight ? "#e9ecef" : "#2a2a2a"
+              }
+            ]}>
+              <MaterialIcons name="content-copy" size={scaleWidth(16)} color={isLight ? "#495057" : "#adb5bd"} />
+            </View>
+          </Pressable>
 
-          <View style={sharedStyles.inputWrapper}>
-            <Pressable
-              onPress={() => copyToClipboard(game.room_pass, true)}
-              style={[
-                sharedStyles.potInputContainer,
-                { borderColor: isLight ? "#000000" : "#ffffff" }
-              ]}
+          <Pressable
+            onPress={() => copyToClipboard(game.room_pass, true)}
+            style={[
+              sharedStyles.potInputContainer,
+              { 
+                borderColor: isLight ? "#000000" : "#ffffff",
+                backgroundColor: isLight ? "#f8f9fa" : "#1a1a1a"
+              }
+            ]}
+          >
+            <View style={[
+              { 
+                paddingHorizontal: scaleWidth(8),
+                paddingVertical: scaleHeight(4),
+                borderRadius: scaleWidth(6),
+                backgroundColor: isLight ? "#e9ecef" : "#2a2a2a",
+                marginRight: scaleWidth(10)
+              }
+            ]}>
+              <Text style={[{ color: isLight ? "#495057" : "#adb5bd", fontSize: scaleWidth(10), fontWeight: '700', letterSpacing: 0.5 }]}>PASS</Text>
+            </View>
+            <Text 
+              style={[{ flex: 1, color: isLight ? "#212529" : "#ffffff", fontWeight: '600', fontSize: scaleWidth(13) }]}
+              numberOfLines={1}
+              ellipsizeMode="middle"
             >
-              <Text style={[{ color: isLight ? "#666666" : "#cccccc", fontSize: scaleWidth(12), marginRight: scaleWidth(8) }]}>Pass:</Text>
-              <Text style={[{ flex: 1, color: isLight ? "#333333" : "#ffffff", fontWeight: '500' }]}>
-                {game.room_pass}
-              </Text>
-              <MaterialIcons name="content-copy" size={scaleWidth(14)} color={isLight ? "#666666" : "#dadada"} />
-            </Pressable>
-          </View>
+              {game.room_pass}
+            </Text>
+            <View style={[
+              {
+                padding: scaleWidth(6),
+                borderRadius: scaleWidth(8),
+                backgroundColor: isLight ? "#e9ecef" : "#2a2a2a"
+              }
+            ]}>
+              <MaterialIcons name="content-copy" size={scaleWidth(16)} color={isLight ? "#495057" : "#adb5bd"} />
+            </View>
+          </Pressable>
         </View>
       </View>
     )
@@ -359,25 +421,48 @@ const CredentialsSection = ({
   if (isLoneWolf && game.team_code  &&  game.status === "in_progress") {
     return (
       <View style={sharedStyles.credentialsDisplayContainer}>
-        <Text style={[sharedStyles.credentialsGuide, { color: isLight ? "#333333" : "#ffffff" }]}>
+        <Text style={[sharedStyles.credentialsGuide, { color: isLight ? "#495057" : "#adb5bd" }]}>
          Teamcode (Copy & Join)
         </Text>
-        <View style={sharedStyles.inputRow}>
-          <View style={sharedStyles.inputWrapper}>
-            <Pressable
-              onPress={() => copyToClipboard(game.team_code, true)}
-              style={[
-                sharedStyles.potInputContainer,
-                { borderColor: isLight ? "#000000" : "#ffffff" }
-              ]}
+        <View>
+          <Pressable
+            onPress={() => copyToClipboard(game.team_code, true)}
+            style={[
+              sharedStyles.potInputContainer,
+              { 
+                borderColor: isLight ? "#000000" : "#ffffff",
+                backgroundColor: isLight ? "#f8f9fa" : "#1a1a1a"
+              }
+            ]}
+          >
+            <View style={[
+              { 
+                paddingHorizontal: scaleWidth(8),
+                paddingVertical: scaleHeight(4),
+                borderRadius: scaleWidth(6),
+                backgroundColor: isLight ? "#e9ecef" : "#2a2a2a",
+                marginRight: scaleWidth(10)
+              }
+            ]}>
+              <Text style={[{ color: isLight ? "#495057" : "#adb5bd", fontSize: scaleWidth(10), fontWeight: '700', letterSpacing: 0.5 }]}>CODE</Text>
+            </View>
+            <Text 
+              style={[{ flex: 1, color: isLight ? "#212529" : "#ffffff", fontWeight: '600', fontSize: scaleWidth(13) }]}
+              numberOfLines={1}
+              ellipsizeMode="middle"
             >
-              <Text style={[{ color: isLight ? "#666666" : "#cccccc", fontSize: scaleWidth(12), marginRight: scaleWidth(8) }]}>Teamcode:</Text>
-              <Text style={[{ flex: 1, color: isLight ? "#333333" : "#ffffff", fontWeight: '500' }]}>
-                {game.team_code}
-              </Text>
-              <MaterialIcons name="content-copy" size={scaleWidth(14)} color={isLight ? "#666666" : "#dadada"} />
-            </Pressable>
-          </View>
+              {game.team_code}
+            </Text>
+            <View style={[
+              {
+                padding: scaleWidth(6),
+                borderRadius: scaleWidth(8),
+                backgroundColor: isLight ? "#e9ecef" : "#2a2a2a"
+              }
+            ]}>
+              <MaterialIcons name="content-copy" size={scaleWidth(16)} color={isLight ? "#495057" : "#adb5bd"} />
+            </View>
+          </Pressable>
         </View>
       </View>
     )
@@ -387,25 +472,48 @@ const CredentialsSection = ({
   if (isMLBB && game.lobby_id && game.status === "in_progress") {
     return (
       <View style={sharedStyles.credentialsDisplayContainer}>
-        <Text style={[sharedStyles.credentialsGuide, { color: isLight ? "#333333" : "#ffffff" }]}>
+        <Text style={[sharedStyles.credentialsGuide, { color: isLight ? "#495057" : "#adb5bd" }]}>
          Lobby ID (Copy & Join)
         </Text>
-        <View style={sharedStyles.inputRow}>
-          <View style={sharedStyles.inputWrapper}>
-            <Pressable
-              onPress={() => copyToClipboard(game.lobby_id, true)}
-              style={[
-                sharedStyles.potInputContainer,
-                { borderColor: isLight ? "#000000" : "#ffffff" }
-              ]}
+        <View>
+          <Pressable
+            onPress={() => copyToClipboard(game.lobby_id, true)}
+            style={[
+              sharedStyles.potInputContainer,
+              { 
+                borderColor: isLight ? "#000000" : "#ffffff",
+                backgroundColor: isLight ? "#f8f9fa" : "#1a1a1a"
+              }
+            ]}
+          >
+            <View style={[
+              { 
+                paddingHorizontal: scaleWidth(8),
+                paddingVertical: scaleHeight(4),
+                borderRadius: scaleWidth(6),
+                backgroundColor: isLight ? "#e9ecef" : "#2a2a2a",
+                marginRight: scaleWidth(10)
+              }
+            ]}>
+              <Text style={[{ color: isLight ? "#495057" : "#adb5bd", fontSize: scaleWidth(10), fontWeight: '700', letterSpacing: 0.5 }]}>LOBBY</Text>
+            </View>
+            <Text 
+              style={[{ flex: 1, color: isLight ? "#212529" : "#ffffff", fontWeight: '600', fontSize: scaleWidth(13) }]}
+              numberOfLines={1}
+              ellipsizeMode="middle"
             >
-              <Text style={[{ color: isLight ? "#666666" : "#cccccc", fontSize: scaleWidth(12), marginRight: scaleWidth(8) }]}>Lobby ID:</Text>
-              <Text style={[{ flex: 1, color: isLight ? "#333333" : "#ffffff", fontWeight: '500' }]}>
-                {game.lobby_id}
-              </Text>
-              <MaterialIcons name="content-copy" size={scaleWidth(14)} color={isLight ? "#666666" : "#dadada"} />
-            </Pressable>
-          </View>
+              {game.lobby_id}
+            </Text>
+            <View style={[
+              {
+                padding: scaleWidth(6),
+                borderRadius: scaleWidth(8),
+                backgroundColor: isLight ? "#e9ecef" : "#2a2a2a"
+              }
+            ]}>
+              <MaterialIcons name="content-copy" size={scaleWidth(16)} color={isLight ? "#495057" : "#adb5bd"} />
+            </View>
+          </Pressable>
         </View>
       </View>
     )
@@ -446,41 +554,63 @@ const CredentialsSection = ({
 
     return (
       <View style={sharedStyles.credentialsDisplayContainer}>
-        <Text style={[sharedStyles.credentialsGuide, { color: isLight ? "#333333" : "#ffffff" }]}>
+        <Text style={[sharedStyles.credentialsGuide, { color: "#00bf63" }]}>
          URL (Click & Join)
         </Text>
-        <View style={sharedStyles.inputRow}>
-          <View style={sharedStyles.inputWrapper}>
-            <Pressable
-              onPress={handlePressURL}
-              onLongPress={() => {
-                copyToClipboard(game.join_url, true);
-                handleAcceptChallengeOnCopy({
-                  challenge_id: game.id,
-                  post_type: "accepted",
-                });
-              }}
+        <View>
+          <Pressable
+            onPress={handlePressURL}
+            onLongPress={() => {
+              copyToClipboard(game.join_url, true);
+              handleAcceptChallengeOnCopy({
+                challenge_id: game.id,
+                post_type: "accepted",
+              });
+            }}
+            style={[
+              sharedStyles.potInputContainer,
+              { 
+                borderColor: isLight ? "#000000" : "#ffffff",
+                backgroundColor: isLight ? "#f8f9fa" : "#1a1a1a"
+              }
+            ]}
+          >
+            <View style={[
+              { 
+                paddingHorizontal: scaleWidth(8),
+                paddingVertical: scaleHeight(4),
+                borderRadius: scaleWidth(6),
+                backgroundColor: "#d1f4e0",
+                marginRight: scaleWidth(10)
+              }
+            ]}>
+              <Text style={[{ color: "#00bf63", fontSize: scaleWidth(10), fontWeight: '700', letterSpacing: 0.5 }]}>LINK</Text>
+            </View>
+            <Text
               style={[
-                sharedStyles.potInputContainer,
-                { borderColor: isLight ? "#000000" : "#ffffff" }
+                {
+                  flex: 1,
+                  color: "#00bf63",
+                  fontWeight: '600',
+                  fontSize: scaleWidth(12),
+                  textDecorationLine: 'underline'
+                }
               ]}
+              numberOfLines={1}
+              ellipsizeMode="middle"
             >
-              <Text style={[{ color: isLight ? "#666666" : "#cccccc", fontSize: scaleWidth(12), marginRight: scaleWidth(8) }]}>URL:</Text>
-              <Text
-                style={[
-                  {
-                    flex: 1,
-                    color: "#00bf63",
-                    fontWeight: '500',
-                    textDecorationLine: 'underline'
-                  }
-                ]}
-                numberOfLines={1}
-              >
-                {game.join_url}
-              </Text>
-            </Pressable>
-          </View>
+              {game.join_url}
+            </Text>
+            <View style={[
+              {
+                padding: scaleWidth(6),
+                borderRadius: scaleWidth(8),
+                backgroundColor: "#d1f4e0"
+              }
+            ]}>
+              <MaterialIcons name="open-in-new" size={scaleWidth(16)} color="#00bf63" />
+            </View>
+          </Pressable>
         </View>
       </View>
     )

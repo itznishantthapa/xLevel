@@ -4,13 +4,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { UtilsAPI } from "../api/utilsApi";
 
-const ONE_DAY = 24 * 60 * 60 * 1000;
+const TEN_MIN = 10 * 60 * 1000;
 
 export const useUtils = () =>
   useQuery({
     queryKey: ["utils"],
     queryFn: UtilsAPI.getUtils,
-    staleTime: ONE_DAY,
+    staleTime: TEN_MIN,
     select: (utils) => utils ?? [],
   });
 

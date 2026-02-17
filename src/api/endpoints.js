@@ -67,10 +67,6 @@ export const endpoints = {
   confirmOpponent: "/api/challenges/confirm-opponent/",
 
 
-  //issues
-  createIssue:"/api/issues/create/",
-  getIssues:"/api/issues/my-issues/",
-
   //reports
   submitReport:"/api/reports/create/",
   getReports:"/api/reports/my-reports/",

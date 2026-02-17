@@ -27,9 +27,7 @@ const Report = ({ route }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
 
-    useEffect(() => {
-        console.log('Game details:', game);
-    }, [game]);
+ 
 
     // Image picker function
     const pickImage = async (setEvidence, setImageResult) => {
@@ -60,8 +58,8 @@ const Report = ({ route }) => {
                 Toast.show("Please provide a description of the issue", Toast.SHORT);
                 return;
             }
-            if (!evidence1) {
-                Toast.show("Please upload at least one evidence screenshot", Toast.SHORT);
+            if (!evidence1 || !evidence2 || !evidence3) {
+                Toast.show("Please upload all 3 evidence screenshots", Toast.SHORT);
                 return;
             }
         }
@@ -109,17 +107,6 @@ const Report = ({ route }) => {
                 }
             }
 
-            // Log payload for debugging
-            console.log('Report Payload:', {
-                challenge_id: game.id,
-                report_type: reportType,
-                ...(reportType === 'game_issue' && {
-                    description: description.trim(),
-                    evidence_1: evidence1 ? 'attached' : null,
-                    evidence_2: evidence2 ? 'attached' : null,
-                    evidence_3: evidence3 ? 'attached' : null,
-                })
-            });
 
             await createReport(formData);
             Toast.show('Report submitted successfully', Toast.LONG);
@@ -229,6 +216,12 @@ const Report = ({ route }) => {
                             styles.imagePickerText,
                             { color: isLight ? "#666666" : "#cccccc", marginTop: 8 }
                         ]}>
+                            Tap to Upload
+                        </Text>
+                        <Text style={[
+                            styles.imagePickerText,
+                            { color: isLight ? "#ff4444" : "#ff6666", marginTop: 4, fontSize: 13, fontWeight: '700' }
+                        ]}>
                             {title}
                         </Text>
                     </View>
@@ -332,7 +325,7 @@ const Report = ({ route }) => {
                     ]}>
                         {reportType === 'refund_agreement'
                             ? 'Both players le Refund Agreement garnu vyo vni Entry Point refund paunu huncha. \n(Notification & Guide will be delivered to your opponent)'
-                            : 'Tapai ko match ma k-kasto problem aako chha hami lai explain garnus and screenshots pni dinu hos. Try to provide different screenshots for better and strong report claim. \n(False info may result in a -20 point fine.)'}
+                            : 'Tapai ko match ma k-kasto problem aako chha hami lai explain garnus and screenshots pni dinu hos. All 3 screenshots are required for better and strong report claim. \n(False info may result in a -20 point fine.)'}
                     </Text>
 
                     {/* Description and Evidence Upload Section - Only for Game Issue */}
@@ -368,17 +361,17 @@ const Report = ({ route }) => {
                             <ImagePickerButton
                                 evidence={evidence1}
                                 onPress={() => pickImage(setEvidence1, setImageResult1)}
-                                title="Tap to Upload Evidence 1"
+                                title="Evidence 1 (Required)"
                             />
                             <ImagePickerButton
                                 evidence={evidence2}
                                 onPress={() => pickImage(setEvidence2, setImageResult2)}
-                                title="Tap to Upload Evidence 2"
+                                title="Evidence 2 (Required)"
                             />
                             <ImagePickerButton
                                 evidence={evidence3}
                                 onPress={() => pickImage(setEvidence3, setImageResult3)}
-                                title="Tap to Upload Evidence 3"
+                                title="Evidence 3 (Required)"
                             />
                         </>
                     )}

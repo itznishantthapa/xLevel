@@ -64,19 +64,7 @@ const ActionButtons = ({ game, isLight, isCreator, user, handleResultUpload, for
         activeOpacity={0.8}
       >
         <View style={styles.joinButtonContent}>
-          <Text style={[styles.joinButtonText, isLight ? { color: "#ffffff" } : { color: "#000000" }]}>Join</Text>
-          {!game.is_free && (
-            <View style={styles.entryFeeContainer}>
-              <Text style={[styles.entryFeeText, isLight ? { color: "#ffffff" } : { color: "#000000" }]}>
-                {game.entry_fee}
-              </Text>
-              <MaterialCommunityIcons 
-                name="star-four-points-outline" 
-                size={14} 
-                color={isLight ? "#00bf63" : "#000000"} 
-              />
-            </View>
-          )}
+          <Text style={[styles.joinButtonText, isLight ? { color: "#ffffff" } : { color: "#000000" }]}>JOIN</Text>
         </View>
       </Pressable>
 
@@ -104,16 +92,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 2,
   },
-  entryFeeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 2,
-  },
-  entryFeeText: {
-    color: '#ffffff',
-    fontSize: 12,
-    fontWeight: '600',
-  },
+
 })
 
 

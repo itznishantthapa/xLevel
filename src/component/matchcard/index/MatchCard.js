@@ -34,7 +34,6 @@ const MatchCard = ({
   handleConfirmChallenge,
   handleReportUser,
   forOpenGames = false,
-  handleIssue,
   handleReport
 }) => {
   const { isLight } = useThemeStore()
@@ -53,8 +52,6 @@ const MatchCard = ({
           handleLeaveChallenge={handleLeaveChallenge}
           handleReportUser={handleReportUser}
           forOpenGames={forOpenGames}
-          handleIssue={handleIssue}
-
         />
 
         {/* Main Content Columns */}
@@ -86,19 +83,21 @@ const MatchCard = ({
           ) : (
             <View style={localStyles.timeReportContainer}>
               <Time time={game.created_at} isDark={!isLight} forMatch={true} />
-              <Pressable 
-                style={[
-                  localStyles.reportButton,
-                  { backgroundColor: isLight ? '#000000' : '#ffffff' }
-                ]}
-                onPress={() => handleReport?.(game)}
-                activeOpacity={0.85}
-              >
-                <View style={localStyles.reportButtonContent}>
-                  <MaterialIcons name="flag" size={scaleWidth(16)} color={isLight ? "#ffffff" : "#000000"} />
-                  <Text style={[localStyles.reportButtonText, { color: isLight ? '#ffffff' : '#000000' }]}>Report Match</Text>
-                </View>
-              </Pressable>
+              {game.status === 'in_progress' && (
+                <Pressable 
+                  style={[
+                    localStyles.reportButton,
+                    { backgroundColor: isLight ? '#000000' : '#ffffff' }
+                  ]}
+                  onPress={() => handleReport?.(game)}
+                  activeOpacity={0.85}
+                >
+                  <View style={localStyles.reportButtonContent}>
+                    <MaterialIcons name="flag" size={scaleWidth(16)} color={isLight ? "#ffffff" : "#000000"} />
+                    <Text style={[localStyles.reportButtonText, { color: isLight ? '#ffffff' : '#000000' }]}>Report Match</Text>
+                  </View>
+                </Pressable>
+              )}
             </View>
           )
         }

@@ -80,38 +80,6 @@ const Match = () => {
   }, [refetch]);
 
 
-  const handleIssue = useCallback((challenge_id, isCreator, game_name, game_mode, game) => {
-    // Extract opponent information from game participants
-    let opponent = null;
-    
-    if (game?.participants && game.participants.length > 0) {
-      // Find the opponent (the participant who is not the current user)
-      opponent = game.participants.find(participant => 
-        participant.id !== user?.id && participant.participant_id !== user?.id
-      );
-    }
-
-    // If no participants but we have creator info and current user is not creator
-    if (!opponent && game?.created_by && game.created_by.id !== user?.id) {
-      opponent = {
-        id: game.created_by.id,
-        full_name: game.created_by.full_name,
-        name: game.created_by.full_name
-      };
-    }
-
-    navigation.navigate('selectIssue', { 
-      challenge_id, 
-      isCreator, 
-      game_name, 
-      game_mode,
-      opponent 
-    });
-  }, [navigation, user?.id]);
-
-
-
-
   //============ Handle Leave Challenge ============  
   const handleLeaveChallenge = useCallback(async (challengeId) => {
     try {
@@ -246,7 +214,6 @@ const Match = () => {
         onLoadMore={handleLoadMore}
         handleConfirmedOpponent={handleConfirmedOpponent}
         handleLeaveChallenge={handleLeaveChallenge}
-        handleIssue={handleIssue}
         handleReport={handleReport}
       />
     </View>

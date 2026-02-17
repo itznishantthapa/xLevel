@@ -18,9 +18,6 @@ import EfootballCreate from "../screens/customer/createGame/EfootballCreate";
 import CreateChess from "../screens/customer/createGame/CreateChess";
 import CreatePubg from "../screens/customer/createGame/CreatePubg";
 import CreateMLBB from "../screens/customer/createGame/CreateMLBB";
-import DropIssue from "../screens/customer/issue/DropIssue";
-import SelectIssue from "../screens/customer/issue/SelectIssue";
-import Issue from "../screens/customer/issue/Issue";
 import AccountDeletion from "../screens/customer/account/AccountDeletion";
 import Credits from "../screens/customer/legal/Credits";
 import Leaderboard from "../screens/customer/Leaderboard";
@@ -66,9 +63,6 @@ export default function CustomerNavigator(){
             <Stack.Screen component={CreateChess} name="createChess"/>
             <Stack.Screen component={CreatePubg} name="createPubg"/>
             <Stack.Screen component={CreateMLBB} name="createMLBB"/>
-            <Stack.Screen component={DropIssue} name="dropIssue"/>
-            <Stack.Screen component={SelectIssue} name="selectIssue"/>
-            <Stack.Screen component={Issue} name="issue"/>
             <Stack.Screen component={AccountDeletion} name="accountDeletion"/>
             <Stack.Screen component={Credits} name="credits"/>
             <Stack.Screen component={Leaderboard} name="leaderboard"/>
