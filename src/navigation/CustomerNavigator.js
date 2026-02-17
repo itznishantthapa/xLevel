@@ -25,6 +25,8 @@ import AccountDeletion from "../screens/customer/account/AccountDeletion";
 import Credits from "../screens/customer/legal/Credits";
 import Leaderboard from "../screens/customer/Leaderboard";
 import ReportUser from "../screens/customer/issue/ReportUser";
+import Report from "../screens/customer/Report";
+import ReportList from "../screens/customer/report/ReportList";
 import Thanks from "../screens/customer/issue/Thanks";
 import BlockedUserList from "../screens/customer/BlockedUserList";
 import Exchange from "../screens/customer/Exchange";
@@ -71,6 +73,8 @@ export default function CustomerNavigator(){
             <Stack.Screen component={Credits} name="credits"/>
             <Stack.Screen component={Leaderboard} name="leaderboard"/>
             <Stack.Screen component={ReportUser} name="reportUser"/>
+            <Stack.Screen component={Report} name="report" options={{ animation: "fade"}}/>
+            <Stack.Screen component={ReportList} name="reportList" options={{ animation: "fade"}}/>
             <Stack.Screen component={Thanks} name="thanks"/>
             <Stack.Screen component={BlockedUserList} name="blockedUserList"/>
             <Stack.Screen component={Exchange} name="exchange"/>

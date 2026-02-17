@@ -288,6 +288,18 @@ const Profile = () => {
                   </View>
                   <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
                 </Pressable>
+
+                <Pressable
+                  style={[styles.actionRow, styles.actionRowBorder, { borderBottomColor: colors.border }]}
+                  onPress={() => navigation.navigate("reportList")}
+                >
+                  <View style={styles.actionContent}>
+                    <MaterialIcons name="flag" size={20} color={colors.text} />
+                    <Text style={[styles.actionText, { color: colors.text }]}>My Reports</Text>
+                  </View>
+                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
+                </Pressable>
+
                 <Pressable
                   style={styles.actionRow}
                   onPress={() => navigation.navigate("blockedUserList")}
@@ -379,7 +391,7 @@ const Profile = () => {
           </View>
 
           <View style={styles.versionFooter}>
-            <Text style={[styles.versionText, { color: colors.textTertiary }]}>Version 1.3 (7)</Text>
+            <Text style={[styles.versionText, { color: colors.textTertiary }]}>Version 4.5 (45)</Text>
           </View>
 
        

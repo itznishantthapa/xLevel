@@ -9,7 +9,8 @@ const OpponentMatchCard = ({
   handleAcceptChallengeOnCopy,
   handleDeleteChallenge,
   handleLeaveChallenge,
-  handleIssue
+  handleIssue,
+  handleReport
 }) => {
   return (
     <MatchCard
@@ -22,6 +23,7 @@ const OpponentMatchCard = ({
       handleDeleteChallenge={handleDeleteChallenge}
       handleLeaveChallenge={handleLeaveChallenge}
       handleIssue={handleIssue}
+      handleReport={handleReport}
     />
   )
 }

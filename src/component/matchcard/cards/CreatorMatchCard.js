@@ -8,7 +8,8 @@ const CreatorMatchCard = ({
   handleResultUpload,
   handleDeleteChallenge,
   handleConfirmedOpponent,
-  handleIssue
+  handleIssue,
+  handleReport
 }) => {
   return (
     <MatchCard
@@ -20,6 +21,7 @@ const CreatorMatchCard = ({
       handleDeleteChallenge={handleDeleteChallenge}
       handleConfirmedOpponent={handleConfirmedOpponent}
       handleIssue={handleIssue}
+      handleReport={handleReport}
     />
   )
 }

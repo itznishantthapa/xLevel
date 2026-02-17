@@ -71,6 +71,10 @@ export const endpoints = {
   createIssue:"/api/issues/create/",
   getIssues:"/api/issues/my-issues/",
 
+  //reports
+  submitReport:"/api/reports/create/",
+  getReports:"/api/reports/my-reports/",
+
   //Guides
   getGuides:"/api/guide/",
 

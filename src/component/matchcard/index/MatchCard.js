@@ -1,4 +1,4 @@
-import { Text, View } from "react-native"
+import { Pressable, Text, View } from "react-native"
 import GameHeader from "../GameHeader"
 import { sharedStyles } from "../sharedStyleAndInfo"
 import GameDetails from "../gameDetails/GameDetails"
@@ -14,6 +14,7 @@ import { Time } from "../Time"
 import { scaleHeight, scaleWidth } from "../../../utils/scaling"
 import SettingInfo from "../SettingInfo"
 import { Fontisto, MaterialIcons } from "@expo/vector-icons"
+import { StyleSheet } from "react-native"
 
 
 /**
@@ -33,7 +34,8 @@ const MatchCard = ({
   handleConfirmChallenge,
   handleReportUser,
   forOpenGames = false,
-  handleIssue
+  handleIssue,
+  handleReport
 }) => {
   const { isLight } = useThemeStore()
   const { user } = useAuthStore()
@@ -80,10 +82,24 @@ const MatchCard = ({
 
         {
           forOpenGames ? (
-            <Time time={game.created_at} isDark={!isLight} />
+             <Time time={game.created_at} isDark={!isLight} forMatch={true} />
           ) : (
-            <Time time={game.created_at} isDark={!isLight} forMatch={true} />
-
+            <View style={localStyles.timeReportContainer}>
+              <Time time={game.created_at} isDark={!isLight} forMatch={true} />
+              <Pressable 
+                style={[
+                  localStyles.reportButton,
+                  { backgroundColor: isLight ? '#000000' : '#ffffff' }
+                ]}
+                onPress={() => handleReport?.(game)}
+                activeOpacity={0.85}
+              >
+                <View style={localStyles.reportButtonContent}>
+                  <MaterialIcons name="flag" size={scaleWidth(16)} color={isLight ? "#ffffff" : "#000000"} />
+                  <Text style={[localStyles.reportButtonText, { color: isLight ? '#ffffff' : '#000000' }]}>Report Match</Text>
+                </View>
+              </Pressable>
+            </View>
           )
         }
 
@@ -124,5 +140,44 @@ const MatchCard = ({
     </View>
   )
 }
+
+const localStyles = StyleSheet.create({
+  timeReportContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingVertical: scaleHeight(6),
+    paddingHorizontal: scaleWidth(2),
+    gap: scaleWidth(12),
+  },
+  reportButton: {
+    paddingHorizontal: scaleWidth(16),
+    paddingVertical: scaleHeight(9),
+    borderRadius: scaleWidth(24),
+    minHeight: scaleHeight(36),
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 6,
+  },
+  reportButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: scaleWidth(6),
+  },
+  reportButtonText: {
+    fontSize: scaleWidth(13),
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
+});
 
 export default MatchCard

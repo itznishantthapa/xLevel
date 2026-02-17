@@ -182,6 +182,11 @@ const Match = () => {
     navigation.navigate('resultUpload', { game })
   }, [navigation])
 
+  //============ Handle Report ============  
+  const handleReport = useCallback((game) => {
+    navigation.navigate('report', { game })
+  }, [navigation])
+
 
 
   //============ Handle Load More ============  
@@ -242,6 +247,7 @@ const Match = () => {
         handleConfirmedOpponent={handleConfirmedOpponent}
         handleLeaveChallenge={handleLeaveChallenge}
         handleIssue={handleIssue}
+        handleReport={handleReport}
       />
     </View>
   );

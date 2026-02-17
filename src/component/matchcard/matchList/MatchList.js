@@ -42,7 +42,8 @@ const MatchList = ({
   handleDeleteChallenge,
   handleConfirmedOpponent,
   handleLeaveChallenge,
-  handleIssue
+  handleIssue,
+  handleReport
 }) => {
   const { isLight } = useThemeStore();
   const { user } = useAuthStore();
@@ -113,6 +114,7 @@ const MatchList = ({
       handleDeleteChallenge={handleDeleteChallenge}
       handleConfirmedOpponent={handleConfirmedOpponent}
       handleIssue={handleIssue}
+      handleReport={handleReport}
     />
     ):(
         <OpponentMatchCard
@@ -125,6 +127,7 @@ const MatchList = ({
           handleDeleteChallenge={handleDeleteChallenge}
           handleLeaveChallenge={handleLeaveChallenge}
           handleIssue={handleIssue}
+          handleReport={handleReport}
         />
     )
     
