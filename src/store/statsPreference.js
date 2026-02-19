@@ -39,7 +39,7 @@ export const useStatsPreferenceStore = create(
       statsConfig: DEFAULT_STATS,
       isLoading: false,
       hasQR: false,
-      colorfulIcons: false, // New state for controlling icon colors
+      colorfulIcons: true, // New state for controlling icon colors (default: enabled)
 
       // Actions
       updateStatsConfig: (newConfig) => {

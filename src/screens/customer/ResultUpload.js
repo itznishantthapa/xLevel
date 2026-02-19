@@ -329,9 +329,9 @@ const ResultUpload = ({ route }) => {
   const GameResultSelector = ({ selectedResult, onSelect, errorMessage }) => {
     // Define all possible results
     const allGameResults = [
-      { value: 'win', label: 'Won', icon: 'emoji-events', color: '#4CAF50' },
-      { value: 'lose', label: 'Lost', icon: 'thumb-down', color: '#F44336' },
-      { value: 'draw', label: 'Draw', icon: 'remove', color: '#FF9800' }
+      { value: 'win', label: 'Won', icon: 'emoji-events' },
+      { value: 'lose', label: 'Lost', icon: 'thumb-down' },
+      { value: 'draw', label: 'Draw', icon: 'remove' }
     ];
 
     // Check if current game supports draw (Chess and eFootball only)
@@ -354,10 +354,10 @@ const ResultUpload = ({ route }) => {
                 styles.gameResultOption,
                 {
                   backgroundColor: selectedResult === result.value
-                    ? (isLight ? result.color : result.color)
+                    ? (isLight ? "#000000" : "#ffffff")
                     : (isLight ? "#f5f5f5" : "#1a1a1a"),
                   borderColor: selectedResult === result.value
-                    ? result.color
+                    ? (isLight ? "#000000" : "#ffffff")
                     : (isLight ? "#cccccc" : "#333333"),
                 }
               ]}
@@ -368,19 +368,11 @@ const ResultUpload = ({ route }) => {
                 }
               }}
             >
-              {/* <MaterialIcons
-                name={result.icon}
-                size={scaleWidth(24)}
-                color={selectedResult === result.value 
-                  ? "#ffffff" 
-                  : (isLight ? "#666666" : "#cccccc")
-                }
-              /> */}
               <Text style={[
                 styles.gameResultOptionText,
                 {
                   color: selectedResult === result.value
-                    ? "#ffffff"
+                    ? (isLight ? "#ffffff" : "#000000")
                     : (isLight ? "#333333" : "#ffffff"),
                   fontWeight: selectedResult === result.value ? 'bold' : 'normal'
                 }
@@ -424,55 +416,13 @@ const ResultUpload = ({ route }) => {
           />
 
           <Text style={[
-            styles.subtitle,
-            { color: isLight ? '#666666' : '#cccccc', marginBottom: 16 }
+            styles.instructionText,
+            { color: isLight ? '#666666' : '#cccccc', marginBottom: 12 }
           ]}>
-            Please upload two screenshots of your game results exactly as shown in the example.
+            Upload two screenshots of your game results. 
           </Text>
 
-          {/* Important Rules */}
-          <View style={[
-            styles.rulesContainer,
-            { 
-              backgroundColor: isLight ? '#e8f9f0' : '#003d1f',
-              borderColor: '#00bf63'
-            }
-          ]}>
-            <View style={styles.rulesHeaderContainer}>
-              <MaterialIcons 
-                name="info-outline" 
-                size={24} 
-                color="#00bf63" 
-              />
-              <Text style={[
-                styles.rulesHeading,
-                { color: isLight ? '#003d1f' : '#ffffff' }
-              ]}>
-                Important Things to Know
-              </Text>
-            </View>
-            
-            <View style={styles.rulesTextContainer}>
-              {[
-                "If you lost the match, you don't need to submit the result.",
-                "If you won the match, you must submit the result within 20 minutes.",
-                "Submissions after 20 minutes may not be reviewed and can be marked as a loss.",
-                "The 20 minute starts when both players finish the match, not when it begins."
-              ].map((rule, index) => (
-                <Text
-                  key={index}
-                  style={[
-                    styles.rulesText,
-                    { color: isLight ? '#003d1f' : '#ffffff', marginTop: index === 0 ? 0 : 10 },
-                  ]}
-                >
-                  <Text style={styles.boldText}>{index + 1}.</Text> {rule}
-                </Text>
-              ))}
-            </View>
-          </View>
-
-          {/* See Example Button */}
+          {/* See Example Button - Compact Version */}
           <Pressable
             onPress={() => navigation.navigate('example', { 
               game: game?.game,
@@ -481,28 +431,19 @@ const ResultUpload = ({ route }) => {
             style={[
               styles.seeExampleButton,
               { 
-                backgroundColor: isLight ? '#f0fdf4' : '#022c22',
-                borderColor: '#00bf63'
+                backgroundColor: isLight ? '#f5f5f5' : '#1a1a1a',
+                borderColor: isLight ? '#cccccc' : '#333333'
               }
             ]}
           >
-            <View style={styles.exampleButtonContent}>
-              <View style={styles.exampleIconContainer}>
-                <MaterialIcons 
-                  name="photo-library" 
-                  size={20} 
-                  color="#00bf63" 
-                />
-              </View>
-              <Text style={[styles.seeExampleButtonText, { color: isLight ? '#003d1f' : '#00bf63' }]}>
-                View Example Screenshots
-              </Text>
-            </View>
             <MaterialIcons 
-              name="arrow-forward" 
-              size={20} 
-              color="#00bf63" 
+              name="photo-library" 
+              size={16} 
+              color={isLight ? '#333333' : '#ffffff'} 
             />
+            <Text style={[styles.seeExampleButtonText, { color: isLight ? '#333333' : '#ffffff' }]}>
+              View Example
+            </Text>
           </Pressable>
 
           {/* Game Result Selector */}
@@ -546,7 +487,7 @@ const ResultUpload = ({ route }) => {
               styles.warningText,
               { color: isLight ? '#333333' : '#ffffff' }
             ]}>
-            Submitting false results will lead to an account suspension and a 50 point penalty.
+            Submitting false results will lead to an account suspension and a 20 point penalty.
             </Text>
           </View>
         </View>
@@ -611,60 +552,25 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 13,
   },
-  seeExampleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    marginBottom: 20,
-    borderWidth: 1.5,
-  },
-  exampleButtonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  exampleIconContainer: {
-    width: 32,
-    height: 32,
-    borderRadius: 6,
-    backgroundColor: 'rgba(0, 191, 99, 0.1)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  seeExampleButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  rulesContainer: {
-    flexDirection: 'column',
-    marginBottom: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    borderRadius: 8,
-    borderWidth: 1,
-  },
-  rulesHeaderContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-    gap: 8,
-  },
-  rulesHeading: {
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  rulesTextContainer: {
-    flex: 1,
-  },
-  rulesText: {
+  instructionText: {
     fontSize: 13,
     lineHeight: 18,
   },
-  boldText: {
-    fontWeight: '700',
+  seeExampleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    marginBottom: 20,
+    borderWidth: 1,
+    alignSelf: 'flex-start',
+    gap: 6,
+  },
+  seeExampleButtonText: {
+    fontSize: 12,
+    fontWeight: '500',
   },
   imagePickerSection: {
     marginBottom: 16,
@@ -722,13 +628,13 @@ const styles = StyleSheet.create({
   },
   gameResultOption: {
     flex: 1,
-    borderWidth: 2,
-    borderRadius: 8,
-    paddingVertical: 16,
+    borderWidth: 1.5,
+    borderRadius: 6,
+    paddingVertical: 14,
     paddingHorizontal: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 80,
+    minHeight: 70,
   },
   gameResultOptionText: {
     fontSize: 14,

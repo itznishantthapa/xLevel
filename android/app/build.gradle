@@ -93,8 +93,8 @@ android {
         applicationId 'com.blackonedevs.levelesportmatchmaking'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 46
-        versionName "4.6"
+        versionCode 47
+        versionName "4.7"
     }
     signingConfigs {
         debug {

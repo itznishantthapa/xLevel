@@ -108,23 +108,7 @@ const GameHeader = ({ game, isLight, isCreator, user, handleDeleteChallenge, han
             </TouchableOpacity>
           )
         }
-        {
-          game.status !== "cancelled" && game.is_free && !forOpenGames && game.status !== "completed"  &&  (
-            <Pressable 
-              style={[
-                localStyles.cancelButton,
-                { backgroundColor: isLight ? '#000000' : '#ffffff' }
-              ]}
-              onPress={handleDelete}
-              activeOpacity={0.85}
-            >
-              <View style={localStyles.cancelButtonContent}>
-                <Entypo name="cross" size={scaleWidth(16)} color={isLight ? "#ffffff" : "#000000"} />
-                <Text style={[localStyles.cancelButtonText, { color: isLight ? '#ffffff' : '#000000' }]}>{isCreator ? "Cancel" : "Leave"}</Text>
-              </View>
-            </Pressable>
-          )
-        }
+
 
 
       </View>

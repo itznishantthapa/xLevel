@@ -83,7 +83,7 @@ const MatchCard = ({
           ) : (
             <View style={localStyles.timeReportContainer}>
               <Time time={game.created_at} isDark={!isLight} forMatch={true} />
-              {game.status === 'in_progress' && (
+              {game.status === 'in_progress' && !game.is_free && (
                 <Pressable 
                   style={[
                     localStyles.reportButton,
