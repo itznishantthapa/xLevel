@@ -10,7 +10,7 @@ const { width } = Dimensions.get("window")
 const CARD_WIDTH = width * 0.95
 const CARD_HEIGHT = 160
 
-const GameMode = ({ game_mode, handleGameMode }) => {
+const GameMode = ({ game_mode, handleGameMode, game }) => {
   const navigation = useNavigation();
   const { isLight } = useThemeStore();
   const getGameModeIcon = (mode) => {
@@ -24,10 +24,42 @@ const GameMode = ({ game_mode, handleGameMode }) => {
     }
   }
 
+  const getStoreButtonText = () => {
+    if (!game?.game_name) return "Game Store";
+    
+    const gameName = game.game_name.toLowerCase();
+    if (gameName.includes('free fire') || gameName.includes('freefire')) {
+      return "FreeFire Store";
+    } else if (gameName.includes('pubg')) {
+      return "PUBG Store";
+    } else if (gameName.includes('efootball')) {
+      return "Efootball Store";
+    } else if (gameName.includes('mlbb')) {
+      return "MLBB Store";
+    } else if (gameName.includes('chess')) {
+      return "Chess Store";
+    }
+    return "Game Store";
+  }
+
+  const handleStoreNavigation = () => {
+    if (!game?.game_name) return;
+    
+    const gameName = game.game_name.toLowerCase();
+    if (gameName.includes('free fire') || gameName.includes('freefire')) {
+      navigation.navigate('freeFireStore', { game });
+    } else if (gameName.includes('pubg')) {
+      navigation.navigate('pubgStore', { game });
+    } else if (gameName.includes('efootball')) {
+      navigation.navigate('efootballStore', { game });
+    } else if (gameName.includes('mlbb')) {
+      navigation.navigate('mlbbStore', { game });
+    }
+  }
+
 
 
   const renderGameCard = ({ item }) => {
-
     const iconName = getGameModeIcon(item)
 
     return (
@@ -104,6 +136,18 @@ const GameMode = ({ game_mode, handleGameMode }) => {
         contentContainerStyle={styles.gridContainer}
         ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
       />
+
+      {/* Store Link */}
+      <Pressable onPress={handleStoreNavigation} style={styles.storeLinkContainer}>
+        <View style={styles.storeLinkRow}>
+          {/* <Ionicons name="diamond" size={20} color="#00a3ee" style={styles.diamondIcon} /> */}
+          <Text style={[styles.storeLinkText, { color:  '#00bf63' }]}>
+            Go to {getStoreButtonText()}
+          </Text>
+          {/* <Ionicons name="diamond" size={15} color="#00a3ee" style={styles.diamondIcon} /> */}
+        </View>
+        <View style={[styles.storeLinkUnderline, { backgroundColor: '#00bf63' }]} />
+      </Pressable>
     </View>
   )
 }
@@ -220,6 +264,32 @@ const styles = StyleSheet.create({
     height: "100%",
     backgroundColor: "rgba(255, 255, 255, 0.1)",
     transform: [{ skewX: "-20deg" }],
+  },
+  storeLinkContainer: {
+    alignItems: "center",
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    paddingBottom: Platform.OS === 'ios' ? 30 : 20,
+  },
+  storeLinkRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 0,
+  },
+  diamondIcon: {
+    marginHorizontal: 4,
+  },
+  storeLinkText: {
+    fontSize: 18,
+    fontWeight: "700",
+    letterSpacing: 0.3,
+  },
+  storeLinkUnderline: {
+    alignSelf: 'center',
+    minWidth: 200,
+    height: 3,
+    marginTop: 6,
+    borderRadius: 1.5,
   },
 })
 

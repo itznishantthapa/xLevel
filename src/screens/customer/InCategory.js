@@ -161,6 +161,7 @@ const InCategory = ({ route }) => {
             <GameMode
               game_mode={game.game_modes}
               handleGameMode={handleGameMode}
+              game={game}
             />
           </View>
         </View>

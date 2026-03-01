@@ -6,8 +6,11 @@ import LoaderKitView from "react-native-loader-kit"
 import { useThemeStore } from "../../../store/themeStore"
 
 
-const CoolButton = ({ handlePress, disableBtn=false, title }) => {
+const CoolButton = ({ handlePress, disableBtn=false, title, backgroundColor, textColor }) => {
   const { isLight } = useThemeStore()
+
+  const buttonBgColor = backgroundColor || (isLight ? "#000000" : "#eaf4f4")
+  const buttonTextColor = textColor || (isLight ? "#ffffff" : "#000000")
 
   const textOpacity = useRef(new Animated.Value(1)).current
   const loaderOpacity = useRef(new Animated.Value(0)).current
@@ -57,12 +60,12 @@ const CoolButton = ({ handlePress, disableBtn=false, title }) => {
   return (
     <View >
       <Pressable
-        style={[styles.submitButton, { backgroundColor: isLight ? "#000000" : "#eaf4f4" }]}
+        style={[styles.submitButton, { backgroundColor: buttonBgColor }]}
         onPress={handlePress}
         disabled={disableBtn}
       >
         <Animated.View style={[styles.contentContainer, { opacity: textOpacity }]}>
-          <Text style={[styles.submitButtonText, { color: isLight ? "#ffffff" : "#000000" }]}>{title}</Text>
+          <Text style={[styles.submitButtonText, { color: buttonTextColor }]}>{title}</Text>
         </Animated.View>
 
         <Animated.View
@@ -78,7 +81,7 @@ const CoolButton = ({ handlePress, disableBtn=false, title }) => {
             style={{ width: 30, height: 30 }}
             name={"BallPulse"}
             animationSpeedMultiplier={1.0}
-            color={isLight ? "#ffffff" : "#000000"}
+            color={buttonTextColor}
           />
         </Animated.View>
       </Pressable>

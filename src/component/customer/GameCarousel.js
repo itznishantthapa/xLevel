@@ -29,7 +29,7 @@ const GameCarousel = ({ games, handleGameCardPress }) => {
         <View style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
-                <Text style={[styles.title, isLight ? { color: '#000000' } : { color: '#EAEAEA' }]}>Create Match</Text>
+                <Text style={[styles.title, isLight ? { color: '#000000' } : { color: '#EAEAEA' }]}>Games & Store</Text>
             </View>
 
             {/* Games Carousel */}

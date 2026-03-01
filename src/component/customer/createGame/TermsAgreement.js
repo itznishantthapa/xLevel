@@ -13,11 +13,12 @@ import Animated, {
  * @param {function} onToggle - Function to call when checkbox is toggled
  * @param {boolean} isLight - Whether light theme is active
  * @param {function} onReadRules - Function to call when "Read Rules" is pressed
+ * @param {string} text - Custom terms text (optional)
  * @param {React.Ref} ref - Reference to access shake function
  * @returns {JSX.Element}
  */
-const TermsAgreement = forwardRef(({ isAccepted, onToggle, isLight, onReadRules }, ref) => {
-  const termsText = "I’ve accepted the game rules & terms.";
+const TermsAgreement = forwardRef(({ isAccepted, onToggle, isLight, onReadRules, text }, ref) => {
+  const termsText = text || "I've accepted the game rules & terms.";
   
   // Shared value for shake animation
   const shakeOffset = useSharedValue(0);
