@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, Image, Pressable, TextInput, Animated } from 'react-native'
+import Toast from 'react-native-simple-toast'
 import { useThemeStore } from '../../../store/themeStore'
 import { MaterialIcons, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons'
 import { useEffect, useState, useRef } from 'react'
@@ -7,8 +8,14 @@ import { CreateGameLayout, SectionTitle, DividerLine, TermsAgreement } from '../
 
 // Local images
 const weeklyMembershipImg = require('../../../assets/weekly.png')
+const weeklyLightMembershipImg = require('../../../assets/weeklylight.png')
 const monthlyMembershipImg = require('../../../assets/monthly.png')
 const diamondImg = require('../../../assets/diamond.png')
+const evo3DayImg = require('../../../assets/3DEvo.png')
+const evo7DayImg = require('../../../assets/7DEvo.png')
+const evo30DayImg = require('../../../assets/30DEvo.png')
+const levelUpImg = require('../../../assets/levelup.png') //same image for all level ups
+
 
 // Monochrome accent colors
 const ACCENT_PRIMARY = (isLight) => isLight ? '#000000' : '#ffffff'
@@ -67,7 +74,19 @@ const FreeFireStore = ({ route }) => {
     { id: 7, type: "diamond", diamonds: 5600, points: 6100, image: null },
     { id: 8, type: "diamond", diamonds: 11500, points: 12500, image: null },
     { id: 9, type: "membership", membership: "weekly", points: 150, image: weeklyMembershipImg },
+    { id: 20, type: "membership", membership: "weekly-light", points: 200, image: weeklyLightMembershipImg },
     { id: 10, type: "membership", membership: "monthly", points: 350, image: monthlyMembershipImg },
+    { id: 11, type: "levelup", level: "6", points: 40, image: levelUpImg },
+    { id: 12, type: "levelup", level: "10", points: 40, image: levelUpImg },
+    { id: 13, type: "levelup", level: "15", points: 40, image: levelUpImg },
+    { id: 14, type: "levelup", level: "20", points: 40, image: levelUpImg },
+    { id: 15, type: "levelup", level: "25", points: 40, image: levelUpImg },
+    { id: 16, type: "levelup", level: "30", points: 40, image: levelUpImg },
+    { id: 17, type: "evoaccess", day: "3D", points: 40, image: evo3DayImg },
+    { id: 18, type: "evoaccess", day: "7D", points: 80, image: evo7DayImg },
+    { id: 19, type: "evoaccess", day: "30D", points: 200, image: evo30DayImg },
+    
+
   ]
 
   // Separate diamonds and memberships
@@ -97,11 +116,12 @@ const FreeFireStore = ({ route }) => {
   // Handle confirm purchase
   const handleConfirm = () => {
     if (!selectedItem) {
-      console.log('Please select an item')
+      Toast.show('Please select an item', Toast.SHORT)
       return
     }
 
     if (!agreementAccepted) {
+      Toast.show('Please confirm your game profile', Toast.SHORT)
       termsRef.current?.shake()
       return
     }
