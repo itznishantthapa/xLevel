@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "400",
+    fontWeight: "600",
   },
   rulesLink: {
     alignSelf: "flex-start",

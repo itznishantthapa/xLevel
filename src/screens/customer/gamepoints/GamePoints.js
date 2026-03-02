@@ -228,7 +228,7 @@ const GamePoints = () => {
       {/* Header */}
       <AppHeader
         backButton={true}
-        title={'Game Points'}
+        title={'Requests'}
       />
 
       {/* pointsinout List */}

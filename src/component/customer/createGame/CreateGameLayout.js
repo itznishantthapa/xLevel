@@ -31,7 +31,8 @@ const CreateGameLayout = ({
   buttonTitle = "Create Match",
   loaderMessage = "Creating match...",
   buttonBackgroundColor,
-  buttonTextColor
+  buttonTextColor,
+  aboveButtonContent
 }) => {
   const insets = useSafeAreaInsets()
   return (
@@ -64,6 +65,7 @@ const CreateGameLayout = ({
 
           {/* Submit Button */}
           <View style={{ marginHorizontal: 20, marginBottom: 10 }}>
+            {aboveButtonContent}
             <CoolButton title={buttonTitle} handlePress={onSubmit} backgroundColor={buttonBackgroundColor} textColor={buttonTextColor} />
           </View>
         </KeyboardAvoidingView>

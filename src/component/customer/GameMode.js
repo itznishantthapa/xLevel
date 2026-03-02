@@ -1,27 +1,20 @@
 "use client"
-import { View, Text, StyleSheet, Pressable, ImageBackground, Dimensions, FlatList, Platform } from "react-native"
-import { Entypo, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons"
-import { LinearGradient } from "expo-linear-gradient"
+import { View, Text, StyleSheet, Pressable, Dimensions, FlatList, Platform } from "react-native"
+import { Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons"
 import { useThemeStore } from "../../store/themeStore"
 import { useNavigation } from "@react-navigation/native"
-import AppHeader from "../../screens/customer/header/AppHeader"
 
 const { width } = Dimensions.get("window")
-const CARD_WIDTH = width * 0.95
-const CARD_HEIGHT = 160
+const CARD_WIDTH = width - 40
+
+// Monochrome accent colors
 
 const GameMode = ({ game_mode, handleGameMode, game }) => {
   const navigation = useNavigation();
   const { isLight } = useThemeStore();
-  const getGameModeIcon = (mode) => {
-    switch (mode) {
-      case "Clash Squad":
-        return "groups"
-      case "Lone Wolf":
-        return "person"
-      default:
-        return "gamepad"
-    }
+
+  const getGameModeIcon = () => {
+    return "gamepad"
   }
 
   const getStoreButtonText = () => {
@@ -57,96 +50,176 @@ const GameMode = ({ game_mode, handleGameMode, game }) => {
     }
   }
 
-
-
-  const renderGameCard = ({ item }) => {
+  const renderGameCard = ({ item, index }) => {
     const iconName = getGameModeIcon(item)
+    const cardColor = isLight ? '#1a1a1a' : '#ffffff'
+    const accentAlt = isLight ? '#555555' : '#aaaaaa'
 
     return (
       <Pressable
-        style={[styles.gameCard, { transform: [{ scale: 1 }] }]}
+        style={({ pressed }) => [
+          styles.gameCard,
+          isLight ? styles.gameCardLight : styles.gameCardDark,
+          pressed && styles.gameCardPressed
+        ]}
         onPress={() => handleGameMode(item)}
-        activeOpacity={0.95}
       >
-        {/* <ImageBackground source={{ uri: item.bg_url }} style={styles.gameImage} imageStyle={styles.imageStyle}> */}
-        {/* Gradient Overlay */}
-        <LinearGradient
-          colors={["rgba(0,0,0,0.3)", "rgba(0,0,0,0.6)", "rgba(0,0,0,0.9)"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.gradientOverlay}
-        >
+        {/* Geometric Corner Accents */}
+        <View style={[styles.cornerAccent, styles.cornerTopLeft, { borderColor: cardColor }]} />
+        <View style={[styles.cornerAccent, styles.cornerBottomRight, { borderColor: accentAlt }]} />
+        
+        {/* Left Side - Index Number */}
+        <View style={styles.indexContainer}>
+          <Text style={[styles.indexNumber, { color: cardColor }]}>
+            {String(index + 1).padStart(2, '0')}
+          </Text>
+          <View style={[styles.indexLine, { backgroundColor: cardColor }]} />
+        </View>
 
-
-          {/* Middle Section - Game Icon */}
-          <View style={styles.middleSection}>
-            <View style={styles.gameIconContainer}>
-              <MaterialIcons name={iconName} size={32} color="#ffffff" />
-            </View>
+        {/* Center Content */}
+        <View style={styles.cardContent}>
+          <View style={[styles.iconWrapper, isLight ? styles.iconWrapperLight : styles.iconWrapperDark, { borderColor: cardColor }]}>
+            <MaterialIcons 
+              name={iconName} 
+              size={24} 
+              color={cardColor} 
+            />
           </View>
-
-          {/* Bottom Section - Game Mode Name */}
-          <View style={styles.bottomSection}>
-            <View style={styles.modeNameContainer}>
-              <Text style={styles.modeNameText}>{item}</Text>
-              <View style={styles.modeNameUnderline} />
-            </View>
-
-            {/* Decorative Elements */}
-            <View style={styles.decorativeElements}>
-              <View style={styles.decorativeDot} />
-              <View style={styles.decorativeLine} />
-              <View style={styles.decorativeDot} />
-            </View>
+          <View style={styles.textContent}>
+            <Text style={[styles.modeLabel, { color: cardColor }]}>MODE</Text>
+            <Text style={[styles.modeName, isLight ? styles.nameLight : styles.nameDark]}>{item}</Text>
           </View>
+        </View>
 
-          {/* Shine Effect */}
-          <View style={styles.shineEffect} />
-        </LinearGradient>
-        {/* </ImageBackground> */}
+        {/* Right Arrow */}
+        <View style={styles.arrowContainer}>
+          <View style={[styles.arrowLine, { backgroundColor: cardColor }]} />
+          <Ionicons 
+            name="chevron-forward" 
+            size={20} 
+            color={cardColor} 
+          />
+        </View>
       </Pressable>
     )
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, isLight ? styles.containerLight : styles.containerDark]}>
       {/* Header */}
-      <Pressable style={[styles.header, { paddingHorizontal: 20 }]} onPress={() => { navigation.goBack() }} disabled={Platform.OS === 'android'}>
-        {
-          Platform.OS === 'ios' && (
-            <Pressable onPress={() => navigation.goBack()} style={{ marginRight: 10 }}>
-              <MaterialCommunityIcons name="backburger" size={24} color={"#00ff88"} />
-            </Pressable>
-          )
-        }
+      <View style={styles.header}>
         <View style={styles.titleContainer}>
-          <Text style={[styles.title, { color: isLight ? '#333333' : '#EAEAEA' }]}>Game Modes</Text>
-          <View style={styles.titleUnderline} />
+          <View style={styles.titleRow}>
+            <View style={[styles.titleAccent, isLight ? styles.accentLight : styles.accentDark]} />
+            <Text style={[styles.title, isLight ? styles.titleLight : styles.titleDark]}>
+              SELECT MODE
+            </Text>
+          </View>
+          <Text style={[styles.subtitle, isLight ? styles.subtitleLight : styles.subtitleDark]}>
+            Choose your Match & Create
+          </Text>
         </View>
-      </Pressable>
+      </View>
 
+      {/* Geometric Divider */}
+      <View style={styles.dividerContainer}>
+        <View style={[styles.dividerLine, isLight ? styles.dividerLight : styles.dividerDark]} />
+        <View style={[styles.dividerDiamond, isLight ? styles.diamondLight : styles.diamondDark]} />
+        <View style={[styles.dividerLine, isLight ? styles.dividerLight : styles.dividerDark]} />
+      </View>
 
-      {/* Game Grid */}
+      {/* Game Modes List */}
       <FlatList
         data={game_mode}
         renderItem={renderGameCard}
         keyExtractor={(item, index) => index.toString()}
-        numColumns={1}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.gridContainer}
-        ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
+        contentContainerStyle={styles.listContainer}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        ListFooterComponent={() => (
+          <View style={styles.storeSection}>
+            {/* Store Section Header */}
+            <View style={styles.storeSectionHeader}>
+              <View style={styles.titleRow}>
+                <View style={[styles.titleAccent, { backgroundColor: isLight ? '#1a1a1a' : '#ffffff' }]} />
+                <Text style={[styles.sectionTitle, isLight ? styles.titleLight : styles.titleDark]}>
+                  GAME STORE
+                </Text>
+              </View>
+              <Text style={[styles.subtitle, isLight ? styles.subtitleLight : styles.subtitleDark]}>
+                Get Game Items
+              </Text>
+            </View>
+
+            {/* Store Divider */}
+            <View style={styles.dividerContainer}>
+              <View style={[styles.dividerLine, isLight ? styles.dividerLight : styles.dividerDark]} />
+              <View style={[styles.dividerDiamond, { backgroundColor: isLight ? '#555555' : '#aaaaaa' }]} />
+              <View style={[styles.dividerLine, isLight ? styles.dividerLight : styles.dividerDark]} />
+            </View>
+
+            {/* Store Card */}
+            <Pressable
+              style={({ pressed }) => [
+                styles.gameCard,
+                isLight ? styles.gameCardLight : styles.gameCardDark,
+                pressed && styles.gameCardPressed
+              ]}
+              onPress={handleStoreNavigation}
+            >
+              {/* Geometric Corner Accents */}
+              <View style={[styles.cornerAccent, styles.cornerTopLeft, { borderColor: isLight ? '#1a1a1a' : '#ffffff' }]} />
+              <View style={[styles.cornerAccent, styles.cornerBottomRight, { borderColor: isLight ? '#555555' : '#aaaaaa' }]} />
+              
+              {/* Left Side - Icon */}
+              <View style={styles.indexContainer}>
+                <Ionicons 
+                  name="diamond-outline" 
+                  size={20} 
+                  color={isLight ? '#1a1a1a' : '#ffffff'} 
+                />
+                <View style={[styles.indexLine, { backgroundColor: isLight ? '#1a1a1a' : '#ffffff' }]} />
+              </View>
+
+              {/* Center Content */}
+              <View style={styles.cardContent}>
+                <View style={[styles.iconWrapper, isLight ? styles.iconWrapperLight : styles.iconWrapperDark, { borderColor: isLight ? '#1a1a1a' : '#ffffff' }]}>
+                  <Ionicons 
+                    name="storefront-outline" 
+                    size={24} 
+                    color={isLight ? '#1a1a1a' : '#ffffff'} 
+                  />
+                </View>
+                <View style={styles.textContent}>
+                  <Text style={[styles.modeLabel, { color: isLight ? '#1a1a1a' : '#ffffff' }]}>STORE</Text>
+                  <Text style={[styles.modeName, isLight ? styles.nameLight : styles.nameDark]}>{getStoreButtonText()}</Text>
+                </View>
+              </View>
+
+              {/* Right Arrow */}
+              <View style={styles.arrowContainer}>
+                <View style={[styles.arrowLine, { backgroundColor: isLight ? '#1a1a1a' : '#ffffff' }]} />
+                <Ionicons 
+                  name="chevron-forward" 
+                  size={20} 
+                  color={isLight ? '#1a1a1a' : '#ffffff'} 
+                />
+              </View>
+            </Pressable>
+          </View>
+        )}
       />
 
-      {/* Store Link */}
-      <Pressable onPress={handleStoreNavigation} style={styles.storeLinkContainer}>
-        <View style={styles.storeLinkRow}>
-          {/* <Ionicons name="diamond" size={20} color="#00a3ee" style={styles.diamondIcon} /> */}
-          <Text style={[styles.storeLinkText, { color:  '#00bf63' }]}>
-            Go to {getStoreButtonText()}
-          </Text>
-          {/* <Ionicons name="diamond" size={15} color="#00a3ee" style={styles.diamondIcon} /> */}
-        </View>
-        <View style={[styles.storeLinkUnderline, { backgroundColor: '#00bf63' }]} />
+      {/* Back Button - Bottom Left */}
+      <Pressable 
+        onPress={() => navigation.goBack()} 
+        style={[styles.backButton, isLight ? styles.backButtonLight : styles.backButtonDark]}
+      >
+        <Ionicons 
+          name="chevron-back" 
+          size={24} 
+          color={isLight ? "#1a1a1a" : "#ffffff"} 
+        />
       </Pressable>
     </View>
   )
@@ -154,142 +227,254 @@ const GameMode = ({ game_mode, handleGameMode, game }) => {
 
 const styles = StyleSheet.create({
   container: {
-    // marginVertical: 20,
     flex: 1,
+  },
+  containerLight: {
+    backgroundColor: "#f5f5f5",
+  },
+  containerDark: {
+    backgroundColor: "#0a0a0a",
+  },
+  backButton: {
+    position: "absolute",
+    bottom: Platform.OS === 'ios' ? 30 : 20,
+    left: 20,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  backButtonLight: {
+    backgroundColor: "#ffffff",
+  },
+  backButtonDark: {
+    backgroundColor: "#1a1a1a",
   },
   header: {
     paddingHorizontal: 20,
-    marginBottom: 20,
-    flexDirection: "row",
-    alignItems: "center",
+    paddingTop: 16,
+    paddingBottom: 16,
   },
   titleContainer: {
-    alignItems: "flex-start",
   },
-  title: {
-    fontSize: 28,
-    fontWeight: "800",
-    color: "#fff",
-    letterSpacing: 0.5,
-  },
-  titleUnderline: {
-    width: 60,
-    height: 3,
-    backgroundColor: "#00ff88",
-    borderRadius: 2,
-    marginTop: 4,
-  },
-  gridContainer: {
-    paddingHorizontal: 10,
-    paddingBottom: 20,
-  },
-  gameCard: {
-    width: CARD_WIDTH,
-    height: CARD_HEIGHT,
-    borderRadius: 24,
-    overflow: "hidden",
-    alignSelf: "center",
-  },
-  gameImage: {
-    width: "100%",
-    height: "100%",
-  },
-  imageStyle: {
-    borderRadius: 24,
-  },
-  gradientOverlay: {
-    flex: 1,
-    padding: 20,
-    justifyContent: "space-between",
-  },
-
-  middleSection: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  gameIconContainer: {
-    backgroundColor: "rgba(255, 255, 255, 0.15)",
-    borderRadius: 50,
-    padding: 16,
-    borderWidth: 2,
-    borderColor: "rgba(255, 255, 255, 0.3)",
-  },
-  bottomSection: {
-    alignItems: "center",
-    gap: 8,
-  },
-  modeNameContainer: {
-    alignItems: "center",
-  },
-  modeNameText: {
-    color: "#ffffff",
-    fontSize: 20,
-    fontWeight: "700",
-    letterSpacing: 1,
-    textAlign: "center",
-    textShadowColor: "rgba(0, 0, 0, 0.8)",
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
-  },
-  modeNameUnderline: {
-    width: 40,
-    height: 2,
-    backgroundColor: "#ffffff",
-    borderRadius: 1,
-    marginTop: 4,
-    opacity: 0.8,
-  },
-  decorativeElements: {
+  titleRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 10,
   },
-  decorativeDot: {
+  titleAccent: {
     width: 4,
-    height: 4,
+    height: 24,
     borderRadius: 2,
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
   },
-  decorativeLine: {
-    width: 20,
-    height: 1,
-    backgroundColor: "rgba(255, 255, 255, 0.4)",
+  accentLight: {
+    backgroundColor: "#1a1a1a",
   },
-  shineEffect: {
-    position: "absolute",
-    top: 0,
-    left: -100,
-    width: 50,
-    height: "100%",
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    transform: [{ skewX: "-20deg" }],
+  accentDark: {
+    backgroundColor: "#ffffff",
   },
-  storeLinkContainer: {
+  title: {
+    fontSize: 22,
+    fontWeight: "800",
+    letterSpacing: 3,
+    textTransform: "uppercase",
+  },
+  titleLight: {
+    color: "#1a1a1a",
+  },
+  titleDark: {
+    color: "#ffffff",
+  },
+  subtitle: {
+    fontSize: 12,
+    fontWeight: "400",
+    letterSpacing: 1,
+    marginTop: 4,
+    marginLeft: 14,
+  },
+  subtitleLight: {
+    color: "#666666",
+  },
+  subtitleDark: {
+    color: "#888888",
+  },
+  dividerContainer: {
+    flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 20,
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+  },
+  dividerLight: {
+    backgroundColor: "#d0d0d0",
+  },
+  dividerDark: {
+    backgroundColor: "#333333",
+  },
+  dividerDiamond: {
+    width: 8,
+    height: 8,
+    transform: [{ rotate: "45deg" }],
+    marginHorizontal: 12,
+  },
+  diamondLight: {
+    backgroundColor: "#1a1a1a",
+  },
+  diamondDark: {
+    backgroundColor: "#ffffff",
+  },
+  listContainer: {
     paddingHorizontal: 20,
     paddingBottom: Platform.OS === 'ios' ? 30 : 20,
   },
-  storeLinkRow: {
+  separator: {
+    height: 12,
+  },
+  storeSection: {
+    marginTop: 24,
+  },
+  storeSectionHeader: {
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "800",
+    letterSpacing: 2,
+    textTransform: "uppercase",
+  },
+  gameCard: {
+    width: CARD_WIDTH,
+    height: 80,
+    borderRadius: 12,
     flexDirection: "row",
     alignItems: "center",
-    gap: 0,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    overflow: "hidden",
   },
-  diamondIcon: {
-    marginHorizontal: 4,
+  gameCardLight: {
+    backgroundColor: "#ffffff",
+    borderColor: "#e0e0e0",
   },
-  storeLinkText: {
-    fontSize: 18,
+  gameCardDark: {
+    backgroundColor: "#141414",
+    borderColor: "#2a2a2a",
+  },
+  gameCardPressed: {
+    opacity: 0.8,
+    transform: [{ scale: 0.98 }],
+  },
+  cornerAccent: {
+    position: "absolute",
+    width: 20,
+    height: 20,
+    borderWidth: 2.5,
+  },
+  cornerTopLeft: {
+    top: -1,
+    left: -1,
+    borderRightWidth: 0,
+    borderBottomWidth: 0,
+    borderTopLeftRadius: 12,
+  },
+  cornerBottomRight: {
+    bottom: -1,
+    right: -1,
+    borderLeftWidth: 0,
+    borderTopWidth: 0,
+    borderBottomRightRadius: 12,
+  },
+  indexContainer: {
+    alignItems: "center",
+    marginRight: 16,
+  },
+  indexNumber: {
+    fontSize: 20,
+    fontWeight: "300",
+    letterSpacing: 2,
+  },
+  indexLight: {
+    color: "#cccccc",
+  },
+  indexDark: {
+    color: "#444444",
+  },
+  indexLine: {
+    width: 1,
+    height: 12,
+    marginTop: 4,
+  },
+  lineLight: {
+    backgroundColor: "#d0d0d0",
+  },
+  lineDark: {
+    backgroundColor: "#333333",
+  },
+  cardContent: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+  },
+  iconWrapper: {
+    width: 44,
+    height: 44,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+  },
+  iconWrapperLight: {
+    backgroundColor: "#f8f8f8",
+    borderColor: "#e8e8e8",
+  },
+  iconWrapperDark: {
+    backgroundColor: "#1f1f1f",
+    borderColor: "#333333",
+  },
+  textContent: {
+    flex: 1,
+  },
+  modeLabel: {
+    fontSize: 10,
+    fontWeight: "600",
+    letterSpacing: 2,
+    marginBottom: 2,
+  },
+  labelLight: {
+    color: "#999999",
+  },
+  labelDark: {
+    color: "#666666",
+  },
+  modeName: {
+    fontSize: 16,
     fontWeight: "700",
-    letterSpacing: 0.3,
+    letterSpacing: 0.5,
   },
-  storeLinkUnderline: {
-    alignSelf: 'center',
-    minWidth: 200,
-    height: 3,
-    marginTop: 6,
-    borderRadius: 1.5,
+  nameLight: {
+    color: "#1a1a1a",
+  },
+  nameDark: {
+    color: "#ffffff",
+  },
+  arrowContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  arrowLine: {
+    width: 20,
+    height: 1,
   },
 })
 
