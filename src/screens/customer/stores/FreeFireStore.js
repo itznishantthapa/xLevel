@@ -3,19 +3,13 @@ import Toast from 'react-native-simple-toast'
 import { useThemeStore } from '../../../store/themeStore'
 import { MaterialIcons, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons'
 import { useEffect, useState, useRef } from 'react'
+import { useNavigation } from '@react-navigation/native'
 import { useGameProfiles } from '../../../queries/useGameProfiles'
+import { useStoreItems } from '../../../queries/useStoreItems'
 import { CreateGameLayout, SectionTitle, DividerLine, TermsAgreement } from '../../../component/customer/createGame'
-
-// Local images
-const weeklyMembershipImg = require('../../../assets/weekly.png')
-const weeklyLightMembershipImg = require('../../../assets/weeklylight.png')
-const monthlyMembershipImg = require('../../../assets/monthly.png')
-const diamondImg = require('../../../assets/diamond.png')
-const evo3DayImg = require('../../../assets/3DEvo.png')
-const evo7DayImg = require('../../../assets/7DEvo.png')
-const evo30DayImg = require('../../../assets/30DEvo.png')
-const levelUpImg = require('../../../assets/levelup.png') //same image for all level ups
-
+import { useQueryClient } from '@tanstack/react-query'
+import { useAuthStore } from '../../../store/authStore'
+import { useStoreTopup } from '../../../queries/useMutation/useStoreTopup'
 
 // Monochrome accent colors
 const ACCENT_PRIMARY = (isLight) => isLight ? '#000000' : '#ffffff'
@@ -24,13 +18,21 @@ const ACCENT_ALT = (isLight) => isLight ? '#555555' : '#aaaaaa'
 const FreeFireStore = ({ route }) => {
   const { game } = route.params || {}
   const { isLight } = useThemeStore()
+  const navigation = useNavigation()
   const { data: gameProfiles = [] } = useGameProfiles()
+  const { get_user, update_wallet_balance } = useAuthStore()
+  const queryClient = useQueryClient()
+  const { mutateAsync: storeTopup } = useStoreTopup()
   const termsRef = useRef(null)
   const slideAnim = useRef(new Animated.Value(0)).current
+
+  // Fetch store items for Free Fire
+  const { data: storeItemsData, isLoading: isLoadingStore } = useStoreItems('freefire')
 
   // Selection state
   const [selectedItem, setSelectedItem] = useState(null)
   const [agreementAccepted, setAgreementAccepted] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   
   // Profile selection state
   const [profileType, setProfileType] = useState('own') // 'own' or 'other'
@@ -42,11 +44,13 @@ const FreeFireStore = ({ route }) => {
     profile => profile.game_name?.toLowerCase() === 'free fire'
   )
 
+  // Log store items when fetched
   useEffect(() => {
-   console.log('Game data in FreeFireStore:', game)
-   console.log('Game Profiles:', gameProfiles)
-   console.log('Free Fire Profile:', freeFireProfile)
-  }, [game, gameProfiles, freeFireProfile])
+    if (storeItemsData) {
+      console.log('FreeFire Store Items:', storeItemsData)
+      console.log('Transformed Store Items:', transformStoreItems(storeItemsData))
+    }
+  }, [storeItemsData])
 
   // Animate selected item display
   useEffect(() => {
@@ -62,36 +66,46 @@ const FreeFireStore = ({ route }) => {
     }
   }, [selectedItem])
   
-
-  // Store items with game points pricing (diamonds + memberships)
-  const storeItems = [
-    { id: 1, type: "diamond", diamonds: 25, points: 30, image: null },
-    { id: 2, type: "diamond", diamonds: 100, points: 110, image: null },
-    { id: 3, type: "diamond", diamonds: 310, points: 350, image: null },
-    { id: 4, type: "diamond", diamonds: 520, points: 580, image: null },
-    { id: 5, type: "diamond", diamonds: 1060, points: 1180, image: null },
-    { id: 6, type: "diamond", diamonds: 2180, points: 2400, image: null },
-    { id: 7, type: "diamond", diamonds: 5600, points: 6100, image: null },
-    { id: 8, type: "diamond", diamonds: 11500, points: 12500, image: null },
-    { id: 9, type: "membership", membership: "weekly", points: 150, image: weeklyMembershipImg },
-    { id: 20, type: "membership", membership: "weekly-light", points: 200, image: weeklyLightMembershipImg },
-    { id: 10, type: "membership", membership: "monthly", points: 350, image: monthlyMembershipImg },
-    { id: 11, type: "levelup", level: "6", points: 40, image: levelUpImg },
-    { id: 12, type: "levelup", level: "10", points: 40, image: levelUpImg },
-    { id: 13, type: "levelup", level: "15", points: 40, image: levelUpImg },
-    { id: 14, type: "levelup", level: "20", points: 40, image: levelUpImg },
-    { id: 15, type: "levelup", level: "25", points: 40, image: levelUpImg },
-    { id: 16, type: "levelup", level: "30", points: 40, image: levelUpImg },
-    { id: 17, type: "evoaccess", day: "3D", points: 40, image: evo3DayImg },
-    { id: 18, type: "evoaccess", day: "7D", points: 80, image: evo7DayImg },
-    { id: 19, type: "evoaccess", day: "30D", points: 200, image: evo30DayImg },
+  // Transform backend data to frontend format
+  const transformStoreItems = (items) => {
+    if (!items || items.length === 0) return []
     
+    return items.map(item => {
+      const transformed = {
+        id: item.id,
+        type: item.type,
+        points: item.points,
+        image: { uri: item.image },
+      }
 
-  ]
+      // Add type-specific fields based on quantity and label
+      if (item.type === 'diamond') {
+        transformed.diamonds = item.quantity
+      } else if (item.type === 'membership') {
+        // Extract membership type from label (e.g., "Weekly Light Membership" -> "weekly-light")
+        const membershipType = item.label
+          .replace(' Membership', '')
+          .toLowerCase()
+          .replace(/\s+/g, '-')
+        transformed.membership = membershipType
+      } else if (item.type === 'levelup') {
+        transformed.level = String(item.quantity)
+      } else if (item.type === 'evoaccess') {
+        transformed.day = `${item.quantity}D`
+      }
 
-  // Separate diamonds and memberships
-  const diamonds = storeItems.filter(item => item.type === "diamond")
-  const memberships = storeItems.filter(item => item.type === "membership")
+      return transformed
+    })
+  }
+
+  // Store items from API
+  const storeItems = transformStoreItems(storeItemsData)
+
+  // Separate item types
+  const diamonds = storeItems?.filter(item => item.type === "diamond") || []
+  const memberships = storeItems?.filter(item => item.type === "membership") || []
+  const levelups = storeItems?.filter(item => item.type === "levelup") || []
+  const evoaccesses = storeItems?.filter(item => item.type === "evoaccess") || []
 
   // Get the username and UID based on profile type
   const getProfileData = () => {
@@ -114,7 +128,7 @@ const FreeFireStore = ({ route }) => {
   const isFormValid = selectedItem && agreementAccepted && isProfileValid
 
   // Handle confirm purchase
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!selectedItem) {
       Toast.show('Please select an item', Toast.SHORT)
       return
@@ -128,20 +142,58 @@ const FreeFireStore = ({ route }) => {
 
     const profileData = getProfileData()
     if (!profileData.username || !profileData.uid) {
-      console.log('Please provide valid username and UID')
+      Toast.show('Please provide valid username and UID', Toast.SHORT)
       return
     }
 
+    // Prepare payload for backend
     const payload = {
-      type: selectedItem.type,
-      [selectedItem.type === 'diamond' ? 'diamonds' : 'membership']: 
-        selectedItem.type === 'diamond' ? selectedItem.diamonds : selectedItem.membership,
-      points: selectedItem.points,
+      product_id: selectedItem.id,
       username: profileData.username,
       uid: profileData.uid
     }
 
-    console.log('Selected Item:', payload)
+    try {
+      setIsSubmitting(true)
+
+      // Call the topup mutation
+      const response = await storeTopup(payload)
+      
+      // Refresh user data to get updated wallet balance
+      await get_user()
+
+      // Navigate to gamePoints screen
+      navigation.reset({
+        index: 1,
+        routes: [
+          { name: 'customerTabs' },
+          { name: 'gamePoints' }
+        ],
+      })
+
+    } catch (error) {
+      // Handle specific error messages from backend
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to purchase item.'
+      Toast.show(errorMessage, Toast.LONG)
+      console.error('Topup Error:', error)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  // Format membership name
+  const getMembershipName = (membership) => {
+    if (membership === 'weekly-light') return 'Wk Light'
+    return membership.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+  }
+
+  // Get selected item display title
+  const getSelectedTitle = (item) => {
+    if (item.type === 'diamond') return `${item.diamonds.toLocaleString()} Diamonds`
+    if (item.type === 'membership') return `${getMembershipName(item.membership)} Membership`
+    if (item.type === 'levelup') return `Level Up to ${item.level}`
+    if (item.type === 'evoaccess') return `Evo Access ${item.day}`
+    return ''
   }
 
   // Black and white theme
@@ -171,32 +223,19 @@ const FreeFireStore = ({ route }) => {
         ]}
         onPress={() => setSelectedItem(item)}
       >
-        {/* Corner Accents */}
-        <View style={[styles.cornerAccent, styles.cornerTopLeft, { borderColor: cardColor }]} />
-        <View style={[styles.cornerAccent, styles.cornerBottomRight, { borderColor: accentAlt }]} />
-
         {/* Selection checkmark */}
         {isSelected && (
-          <View style={styles.selectedMark}>
+          <View  style={styles.selectedMark}>
             <MaterialIcons name="check-circle" size={18} color={isLight ? '#ffffff' : '#000000'} />
           </View>
         )}
         
-        {/* Diamond Icon Wrapper */}
-        <View style={[styles.diamondImageContainer, {
-          backgroundColor: isSelected 
-            ? (isLight ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)')
-            : (isLight ? '#f8f8f8' : '#1f1f1f'),
-          borderColor: isSelected
-            ? (isLight ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)')
-            : (isLight ? '#eeeeee' : '#2a2a2a'),
-        }]}>
-          <Image 
-            source={diamondImg} 
-            style={styles.diamondIconImg}
-            resizeMode="contain"
-          />
-        </View>
+        {/* Diamond Icon */}
+        <Image 
+          source={item.image} 
+          style={styles.diamondIconImg}
+          resizeMode="contain"
+        />
         
         {/* Diamond Count & Label */}
         <Text style={[styles.modeLabel, { color: cardColor }]}>DIAMONDS</Text>
@@ -212,6 +251,7 @@ const FreeFireStore = ({ route }) => {
         
         {/* Points */}
         <View style={styles.diamondPriceContainer}>
+          <View style={[styles.priceLine, { backgroundColor: isSelected ? (isLight ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.25)') : (isLight ? '#cccccc' : '#444444') }]} />
           <MaterialCommunityIcons 
             name="star-four-points-outline" 
             size={12} 
@@ -224,6 +264,7 @@ const FreeFireStore = ({ route }) => {
           }]}>
             {item.points} point
           </Text>
+          <View style={[styles.priceLine, { backgroundColor: isSelected ? (isLight ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.25)') : (isLight ? '#cccccc' : '#444444') }]} />
         </View>
       </Pressable>
     )
@@ -251,12 +292,8 @@ const FreeFireStore = ({ route }) => {
         ]}
         onPress={() => setSelectedItem(item)}
       >
-        {/* Corner Accents */}
-        <View style={[styles.cornerAccent, styles.cornerTopLeft, { borderColor: cardColor }]} />
-        <View style={[styles.cornerAccent, styles.cornerBottomRight, { borderColor: accentAlt }]} />
-
         {isSelected && (
-          <View style={[styles.selectedCheck, {
+          <View  style={[styles.selectedCheck, {
             backgroundColor: isLight ? '#ffffff' : '#000000'
           }]}>
             <MaterialIcons name="check" size={12} color={themeColor} />
@@ -264,20 +301,11 @@ const FreeFireStore = ({ route }) => {
         )}
 
         {/* Membership Image */}
-        <View style={[styles.membershipImgWrapper, {
-          backgroundColor: isSelected
-            ? (isLight ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)')
-            : (isLight ? '#f8f8f8' : '#1f1f1f'),
-          borderColor: isSelected
-            ? (isLight ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)')
-            : (isLight ? '#eeeeee' : '#2a2a2a'),
-        }]}>
-          <Image
-            source={item.image}
-            style={styles.membershipImage}
-            resizeMode="contain"
-          />
-        </View>
+        <Image
+          source={item.image}
+          style={styles.membershipImage}
+          resizeMode="contain"
+        />
 
         {/* Text */}
         <Text style={[styles.modeLabel, { color: cardColor, marginTop: 10 }]}>MEMBERSHIP</Text>
@@ -286,11 +314,12 @@ const FreeFireStore = ({ route }) => {
             ? (isLight ? '#ffffff' : '#000000')
             : (isLight ? '#000000' : '#ffffff')
         }]}>
-          {item.membership.charAt(0).toUpperCase() + item.membership.slice(1)}
+          {getMembershipName(item.membership)}
         </Text>
 
         {/* Points */}
         <View style={styles.membershipPriceContainer}>
+          <View style={[styles.priceLine, { backgroundColor: isSelected ? (isLight ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.25)') : (isLight ? '#cccccc' : '#444444') }]} />
           <MaterialCommunityIcons 
             name="star-four-points-outline" 
             size={12} 
@@ -303,6 +332,133 @@ const FreeFireStore = ({ route }) => {
           }]}>
             {item.points} point
           </Text>
+          <View style={[styles.priceLine, { backgroundColor: isSelected ? (isLight ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.25)') : (isLight ? '#cccccc' : '#444444') }]} />
+        </View>
+      </Pressable>
+    )
+  }
+
+  // Render single level up card with level selector
+  const renderLevelUpSection = () => {
+    const selectedLevel = selectedItem?.type === 'levelup' ? selectedItem : null
+    const cardColor = ACCENT_PRIMARY(isLight)
+    const accentAlt = ACCENT_ALT(isLight)
+
+    return (
+      <View style={[styles.levelUpCard, {
+        backgroundColor: isLight ? '#ffffff' : '#141414',
+        borderColor: isLight ? '#e0e0e0' : '#2a2a2a',
+      }]}>
+        {/* Image */}
+        <Image 
+          source={levelups[0]?.image} 
+          style={styles.levelUpImg} 
+          resizeMode="contain" 
+        />
+
+        <Text style={[styles.modeLabel, { color: cardColor, marginTop: 10 }]}>LEVEL UP PASS</Text>
+        <Text style={[styles.levelUpTitle, { color: isLight ? '#1a1a1a' : '#ffffff' }]}>
+          Select a Level
+        </Text>
+
+        {/* Level Chips */}
+        <View style={styles.levelSelectorGrid}>
+          {levelups.map((item) => {
+            const isSelected = selectedItem?.id === item.id
+            return (
+              <Pressable
+                key={item.id}
+                style={[styles.levelChip, {
+                  backgroundColor: isSelected
+                    ? (isLight ? '#000000' : '#ffffff')
+                    : (isLight ? '#f0f0f0' : '#1f1f1f'),
+                  borderColor: isSelected
+                    ? (isLight ? '#000000' : '#ffffff')
+                    : (isLight ? '#dddddd' : '#333333'),
+                }]}
+                onPress={() => setSelectedItem(item)}
+              >
+                <Text style={[styles.levelChipText, {
+                  color: isSelected
+                    ? (isLight ? '#ffffff' : '#000000')
+                    : (isLight ? '#333333' : '#cccccc'),
+                }]}>
+                  Lv. {item.level}
+                </Text>
+              </Pressable>
+            )
+          })}
+        </View>
+
+        {/* Points */}
+        {selectedLevel && (
+          <View style={[styles.diamondPriceContainer, { marginTop: 10 }]}>
+            <View style={[styles.priceLine, { backgroundColor: isLight ? '#cccccc' : '#444444' }]} />
+            <MaterialCommunityIcons name="star-four-points-outline" size={12} color="#00bf63" />
+            <Text style={[styles.diamondPrice, { color: '#00bf63' }]}>
+              {selectedLevel.points} point
+            </Text>
+            <View style={[styles.priceLine, { backgroundColor: isLight ? '#cccccc' : '#444444' }]} />
+          </View>
+        )}
+      </View>
+    )
+  }
+
+  // Render evo access card (3-column row)
+  const renderEvoOption = (item, index) => {
+    const isSelected = selectedItem?.id === item.id
+    const cardColor = ACCENT_PRIMARY(isLight)
+    const accentAlt = ACCENT_ALT(isLight)
+
+    return (
+      <Pressable
+        key={item.id}
+        style={[
+          styles.evoCard,
+          {
+            backgroundColor: isSelected
+              ? (isLight ? '#000000' : '#ffffff')
+              : (isLight ? '#ffffff' : '#141414'),
+            borderColor: isSelected
+              ? (isLight ? '#000000' : '#ffffff')
+              : (isLight ? '#e0e0e0' : '#2a2a2a'),
+          },
+        ]}
+        onPress={() => setSelectedItem(item)}
+      >
+        {isSelected && (
+          <View  style={styles.selectedMark}>
+            <MaterialIcons name="check-circle" size={18} color={isLight ? '#ffffff' : '#000000'} />
+          </View>
+        )}
+
+        <Image source={item.image} style={styles.evaImg} resizeMode="contain" />
+
+        <Text style={[styles.modeLabel, { color: cardColor, marginTop: 8 }]}>EVO ACCESS</Text>
+        <Text style={[styles.diamondCount, {
+          color: isSelected
+            ? (isLight ? '#ffffff' : '#000000')
+            : (isLight ? '#1a1a1a' : '#ffffff'),
+        }]}>
+          {item.day}
+        </Text>
+
+        <View style={styles.diamondPriceContainer}>
+          <View style={[styles.priceLine, { backgroundColor: isSelected ? (isLight ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.25)') : (isLight ? '#cccccc' : '#444444') }]} />
+          <MaterialCommunityIcons
+            name="star-four-points-outline"
+            size={12}
+            color={isSelected && !isLight ? '#000000' : '#00bf63'}
+          />
+          <Text style={[styles.diamondPrice, {
+            color: isSelected
+              ? (isLight ? '#00bf63' : '#000000')
+              : (isLight ? '#00bf63' : '#ffffff')
+          }]}>
+            {item.points} point
+          </Text>
+          <View style={[styles.priceLine, { backgroundColor: isSelected ? (isLight ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.25)') : (isLight ? '#cccccc' : '#444444') }]} />
         </View>
       </Pressable>
     )
@@ -312,10 +468,10 @@ const FreeFireStore = ({ route }) => {
     <CreateGameLayout
       title="FreeFire Store"
       isLight={isLight}
-      isLoading={false}
+      isLoading={isLoadingStore || isSubmitting}
       onSubmit={handleConfirm}
-      buttonTitle="Confirm Purchase"
-      loaderMessage="Processing..."
+      buttonTitle={isSubmitting ? "Processing..." : "Confirm Purchase"}
+      loaderMessage={isSubmitting ? "Processing" : "Opening"}
       aboveButtonContent={
         selectedItem && (
           <Animated.View 
@@ -326,7 +482,7 @@ const FreeFireStore = ({ route }) => {
               shadowOffset: { width: 0, height: -2 },
               shadowOpacity: isLight ? 0.08 : 0.3,
               shadowRadius: 8,
-              elevation: 4,
+              elevation: 20,
               overflow: 'hidden',
               position: 'relative',
               transform: [
@@ -342,9 +498,6 @@ const FreeFireStore = ({ route }) => {
               opacity: slideAnim,
             }]}
           >
-            {/* Corner Accents */}
-            <View style={[styles.cornerAccent, styles.cornerTopLeft, { borderColor: ACCENT_PRIMARY(isLight) }]} />
-            <View style={[styles.cornerAccent, styles.cornerBottomRight, { borderColor: ACCENT_ALT(isLight) }]} />
             <View style={styles.selectedItemRow}>
               <View style={styles.selectedItemLeft}>
                 <View style={[styles.selectedItemIconWrapper, {
@@ -352,7 +505,7 @@ const FreeFireStore = ({ route }) => {
                 }]}>
                   {selectedItem.type === 'diamond' ? (
                     <Image 
-                      source={diamondImg} 
+                      source={selectedItem.image} 
                       style={styles.selectedItemIcon}
                       resizeMode="contain"
                     />
@@ -369,10 +522,7 @@ const FreeFireStore = ({ route }) => {
                     YOUR TOP-UP
                   </Text>
                   <Text style={[styles.selectedItemTitle, { color: isLight ? '#000000' : '#ffffff' }]}>
-                    {selectedItem.type === 'diamond' 
-                      ? `${selectedItem.diamonds.toLocaleString()} Diamonds`
-                      : `${selectedItem.membership.charAt(0).toUpperCase() + selectedItem.membership.slice(1)} Membership`
-                    }
+                    {getSelectedTitle(selectedItem)}
                   </Text>
                 </View>
               </View>
@@ -432,7 +582,7 @@ const FreeFireStore = ({ route }) => {
 
       {/* Diamond Packages */}
       <View style={styles.section}>
-        {/* <SectionTitle title="Diamond Packages" isLight={isLight} /> */}
+        <SectionTitle title="Diamond Packages" isLight={isLight} />
         <View style={styles.optionsGrid}>
           {diamonds.map((item, index) => renderDiamondOption(item, index))}
         </View>
@@ -442,7 +592,7 @@ const FreeFireStore = ({ route }) => {
 
       {/* Membership Packages */}
       <View style={styles.section}>
-        {/* <SectionTitle title="Membership" isLight={isLight} /> */}
+        <SectionTitle title="Memberships" isLight={isLight} />
         <View style={styles.membershipGrid}>
           {memberships.map((item, index) => renderMembershipOption(item, index))}
         </View>
@@ -450,7 +600,23 @@ const FreeFireStore = ({ route }) => {
 
       <DividerLine isLight={isLight} />
 
-      {/* Player Profile */}
+      {/* Level Up Pass */}
+      <View style={styles.section}>
+        <SectionTitle title="Level Up Packages" isLight={isLight} />
+        {renderLevelUpSection()}
+      </View>
+
+      <DividerLine isLight={isLight} />
+
+      {/* Evo Access */}
+      <View style={styles.section}>
+        <SectionTitle title="Evo Access" isLight={isLight} />
+        <View style={styles.evoGrid}>
+          {evoaccesses.map((item, index) => renderEvoOption(item, index))}
+        </View>
+      </View>
+
+      <DividerLine isLight={isLight} />
       <View style={styles.section}>
         <SectionTitle title="Select Profile" isLight={isLight} />
         
@@ -470,8 +636,6 @@ const FreeFireStore = ({ route }) => {
             ]}
             onPress={() => setProfileType('own')}
           >
-            <View style={[styles.cornerAccent, styles.cornerTopLeft, { borderColor: ACCENT_PRIMARY(isLight) }]} />
-            <View style={[styles.cornerAccent, styles.cornerBottomRight, { borderColor: ACCENT_ALT(isLight) }]} />
             <MaterialCommunityIcons 
               name="account" 
               size={18} 
@@ -487,7 +651,7 @@ const FreeFireStore = ({ route }) => {
                   : (isLight ? '#333333' : '#ffffff')
               }
             ]}>
-              My Profile
+              Use My Profile
             </Text>
           </Pressable>
           
@@ -505,8 +669,6 @@ const FreeFireStore = ({ route }) => {
             ]}
             onPress={() => setProfileType('other')}
           >
-            <View style={[styles.cornerAccent, styles.cornerTopLeft, { borderColor: ACCENT_PRIMARY(isLight) }]} />
-            <View style={[styles.cornerAccent, styles.cornerBottomRight, { borderColor: ACCENT_ALT(isLight) }]} />
             <MaterialCommunityIcons 
               name="account-switch-outline" 
               size={18} 
@@ -522,7 +684,7 @@ const FreeFireStore = ({ route }) => {
                   : (isLight ? '#333333' : '#ffffff')
               }
             ]}>
-              Another Profile
+              Use Another Profile
             </Text>
           </Pressable>
         </View>
@@ -533,8 +695,6 @@ const FreeFireStore = ({ route }) => {
             backgroundColor: 'transparent',
             borderColor: isLight ? "#cccccc" : "#333333",
           }]}>
-            <View style={[styles.cornerAccent, styles.cornerTopLeft, { borderColor: ACCENT_PRIMARY(isLight) }]} />
-            <View style={[styles.cornerAccent, styles.cornerBottomRight, { borderColor: ACCENT_ALT(isLight) }]} />
             <View style={styles.profileItem}>
               <MaterialCommunityIcons name="account-outline" size={18} color={isLight ? '#888888' : '#777777'} style={{ marginBottom: 4 }} />
               <Text style={[styles.profileLabel, { color: isLight ? '#666666' : '#999999' }]}>
@@ -561,8 +721,6 @@ const FreeFireStore = ({ route }) => {
               borderColor: isLight ? '#cccccc' : '#333333',
               backgroundColor: isLight ? '#f8f8f8' : '#1a1a1a',
             }]}>
-              <View style={[styles.cornerAccent, styles.cornerTopLeft, { borderColor: ACCENT_PRIMARY(isLight) }]} />
-              <View style={[styles.cornerAccent, styles.cornerBottomRight, { borderColor: ACCENT_ALT(isLight) }]} />
               <MaterialCommunityIcons 
                 name="gamepad" 
                 size={20} 
@@ -582,8 +740,6 @@ const FreeFireStore = ({ route }) => {
               borderColor: isLight ? '#cccccc' : '#333333',
               backgroundColor: isLight ? '#f8f8f8' : '#1a1a1a',
             }]}>
-              <View style={[styles.cornerAccent, styles.cornerTopLeft, { borderColor: ACCENT_PRIMARY(isLight) }]} />
-              <View style={[styles.cornerAccent, styles.cornerBottomRight, { borderColor: ACCENT_ALT(isLight) }]} />
               <MaterialIcons 
                 name="tag" 
                 size={20} 
@@ -667,24 +823,9 @@ const styles = StyleSheet.create({
     position: 'relative',
     overflow: 'hidden',
   },
-  cornerAccent: {
-    position: 'absolute',
-    width: 18,
-    height: 18,
-    borderWidth: 2,
-  },
-  cornerTopLeft: {
-    top: 0,
-    left: 0,
-    borderRightWidth: 0,
-    borderBottomWidth: 0,
-  },
-  cornerBottomRight: {
-    bottom: 0,
-    right: 0,
-    borderLeftWidth: 0,
-    borderTopWidth: 0,
-  },
+  cornerAccent: {},
+  cornerTopLeft: {},
+  cornerBottomRight: {},
   modeLabel: {
     fontSize: 9,
     fontWeight: '700',
@@ -692,18 +833,10 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     marginBottom: 2,
   },
-  diamondImageContainer: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    borderWidth: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
   diamondIconImg: {
-    width: 30,
-    height: 30,
+    width: 70,
+    height: 70,
+    marginBottom: 8,
   },
   diamondCount: {
     fontSize: 20,
@@ -720,6 +853,11 @@ const styles = StyleSheet.create({
   diamondPrice: {
     fontSize: 11,
     fontWeight: '600',
+  },
+  priceLine: {
+    width: 14,
+    height: 1,
+    opacity: 0.8,
   },
   selectedMark: {
     position: 'absolute',
@@ -739,17 +877,9 @@ const styles = StyleSheet.create({
     position: 'relative',
     overflow: 'hidden',
   },
-  membershipImgWrapper: {
-    width: '100%',
-    height: 80,
-    borderWidth: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden',
-  },
   membershipImage: {
-    width: '80%',
-    height: '80%',
+    width: '100%',
+    height: 100,
   },
   selectedCheck: {
     position: 'absolute',
@@ -898,6 +1028,59 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     color: '#00bf63',
+  },
+  levelUpCard: {
+    borderWidth: 1,
+    padding: 14,
+    alignItems: 'center',
+    position: 'relative',
+    overflow: 'visible',
+    paddingTop: 100,
+  },
+  levelUpImg: {
+    width: 180,
+    height: 180,
+    position: 'absolute',
+    top: -30,
+    alignSelf: 'center',
+  },
+  levelUpTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    marginBottom: 12,
+    marginTop: 4,
+  },
+  levelSelectorGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    justifyContent: 'center',
+  },
+  levelChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderWidth: 1,
+  },
+  levelChipText: {
+    fontSize: 13,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+  },
+  evoGrid: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  evoCard: {
+    flex: 1,
+    padding: 14,
+    borderWidth: 1,
+    alignItems: 'center',
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  evaImg: {
+    width: '100%',
+    height: 90,
   },
 })
 

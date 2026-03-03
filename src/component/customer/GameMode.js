@@ -57,16 +57,15 @@ const GameMode = ({ game_mode, handleGameMode, game }) => {
 
     return (
       <Pressable
-        style={({ pressed }) => [
+        style={[
           styles.gameCard,
-          isLight ? styles.gameCardLight : styles.gameCardDark,
-          pressed && styles.gameCardPressed
+          isLight ? styles.gameCardLight : styles.gameCardDark
         ]}
         onPress={() => handleGameMode(item)}
       >
         {/* Geometric Corner Accents */}
-        <View style={[styles.cornerAccent, styles.cornerTopLeft, { borderColor: cardColor }]} />
-        <View style={[styles.cornerAccent, styles.cornerBottomRight, { borderColor: accentAlt }]} />
+        <View pointerEvents="none" style={[styles.cornerAccent, styles.cornerTopLeft, { borderColor: cardColor }]} />
+        <View pointerEvents="none" style={[styles.cornerAccent, styles.cornerBottomRight, { borderColor: accentAlt }]} />
         
         {/* Left Side - Index Number */}
         <View style={styles.indexContainer}>
@@ -160,16 +159,15 @@ const GameMode = ({ game_mode, handleGameMode, game }) => {
 
             {/* Store Card */}
             <Pressable
-              style={({ pressed }) => [
+              style={[
                 styles.gameCard,
-                isLight ? styles.gameCardLight : styles.gameCardDark,
-                pressed && styles.gameCardPressed
+                isLight ? styles.gameCardLight : styles.gameCardDark
               ]}
               onPress={handleStoreNavigation}
             >
               {/* Geometric Corner Accents */}
-              <View style={[styles.cornerAccent, styles.cornerTopLeft, { borderColor: isLight ? '#1a1a1a' : '#ffffff' }]} />
-              <View style={[styles.cornerAccent, styles.cornerBottomRight, { borderColor: isLight ? '#555555' : '#aaaaaa' }]} />
+              <View pointerEvents="none" style={[styles.cornerAccent, styles.cornerTopLeft, { borderColor: isLight ? '#1a1a1a' : '#ffffff' }]} />
+              <View pointerEvents="none" style={[styles.cornerAccent, styles.cornerBottomRight, { borderColor: isLight ? '#555555' : '#aaaaaa' }]} />
               
               {/* Left Side - Icon */}
               <View style={styles.indexContainer}>
@@ -368,10 +366,6 @@ const styles = StyleSheet.create({
   gameCardDark: {
     backgroundColor: "#141414",
     borderColor: "#2a2a2a",
-  },
-  gameCardPressed: {
-    opacity: 0.8,
-    transform: [{ scale: 0.98 }],
   },
   cornerAccent: {
     position: "absolute",

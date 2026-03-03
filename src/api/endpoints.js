@@ -76,6 +76,10 @@ export const endpoints = {
 
   //utils
   getUtils:"/api/utils/",
+
+  //store
+  getStoreItems: "/api/store/items/",
+  placeTopup: "/api/store/topup/",
   
 };
 

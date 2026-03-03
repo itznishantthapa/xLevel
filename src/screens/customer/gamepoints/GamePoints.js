@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, FlatList, ActivityIndicator, StatusBar, Pressable, RefreshControl } from 'react-native'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useEffectEvent, useState } from 'react'
 import { useThemeStore } from '../../../store/themeStore'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { MaterialIcons, FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
@@ -33,6 +33,18 @@ const GamePoints = () => {
     isRefetching
   } = usePointsHistory(PAGE_SIZE) // Fetch 8 items per page
 
+  // Filter out any null or invalid items and remove duplicates by ID
+  const validPointsInOut = pointsinout
+    .filter(item => item && item.id)
+    .filter((item, index, self) => 
+      index === self.findIndex(t => t.id === item.id)
+    )
+
+  useEffect(() => {
+   console.log("Points history data:", pointsinout);
+  }, [pointsinout])
+  
+
 
  
   // Colors based on theme
@@ -46,6 +58,7 @@ const GamePoints = () => {
     pending: "#FFBB33",
     rejected: "#FF4444",
     processing: "#33B5E5",
+    completed: "#6366F1",
     pointsIn: "#00C851",
     pointsOut: "#FF8800",
     bottomLine: isLight ? "#e0e0e0" : "rgba(255, 255, 255, 0.1)",
@@ -80,6 +93,8 @@ const GamePoints = () => {
         return <MaterialIcons name="cancel" size={18} color={colors.rejected} />
       case 'processing':
         return <MaterialIcons name="sync" size={18} color={colors.processing} />
+      case 'completed':
+        return <Ionicons name="checkmark-circle" size={18} color={colors.completed} />
       default:
         return null
     }
@@ -94,6 +109,8 @@ const GamePoints = () => {
         return <FontAwesome name="arrow-circle-down" size={18} color={colors.pointsIn} />
       case 'pointsout':
         return <FontAwesome name="arrow-circle-up" size={18} color={colors.pointsOut} />
+      case 'store':
+        return <Ionicons name="storefront-outline" size={18} color="#6366F1" />
       default:
         return null
     }
@@ -182,8 +199,16 @@ const GamePoints = () => {
               {getTypeIcon(item.type)}
             </View>
             <View>
-              <Text style={[styles.amountLabel, { color: colors.subText }]}>{item.type=="pointsin" ? "Load" : item.type=="pointsout" ? "Redeem" : ""}</Text>
-              <Text style={[styles.amountValue, { color: colors.text }]}>{item.amount} points</Text>
+              <Text style={[styles.amountLabel, { color: colors.subText }]}>
+                {item.type === "pointsin" ? "Load" : item.type === "pointsout" ? "Redeem" : item.type === "store" ? "Store" : ""}
+              </Text>
+              <Text style={[
+                styles.amountValue, 
+                { color: colors.text },
+                item.type === "store" && item.label && { fontSize: 15 }
+              ]}>
+                {item.type === "store" && item.label ? item.label : `${item.amount} points`}
+              </Text>
             </View>
           </View>
 
@@ -237,16 +262,16 @@ const GamePoints = () => {
 
 
       {/* Always show content during manual refresh, otherwise only when not loading */}
-      {!isLoading && !isManualRefreshing && pointsinout.length === 0 ? (
+      {!isLoading && !isManualRefreshing && validPointsInOut.length === 0 ? (
         <View style={styles.emptyContainer}>
           <MaterialCommunityIcons  name="star-four-points-outline" size={64} color={colors.subText} />
           <Text style={[styles.emptyText, { color: colors.text }]}>Points details unavailable.</Text>
         </View>
       ) : (
         <FlatList
-          data={pointsinout}
+          data={validPointsInOut}
           renderItem={renderPointsCard}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item, index) => item?.id?.toString() || `item-${index}`}
           contentContainerStyle={[styles.listContainer, { paddingBottom: insets.bottom + 24 }]}
           showsVerticalScrollIndicator={false}
           onEndReached={handleLoadMore}

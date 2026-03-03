@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, Pressable } from 'react-native';
 import React, { useEffect, useMemo, useState } from 'react';
-import { MaterialIcons, MaterialCommunityIcons, Entypo } from '@expo/vector-icons';
+import { MaterialIcons, MaterialCommunityIcons, Entypo, Ionicons } from '@expo/vector-icons';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Toast from 'react-native-simple-toast';
 import { useThemeStore } from '../../store/themeStore';
@@ -14,7 +14,8 @@ import { timeAgo } from '../matchcard/index/timeFormatter';
 const NOTIFICATION_TYPES = {
     GAME: 'game',
     CREDITED: 'credited',
-    NORMAL: 'normal'
+    NORMAL: 'normal',
+    STORE: 'store'
 };
 
 /**
@@ -83,33 +84,6 @@ const NotificationCard = ({ notification }) => {
 
 
 
-
-
-    // /**
-    //  * Formats the timestamp into a relative time string (e.g., "2 min ago")
-    //  * @param {string} timestamp - ISO timestamp string
-    //  * @returns {string} Formatted relative time string
-    //  */
-    // const formatTimeAgo = (timestamp) => {
-    //     const date = new Date(timestamp);
-    //     const now = new Date();
-    //     const diffInSeconds = Math.floor((now - date) / 1000);
-    //     const diffInMinutes = Math.floor(diffInSeconds / 60);
-    //     const diffInHours = Math.floor(diffInMinutes / 60);
-    //     const diffInDays = Math.floor(diffInHours / 24);
-
-    //     if (diffInDays > 0) {
-    //         return `${diffInDays} ${diffInDays === 1 ? 'day' : 'days'} ago`;
-    //     }
-    //     if (diffInHours > 0) {
-    //         return `${diffInHours} ${diffInHours === 1 ? 'hour' : 'hours'} ago`;
-    //     }
-    //     if (diffInMinutes > 0) {
-    //         return `${diffInMinutes} ${diffInMinutes === 1 ? 'min' : 'mins'} ago`;
-    //     }
-    //     return 'just now';
-    // };
-
     /**
      * Configuration for different notification types
      * Memoized to prevent recreation on each render
@@ -125,12 +99,21 @@ const NotificationCard = ({ notification }) => {
             />
         },
         [NOTIFICATION_TYPES.CREDITED]: {
-            title: 'Game Point Update',
+            title: 'Game Point',
             bgColor: isLight ? '#14B8A6' : 'rgba(32, 201, 151, 0.2)',
             icon: <MaterialCommunityIcons 
                 name="star-four-points-outline" 
                 size={16} 
                 color={isLight ? "#ffffff" : "#20c997"} 
+            />
+        },
+        [NOTIFICATION_TYPES.STORE]: {
+            title: 'Store',
+            bgColor: isLight ? '#6366F1' : 'rgba(99, 102, 241, 0.2)',
+            icon: <Ionicons 
+                name="storefront-outline" 
+                size={16} 
+                color={isLight ? "#ffffff" : "#6366F1"} 
             />
         },
         [NOTIFICATION_TYPES.NORMAL]: {
