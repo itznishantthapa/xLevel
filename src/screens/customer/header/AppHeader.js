@@ -14,7 +14,7 @@ const AppHeader = ({ backButton = false, title }) => {
                 {
                     backButton && (
                         <Pressable onPress={() => navigation.goBack()} style={styles.backButton}>
-                            <Ionicons name="arrow-back" size={24} color={isLight ? "#000" : "#fff"} />
+                            <Ionicons name="caret-back" size={24} color={isLight ? "#000" : "#fff"} />
                         </Pressable>
                     )
                 }

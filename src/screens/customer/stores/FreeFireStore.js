@@ -361,7 +361,7 @@ const FreeFireStore = ({ route }) => {
           Select a Level
         </Text>
 
-        {/* Level Chips */}
+        {/* Level Boxes */}
         <View style={styles.levelSelectorGrid}>
           {levelups.map((item) => {
             const isSelected = selectedItem?.id === item.id
@@ -371,19 +371,19 @@ const FreeFireStore = ({ route }) => {
                 style={[styles.levelChip, {
                   backgroundColor: isSelected
                     ? (isLight ? '#000000' : '#ffffff')
-                    : (isLight ? '#f0f0f0' : '#1f1f1f'),
+                    : 'transparent',
                   borderColor: isSelected
                     ? (isLight ? '#000000' : '#ffffff')
-                    : (isLight ? '#dddddd' : '#333333'),
+                    : (isLight ? '#cccccc' : '#444444'),
                 }]}
                 onPress={() => setSelectedItem(item)}
               >
                 <Text style={[styles.levelChipText, {
                   color: isSelected
                     ? (isLight ? '#ffffff' : '#000000')
-                    : (isLight ? '#333333' : '#cccccc'),
+                    : (isLight ? '#000000' : '#ffffff'),
                 }]}>
-                  Lv. {item.level}
+                  Upto Lv. {item.level}
                 </Text>
               </Pressable>
             )
@@ -697,9 +697,7 @@ const FreeFireStore = ({ route }) => {
           }]}>
             <View style={styles.profileItem}>
               <MaterialCommunityIcons name="account-outline" size={18} color={isLight ? '#888888' : '#777777'} style={{ marginBottom: 4 }} />
-              <Text style={[styles.profileLabel, { color: isLight ? '#666666' : '#999999' }]}>
-                Game Name
-              </Text>
+   
               <Text style={[styles.profileValue, { color: isLight ? '#000000' : '#ffffff' }]}>
                 {freeFireProfile?.game_username || 'Not Set'}
               </Text>
@@ -707,9 +705,7 @@ const FreeFireStore = ({ route }) => {
             <View style={[styles.profileDivider, { backgroundColor: isLight ? '#cccccc' : '#333333' }]} />
             <View style={styles.profileItem}>
               <MaterialCommunityIcons name="identifier" size={18} color={isLight ? '#888888' : '#777777'} style={{ marginBottom: 4 }} />
-              <Text style={[styles.profileLabel, { color: isLight ? '#666666' : '#999999' }]}>
-                UID
-              </Text>
+
               <Text style={[styles.profileValue, { color: isLight ? '#000000' : '#ffffff' }]}>
                 {freeFireProfile?.uid || freeFireProfile?.game_uid || 'Not Set'}
               </Text>
@@ -924,11 +920,7 @@ const styles = StyleSheet.create({
     height: '100%',
     marginHorizontal: 12,
   },
-  profileLabel: {
-    fontSize: 12,
-    fontWeight: '500',
-    marginBottom: 4,
-  },
+
   profileValue: {
     fontSize: 13,
     fontWeight: '600',
@@ -1054,15 +1046,31 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
-    justifyContent: 'center',
+    width: '100%',
   },
   levelChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    flexBasis: '31%',
+    flexGrow: 0,
+    flexShrink: 0,
+    paddingVertical: 10,
     borderWidth: 1,
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  levelCheckMark: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1,
   },
   levelChipText: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '600',
     letterSpacing: 0.5,
   },
