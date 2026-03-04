@@ -44,13 +44,7 @@ const FreeFireStore = ({ route }) => {
     profile => profile.game_name?.toLowerCase() === 'free fire'
   )
 
-  // Log store items when fetched
-  useEffect(() => {
-    if (storeItemsData) {
-      console.log('FreeFire Store Items:', storeItemsData)
-      console.log('Transformed Store Items:', transformStoreItems(storeItemsData))
-    }
-  }, [storeItemsData])
+
 
   // Animate selected item display
   useEffect(() => {

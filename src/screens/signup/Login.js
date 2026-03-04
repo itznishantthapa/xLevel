@@ -223,7 +223,7 @@ const Login = () => {
                   style={styles.logo}
                   resizeMode="contain"
                 />
-                <Text style={[styles.tagline, { color: colors.success }]}>Verssa</Text>
+                <Text style={[styles.tagline, { color: colors.success }]}>Level eSports</Text>
                 <View style={[styles.taglineUnderline, { backgroundColor: colors.success }]} />
               </View>
             </View>

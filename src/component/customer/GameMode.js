@@ -35,6 +35,24 @@ const GameMode = ({ game_mode, handleGameMode, game }) => {
     return "Game Store";
   }
 
+  const getStoreIcon = () => {
+    if (!game?.game_name) return "storefront-outline";
+    
+    const gameName = game.game_name.toLowerCase();
+    if (gameName.includes('free fire') || gameName.includes('freefire')) {
+      return "diamond-outline";
+    } else if (gameName.includes('pubg')) {
+      return "cube-outline"; // Represents UC/items boxes
+    } else if (gameName.includes('efootball')) {
+      return "football-outline";
+    } else if (gameName.includes('mlbb')) {
+      return "diamond-outline"; // MLBB also uses diamonds
+    } else if (gameName.includes('chess')) {
+      return "trophy-outline";
+    }
+    return "storefront-outline";
+  }
+
   const handleStoreNavigation = () => {
     if (!game?.game_name) return;
     
@@ -172,7 +190,7 @@ const GameMode = ({ game_mode, handleGameMode, game }) => {
               {/* Left Side - Icon */}
               <View style={styles.indexContainer}>
                 <Ionicons 
-                  name="diamond-outline" 
+                  name={getStoreIcon()} 
                   size={20} 
                   color={isLight ? '#1a1a1a' : '#ffffff'} 
                 />

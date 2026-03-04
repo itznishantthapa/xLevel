@@ -179,7 +179,7 @@ const PointsIn = () => {
                     <Text style={[styles.stepNumber, { color: isLight ? "#ffffff" : "#000000" }]}>2</Text>
                   </View>
                   <Text style={[styles.instructionText, { color: colors.textSecondary }]}>
-                    Write your app's email in the remarks (Important).
+                    Write your app's full Name in the remarks (Important).
                   </Text>
                 </View>
 

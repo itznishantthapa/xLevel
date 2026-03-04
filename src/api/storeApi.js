@@ -23,7 +23,11 @@ export const StoreAPI = {
    * @returns {Promise}
    */
   placeTopup: async (payload) => {
-    const res = await API.post(endpoints.placeTopup, payload);
+    const res = await API.post(endpoints.placeTopup, payload, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return res.data;
   },
 };

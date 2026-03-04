@@ -15,8 +15,44 @@ import { useEffect, useState, useRef } from "react"
 import Toast from "react-native-simple-toast"
 import { useEditGameProfile } from "../../queries/useMutation/useEditGameProfile"
 import { CreateGameLayout, SectionTitle } from "../../component/customer/createGame"
+import { Dropdown } from 'react-native-element-dropdown'
 import * as yup from 'yup'
 import { vulgarWords } from "../../utils/censored"
+
+// MLBB rank options
+const MLBB_RANKS = [
+  { label: 'Warrior', value: 'Warrior' },
+  { label: 'Elite', value: 'Elite' },
+  { label: 'Master', value: 'Master' },
+  { label: 'Grandmaster', value: 'Grandmaster' },
+  { label: 'Epic', value: 'Epic' },
+  { label: 'Legend', value: 'Legend' },
+  { label: 'Mythic', value: 'Mythic' },
+  { label: 'Mythical Honor', value: 'Mythical Honor' },
+  { label: 'Mythical Glory', value: 'Mythical Glory' },
+  { label: 'Mythical Immortal', value: 'Mythical Immortal' },
+]
+
+// eFootball division options (1-10)
+const EFOOTBALL_DIVISIONS = [
+  { label: 'Division 1', value: '1' },
+  { label: 'Division 2', value: '2' },
+  { label: 'Division 3', value: '3' },
+  { label: 'Division 4', value: '4' },
+  { label: 'Division 5', value: '5' },
+  { label: 'Division 6', value: '6' },
+  { label: 'Division 7', value: '7' },
+  { label: 'Division 8', value: '8' },
+  { label: 'Division 9', value: '9' },
+  { label: 'Division 10', value: '10' },
+]
+
+// eFootball courtesy rating options
+const EFOOTBALL_COURTESY_RATINGS = [
+  { label: 'A', value: 'A' },
+  { label: 'B', value: 'B' },
+  { label: 'C', value: 'C' },
+]
 
 // Create a comprehensive list of vulgar words for validation
 const getAllVulgarWords = () => {
@@ -119,24 +155,24 @@ const efootballValidationSchema = relaxedUsernameValidationSchema.shape({
   current_division: yup
     .string()
     .matches(/^[0-9]+$/, 'Must be a valid number')
-    .test('division-range', 'Division must be between 0-10', (value) => {
+    .test('division-range', 'Division must be between 1-10', (value) => {
       if (!value) return false
       const division = parseInt(value)
-      return division >= 0 && division <= 10
+      return division >= 1 && division <= 10
     })
     .required('Current division is required'),
   highest_division: yup
     .string()
     .matches(/^[0-9]+$/, 'Must be a valid number')
-    .test('division-range', 'Division must be between 0-10', (value) => {
+    .test('division-range', 'Division must be between 1-10', (value) => {
       if (!value) return false
       const division = parseInt(value)
-      return division >= 0 && division <= 10
+      return division >= 1 && division <= 10
     })
     .required('Highest division is required'),
   courtesy_rating: yup
     .string()
-    .matches(/^[A-Za-z]$/, 'Must be a single letter')
+    .matches(/^[ABC]$/, 'Must be A, B, or C')
     .required('Courtesy rating is required'),
 })
 
@@ -146,6 +182,11 @@ const mlbbValidationSchema = relaxedUsernameValidationSchema.shape({
     .matches(/^[0-9]+$/, 'UID must contain only digits')
     .test('mlbb-length', 'MLBB UID must be 6-12 digits', v => !!v && /^[0-9]{6,12}$/.test(v))
     .required('Game UID is required'),
+  server_id: yup
+    .string()
+    .matches(/^[0-9]+$/, 'Server ID must contain only digits')
+    .test('server-length', 'Server ID must be 4-5 digits', v => !!v && /^[0-9]{4,5}$/.test(v))
+    .required('Server ID is required'),
   current_rank: yup
     .string()
     .test('valid-rank', 'Invalid rank. Must be exactly: Warrior, Elite, Master, Grandmaster, Epic, Legend, Mythic, Mythical Honor, Mythical Glory, or Mythical Immortal', function(value) {
@@ -272,6 +313,7 @@ const EditGameInfo = () => {
         return {
           ...baseState,
           uid: profile?.uid || profile?.game_uid || "",
+          server_id: profile?.server_id || "",
           current_rank: profile?.current_rank || "",
           highest_rank: profile?.highest_rank || "",
         }
@@ -339,6 +381,9 @@ const EditGameInfo = () => {
         default:
           transformed = value.replace(/[^A-Za-z0-9]/g,'')
       }
+    }
+    if (field === 'server_id') {
+      transformed = value.replace(/[^0-9]/g,'').slice(0,5)
     }
     setGameProfile((prev) => ({ ...prev, [field]: transformed }))
     // Clear error when user starts typing and validate field
@@ -633,20 +678,34 @@ const EditGameInfo = () => {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={[styles.fieldLabel, { color: isLight ? "#333333" : "#ffffff" }]}>Current Division (0-10) *</Text>
-              <TextInput
+              <Text style={[styles.fieldLabel, { color: isLight ? "#333333" : "#ffffff" }]}>Current Division *</Text>
+              <Dropdown
                 style={[
-                  inputStyle,
+                  styles.dropdown,
+                  {
+                    backgroundColor: isLight ? "transparent" : "#1a1a1a",
+                    borderColor: isLight ? "#cccccc" : "#333333",
+                  },
                   errors.current_division && {
                     borderColor: "#FF4444",
                   }
                 ]}
+                placeholderStyle={[styles.dropdownPlaceholder, { color: isLight ? "#666666" : "#999999" }]}
+                selectedTextStyle={[styles.dropdownSelectedText, { color: isLight ? "#333333" : "#ffffff" }]}
+                iconStyle={styles.dropdownIcon}
+                containerStyle={[styles.dropdownContainer, {
+                  backgroundColor: isLight ? "#ffffff" : "#1a1a1a",
+                  borderColor: isLight ? "#cccccc" : "#333333",
+                }]}
+                itemTextStyle={{ color: isLight ? "#333333" : "#ffffff" }}
+                activeColor={isLight ? "#f0f0f0" : "#2a2a2a"}
+                data={EFOOTBALL_DIVISIONS}
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                placeholder="Select current division"
                 value={gameProfile.current_division}
-                onChangeText={(text) => updateProfile("current_division", text)}
-                placeholder="Ex. 3"
-                placeholderTextColor={isLight ? "#666666" : "#999999"}
-                keyboardType="numeric"
-                maxLength={2}
+                onChange={(item) => updateProfile("current_division", item.value)}
               />
               {errors.current_division ? (
                 <Text style={styles.errorText}>{errors.current_division}</Text>
@@ -655,19 +714,33 @@ const EditGameInfo = () => {
 
             <View style={styles.inputGroup}>
               <Text style={[styles.fieldLabel, { color: isLight ? "#333333" : "#ffffff" }]}>Highest Division *</Text>
-              <TextInput
+              <Dropdown
                 style={[
-                  inputStyle,
+                  styles.dropdown,
+                  {
+                    backgroundColor: isLight ? "transparent" : "#1a1a1a",
+                    borderColor: isLight ? "#cccccc" : "#333333",
+                  },
                   errors.highest_division && {
                     borderColor: "#FF4444",
                   }
                 ]}
+                placeholderStyle={[styles.dropdownPlaceholder, { color: isLight ? "#666666" : "#999999" }]}
+                selectedTextStyle={[styles.dropdownSelectedText, { color: isLight ? "#333333" : "#ffffff" }]}
+                iconStyle={styles.dropdownIcon}
+                containerStyle={[styles.dropdownContainer, {
+                  backgroundColor: isLight ? "#ffffff" : "#1a1a1a",
+                  borderColor: isLight ? "#cccccc" : "#333333",
+                }]}
+                itemTextStyle={{ color: isLight ? "#333333" : "#ffffff" }}
+                activeColor={isLight ? "#f0f0f0" : "#2a2a2a"}
+                data={EFOOTBALL_DIVISIONS}
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                placeholder="Select highest division"
                 value={gameProfile.highest_division}
-                onChangeText={(text) => updateProfile("highest_division", text)}
-                placeholder="Ex. 1"
-                placeholderTextColor={isLight ? "#666666" : "#999999"}
-                keyboardType="numeric"
-                maxLength={2}
+                onChange={(item) => updateProfile("highest_division", item.value)}
               />
               {errors.highest_division ? (
                 <Text style={styles.errorText}>{errors.highest_division}</Text>
@@ -676,18 +749,33 @@ const EditGameInfo = () => {
 
             <View style={styles.inputGroup}>
               <Text style={[styles.fieldLabel, { color: isLight ? "#333333" : "#ffffff" }]}>Courtesy Rating *</Text>
-              <TextInput
+              <Dropdown
                 style={[
-                  inputStyle,
+                  styles.dropdown,
+                  {
+                    backgroundColor: isLight ? "transparent" : "#1a1a1a",
+                    borderColor: isLight ? "#cccccc" : "#333333",
+                  },
                   errors.courtesy_rating && {
                     borderColor: "#FF4444",
                   }
                 ]}
+                placeholderStyle={[styles.dropdownPlaceholder, { color: isLight ? "#666666" : "#999999" }]}
+                selectedTextStyle={[styles.dropdownSelectedText, { color: isLight ? "#333333" : "#ffffff" }]}
+                iconStyle={styles.dropdownIcon}
+                containerStyle={[styles.dropdownContainer, {
+                  backgroundColor: isLight ? "#ffffff" : "#1a1a1a",
+                  borderColor: isLight ? "#cccccc" : "#333333",
+                }]}
+                itemTextStyle={{ color: isLight ? "#333333" : "#ffffff" }}
+                activeColor={isLight ? "#f0f0f0" : "#2a2a2a"}
+                data={EFOOTBALL_COURTESY_RATINGS}
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                placeholder="Select courtesy rating"
                 value={gameProfile.courtesy_rating}
-                onChangeText={(text) => updateProfile("courtesy_rating", text.toUpperCase())}
-                placeholder="Ex. A"
-                placeholderTextColor={isLight ? "#666666" : "#999999"}
-                maxLength={1}
+                onChange={(item) => updateProfile("courtesy_rating", item.value)}
               />
               {errors.courtesy_rating ? (
                 <Text style={styles.errorText}>{errors.courtesy_rating}</Text>
@@ -710,7 +798,7 @@ const EditGameInfo = () => {
                 ]}
                 value={gameProfile.uid}
                 onChangeText={(text) => updateProfile("uid", text)}
-                placeholder="Paste Your MLBB UID Accurately (Not Server ID)."
+                placeholder="Paste Your MLBB UID Accurately."
                 placeholderTextColor={isLight ? "#666666" : "#999999"}
                 keyboardType="numeric"
                 maxLength={20}
@@ -721,19 +809,55 @@ const EditGameInfo = () => {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={[styles.fieldLabel, { color: isLight ? "#333333" : "#ffffff" }]}>Current Rank *</Text>
+              <Text style={[styles.fieldLabel, { color: isLight ? "#333333" : "#ffffff" }]}>Zone ID *</Text>
               <TextInput
                 style={[
                   inputStyle,
+                  errors.server_id && {
+                    borderColor: "#FF4444",
+                  }
+                ]}
+                value={gameProfile.server_id}
+                onChangeText={(text) => updateProfile("server_id", text)}
+                placeholder="Ex. 12345"
+                placeholderTextColor={isLight ? "#666666" : "#999999"}
+                keyboardType="numeric"
+                maxLength={5}
+              />
+              {errors.server_id ? (
+                <Text style={styles.errorText}>{errors.server_id}</Text>
+              ) : null}
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={[styles.fieldLabel, { color: isLight ? "#333333" : "#ffffff" }]}>Current Rank *</Text>
+              <Dropdown
+                style={[
+                  styles.dropdown,
+                  {
+                    backgroundColor: isLight ? "transparent" : "#1a1a1a",
+                    borderColor: isLight ? "#cccccc" : "#333333",
+                  },
                   errors.current_rank && {
                     borderColor: "#FF4444",
                   }
                 ]}
+                placeholderStyle={[styles.dropdownPlaceholder, { color: isLight ? "#666666" : "#999999" }]}
+                selectedTextStyle={[styles.dropdownSelectedText, { color: isLight ? "#333333" : "#ffffff" }]}
+                iconStyle={styles.dropdownIcon}
+                containerStyle={[styles.dropdownContainer, {
+                  backgroundColor: isLight ? "#ffffff" : "#1a1a1a",
+                  borderColor: isLight ? "#cccccc" : "#333333",
+                }]}
+                itemTextStyle={{ color: isLight ? "#333333" : "#ffffff" }}
+                activeColor={isLight ? "#f0f0f0" : "#2a2a2a"}
+                data={MLBB_RANKS}
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                placeholder="Select your current rank"
                 value={gameProfile.current_rank}
-                onChangeText={(text) => updateProfile("current_rank", text)}
-                placeholder="Ex. Mythic, Legend, Epic"
-                placeholderTextColor={isLight ? "#666666" : "#999999"}
-                maxLength={50}
+                onChange={(item) => updateProfile("current_rank", item.value)}
               />
               {errors.current_rank ? (
                 <Text style={styles.errorText}>{errors.current_rank}</Text>
@@ -742,18 +866,33 @@ const EditGameInfo = () => {
 
             <View style={styles.inputGroup}>
               <Text style={[styles.fieldLabel, { color: isLight ? "#333333" : "#ffffff" }]}>Highest Rank *</Text>
-              <TextInput
+              <Dropdown
                 style={[
-                  inputStyle,
+                  styles.dropdown,
+                  {
+                    backgroundColor: isLight ? "transparent" : "#1a1a1a",
+                    borderColor: isLight ? "#cccccc" : "#333333",
+                  },
                   errors.highest_rank && {
                     borderColor: "#FF4444",
                   }
                 ]}
+                placeholderStyle={[styles.dropdownPlaceholder, { color: isLight ? "#666666" : "#999999" }]}
+                selectedTextStyle={[styles.dropdownSelectedText, { color: isLight ? "#333333" : "#ffffff" }]}
+                iconStyle={styles.dropdownIcon}
+                containerStyle={[styles.dropdownContainer, {
+                  backgroundColor: isLight ? "#ffffff" : "#1a1a1a",
+                  borderColor: isLight ? "#cccccc" : "#333333",
+                }]}
+                itemTextStyle={{ color: isLight ? "#333333" : "#ffffff" }}
+                activeColor={isLight ? "#f0f0f0" : "#2a2a2a"}
+                data={MLBB_RANKS}
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                placeholder="Select your highest rank"
                 value={gameProfile.highest_rank}
-                onChangeText={(text) => updateProfile("highest_rank", text)}
-                placeholder="Ex. Mythical Glory"
-                placeholderTextColor={isLight ? "#666666" : "#999999"}
-                maxLength={50}
+                onChange={(item) => updateProfile("highest_rank", item.value)}
               />
               {errors.highest_rank ? (
                 <Text style={styles.errorText}>{errors.highest_rank}</Text>
@@ -940,6 +1079,26 @@ const styles = StyleSheet.create({
     fontSize: 14,
     borderWidth: 1,
     borderRadius: 0,
+  },
+  dropdown: {
+    height: 50,
+    borderWidth: 1,
+    borderRadius: 0,
+    paddingHorizontal: 12,
+  },
+  dropdownPlaceholder: {
+    fontSize: 14,
+  },
+  dropdownSelectedText: {
+    fontSize: 14,
+  },
+  dropdownIcon: {
+    width: 20,
+    height: 20,
+  },
+  dropdownContainer: {
+    borderWidth: 1,
+    borderRadius: 8,
   },
   errorText: {
     fontSize: 12,
