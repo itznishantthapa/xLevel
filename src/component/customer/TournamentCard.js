@@ -18,9 +18,13 @@ const TournamentCard = ({ game }) => {
 
 
   // Calculate progress percentage for joined players
-  const joinedPercentage = Math.min((game.player_joined / game.max_player) * 100, 100)
-  const spotsLeft = Math.max(game.max_player - game.player_joined, 0)
-  const isAlmostFull = spotsLeft <= Math.ceil(game.max_player * 0.2) // 20% or less spots remaining
+  // Use registered time slot's data if available, otherwise fall back to overall tournament data
+  const playersJoined = game.registered_time_slot?.players_registered ?? game.player_joined
+  const maxPlayers = game.registered_time_slot?.max_players ?? game.max_player
+  
+  const joinedPercentage = Math.min((playersJoined / maxPlayers) * 100, 100)
+  const spotsLeft = Math.max(maxPlayers - playersJoined, 0)
+  const isAlmostFull = spotsLeft <= Math.ceil(maxPlayers * 0.2) // 20% or less spots remaining
 
   const copyToClipboard = (text) => {
     Clipboard.setString(text);
@@ -38,19 +42,23 @@ const TournamentCard = ({ game }) => {
       );
     }
 
-    if (game.room_id && game.room_pass) {
+    // Check for room details in registered_time_slot
+    const roomId = game.registered_time_slot?.room_id;
+    const roomPass = game.registered_time_slot?.room_pass;
+
+    if (roomId && roomPass) {
       return (
         <View style={styles.gameInfoContainer}>
           {/* Room ID */}
           <Pressable
             style={styles.roomDetail}
-            onPress={() => copyToClipboard(game.room_id)}
+            onPress={() => copyToClipboard(roomId)}
             activeOpacity={0.7}
           >
             <View style={[styles.roomInfoItem, { backgroundColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)' }]}>
               <Text style={{ color: isLight ? '#666666' : '#dadada' }}>ID</Text>
               <Text style={[styles.roomInfoText, { color: isLight ? '#333333' : '#dadada' }]} numberOfLines={1}>
-                {game.room_id}
+                {roomId}
               </Text>
               <MaterialIcons name="content-copy" size={14} color={isLight ? '#666666' : '#dadada'} />
             </View>
@@ -59,13 +67,13 @@ const TournamentCard = ({ game }) => {
           {/* Room Password */}
           <Pressable
             style={styles.roomDetail}
-            onPress={() => copyToClipboard(game.room_pass)}
+            onPress={() => copyToClipboard(roomPass)}
             activeOpacity={0.7}
           >
             <View style={[styles.roomInfoItem, { backgroundColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)' }]}>
               <Text style={{ color: isLight ? '#666666' : '#dadada' }}>Pass</Text>
               <Text style={[styles.roomInfoText, { color: isLight ? '#333333' : '#dadada' }]} numberOfLines={1}>
-                {game.room_pass}
+                {roomPass}
               </Text>
               <MaterialIcons name="content-copy" size={14} color={isLight ? '#666666' : '#dadada'} />
             </View>
@@ -77,7 +85,7 @@ const TournamentCard = ({ game }) => {
     return (
       <View style={[styles.credentialsContainer, { borderColor: isLight ? '#000000' : '#ffffff' }]}>
         <Text style={[styles.credentialsText, { color: isLight ? '#000000' : '#ffffff' }]}>
-          "Get ID & Pass 5 mins early"
+          "Get ID & Pass 10 mins early"
         </Text>
       </View>
     );
@@ -132,7 +140,7 @@ const TournamentCard = ({ game }) => {
 
           {/* Tournament ID Stamp */}
           <View style={[styles.stampContainer, isSmallScreen && styles.stampContainerSmall]}>
-            <StampID gameId={game.id} isLight={isLight} compact={isSmallScreen} />
+            <StampID gameId={game.registered_time_slot?.id ?? game.id} isLight={isLight} compact={isSmallScreen} />
           </View>
         </View>
       </View>
@@ -201,7 +209,7 @@ const TournamentCard = ({ game }) => {
       <View style={styles.progressSection}>
         <View style={styles.progressHeader}>
           <Text style={[styles.progressLabel, !isLight && styles.progressLabelDark]}>
-            {game.player_joined}/{game.max_player} Players Joined
+            {playersJoined}/{maxPlayers} Players Joined 
           </Text>
         </View>
 
@@ -221,9 +229,34 @@ const TournamentCard = ({ game }) => {
       {/* Time Section */}
       <View style={styles.bottomSection}>
         <View style={styles.timeInfo}>
-          <Text style={[styles.timeText, !isLight && styles.timeTextDark]}>
-            Start Time: {game.start_time}
-          </Text>
+          {game.registered_time_slot ? (
+            <View style={styles.timeSlotInfo}>
+              {game.game_date && (
+                <View style={[
+                  styles.dateDisplay,
+                  { backgroundColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)' }
+                ]}>
+                  <Ionicons name="calendar-outline" size={14} color={isLight ? '#666666' : '#cccccc'} />
+                  <Text style={[styles.dateText, !isLight && styles.dateTextDark]}>
+                    {new Date(game.game_date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
+                  </Text>
+                </View>
+              )}
+              <View style={[
+                styles.timeSlotDisplay,
+                { backgroundColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)' }
+              ]}>
+                <Ionicons name="time-outline" size={14} color={isLight ? '#666666' : '#cccccc'} />
+                <Text style={[styles.timeSlotText, !isLight && styles.timeSlotTextDark]}>
+                  {game.registered_time_slot.time}
+                </Text>
+              </View>
+            </View>
+          ) : (
+            <Text style={[styles.timeText, !isLight && styles.timeTextDark]}>
+              Start Time: {game.start_time || 'TBD'}
+            </Text>
+          )}
         </View>
         {/* Player Slot Stamp - only show if slot_number exists */}
         {game?.slot_number && (
@@ -462,6 +495,45 @@ const styles = StyleSheet.create({
   timeInfo: {
     flexDirection: "row",
     alignItems: "center",
+    flex: 1,
+  },
+  timeSlotInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    flexWrap: 'wrap',
+  },
+  dateDisplay: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    gap: 6,
+  },
+  dateText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#1a1a1a",
+  },
+  dateTextDark: {
+    color: "#ffffff",
+  },
+  timeSlotDisplay: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    gap: 6,
+  },
+  timeSlotText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#1a1a1a",
+  },
+  timeSlotTextDark: {
+    color: "#ffffff",
   },
   slotStampContainer: {
     marginLeft: 'auto',

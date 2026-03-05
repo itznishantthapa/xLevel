@@ -96,6 +96,12 @@ const Home = () => {
   const {data: utils = []} = useUtils()
 
 
+  useEffect(() => {
+    console.log("Upcoming Challenges Data:", upcomingChallenges)
+  }, [upcomingChallenges])
+  
+
+
 
   // Show all banners - no filtering needed
   const displayBanners = banners
@@ -285,8 +291,9 @@ const Home = () => {
    * Shows the join game sheet with challenge-specific data
    *
    * @param {Object} game - Challenge object to join
+   * @param {number} selectedTimeId - Selected time slot ID
    */
-  const handleConfirmChallenge = async (game) => {
+  const handleConfirmChallenge = async (game, selectedTimeId) => {
     if (!isConnected) {
       return
     }
@@ -298,10 +305,10 @@ const Home = () => {
         // or an object with challenge_id and access_code
         if (typeof joinData === 'object' && joinData.challenge_id) {
           // New format: object with challenge_id and access_code
-          handleRegisterChallenge(joinData.challenge_id, joinData.access_code)
+          handleRegisterChallenge(joinData.challenge_id, joinData.access_code, selectedTimeId)
         } else {
           // Old format: just the challenge_id
-          handleRegisterChallenge(joinData, undefined)
+          handleRegisterChallenge(joinData, undefined, selectedTimeId)
         }
       },
     })
@@ -321,15 +328,29 @@ const Home = () => {
    * 5. Show error toast on failure
    *
    * @param {string} id - Challenge ID to join
+   * @param {string} accessCode - Access code for the challenge (optional)
+   * @param {number} timeSlotId - Selected time slot ID (optional)
    */
 
 
-  const handleRegisterChallenge = async (id, accessCode) => {
+  const handleRegisterChallenge = async (id, accessCode, timeSlotId) => {
     try {
+
+      console.log("Attempting to join challenge with ID:", id, "access code:", accessCode, "time slot ID:", timeSlotId);
       setIsJoiningTournament(true);
 
-      // TODO: Implement actual registration logic with access code
-      await registerTournament({ challenge_id: id, access_code: accessCode });
+      // Prepare registration payload
+      const payload = {
+        challenge_id: id,
+        access_code: accessCode,
+      }
+
+      // Add time_slot_id if provided
+      if (timeSlotId) {
+        payload.time_slot_id = timeSlotId
+      }
+
+      await registerTournament(payload);
 
       // Add a small delay to ensure cache is updated before navigation
       await new Promise(resolve => setTimeout(resolve, 300));

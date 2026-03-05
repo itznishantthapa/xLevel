@@ -393,7 +393,7 @@ const JoinSheetContent = React.memo(
               <Text style={[styles.value, { color: isDark ? "#ffffff" : "#000000" }]}>{game.game?.game_mode}</Text>
             </View>
           </View>
-          {game.created_by.role === "customer" && (
+          {game?.created_by?.role === "customer" && (
             <>
               {/* For chess, show only Creator name in a single full-width card */}
               {game.game?.name?.toLowerCase() === "chess" ? (

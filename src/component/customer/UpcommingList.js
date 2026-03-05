@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Pressable, Image, Dimensions, ActivityIndicator } from "react-native"
+import { View, Text, StyleSheet, Pressable, Image, Dimensions, ActivityIndicator, ScrollView } from "react-native"
 import Clipboard from "@react-native-clipboard/clipboard"
 import { FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons"
 import { useNetworkStatus } from "../../hooks/useNetworkStatus"
@@ -8,9 +8,10 @@ import { useAuthStore } from "../../store/authStore"
 import { useThemeStore } from "../../store/themeStore"
 import { useGameProfiles } from "../../queries/useGameProfiles"
 import { useNavigation } from "@react-navigation/native"
-import { useEffect } from "react"
+import { useEffect, useState, useRef } from "react"
 import { scaleHeight, scaleWidth } from "../../utils/scaling"
 import StampID from "../matchcard/StampID"
+import { ShakeText } from "./animation"
 
 
 const { width } = Dimensions.get("window")
@@ -23,6 +24,8 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
   const { isLight } = useThemeStore()
   const { data: gameProfiles = [] } = useGameProfiles()
   const navigation = useNavigation()
+  const [selectedGameTime, setSelectedGameTime] = useState(null)
+  const shakeTimeRef = useRef(null)
 
   const SCREEN_WIDTH = Dimensions.get('window').width
   const isSmallScreen = SCREEN_WIDTH <= 360
@@ -31,10 +34,16 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
   
 
 
-  // Calculate progress percentage for joined players
-  const joinedPercentage = Math.min((game.player_joined / game.max_player) * 100, 100)
-  const spotsLeft = Math.max(game.max_player - game.player_joined, 0)
-  const isAlmostFull = spotsLeft <= Math.ceil(game.max_player * 0.2) // 20% or less spots remaining
+  // Get selected time slot data
+  const selectedTimeSlot = game.game_times?.find(slot => slot.id === selectedGameTime)
+  
+  // Calculate progress percentage for the selected time slot or overall if none selected
+  const playersJoined = selectedTimeSlot ? selectedTimeSlot.players_registered : game.player_joined
+  const maxPlayers = selectedTimeSlot ? selectedTimeSlot.max_players : game.max_player
+  
+  const joinedPercentage = Math.min((playersJoined / maxPlayers) * 100, 100)
+  const spotsLeft = Math.max(maxPlayers - playersJoined, 0)
+  const isAlmostFull = spotsLeft <= Math.ceil(maxPlayers * 0.2) // 20% or less spots remaining
 
  
 
@@ -46,6 +55,12 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
    * Handles join button press with profile and balance validation
    */
   const handleJoinPress = () => {
+    // Check if time slot selection is required and validate
+    if (game.game_times && game.game_times.length > 0 && !selectedGameTime) {
+      shakeTimeRef.current?.shake()
+      return
+    }
+
     const existingProfile = gameProfiles.find((profile) => profile.game_id === game.game?.id)
 
     if (!existingProfile) {
@@ -63,7 +78,7 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
 
 
 
-    handleConfirmChallenge(game)
+    handleConfirmChallenge(game, selectedGameTime)
   }
 
   /**
@@ -150,15 +165,11 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
                     <Text style={[styles.perKillText, !isLight && styles.perKillTextDark]}> per kill</Text>
                   </View>
                   {
-                    game?.prize ? (
+                    game?.prize && (
                       <View style={styles.winnerTakesContainer}>
                         <Text style={[styles.winnerTakesLabel, !isLight && styles.winnerTakesLabelDark]}>{game?.prize}</Text>
                       </View>
-                    ) : (
-                      <View style={styles.winnerTakesContainer}>
-                        <Text style={[styles.winnerTakesLabel, !isLight && styles.winnerTakesLabelDark]}>Winner Takes Additional 2x Entry Points </Text>
-                      </View>
-                    )
+                    ) 
                   }
 
                 </View>
@@ -170,10 +181,6 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
                           <Text style={[styles.perKillAmount, !isLight && styles.perKillAmountDark]}>+{game.top_position_prize} Points </Text>
                           <Text style={[styles.perKillText, !isLight && styles.perKillTextDark]}>for top {game.prize_position_upto} players</Text>
                         </View>
-                  
-
-                    
-
                         <View style={styles.winnerTakesContainer}>
                           <Text style={[styles.winnerTakesLabel, !isLight && styles.winnerTakesLabelDark]}>{game?.prize}</Text>
                         </View>
@@ -189,6 +196,19 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
         </View>
         {!forFiller && (
           <View style={styles.bonusInfo}>
+            {/* Date Display */}
+            {game?.game_date && (
+              <View style={[
+                styles.dateDisplay,
+                { backgroundColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)' }
+              ]}>
+                <Ionicons name="calendar-outline" size={14} color={isLight ? '#666666' : '#cccccc'} />
+                <Text style={[styles.dateText, !isLight && styles.dateTextDark]}>
+                  {new Date(game.game_date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
+                </Text>
+              </View>
+            )}
+            {/* Entry Fee Display */}
             <View style={[
               styles.entryFeeDisplay,
               { backgroundColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)' }
@@ -209,11 +229,11 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
       {/* Progress and Urgency Section */}
 
       {
-        !forFiller && joinedPercentage > 50 && (
+        !forFiller && joinedPercentage >= 50 && (
           <View style={styles.progressSection}>
             <View style={styles.progressHeader}>
               <Text style={[styles.progressLabel, !isLight && styles.progressLabelDark]}>
-                {game.player_joined}/{game.max_player} Players Joined
+                {playersJoined}/{maxPlayers} Players {selectedTimeSlot ? `(${selectedTimeSlot.time_slot})` : 'Joined'}
               </Text>
             </View>
 
@@ -233,29 +253,73 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
       }
 
 
-      {/* Creator and Time Section */}
-      <View style={styles.bottomSection}>
-
-        <View style={styles.timeInfo}>
-          {
-            forFiller ? (
-              <View style={[{ flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1 }, isLight ? { borderColor: '#000000' } : { borderColor: '#ffffff' }, { padding: 8, borderRadius: 8, marginVertical: 10 }]}>
-                <Text style={[{ fontSize: 12, fontWeight: 'bold' }, !isLight && styles.timeTextDark]}>
-                  See You Soon!
+      {/* Game Times Selection Section */}
+      {!forFiller && game.game_times && game.game_times.length > 0 && (
+        <View style={[styles.gameTimesSection, !isLight && styles.gameTimesSectionDark]}>
+          <ShakeText ref={shakeTimeRef}>
+            <Text style={[styles.gameTimesLabel, !isLight && styles.gameTimesLabelDark]}>
+              Select Game Time :
+            </Text>
+          </ShakeText>
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.gameTimesScrollContent}
+          >
+            {game.game_times.map((timeSlot, index) => (
+              <Pressable
+                key={timeSlot.id || index}
+                style={[
+                  styles.gameTimeButton,
+                  isLight ? styles.gameTimeButtonLight : styles.gameTimeButtonDark,
+                  selectedGameTime === timeSlot.id && styles.gameTimeButtonSelected,
+                  selectedGameTime === timeSlot.id && (isLight ? styles.gameTimeButtonSelectedLight : styles.gameTimeButtonSelectedDark),
+                  timeSlot.is_full && styles.gameTimeButtonDisabled,
+                  timeSlot.user_registered && styles.gameTimeButtonRegistered
+                ]}
+                onPress={() => !timeSlot.is_full && !timeSlot.user_registered && setSelectedGameTime(timeSlot.id)}
+                disabled={timeSlot.is_full || timeSlot.user_registered}
+              >
+                <Ionicons 
+                  name={timeSlot.user_registered ? "checkmark-circle" : "time-outline"}
+                  size={16} 
+                  color={timeSlot.user_registered ? "#ffffff" : timeSlot.is_full ? "#999999" : (selectedGameTime === timeSlot.id ? (isLight ? "#ffffff" : "#000000") : (isLight ? "#666666" : "#cccccc"))} 
+                />
+                <Text style={[
+                  styles.gameTimeText,
+                  isLight ? styles.gameTimeTextLight : styles.gameTimeTextDark,
+                  selectedGameTime === timeSlot.id && styles.gameTimeTextSelected,
+                  selectedGameTime === timeSlot.id && (isLight ? styles.gameTimeTextSelectedLight : styles.gameTimeTextSelectedDark),
+                  timeSlot.is_full && styles.gameTimeTextDisabled,
+                  timeSlot.user_registered && styles.gameTimeTextRegistered
+                ]}>
+                  {timeSlot.time_slot}
                 </Text>
-                <MaterialCommunityIcons name="robot-happy-outline" size={16} color={isLight ? "#000000" : "#ffffff"} />
-              </View>
-
-            ) : (
-              <Text style={[styles.timeText, !isLight && styles.timeTextDark]}>
-                Start Time: {game.start_time}
-              </Text>
-            )
-          }
-
-
+                {timeSlot.is_full && (
+                  <Text style={styles.fullBadge}>Full</Text>
+                )}
+                {timeSlot.user_registered && (
+                  <Text style={styles.registeredBadge}>Registered</Text>
+                )}
+              </Pressable>
+            ))}
+          </ScrollView>
         </View>
-      </View>
+      )}
+
+      {/* Filler Message Section */}
+      {forFiller && (
+        <View style={styles.bottomSection}>
+          <View style={styles.timeInfo}>
+            <View style={[{ flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1 }, isLight ? { borderColor: '#000000' } : { borderColor: '#ffffff' }, { padding: 8, borderRadius: 8, marginVertical: 10 }]}>
+              <Text style={[{ fontSize: 12, fontWeight: 'bold' }, !isLight && styles.timeTextDark]}>
+                See You Soon!
+              </Text>
+              <MaterialCommunityIcons name="robot-happy-outline" size={16} color={isLight ? "#000000" : "#ffffff"} />
+            </View>
+          </View>
+        </View>
+      )}
 
       {/* Enhanced Join Button */}
 
@@ -291,6 +355,51 @@ const UpcommingList = ({ games, handleConfirmChallenge }) => {
   const { isConnected } = useNetworkStatus()
 
 
+  useEffect(() => {
+  console.log("Received games data:", games)
+  }, [games])
+  
+
+ 
+
+  // Comprehensive mocked data for design purposes
+  const mockedGameData = [
+    // Per Kill Game - Almost Full
+    {
+      id: 1,
+      game: {
+        id: 1,
+        name: "PUBG",
+        game_mode: "Erangel",
+        game_logo_url: "https://level-esport-matchmaking-bucket.blr1.cdn.digitaloceanspaces.com/game_logos/3_WU8qmjc.png",
+      },
+      title: "Elite Squad Championship",
+      fight_type: "battle_royale",
+      entry_fee: 50,
+      max_player: 100,
+      win_type: "per_kill",
+      per_kill_point: 25,
+      prize: "Winner Gets 5000 Points",
+      player_joined: 15,
+      is_free: false,
+      game_date: "2026-03-05T00:00:00Z",
+      game_times: [
+        "9:00 AM",
+        "9:30 AM",
+        "10:00 AM",
+        "10:30 AM",
+        "11:00 AM",
+        "11:30 AM",
+        "12:00 PM",
+        "12:30 PM",
+        "1:00 PM",
+        "1:30 PM"
+      ],
+
+       
+    },
+    
+  ];
 
   const fillerGameData = {
     id: 21,
@@ -310,7 +419,6 @@ const UpcommingList = ({ games, handleConfirmChallenge }) => {
     room_id: null,
     room_pass: null,
     win_type: "kill",
-    start_time: "7:30 PM",
     player_joined: 4,
   };
 
@@ -326,12 +434,16 @@ const UpcommingList = ({ games, handleConfirmChallenge }) => {
     )
   }
 
+  // Toggle to use mocked data for design - set to true for design mode
+  const USE_MOCKED_DATA = false;
+  const displayGames = USE_MOCKED_DATA ? mockedGameData : games;
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerContent}>
           {
-            games.length === 0 ? (
+            displayGames.length === 0 ? (
               <Text style={[styles.title, isLight ? { color: "#000000" } : { color: "#EAEAEA" }]}> {'Tournaments'}</Text>
 
             ) : (
@@ -344,10 +456,10 @@ const UpcommingList = ({ games, handleConfirmChallenge }) => {
       </View>
 
       <View style={styles.listContainer}>
-        {games.length === 0 ? (
+        {displayGames.length === 0 ? (
           <UpcommingGameCard key={fillerGameData.id} game={fillerGameData} handleConfirmChallenge={undefined} forFiller={true} />
         ) : (
-          games.map((item) => (
+          displayGames.map((item) => (
             <UpcommingGameCard key={item.id} game={item} handleConfirmChallenge={handleConfirmChallenge} />
           ))
         )}
@@ -562,8 +674,25 @@ const styles = StyleSheet.create({
   },
   bonusInfo: {
     flexDirection: "row",
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
     alignItems: "center",
+    gap: 8,
+  },
+  dateDisplay: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    gap: 6,
+  },
+  dateText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#1a1a1a",
+  },
+  dateTextDark: {
+    color: "#ffffff",
   },
   entryFeeDisplay: {
     flexDirection: "row",
@@ -703,6 +832,104 @@ const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
     height: "100%",
+  },
+
+  // Game Times Section
+  gameTimesSection: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderTopWidth: 1,
+    borderColor: "#e5e5e5",
+  },
+  gameTimesSectionDark: {
+    borderColor: "#333333",
+  },
+  gameTimesLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#1a1a1a",
+    marginBottom: 10,
+  },
+  gameTimesLabelDark: {
+    color: "#ffffff",
+  },
+  gameTimesScrollContent: {
+    flexDirection: "row",
+    gap: 8,
+    paddingRight: 16,
+  },
+  gameTimeButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1.5,
+  },
+  gameTimeButtonLight: {
+    backgroundColor: "transparent",
+    borderColor: "#e0e0e0",
+  },
+  gameTimeButtonDark: {
+    backgroundColor: "#1a1a1a",
+    borderColor: "#333333",
+  },
+  gameTimeButtonSelected: {
+    borderWidth: 2,
+  },
+  gameTimeButtonSelectedLight: {
+    backgroundColor: "#000000",
+    borderColor: "#000000",
+  },
+  gameTimeButtonSelectedDark: {
+    backgroundColor: "#ffffff",
+    borderColor: "#ffffff",
+  },
+  gameTimeText: {
+    fontSize: 13,
+    fontWeight: "600",
+  },
+  gameTimeTextLight: {
+    color: "#666666",
+  },
+  gameTimeTextDark: {
+    color: "#cccccc",
+  },
+  gameTimeTextSelected: {
+    fontWeight: "700",
+  },
+  gameTimeTextSelectedLight: {
+    color: "#ffffff",
+  },
+  gameTimeTextSelectedDark: {
+    color: "#000000",
+  },
+  gameTimeButtonDisabled: {
+    opacity: 0.5,
+  },
+  gameTimeTextDisabled: {
+    color: "#999999",
+  },
+  gameTimeButtonRegistered: {
+    backgroundColor: "#00bf63",
+    borderColor: "#00bf63",
+  },
+  gameTimeTextRegistered: {
+    color: "#ffffff",
+    fontWeight: "700",
+  },
+  fullBadge: {
+    fontSize: 10,
+    fontWeight: "600",
+    color: "#ff6b6b",
+    marginLeft: 4,
+  },
+  registeredBadge: {
+    fontSize: 10,
+    fontWeight: "600",
+    color: "#ffffff",
+    marginLeft: 4,
   },
 })
 

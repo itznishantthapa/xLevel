@@ -8,7 +8,7 @@ export const useRegisterTournament = () => {
     mutationFn: (payload) => ChallengeAPI.join(payload),
 
     onSuccess: (data) => {
-      const joinedChallenge = data?.challenge;
+      const joinedChallenge = data?.tournament;
 
       if (!joinedChallenge) {
         if (__DEV__) {

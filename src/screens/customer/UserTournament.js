@@ -104,7 +104,7 @@ const UserTournament = () => {
     showsVerticalScrollIndicator: false,
     contentContainerStyle: styles.listContainer,
     onEndReached: handleLoadMore,
-    onEndReachedThreshold: 0,
+    onEndReachedThreshold: 0.5,
   }), [handleLoadMore])
 
   return (
@@ -120,7 +120,18 @@ const UserTournament = () => {
           {...flashListProps}
           data={isFetching && tournaments.length === 0 ? [] : tournaments}
           renderItem={renderTournamentCard}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => {
+            // Use participant_id if available (unique for each tournament+timeslot combo)
+            if (item.participant_id) {
+              return `participant-${item.participant_id}`
+            }
+            // Fallback: combine tournament id with registered time slot id
+            if (item.registered_time_slot?.id) {
+              return `${item.id}-${item.registered_time_slot.id}`
+            }
+            // Final fallback: just tournament id (shouldn't happen for joined tournaments)
+            return item.id.toString()
+          }}
           ListEmptyComponent={isFetching ? null : <EmptyListComponent isLight={isLight} />}
           refreshControl={
             <RefreshControl
