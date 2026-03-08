@@ -258,7 +258,7 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
         <View style={[styles.gameTimesSection, !isLight && styles.gameTimesSectionDark]}>
           <ShakeText ref={shakeTimeRef}>
             <Text style={[styles.gameTimesLabel, !isLight && styles.gameTimesLabelDark]}>
-              Select Game Time :
+              Select Game Time   ({game?.game_times?.length} Tournaments)
             </Text>
           </ShakeText>
           <ScrollView 
@@ -355,9 +355,7 @@ const UpcommingList = ({ games, handleConfirmChallenge }) => {
   const { isConnected } = useNetworkStatus()
 
 
-  useEffect(() => {
-  console.log("Received games data:", games)
-  }, [games])
+
   
 
  

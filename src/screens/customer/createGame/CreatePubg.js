@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo, useRef, useCallback } from "react"
-import { View, Text, TextInput, StyleSheet, Keyboard } from "react-native"
+import { View, TextInput, StyleSheet, Keyboard } from "react-native"
 import Toast from "react-native-simple-toast"
 import { useThemeStore } from "../../../store/themeStore"
 import { useNavigation } from "@react-navigation/native"
@@ -35,7 +35,6 @@ const CreatePubg = ({ route }) => {
   const [gameSettings, setGameSettings] = useState({
     game_name,
     game_mode,
-    match_type: "free", // "free" or "paid"
     fight_type: "1v1",
     // TDM specific
     gun_to_use: "M416",
@@ -59,10 +58,6 @@ const CreatePubg = ({ route }) => {
       baseValid = baseValid && gameSettings.map_code !== "" && gameSettings.fight_range !== ""
     }
 
-    if (gameSettings.match_type === "free") {
-      return baseValid
-    }
-    
     return baseValid && gameSettings.entry_fee !== "" && Number.parseFloat(gameSettings.entry_fee) > 0
   }, [gameSettings, game_mode])
 
@@ -135,8 +130,8 @@ const CreatePubg = ({ route }) => {
       game: game_id,
       game_mode: gameSettings.game_mode,
       fight_type: gameSettings.fight_type,
-      is_free: gameSettings.match_type === "free",
-      entry_fee: gameSettings.match_type === "paid" && gameSettings.entry_fee ? Number.parseFloat(gameSettings.entry_fee) : undefined,
+      is_free: false,
+      entry_fee: gameSettings.entry_fee ? Number.parseFloat(gameSettings.entry_fee) : undefined,
     }
 
     // Add mode-specific settings
@@ -273,43 +268,13 @@ const CreatePubg = ({ route }) => {
         </>
       )}
 
-      {/* Match Type Selection */}
-      <OptionsSection
-       title="Practice With"
-        options={[
-          { value: "free", label: "Free Entry" },
-          { value: "paid", label: "Game Points" }
-        ]}
-        selectedValue={gameSettings.match_type}
-        onSelect={(value) => {
-          handleOptionSelect("match_type", value)
-          // Clear entry fee when switching to free
-          if (value === "free") {
-            handleFeeChange("")
-          }
-        }}
+      {/* Entry Fee Input */}
+      <EntryFeeInput
+        value={gameSettings.entry_fee}
+        onChangeText={handleFeeChange}
+        winningAmount={winningAmount}
         isLight={isLight}
-        valueKey="value"
       />
-
-      {/* Free Entry Info Message */}
-      {gameSettings.match_type === "free" && (
-        <View style={styles.infoContainer}>
-          <Text style={[styles.infoText, { color: isLight ? "#666666" : "#cccccc" }]}>
-            You can create and join up to 5 free entry matches per week.
-          </Text>
-        </View>
-      )}
-
-      {/* Entry Fee Input - Only show for paid matches */}
-      {gameSettings.match_type === "paid" && (
-        <EntryFeeInput
-          value={gameSettings.entry_fee}
-          onChangeText={handleFeeChange}
-          winningAmount={winningAmount}
-          isLight={isLight}
-        />
-      )}
 
       <DividerLine isLight={isLight} />
       
@@ -342,16 +307,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     padding: 0,
-  },
-  infoContainer: {
-    marginTop: -8,
-    marginBottom: 12,
-    paddingHorizontal: 4,
-  },
-  infoText: {
-    fontSize: 12,
-    // fontStyle: "italic",
-    lineHeight: 16,
   },
 });
 

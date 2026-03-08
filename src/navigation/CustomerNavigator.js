@@ -37,6 +37,7 @@ import FreeFireStore from "../screens/customer/stores/FreeFireStore";
 import PUBGStore from "../screens/customer/stores/PUBGStore";
 import EfootballStore from "../screens/customer/stores/EfootballStore";
 import MLBBStore from "../screens/customer/stores/MLBBStore";
+import CreateSell from "../screens/customer/store/CreateSell";
 
 
 const Stack = createNativeStackNavigator();
@@ -82,6 +83,7 @@ export default function CustomerNavigator(){
             <Stack.Screen component={PUBGStore} name="pubgStore"/>
             <Stack.Screen component={EfootballStore} name="efootballStore"/>
             <Stack.Screen component={MLBBStore} name="mlbbStore"/>
+            <Stack.Screen component={CreateSell} name="createSell"/>
         </Stack.Navigator>
         </>
     );

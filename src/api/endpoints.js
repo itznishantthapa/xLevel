@@ -80,6 +80,12 @@ export const endpoints = {
   //store
   getStoreItems: "/api/store/items/",
   placeTopup: "/api/store/topup/",
+
+  //buysell
+  getGameAccountsOnLoads: "/api/buysell/accounts/",
+  createGameAccount: "/api/buysell/accounts/create/",
+  deleteGameAccount: "/api/buysell/accounts/delete/",
+  purchaseGameAccount: "/api/buysell/accounts/purchase/",
   
 };
 

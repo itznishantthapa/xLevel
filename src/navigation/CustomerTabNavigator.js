@@ -104,7 +104,7 @@ export default function CustomerTabNavigator() {
                     ),
                 }}
             />
-            {!isIOSActive && Platform.OS === 'ios' && (
+         
                 <Tab.Screen
                     name="StoreTab"
                     component={Store}
@@ -116,7 +116,7 @@ export default function CustomerTabNavigator() {
                                 fontWeight: focused ? '600' : '500',
                                 marginTop: 4,
                             }}>
-                               My Store
+                               {isIOSActive ? 'Buy & Sell' : 'Product'}
                             </Text>
                         ),
                         tabBarIcon: ({ focused, color }) => (
@@ -133,7 +133,7 @@ export default function CustomerTabNavigator() {
                         ),
                     }}
                 />
-            )}
+            
 
             <Tab.Screen
                 name="Notification"

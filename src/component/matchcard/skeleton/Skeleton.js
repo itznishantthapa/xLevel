@@ -4,48 +4,49 @@ import { scaleHeight, scaleWidth } from "../../../utils/scaling"
 
 /**
  * MatchCardSkeleton Component
- * Displays a placeholder loading state that matches the exact layout of OpponentMatchCard
+ * Displays a placeholder loading state that matches the layout of MatchCard
  */
 const MatchCardSkeleton = ({ isLight = true }) => {
   const skeletonColor = isLight ? "#d9d9d9" : "#333333"
-  const cardBg = isLight ? "transparent" : "#121212"
-  const borderColor = isLight ? "#000000" : "#ffffff"
+  const cardBg = isLight ? "transparent" : "#000000"
+  const borderColor = isLight ? "#333333" : "#ffffff"
   const dividerColor = isLight ? "#e0e0e0" : "#333333"
+  const rowBg = isLight ? "#d9d9d980" : "#1a1a1a"
 
   return (
     <View style={[styles.card, { backgroundColor: cardBg, borderColor }]}>
       <View style={styles.cardContent}>
-        {/* Game Info Header Skeleton */}
+
+        {/* Game Info Header - two pill badges + cancel button */}
         <View style={styles.gameInfoHeader}>
-          <View style={[styles.skeletonBox, styles.gameInfoItem, { backgroundColor: skeletonColor }]} />
-          <View style={[styles.skeletonBox, styles.gameInfoItem, { backgroundColor: skeletonColor }]} />
+          <View style={[styles.gameInfoPill, { borderColor: isLight ? "#000000" : "#eaf4f4" }]}>
+            <View style={[styles.pillIcon, { backgroundColor: skeletonColor }]} />
+            <View style={[styles.pillText, { backgroundColor: skeletonColor }]} />
+          </View>
+          <View style={[styles.gameInfoPill, { borderColor: isLight ? "#000000" : "#eaf4f4" }]}>
+            <View style={[styles.pillIcon, { backgroundColor: skeletonColor }]} />
+            <View style={[styles.pillText, { backgroundColor: skeletonColor }]} />
+          </View>
           <View style={styles.headerActions}>
-            <View style={[styles.skeletonBox, styles.pulseIndicator, { backgroundColor: skeletonColor }]} />
-            <View style={[styles.skeletonBox, styles.deleteButton, { backgroundColor: skeletonColor }]} />
+            <View style={[styles.cancelButton, { backgroundColor: skeletonColor }]} />
           </View>
         </View>
 
         {/* Main Section - Two Columns */}
         <View style={styles.mainSection}>
-          {/* Left Section - Game Details */}
+
+          {/* Left Section - Settings bar + InfoRows */}
           <View style={styles.leftSection}>
-            <View style={styles.gameDetails}>
-              {/* 8 InfoRow skeletons to match the game details */}
-              {Array.from({ length: 8 }).map((_, index) => (
-                <View
-                  key={index}
-                  style={[
-                    styles.infoRow,
-                    { backgroundColor: isLight ? '#d9d9d980' : '#1a1a1a' },
-                    index === 0 && styles.firstRow,
-                    index === 7 && styles.lastRow
-                  ]}
-                >
-                  <View style={[styles.skeletonBox, styles.infoLabel, { backgroundColor: skeletonColor }]} />
-                  <View style={[styles.skeletonBox, styles.infoValue, { backgroundColor: skeletonColor }]} />
-                </View>
-              ))}
-            </View>
+            {/* Settings bar */}
+            <View style={[styles.settingsBar, { backgroundColor: isLight ? "#000000" : "#eaf4f4" }]} />
+
+            {/* InfoRows - flat skeleton rows, no nested boxes */}
+            {Array.from({ length: 6 }).map((_, index) => (
+              <View
+                key={index}
+                style={[styles.infoRow, { backgroundColor: rowBg }]}
+              />
+            ))}
           </View>
 
           {/* Vertical Divider */}
@@ -53,59 +54,53 @@ const MatchCardSkeleton = ({ isLight = true }) => {
 
           {/* Right Section */}
           <View style={styles.rightSection}>
-            {/* Creator Header */}
-            <View style={[
-              styles.creatorHeader,
-              { backgroundColor: isLight ? '#d9d9d980' : '#1a1a1a' }
-            ]}>
-              <View style={styles.avatarContainer}>
-                <View style={[styles.skeletonBox, styles.avatar, { backgroundColor: skeletonColor }]} />
-              </View>
+            {/* Creator Header - avatar + name area */}
+            <View style={[styles.creatorHeader, { backgroundColor: rowBg }]}>
+              <View style={[styles.avatar, { backgroundColor: skeletonColor }]} />
               <View style={styles.creatorInfo}>
-                <View style={[styles.skeletonBox, styles.creatorName, { backgroundColor: skeletonColor }]} />
-                <View style={[styles.skeletonBox, styles.creatorLabel, { backgroundColor: skeletonColor }]} />
-                <View style={[styles.skeletonBox, styles.gameUID, { backgroundColor: skeletonColor }]} />
+                <View style={[styles.creatorName, { backgroundColor: skeletonColor }]} />
+                <View style={[styles.creatorLabel, { backgroundColor: skeletonColor }]} />
+                <View style={[styles.creatorUID, { backgroundColor: skeletonColor }]} />
               </View>
             </View>
 
-            {/* Right Info Container */}
-            <View style={styles.rightInfoContainer}>
-              {/* 4 InfoRow skeletons for right side info */}
-              {Array.from({ length: 4 }).map((_, index) => (
-                <View 
-                  key={index} 
-                  style={[
-                    styles.rightInfoRow, 
-                    { backgroundColor: isLight ? '#d9d9d980' : '#1a1a1a' }
-                  ]}
-                >
-                  <View style={[styles.skeletonBox, styles.rightInfoLabel, { backgroundColor: skeletonColor }]} />
-                  <View style={[styles.skeletonBox, styles.rightInfoValue, { backgroundColor: skeletonColor }]} />
-                </View>
-              ))}
+            {/* Game Username box */}
+            <View style={[styles.usernameBox, { borderColor: isLight ? "#333333" : "#ffffff" }]}>
+              <View style={[styles.usernameText, { backgroundColor: skeletonColor }]} />
             </View>
 
-            {/* Status Container */}
-            <View style={styles.statusSection}>
-              <View style={[styles.skeletonBox, styles.statusContainer, { backgroundColor: skeletonColor }]} />
+            {/* Right info rows */}
+            {Array.from({ length: 3 }).map((_, index) => (
+              <View
+                key={index}
+                style={[styles.rightInfoRow, { backgroundColor: rowBg }]}
+              />
+            ))}
+
+            {/* Entry Fee row */}
+            <View style={[styles.entryFeeRow, { borderColor: isLight ? "#333333" : "#ffffff", backgroundColor: rowBg }]} />
+
+            {/* Status Display box */}
+            <View style={[styles.statusBox, { borderColor: "#00bf6350", backgroundColor: "#0a0a0a" }]} />
+
+            {/* Stamp ID */}
+            <View style={styles.stampContainer}>
+              <View style={[styles.stampBox, { borderColor: isLight ? "#333333" : "#eaf4f4", backgroundColor: isLight ? "#f5f5f5" : "#1a1a1a" }]} />
             </View>
           </View>
         </View>
 
-        {/* Credentials Section */}
-        <View style={styles.credentialsSection}>
-          <View style={[styles.skeletonBox, styles.credentialsGuide, { backgroundColor: skeletonColor }]} />
-          <View style={styles.credentialsRow}>
-            <View style={[styles.skeletonBox, styles.credentialItem, { backgroundColor: skeletonColor }]} />
-            <View style={[styles.skeletonBox, styles.credentialItem, { backgroundColor: skeletonColor }]} />
-          </View>
+        {/* Time row */}
+        <View style={[styles.timeRow, { backgroundColor: isLight ? "rgba(0,0,0,0.04)" : "rgba(255,255,255,0.08)" }]}>
+          <View style={[styles.timeIcon, { backgroundColor: skeletonColor }]} />
+          <View style={[styles.timeText, { backgroundColor: skeletonColor }]} />
         </View>
 
-        {/* Upload Result Button */}
-        <View style={[styles.skeletonBox, styles.uploadButton, { backgroundColor: skeletonColor }]} />
+        {/* Divider line */}
+        <View style={[styles.dividerLine, { backgroundColor: dividerColor }]} />
 
-        {/* Bottom Line */}
-        <View style={[styles.buttonLine, { backgroundColor: dividerColor }]} />
+        {/* Waiting for opponent */}
+        <View style={[styles.waitingBar, { backgroundColor: isLight ? "#000000" : "#ffffff" }]} />
       </View>
     </View>
   )
@@ -116,193 +111,198 @@ const styles = StyleSheet.create({
     marginHorizontal: scaleWidth(8),
     marginVertical: scaleHeight(8),
     borderRadius: scaleWidth(25),
-    borderWidth: 1,
+    borderWidth: scaleWidth(1.5),
     overflow: "hidden",
   },
   cardContent: {
-    padding: 15,
-  },
-  skeletonBox: {
-    borderRadius: 4,
+    padding: scaleWidth(12),
   },
 
   // Game Info Header
   gameInfoHeader: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: scaleHeight(12),
-    gap: scaleWidth(12),
+    marginBottom: scaleHeight(8),
+    gap: scaleWidth(8),
   },
-  gameInfoItem: {
-    height: scaleHeight(24),
-    width: scaleWidth(80),
-    borderRadius: 12,
-  },
-  headerActions: {
+  gameInfoPill: {
     flexDirection: "row",
     alignItems: "center",
-    gap: scaleWidth(20),
+    paddingHorizontal: scaleWidth(12),
+    paddingVertical: scaleHeight(8),
+    borderRadius: scaleWidth(20),
+    borderWidth: scaleWidth(1),
+    gap: scaleWidth(6),
+  },
+  pillIcon: {
+    width: scaleWidth(24),
+    height: scaleWidth(24),
+    borderRadius: scaleWidth(12),
+  },
+  pillText: {
+    width: scaleWidth(48),
+    height: scaleHeight(14),
+    borderRadius: 4,
+  },
+  headerActions: {
     marginLeft: "auto",
   },
-  pulseIndicator: {
-    width: scaleWidth(10),
-    height: scaleWidth(10),
-    borderRadius: scaleWidth(5),
-  },
-  deleteButton: {
-    width: scaleWidth(18),
-    height: scaleWidth(18),
-    borderRadius: 2,
+  cancelButton: {
+    width: scaleWidth(70),
+    height: scaleHeight(32),
+    borderRadius: scaleWidth(24),
   },
 
   // Main Section
   mainSection: {
     flexDirection: "row",
-    marginBottom: scaleHeight(16),
+    marginBottom: scaleHeight(10),
   },
   leftSection: {
     flex: 1,
-    paddingRight: scaleWidth(8),
+    paddingRight: scaleWidth(12),
   },
   rightSection: {
     flex: 1,
-    paddingLeft: scaleWidth(8),
+    paddingLeft: scaleWidth(12),
   },
   verticalDivider: {
-    width: 1,
+    width: scaleWidth(1),
     marginHorizontal: scaleWidth(8),
   },
 
-  // Game Details (Left Section)
-  gameDetails: {
-    backgroundColor: "transparent",
-  },
-  infoRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: scaleHeight(6),
-    paddingHorizontal: scaleWidth(8),
-    borderRadius: 0,
-    marginBottom: scaleHeight(6),
-  },
-  firstRow: {
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-  },
-  lastRow: {
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8,
-  },
-  infoLabel: {
-    height: scaleHeight(12),
-    width: "45%",
-  },
-  infoValue: {
-    height: scaleHeight(12),
-    width: "35%",
+  // Left Section - Settings bar
+  settingsBar: {
+    height: scaleHeight(36),
+    borderTopLeftRadius: scaleWidth(12),
+    borderTopRightRadius: scaleWidth(12),
+    marginBottom: scaleHeight(0),
   },
 
-  // Creator Header (Right Section)
+  // Left Section - InfoRows (flat, no nested skeleton)
+  infoRow: {
+    height: scaleHeight(28),
+    marginBottom: scaleHeight(6),
+  },
+
+  // Right Section - Creator Header
   creatorHeader: {
     flexDirection: "row",
     alignItems: "center",
-    padding: scaleWidth(12),
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-    marginBottom: scaleHeight(12),
-  },
-  avatarContainer: {
-    position: "relative",
-    marginRight: scaleWidth(12),
+    padding: scaleWidth(10),
+    borderTopRightRadius: scaleWidth(12),
+    borderTopLeftRadius: scaleWidth(12),
+    marginBottom: scaleHeight(8),
   },
   avatar: {
     width: scaleWidth(40),
     height: scaleWidth(40),
     borderRadius: scaleWidth(20),
+    marginRight: scaleWidth(12),
   },
-
   creatorInfo: {
     flex: 1,
+    gap: scaleHeight(4),
   },
   creatorName: {
-    height: scaleHeight(16),
+    height: scaleHeight(14),
     width: "60%",
-    marginBottom: scaleHeight(4),
+    borderRadius: 3,
   },
   creatorLabel: {
-    height: scaleHeight(12),
-    width: "40%",
-    marginBottom: scaleHeight(4),
-  },
-  gameUID: {
-    height: scaleHeight(12),
-    width: "70%",
-  },
-
-  // Right Info Container
-  rightInfoContainer: {
-    marginBottom: scaleHeight(12),
-    gap: scaleHeight(8),
-  },
-  rightInfoRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: scaleHeight(6),
-    paddingHorizontal: scaleWidth(8),
-    borderRadius: 0,
-  },
-  rightInfoLabel: {
-    height: scaleHeight(12),
-    width: "45%",
-  },
-  rightInfoValue: {
-    height: scaleHeight(12),
+    height: scaleHeight(10),
     width: "35%",
+    borderRadius: 3,
+  },
+  creatorUID: {
+    height: scaleHeight(10),
+    width: "55%",
+    borderRadius: 3,
   },
 
-  // Status Section
-  statusSection: {
-    marginTop: scaleHeight(4),
+  // Right Section - Game Username box
+  usernameBox: {
+    borderWidth: scaleWidth(2),
+    paddingVertical: scaleWidth(10),
+    paddingHorizontal: scaleWidth(14),
+    marginBottom: scaleWidth(8),
+    alignItems: "center",
   },
-  statusContainer: {
-    height: scaleHeight(40),
-    width: "100%",
-    borderRadius: 12,
-  },
-
-  // Credentials Section
-  credentialsSection: {
-    marginBottom: scaleHeight(16),
-  },
-  credentialsGuide: {
+  usernameText: {
     height: scaleHeight(16),
     width: "70%",
+    borderRadius: 3,
+  },
+
+  // Right Section - Info rows
+  rightInfoRow: {
+    height: scaleHeight(28),
+    marginBottom: scaleHeight(4),
+  },
+
+  // Right Section - Entry Fee row
+  entryFeeRow: {
+    height: scaleHeight(28),
+    borderWidth: 2,
+    marginTop: scaleHeight(4),
     marginBottom: scaleHeight(8),
   },
-  credentialsRow: {
+
+  // Right Section - Status Display
+  statusBox: {
+    height: scaleHeight(44),
+    borderWidth: scaleWidth(1),
+    marginTop: scaleHeight(10),
+  },
+
+  // Right Section - Stamp ID
+  stampContainer: {
+    alignItems: "center",
+    marginTop: scaleHeight(12),
+  },
+  stampBox: {
+    width: "75%",
+    height: scaleHeight(32),
+    borderRadius: scaleWidth(12),
+    borderWidth: scaleWidth(2),
+    borderStyle: "dashed",
+    transform: [{ rotate: "-8deg" }],
+  },
+
+  // Time row
+  timeRow: {
     flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "flex-start",
+    paddingHorizontal: scaleWidth(12),
+    paddingVertical: scaleHeight(8),
+    borderRadius: scaleWidth(24),
     gap: scaleWidth(8),
+    marginBottom: scaleHeight(10),
   },
-  credentialItem: {
-    flex: 1,
-    height: scaleHeight(48),
-    borderRadius: 8,
+  timeIcon: {
+    width: scaleWidth(28),
+    height: scaleWidth(28),
+    borderRadius: scaleWidth(14),
   },
-
-  // Upload Button
-  uploadButton: {
-    height: scaleHeight(48),
-    width: "100%",
-    borderRadius: 12,
-    marginBottom: scaleHeight(12),
+  timeText: {
+    width: scaleWidth(90),
+    height: scaleHeight(13),
+    borderRadius: 3,
   },
 
-  // Bottom Line
-  buttonLine: {
+  // Divider line
+  dividerLine: {
     height: 1,
     width: "100%",
+    marginBottom: scaleHeight(10),
+  },
+
+  // Waiting bar
+  waitingBar: {
+    height: scaleHeight(44),
+    borderRadius: scaleWidth(12),
+    opacity: 0.15,
   },
 })
 

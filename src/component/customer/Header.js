@@ -101,7 +101,7 @@ const Header = ({
     const computedThemeStyles = {
       textColor: isLight ? "#333333" : "#EAEAEA",
       iconColor: isLight ? "#000000" : "#EAEAEA",
-      buttonBackground: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.1)",
+      buttonBackground: isLight ? "#f5f5f5" : "rgba(255, 255, 255, 0.1)",
       profileBackground: isLight ? "#dadada" : "#444444",
     }
 
@@ -396,13 +396,6 @@ const styles = StyleSheet.create({
     borderRadius: scaleWidth(21),
     justifyContent: "center",
     alignItems: "center",
-    shadowOffset: {
-      width: 0,
-      height: scaleHeight(2),
-    },
-     shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: scaleWidth(8),
-    elevation: 1.5,
+ 
   },
 })

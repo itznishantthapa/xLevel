@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo, useRef, useCallback } from "react"
-import { Text, View, StyleSheet, Keyboard } from "react-native"
+import { Keyboard } from "react-native"
 import Toast from "react-native-simple-toast"
 import { useThemeStore } from "../../../store/themeStore"
 import { useNavigation } from "@react-navigation/native"
@@ -43,7 +43,6 @@ const CreateChess = ({ route }) => {
   const [gameSettings, setGameSettings] = useState({
     game_name,
     game_mode,
-    match_type: "free", // "free" or "paid"
     time_control: getDefaultTimeControl(),
     game_type: "Standard",
     rated: false,
@@ -54,16 +53,11 @@ const CreateChess = ({ route }) => {
 
   // Form validation for chess
   const isFormValid = useMemo(() => {
-    const baseValidation = gameSettings.time_control !== "" &&
+    return gameSettings.time_control !== "" &&
       gameSettings.opponent_color !== "" &&
       gameSettings.game_type !== "" &&
-      gameSettings.termsAccepted
-
-    if (gameSettings.match_type === "free") {
-      return baseValidation
-    }
-    
-    return baseValidation && gameSettings.entry_fee !== "" && Number.parseFloat(gameSettings.entry_fee) > 0
+      gameSettings.termsAccepted &&
+      gameSettings.entry_fee !== "" && Number.parseFloat(gameSettings.entry_fee) > 0
   }, [gameSettings])
 
   // Calculate winning amount with 10% service fee deduction
@@ -138,8 +132,8 @@ const CreateChess = ({ route }) => {
       game_type: gameSettings.game_type,
       rated: gameSettings.rated,
       opponent_color: gameSettings.opponent_color,
-      is_free: gameSettings.match_type === "free",
-      entry_fee: gameSettings.match_type === "paid" && gameSettings.entry_fee ? Number.parseFloat(gameSettings.entry_fee) : undefined,
+      is_free: false,
+      entry_fee: gameSettings.entry_fee ? Number.parseFloat(gameSettings.entry_fee) : undefined,
     }
     
 
@@ -224,45 +218,15 @@ const CreateChess = ({ route }) => {
         isLight={isLight}
       />
 
-      {/* Match Type Selection */}
-      <OptionsSection
-        title="Practice With"
-        options={[
-          { value: "free", label: "Free Entry" },
-          { value: "paid", label: "Game Points" }
-        ]}
-        selectedValue={gameSettings.match_type}
-        onSelect={(value) => {
-          handleOptionSelect("match_type", value)
-          // Clear entry fee when switching to free
-          if (value === "free") {
-            handleFeeChange("")
-          }
-        }}
+      {/* Entry Fee Input */}
+      <EntryFeeInput
+        value={gameSettings.entry_fee}
+        onChangeText={handleFeeChange}
+        winningAmount={winningAmount}
         isLight={isLight}
-        valueKey="value"
+        gameName={game_name}
+        gameMode={game_mode}
       />
-
-      {/* Free Entry Info Message */}
-      {gameSettings.match_type === "free" && (
-        <View style={styles.infoContainer}>
-          <Text style={[styles.infoText, { color: isLight ? "#666666" : "#cccccc" }]}>
-            You can create and join up to 5 free entry matches per week.
-          </Text>
-        </View>
-      )}
-
-      {/* Entry Fee Input - Only show for paid matches */}
-      {gameSettings.match_type === "paid" && (
-        <EntryFeeInput
-          value={gameSettings.entry_fee}
-          onChangeText={handleFeeChange}
-          winningAmount={winningAmount}
-          isLight={isLight}
-          gameName={game_name}
-          gameMode={game_mode}
-        />
-      )}
 
       <DividerLine isLight={isLight} />
       
@@ -277,18 +241,5 @@ const CreateChess = ({ route }) => {
     </CreateGameLayout>
   )
 }
-
-const styles = StyleSheet.create({
-  infoContainer: {
-    marginTop: -8,
-    marginBottom: 12,
-    paddingHorizontal: 4,
-  },
-  infoText: {
-    fontSize: 12,
-    // fontStyle: "italic",
-    lineHeight: 16,
-  },
-});
 
 export default CreateChess

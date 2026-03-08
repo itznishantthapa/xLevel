@@ -64,7 +64,7 @@ const ActionButtons = ({ game, isLight, isCreator, user, handleResultUpload, for
         activeOpacity={0.8}
       >
         <View style={styles.joinButtonContent}>
-          <Text style={[styles.joinButtonText, isLight ? { color: "#ffffff" } : { color: "#000000" }]}>JOIN</Text>
+          <Text style={[styles.joinButtonText, isLight ? { color: "#ffffff" } : { color: "#000000" }]}>JOIN {game.entry_fee ? `${game.entry_fee}` : ""}</Text>
         </View>
       </Pressable>
 

@@ -4,7 +4,7 @@ import { getFirestore, doc, getDoc } from '@react-native-firebase/firestore';
 
 // Current app versions - Update these when releasing new versions for each platform
 export const CURRENT_IOS_VERSION = 1.2;
-export const CURRENT_ANDROID_VERSION = 4.7;
+export const CURRENT_ANDROID_VERSION = 4.8;
 
 // Get current version based on platform
 const getCurrentAppVersion = () => {

@@ -8,6 +8,7 @@ import {
     ImageBackground,
     Dimensions,
     Image,
+    Platform,
 } from 'react-native';
 import { Entypo } from "@expo/vector-icons"
 import { useThemeStore } from '../../store/themeStore';
@@ -23,13 +24,13 @@ const CARD_HEIGHT = scaleHeight(130);
 const GameCarousel = ({ games, handleGameCardPress }) => {
     const { data: utils = [] } = useUtils()
 
-    const shouldShowLabel = utils?.is_ios_active;
+    const shouldShowLabel = Platform.OS === 'android' || !!utils?.is_ios_active;
     const { isLight } = useThemeStore();
     return (
         <View style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
-                <Text style={[styles.title, isLight ? { color: '#000000' } : { color: '#EAEAEA' }]}>Games & Store</Text>
+                <Text style={[styles.title, isLight ? { color: '#000000' } : { color: '#EAEAEA' }]}>{shouldShowLabel ? 'Games & Store' : 'Create Match'}</Text>
             </View>
 
             {/* Games Carousel */}

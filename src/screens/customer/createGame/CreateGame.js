@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo, useRef, useCallback } from "react"
-import { Text, View, StyleSheet, Keyboard } from "react-native"
+import { Keyboard } from "react-native"
 import { useThemeStore } from "../../../store/themeStore"
 import { useNavigation } from "@react-navigation/native"
 import { useQueryClient } from "@tanstack/react-query"
@@ -35,7 +35,6 @@ const CreateGame = ({ route }) => {
   const [gameSettings, setGameSettings] = useState({
     game_name,
     game_mode,
-    match_type: "free", // "free" or "paid"
     fight_type: "1v1",
     limited_ammo: false,
     character_skill_status: false,
@@ -56,24 +55,16 @@ const CreateGame = ({ route }) => {
     const baseValidation = gameSettings.fight_type !== "" && gameSettings.termsAccepted
     
     if (game_mode === "Lone Wolf") {
-      if (gameSettings.match_type === "free") {
-        return baseValidation
-      }
       return baseValidation && gameSettings.game_pot !== "" && Number.parseFloat(gameSettings.game_pot) > 0
     }
 
-    const extendedValidation = baseValidation &&
+    return baseValidation &&
       gameSettings.game_round !== null &&
       gameSettings.device_type !== "" &&
       gameSettings.default_coins !== "" &&
       gameSettings.default_ep !== "" &&
-      gameSettings.termsAccepted
-
-    if (gameSettings.match_type === "free") {
-      return extendedValidation
-    }
-    
-    return extendedValidation && gameSettings.game_pot !== "" && Number.parseFloat(gameSettings.game_pot) > 0
+      gameSettings.termsAccepted &&
+      gameSettings.game_pot !== "" && Number.parseFloat(gameSettings.game_pot) > 0
   }, [gameSettings, game_mode])
 
   // Calculate winning amount with 10% service fee deduction
@@ -153,8 +144,8 @@ const CreateGame = ({ route }) => {
       ep: gameSettings.default_ep ? Number.parseInt(gameSettings.default_ep) : undefined,
       device_type: gameSettings.device_type,
       fight_type: gameSettings.fight_type,
-      is_free: gameSettings.match_type === "free",
-      entry_fee: gameSettings.match_type === "paid" && gameSettings.game_pot ? Number.parseFloat(gameSettings.game_pot) : undefined,
+      is_free: false,
+      entry_fee: gameSettings.game_pot ? Number.parseFloat(gameSettings.game_pot) : undefined,
     }
 
     // Remove undefined values from payload
@@ -272,45 +263,15 @@ const CreateGame = ({ route }) => {
         />
       )}
 
-      {/* Match Type Selection */}
-      <OptionsSection
-        title="Practice With"
-        options={[
-          { value: "free", label: "Free Entry" },
-          { value: "paid", label: "Game Points" }
-        ]}
-        selectedValue={gameSettings.match_type}
-        onSelect={(value) => {
-          handleOptionSelect("match_type", value)
-          // Clear entry fee when switching to free
-          if (value === "free") {
-            handlePotChange("")
-          }
-        }}
+      {/* Entry Fee Input */}
+      <EntryFeeInput
+        value={gameSettings.game_pot}
+        onChangeText={handlePotChange}
+        winningAmount={winningAmount}
         isLight={isLight}
-        valueKey="value"
+        gameName={game_name}
+        gameMode={game_mode}
       />
-
-      {/* Free Entry Info Message */}
-      {gameSettings.match_type === "free" && (
-        <View style={styles.infoContainer}>
-          <Text style={[styles.infoText, { color: isLight ? "#666666" : "#cccccc" }]}>
-            You can create and join up to 5 free entry matches per week.
-          </Text>
-        </View>
-      )}
-
-      {/* Entry Fee Input - Only show for paid matches */}
-      {gameSettings.match_type === "paid" && (
-        <EntryFeeInput
-          value={gameSettings.game_pot}
-          onChangeText={handlePotChange}
-          winningAmount={winningAmount}
-          isLight={isLight}
-          gameName={game_name}
-          gameMode={game_mode}
-        />
-      )}
 
       {/* Divider line */}
       <DividerLine isLight={isLight} />
@@ -326,18 +287,5 @@ const CreateGame = ({ route }) => {
     </CreateGameLayout>
   )
 }
-
-const styles = StyleSheet.create({
-  infoContainer: {
-    marginTop: -8,
-    marginBottom: 12,
-    paddingHorizontal: 4,
-  },
-  infoText: {
-    fontSize: 12,
-    // fontStyle: "italic",
-    lineHeight: 16,
-  },
-});
 
 export default CreateGame

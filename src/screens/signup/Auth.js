@@ -45,6 +45,7 @@ const Auth = () => {
   const { google_signup, apple_signup, login } = useAuthStore();
 
 
+
   // Global state management
   const { isLight } = useThemeStore()
   const { isConnected } = useNetworkStatus()
@@ -52,6 +53,11 @@ const Auth = () => {
   // API data queries
   const { data: banners = [] } = useBanners()
   const {data: utils = []} = useUtils()
+
+    useEffect(() => {
+    console.log("utils:", utils);
+  }, [utils])
+  
 
   const shouldShowEmailLogin = !utils?.is_ios_active;
 

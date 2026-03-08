@@ -4,6 +4,7 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useR
 import {
   BackHandler,
   Dimensions,
+  Image,
   Pressable,
   StyleSheet,
   Text,
@@ -23,12 +24,13 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler"
 import { useThemeStore } from "../store/themeStore"
 // Removed unused icon imports
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { MaterialCommunityIcons } from "@expo/vector-icons"
+import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons"
 import { NavigationService } from "../service/navigationService"
 import { useQueryClient } from "@tanstack/react-query"
 import OpponentSheetContent from "./component/OpponentSheetContent"
 import { ShakeText } from "../component/customer/animation"
 import { scaleWidth } from "../utils/scaling"
+import { useUtils } from "../queries/useUtils"
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window")
 
@@ -168,6 +170,13 @@ export const BottomSheetProvider = ({ children }) => {
     setVisible(true)
   }, [])
 
+  const showPurchaseSheet = useCallback(({ product, onConfirm }) => {
+    setSheetType("purchase")
+    setPayload({ product })
+    onConfirmRef.current = onConfirm || null
+    setVisible(true)
+  }, [])
+
   useEffect(() => {
     if (visible) {
       // Reset values before opening
@@ -269,10 +278,11 @@ export const BottomSheetProvider = ({ children }) => {
       showJoinSheet,
       showConfirmSheet,
       showOpponentSheet,
+      showPurchaseSheet,
       closeSheet,
       checkAndReopenSheet,
     }),
-    [showJoinSheet, showConfirmSheet, showOpponentSheet, closeSheet, checkAndReopenSheet]
+    [showJoinSheet, showConfirmSheet, showOpponentSheet, showPurchaseSheet, closeSheet, checkAndReopenSheet]
   )
 
   // Animated styles
@@ -344,6 +354,16 @@ export const BottomSheetProvider = ({ children }) => {
 
                 {sheetType === "opponent" && payload?.opponent ? (
                   <OpponentSheetContent
+                    payload={payload}
+                    isDark={isDark}
+                    insets={insets}
+                    handleCancel={handleCancel}
+                    handleConfirm={handleConfirm}
+                  />
+                ) : null}
+
+                {sheetType === "purchase" && payload?.product ? (
+                  <PurchaseSheetContent
                     payload={payload}
                     isDark={isDark}
                     insets={insets}
@@ -628,6 +648,141 @@ const ConfirmSheetContent = React.memo(({ payload, isDark, insets, handleCancel,
     </View>
   </View>
 ))
+
+const PurchaseSheetContent = React.memo(({ payload, isDark, insets, handleCancel, handleConfirm }) => {
+  const { data: utils = [] } = useUtils()
+  const isIOSActive = !!utils?.is_ios_active
+  const product = payload?.product
+  if (!product) return null
+
+  return (
+    <View style={styles.content}>
+        {/* Seller Info Row */}
+        <View style={purchaseStyles.sellerRow}>
+          <View style={[
+            purchaseStyles.sellerAvatar,
+            { borderColor: isDark ? '#404040' : '#e0e0e0', backgroundColor: isDark ? '#2a2a2a' : '#f5f5f5' }
+          ]}>
+            {product.seller?.profile_picture && product.seller.profile_picture !== 'null' ? (
+              <Image source={{ uri: product.seller.profile_picture }} style={purchaseStyles.sellerImage} />
+            ) : (
+              <Ionicons name="person" size={18} color={isDark ? '#999999' : '#666666'} />
+            )}
+          </View>
+          <View style={purchaseStyles.sellerInfo}>
+            <Text style={[purchaseStyles.sellerName, { color: isDark ? '#ffffff' : '#1a1a1a' }]}>
+              {product.seller?.full_name || 'Seller'}
+            </Text>
+            <Text style={[purchaseStyles.sellerLabel, { color: isDark ? '#888888' : '#666666' }]}>
+              Seller
+            </Text>
+          </View>
+        </View>
+
+        {/* Game & Price Info */}
+        <View style={styles.gameRow}>
+          <View style={[styles.gameItem, { backgroundColor: isDark ? '#2a2a2a' : '#e5e5e5', borderColor: isDark ? '#3a3a3a' : '#d0d0d0' }]}>
+            <Text style={[styles.label, { color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)' }]}>GAME</Text>
+            <Text style={[styles.value, { color: isDark ? '#ffffff' : '#000000' }]}>{product.game}</Text>
+          </View>
+          <View style={[styles.gameItem, { backgroundColor: isDark ? '#2a2a2a' : '#e5e5e5', borderColor: isDark ? '#3a3a3a' : '#d0d0d0' }]}>
+            <Text style={[styles.label, { color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)' }]}>STATUS</Text>
+            <Text style={[styles.value, { color: isDark ? '#ffffff' : '#000000' }]}>{product.status === 'sold' ? 'Sold' : 'Available'}</Text>
+          </View>
+        </View>
+
+        {/* Price Display */}
+        <View style={styles.entryPointsCard}>
+          <View style={[styles.entryGlowBorder, { borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)' }]}>
+            <View style={styles.entryInner}>
+              <View style={[styles.entryCorner, styles.entryCornerTL, { borderColor: isDark ? '#ffffff' : '#000000' }]} />
+              <View style={[styles.entryCorner, styles.entryCornerTR, { borderColor: isDark ? '#ffffff' : '#000000' }]} />
+              <View style={[styles.entryCorner, styles.entryCornerBL, { borderColor: isDark ? '#ffffff' : '#000000' }]} />
+              <View style={[styles.entryCorner, styles.entryCornerBR, { borderColor: isDark ? '#ffffff' : '#000000' }]} />
+              <MaterialCommunityIcons name="star-four-points-outline" size={18} color="#00bf63" />
+              <Text style={[styles.entryAmount, { color: isDark ? '#ffffff' : '#000000' }]}>{product.points?.toLocaleString()}</Text>
+            </View>
+          </View>
+          <View style={styles.entryTagLine}>
+            <View style={[styles.entryDash, { backgroundColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)' }]} />
+            <Text style={[styles.entryTagText, { color: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)' }]}>PRICE</Text>
+            <View style={[styles.entryDash, { backgroundColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)' }]} />
+          </View>
+        </View>
+
+        {/* Verification Info */}
+        {isIOSActive && (
+          <View style={purchaseStyles.noticeContainer}>
+            <Text style={[purchaseStyles.noticeText, { color: isDark ? '#ffffff' : '#000000' }]}>
+              "After you purchase, admin will login & review the account. Once verified, you will receive the account credentials to your app email."
+            </Text>
+          </View>
+        )}
+
+      <View style={[styles.actionsRow, { paddingBottom: Math.max(8, insets.bottom || 0) }]}>
+        <Pressable
+          style={[styles.btn, styles.cancelBtn, { borderColor: isDark ? '#eaf4f4' : '#333333' }]}
+          onPress={handleCancel}
+        >
+          <Text style={[styles.btnText, { color: isDark ? '#ffffff' : '#333333' }]}>Cancel</Text>
+        </Pressable>
+        <Pressable
+          style={[styles.btn, styles.joinBtn, { backgroundColor: isDark ? '#eaf4f4' : '#000000' }]}
+          onPress={handleConfirm}
+        >
+          <Text style={[styles.btnText, { color: isDark ? '#000000' : '#ffffff' }]}>Purchase</Text>
+        </Pressable>
+      </View>
+    </View>
+  )
+})
+
+const purchaseStyles = StyleSheet.create({
+  sellerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingBottom: 8,
+  },
+  sellerAvatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 1.5,
+    marginRight: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  sellerImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  sellerInfo: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  sellerName: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  sellerLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+    letterSpacing: 0.3,
+  },
+  noticeContainer: {
+    padding: 12,
+    marginTop: 16,
+  },
+  noticeText: {
+    fontSize: 13,
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+})
 
 
 export const useBottomSheet = () => useContext(BottomSheetContext)

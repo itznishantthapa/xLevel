@@ -59,6 +59,7 @@ const GamePoints = () => {
     rejected: "#FF4444",
     processing: "#33B5E5",
     completed: "#6366F1",
+    reviewing: "#2196f3",
     pointsIn: "#00C851",
     pointsOut: "#FF8800",
     bottomLine: isLight ? "#e0e0e0" : "rgba(255, 255, 255, 0.1)",
@@ -94,7 +95,10 @@ const GamePoints = () => {
       case 'processing':
         return <MaterialIcons name="sync" size={18} color={colors.processing} />
       case 'completed':
+      case 'sold':
         return <Ionicons name="checkmark-circle" size={18} color={colors.completed} />
+      case 'reviewing':
+        return <Ionicons name="search-circle-sharp" size={25} color={colors.reviewing} />
       default:
         return null
     }
@@ -216,7 +220,7 @@ const GamePoints = () => {
             <View style={styles.statusIconContainer}>
               {getStatusIcon(item.status)}
             </View>
-            <Text style={[styles.statusText, { color: colors[item.status] }]}>{capitalize(item.status)}</Text>
+            <Text style={[styles.statusText, { color: colors[item.status === 'sold' ? 'completed' : item.status] }]}>{item.status === 'sold' ? 'Completed' : capitalize(item.status)}</Text>
           </View>
         </View>
 

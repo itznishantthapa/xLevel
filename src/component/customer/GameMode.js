@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Pressable, Dimensions, FlatList, Platform } fro
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons"
 import { useThemeStore } from "../../store/themeStore"
 import { useNavigation } from "@react-navigation/native"
+import { useUtils } from "../../queries/useUtils"
 
 const { width } = Dimensions.get("window")
 const CARD_WIDTH = width - 40
@@ -12,6 +13,23 @@ const CARD_WIDTH = width - 40
 const GameMode = ({ game_mode, handleGameMode, game }) => {
   const navigation = useNavigation();
   const { isLight } = useThemeStore();
+    const {data: utils = []} = useUtils()
+    const isIOSActive = !!utils?.is_ios_active
+
+    const isStoreActive = (() => {
+      if (!game?.game_name) return false
+      const store = utils?.active_store
+      if (!store) return false
+      const name = game.game_name.toLowerCase()
+      if (name.includes('free fire') || name.includes('freefire')) return !!store.is_freefire_store_active
+      if (name.includes('pubg')) return !!store.is_pubg_store_active
+      if (name.includes('efootball')) return !!store.is_efootball_store_active
+      if (name.includes('mlbb')) return !!store.is_mlbb_store_active
+      return false
+    })()
+
+    const showStore = isIOSActive && isStoreActive
+    
 
   const getGameModeIcon = () => {
     return "gamepad"
@@ -153,7 +171,7 @@ const GameMode = ({ game_mode, handleGameMode, game }) => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContainer}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
-        ListFooterComponent={() => (
+        ListFooterComponent={showStore ? () => (
           <View style={styles.storeSection}>
             {/* Store Section Header */}
             <View style={styles.storeSectionHeader}>
@@ -223,7 +241,7 @@ const GameMode = ({ game_mode, handleGameMode, game }) => {
               </View>
             </Pressable>
           </View>
-        )}
+        ) : null}
       />
 
       {/* Back Button - Bottom Left */}

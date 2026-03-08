@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo, useRef, useCallback } from "react"
-import { Text, View, StyleSheet, Keyboard } from "react-native"
+import { Keyboard } from "react-native"
 import { useThemeStore } from "../../../store/themeStore"
 import { useNavigation } from "@react-navigation/native"
 import { useQueryClient } from "@tanstack/react-query"
@@ -36,7 +36,6 @@ const CreateMLBB = ({ route }) => {
   const [gameSettings, setGameSettings] = useState({
     game_name,
     game_mode,
-    match_type: "free", // "free" or "paid"
     fight_type: "1v1",
     // Classic mode only fields
     ...(isBrawlMode ? {} : {
@@ -93,28 +92,16 @@ const CreateMLBB = ({ route }) => {
   }
 
   const isFormValid = useMemo(() => {
-    // Base validation for both modes
     const baseValidation = gameSettings.fight_type !== "" && gameSettings.termsAccepted
 
-    // For Brawl mode - only need fight type and terms
     if (isBrawlMode) {
-      if (gameSettings.match_type === "free") {
-        return baseValidation
-      }
       return baseValidation && gameSettings.game_pot !== "" && Number.parseFloat(gameSettings.game_pot) > 0
     }
 
-    // For Classic mode - also need lane and hero class
-    const classicValidation = 
-      baseValidation &&
+    return baseValidation &&
       gameSettings.lane !== "" &&
-      gameSettings.hero_class !== ""
-
-    if (gameSettings.match_type === "free") {
-      return classicValidation
-    }
-    
-    return classicValidation && gameSettings.game_pot !== "" && Number.parseFloat(gameSettings.game_pot) > 0
+      gameSettings.hero_class !== "" &&
+      gameSettings.game_pot !== "" && Number.parseFloat(gameSettings.game_pot) > 0
   }, [gameSettings, isBrawlMode])
 
   // Calculate winning amount with 10% service fee deduction
@@ -191,8 +178,8 @@ const CreateMLBB = ({ route }) => {
         lane: gameSettings.lane,
         hero_class: gameSettings.hero_class,
       }),
-      is_free: gameSettings.match_type === "free",
-      entry_fee: gameSettings.match_type === "paid" && gameSettings.game_pot ? Number.parseFloat(gameSettings.game_pot) : undefined,
+      is_free: false,
+      entry_fee: gameSettings.game_pot ? Number.parseFloat(gameSettings.game_pot) : undefined,
     }
 
     // Remove undefined values from payload
@@ -267,45 +254,15 @@ const CreateMLBB = ({ route }) => {
         </>
       )}
 
-      {/* Match Type Selection */}
-      <OptionsSection
-        title="Practice With"
-        options={[
-          { value: "free", label: "Free Entry" },
-          { value: "paid", label: "Game Points" }
-        ]}
-        selectedValue={gameSettings.match_type}
-        onSelect={(value) => {
-          handleOptionSelect("match_type", value)
-          // Clear entry fee when switching to free
-          if (value === "free") {
-            handlePotChange("")
-          }
-        }}
+      {/* Entry Fee Input */}
+      <EntryFeeInput
+        value={gameSettings.game_pot}
+        onChangeText={handlePotChange}
+        winningAmount={winningAmount}
         isLight={isLight}
-        valueKey="value"
+        gameName={game_name}
+        gameMode={game_mode}
       />
-
-      {/* Free Entry Info Message */}
-      {gameSettings.match_type === "free" && (
-        <View style={styles.infoContainer}>
-          <Text style={[styles.infoText, { color: isLight ? "#666666" : "#cccccc" }]}>
-            You can create and join up to 5 free entry matches per week.
-          </Text>
-        </View>
-      )}
-
-      {/* Entry Fee Input - Only show for paid matches */}
-      {gameSettings.match_type === "paid" && (
-        <EntryFeeInput
-          value={gameSettings.game_pot}
-          onChangeText={handlePotChange}
-          winningAmount={winningAmount}
-          isLight={isLight}
-          gameName={game_name}
-          gameMode={game_mode}
-        />
-      )}
 
       {/* Divider line */}
       <DividerLine isLight={isLight} />
@@ -321,17 +278,5 @@ const CreateMLBB = ({ route }) => {
     </CreateGameLayout>
   )
 }
-
-const styles = StyleSheet.create({
-  infoContainer: {
-    marginTop: -8,
-    marginBottom: 12,
-    paddingHorizontal: 4,
-  },
-  infoText: {
-    fontSize: 12,
-    lineHeight: 16,
-  },
-})
 
 export default CreateMLBB
