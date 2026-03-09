@@ -92,15 +92,17 @@ const ProductCard = ({ product, index, isLight, onOrderPress, onDeletePress, use
         <Pagination.Custom
           progress={animatedProgress}
           data={product.images}
-          size={6}
+          size={5}
           dotStyle={{
-            borderRadius: 10,
-            backgroundColor: 'rgba(255, 255, 255, 0.35)',
+            borderRadius: 2.5,
+            backgroundColor: 'rgba(255, 255, 255, 0.5)',
+            width: 5,
+            height: 5,
           }}
           activeDotStyle={{
-            borderRadius: 5,
-            width: 30,
-            height: 6,
+            borderRadius: 2.5,
+            width: 5,
+            height: 5,
             overflow: 'hidden',
             backgroundColor: '#ffffff',
           }}
@@ -695,10 +697,10 @@ const styles = StyleSheet.create({
   },
   paginationContainer: {
     position: 'absolute',
-    bottom: 10,
+    bottom: 8,
     gap: 4,
     alignItems: 'center',
-    height: 6,
+    justifyContent: 'center',
   },
   outOfStockOverlay: {
     position: 'absolute',

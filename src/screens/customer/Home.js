@@ -96,6 +96,11 @@ const Home = () => {
   const {data: utils = []} = useUtils()
 
 
+  useEffect(() => {
+    console.log("Home Screen - Utils Data:", utils)
+  }, [utils])
+  
+
  
   
 
@@ -280,7 +285,19 @@ const Home = () => {
 
 
   const handleHeaderGamePoint = () => {
-    navigation.navigate("pointsIn")
+    // Get active load way settings
+    const isDynamicActive = utils?.active_load_way?.is_dynamic_active
+    const isStaticActive = utils?.active_load_way?.is_static_active
+
+    // Conditional navigation based on active load way
+    if (isDynamicActive) {
+      navigation.navigate("dynamicIn")
+    } else if (isStaticActive) {
+      navigation.navigate("pointsIn")
+    } else {
+      // Default to static (PointsIn) if none are active
+      navigation.navigate("pointsIn")
+    }
   }
 
 

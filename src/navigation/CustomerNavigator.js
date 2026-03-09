@@ -31,6 +31,7 @@ import AccessBar from "../screens/customer/AccessBar";
 import { Platform } from "react-native";
 import PointsOut from "../screens/customer/PointsOut";
 import PointsIn from "../screens/customer/PointsIn";
+import DynamicIn from "../screens/customer/DynamicIn";
 import GamePoints from "../screens/customer/gamepoints/GamePoints";
 import Example from "../screens/customer/example/Example";
 import FreeFireStore from "../screens/customer/stores/FreeFireStore";
@@ -55,6 +56,7 @@ export default function CustomerNavigator(){
             <Stack.Screen component={UserTournament} name="userTournament"/>
             <Stack.Screen component={PointsOut} name="pointsOut"/>
             <Stack.Screen component={PointsIn} name="pointsIn"/>
+            <Stack.Screen component={DynamicIn} name="dynamicIn"/>
             <Stack.Screen component={GamePoints} name="gamePoints"/>
             <Stack.Screen component={Match} name="match"/>
             <Stack.Screen component={Notify} name="notify"/>
