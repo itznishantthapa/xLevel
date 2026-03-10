@@ -10,6 +10,7 @@ import { CreateGameLayout, SectionTitle, DividerLine, TermsAgreement } from '../
 import { useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '../../../store/authStore'
 import { useStoreTopup } from '../../../queries/useMutation/useStoreTopup'
+import { scaleWidth, scaleHeight } from '../../../utils/scaling'
 
 // Monochrome accent colors
 const ACCENT_PRIMARY = (isLight) => isLight ? '#000000' : '#ffffff'
@@ -198,8 +199,9 @@ const FreeFireStore = ({ route }) => {
   // Render diamond option button (Vertical Card - Similar to Membership)
   const renderDiamondOption = (item, index) => {
     const isSelected = selectedItem?.id === item.id
-    const cardColor = ACCENT_PRIMARY(isLight)
-    const accentAlt = ACCENT_ALT(isLight)
+    const cardColor = isSelected
+      ? (isLight ? '#ffffff' : '#000000')
+      : (isLight ? '#000000' : '#ffffff')
     
     return (
       <Pressable
@@ -232,13 +234,20 @@ const FreeFireStore = ({ route }) => {
         />
         
         {/* Diamond Count & Label */}
-        <Text style={[styles.modeLabel, { color: cardColor }]}>DIAMONDS</Text>
+        <Text 
+          style={[styles.modeLabel, { color: cardColor }]}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+        >
+          DIAMONDS
+        </Text>
         <Text
           style={[styles.diamondCount, {
             color: isSelected 
               ? (isLight ? '#ffffff' : '#000000')
               : (isLight ? '#1a1a1a' : '#ffffff'),
           }]}
+          numberOfLines={1}
         >
           {item.diamonds.toLocaleString()}
         </Text>
@@ -267,8 +276,9 @@ const FreeFireStore = ({ route }) => {
   // Render membership card
   const renderMembershipOption = (item, index) => {
     const isSelected = selectedItem?.id === item.id
-    const cardColor = ACCENT_PRIMARY(isLight)
-    const accentAlt = ACCENT_ALT(isLight)
+    const cardColor = isSelected
+      ? (isLight ? '#ffffff' : '#000000')
+      : (isLight ? '#000000' : '#ffffff')
     
     return (
       <Pressable
@@ -302,12 +312,21 @@ const FreeFireStore = ({ route }) => {
         />
 
         {/* Text */}
-        <Text style={[styles.modeLabel, { color: cardColor, marginTop: 10 }]}>MEMBERSHIP</Text>
-        <Text style={[styles.membershipTitle, {
-          color: isSelected 
-            ? (isLight ? '#ffffff' : '#000000')
-            : (isLight ? '#000000' : '#ffffff')
-        }]}>
+        <Text 
+          style={[styles.modeLabel, { color: cardColor, marginTop: scaleHeight(10) }]}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+        >
+          MEMBERSHIP
+        </Text>
+        <Text 
+          style={[styles.membershipTitle, {
+            color: isSelected 
+              ? (isLight ? '#ffffff' : '#000000')
+              : (isLight ? '#000000' : '#ffffff')
+          }]}
+          numberOfLines={1}
+        >
           {getMembershipName(item.membership)}
         </Text>
 
@@ -335,8 +354,7 @@ const FreeFireStore = ({ route }) => {
   // Render single level up card with level selector
   const renderLevelUpSection = () => {
     const selectedLevel = selectedItem?.type === 'levelup' ? selectedItem : null
-    const cardColor = ACCENT_PRIMARY(isLight)
-    const accentAlt = ACCENT_ALT(isLight)
+    const cardColor = isLight ? '#000000' : '#ffffff'
 
     return (
       <View style={[styles.levelUpCard, {
@@ -350,8 +368,17 @@ const FreeFireStore = ({ route }) => {
           resizeMode="contain" 
         />
 
-        <Text style={[styles.modeLabel, { color: cardColor, marginTop: 10 }]}>LEVEL UP PASS</Text>
-        <Text style={[styles.levelUpTitle, { color: isLight ? '#1a1a1a' : '#ffffff' }]}>
+        <Text 
+          style={[styles.modeLabel, { color: cardColor, marginTop: scaleHeight(10) }]}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+        >
+          LEVEL UP PASS
+        </Text>
+        <Text 
+          style={[styles.levelUpTitle, { color: isLight ? '#1a1a1a' : '#ffffff' }]}
+          numberOfLines={1}
+        >
           Select a Level
         </Text>
 
@@ -402,8 +429,9 @@ const FreeFireStore = ({ route }) => {
   // Render evo access card (3-column row)
   const renderEvoOption = (item, index) => {
     const isSelected = selectedItem?.id === item.id
-    const cardColor = ACCENT_PRIMARY(isLight)
-    const accentAlt = ACCENT_ALT(isLight)
+    const cardColor = isSelected
+      ? (isLight ? '#ffffff' : '#000000')
+      : (isLight ? '#000000' : '#ffffff')
 
     return (
       <Pressable
@@ -429,12 +457,21 @@ const FreeFireStore = ({ route }) => {
 
         <Image source={item.image} style={styles.evaImg} resizeMode="contain" />
 
-        <Text style={[styles.modeLabel, { color: cardColor, marginTop: 8 }]}>EVO ACCESS</Text>
-        <Text style={[styles.diamondCount, {
-          color: isSelected
-            ? (isLight ? '#ffffff' : '#000000')
-            : (isLight ? '#1a1a1a' : '#ffffff'),
-        }]}>
+        <Text 
+          style={[styles.modeLabel, { color: cardColor, marginTop: scaleHeight(8) }]}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+        >
+          EVO ACCESS
+        </Text>
+        <Text 
+          style={[styles.diamondCount, {
+            color: isSelected
+              ? (isLight ? '#ffffff' : '#000000')
+              : (isLight ? '#1a1a1a' : '#ffffff'),
+          }]}
+          numberOfLines={1}
+        >
           {item.day}
         </Text>
 
@@ -817,21 +854,21 @@ const styles = StyleSheet.create({
   cornerTopLeft: {},
   cornerBottomRight: {},
   modeLabel: {
-    fontSize: 9,
+    fontSize: scaleWidth(9),
     fontWeight: '700',
-    letterSpacing: 2,
+    letterSpacing: scaleWidth(1.5),
     textTransform: 'uppercase',
-    marginBottom: 2,
+    marginBottom: scaleHeight(2),
   },
   diamondIconImg: {
-    width: 70,
-    height: 70,
-    marginBottom: 8,
+    width: scaleWidth(70),
+    height: scaleWidth(70),
+    marginBottom: scaleHeight(8),
   },
   diamondCount: {
-    fontSize: 20,
+    fontSize: scaleWidth(20),
     fontWeight: '700',
-    letterSpacing: 0.5,
+    letterSpacing: scaleWidth(0.5),
     textAlign: 'center',
   },
   diamondPriceContainer: {
@@ -841,7 +878,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   diamondPrice: {
-    fontSize: 11,
+    fontSize: scaleWidth(11),
     fontWeight: '600',
   },
   priceLine: {
@@ -883,12 +920,12 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   membershipTitle: {
-    fontSize: 15,
+    fontSize: scaleWidth(15),
     fontWeight: '700',
-    letterSpacing: 0.3,
+    letterSpacing: scaleWidth(0.3),
   },
   membershipPrice: {
-    fontSize: 11,
+    fontSize: scaleWidth(11),
     fontWeight: '600',
   },
   membershipPriceContainer: {

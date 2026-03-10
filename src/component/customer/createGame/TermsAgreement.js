@@ -6,6 +6,7 @@ import Animated, {
   withTiming,
   withSequence,
 } from "react-native-reanimated";
+import { scaleWidth, scaleHeight } from '../../../utils/scaling';
 
 /**
  * TermsAgreement component for accepting game rules with shake animation
@@ -27,10 +28,10 @@ const TermsAgreement = forwardRef(({ isAccepted, onToggle, isLight, onReadRules,
   const shakeTermsText = useCallback(() => {
     'worklet'
     shakeOffset.value = withSequence(
-      withTiming(8, { duration: 50 }),
-      withTiming(-8, { duration: 50 }),
-      withTiming(8, { duration: 50 }),
-      withTiming(-8, { duration: 50 }),
+      withTiming(scaleWidth(8), { duration: 50 }),
+      withTiming(scaleWidth(-8), { duration: 50 }),
+      withTiming(scaleWidth(8), { duration: 50 }),
+      withTiming(scaleWidth(-8), { duration: 50 }),
       withTiming(0, { duration: 50 })
     )
   }, [shakeOffset]);
@@ -57,7 +58,7 @@ const TermsAgreement = forwardRef(({ isAccepted, onToggle, isLight, onReadRules,
         {/* Make checkbox + terms text both toggleable */}
         <Pressable
           onPress={onToggle}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          hitSlop={{ top: scaleHeight(12), bottom: scaleHeight(12), left: scaleWidth(12), right: scaleWidth(12) }}
           style={styles.pressableArea}
           accessibilityRole="checkbox"
           accessibilityState={{ checked: !!isAccepted }}
@@ -88,7 +89,7 @@ const TermsAgreement = forwardRef(({ isAccepted, onToggle, isLight, onReadRules,
 
         {onReadRules && (
           <Pressable style={styles.rulesLink} onPress={onReadRules}>
-            <Text style={styles.rulesLinkText}>Read rules</Text>
+            <Text style={styles.rulesLinkText}>[ GO TO RULES ]</Text>
           </Pressable>
         )}
       </View>
@@ -99,53 +100,53 @@ const TermsAgreement = forwardRef(({ isAccepted, onToggle, isLight, onReadRules,
 
 const styles = StyleSheet.create({
   termsContainer: {
-    marginTop: 10,
+    marginTop: scaleHeight(10),
     justifyContent: "flex-start",
     alignItems: "center",
- 
-
   },
   checkboxContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: scaleWidth(10),
+    flexWrap: 'wrap',
   },
   pressableArea: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: scaleWidth(10),
     flex: 1,
+    minWidth: 0,
   },
   checkboxBox: {
-    width: 22,
-    height: 22,
-    borderWidth: 2,
-    borderRadius: 4,
+    width: scaleWidth(20),
+    height: scaleWidth(20),
+    borderWidth: scaleWidth(2),
+    borderRadius: scaleWidth(4),
     alignItems: 'center',
     justifyContent: 'center',
   },
   checkMark: {
-    fontSize: 14,
+    fontSize: scaleWidth(12),
     fontWeight: '700',
-    lineHeight: 14,
-    marginTop: -1,
+    lineHeight: scaleWidth(12),
+    marginTop: scaleHeight(-1),
   },
   termsText: {
     flex: 1,
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "600",
+    fontSize: scaleWidth(14),
+    lineHeight: scaleHeight(18),
+    fontWeight: "400",
   },
   rulesLink: {
     alignSelf: "flex-start",
-    paddingVertical: 5,
-    paddingHorizontal: 5,
+    paddingVertical: scaleHeight(5),
+    paddingHorizontal: scaleWidth(5),
   },
   rulesLinkText: {
-    color: "#00C851",
-    fontSize: 14,
-    fontWeight: "600",
-    textDecorationLine: "underline",
+    color: "#00bf63",
+    fontSize: scaleWidth(12),
+    fontWeight: "700",
+    letterSpacing: 1,
   },
 });
 

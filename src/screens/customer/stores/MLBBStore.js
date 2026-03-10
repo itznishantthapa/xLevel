@@ -10,6 +10,7 @@ import { CreateGameLayout, SectionTitle, DividerLine, TermsAgreement } from '../
 import { useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '../../../store/authStore'
 import { useStoreTopup } from '../../../queries/useMutation/useStoreTopup'
+import { scaleWidth, scaleHeight } from '../../../utils/scaling'
 
 // Monochrome accent colors
 const ACCENT_PRIMARY = (isLight) => isLight ? '#000000' : '#ffffff'
@@ -178,7 +179,9 @@ const MLBBStore = ({ route }) => {
   // Render Diamond option button (Vertical Card)
   const renderDiamondOption = (item, index) => {
     const isSelected = selectedItem?.id === item.id
-    const cardColor = ACCENT_PRIMARY(isLight)
+    const cardColor = isSelected
+      ? (isLight ? '#ffffff' : '#000000')
+      : (isLight ? '#000000' : '#ffffff')
     const accentAlt = ACCENT_ALT(isLight)
     
     return (
@@ -212,7 +215,13 @@ const MLBBStore = ({ route }) => {
         />
         
         {/* Diamond Count & Label */}
-        <Text style={[styles.modeLabel, { color: cardColor }]}>DIAMONDS</Text>
+        <Text 
+          style={[styles.modeLabel, { color: cardColor }]}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+        >
+          DIAMONDS
+        </Text>
         <Text
           style={[styles.diamondCount, {
             color: isSelected 
@@ -247,7 +256,9 @@ const MLBBStore = ({ route }) => {
   // Render Pass option button (Horizontal Card)
   const renderPassOption = (item, index) => {
     const isSelected = selectedItem?.id === item.id
-    const cardColor = ACCENT_PRIMARY(isLight)
+    const cardColor = isSelected
+      ? (isLight ? '#ffffff' : '#000000')
+      : (isLight ? '#000000' : '#ffffff')
     const accentAlt = ACCENT_ALT(isLight)
     
     return (
@@ -282,7 +293,13 @@ const MLBBStore = ({ route }) => {
         />
 
         {/* Text */}
-        <Text style={[styles.modeLabel, { color: cardColor, marginTop: 10 }]}>PASS</Text>
+        <Text 
+          style={[styles.modeLabel, { color: cardColor, marginTop: scaleHeight(10) }]}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+        >
+          PASS
+        </Text>
         <Text style={[styles.passTitle, {
           color: isSelected 
             ? (isLight ? '#ffffff' : '#000000')
@@ -610,50 +627,50 @@ const MLBBStore = ({ route }) => {
 
 const styles = StyleSheet.create({
   section: {
-    marginBottom: 8,
+    marginBottom: scaleHeight(8),
   },
   gameHeader: {
     flexDirection: 'row',
-    padding: 14,
+    padding: scaleWidth(14),
     alignItems: 'center',
-    gap: 14,
-    marginBottom: 4,
+    gap: scaleWidth(14),
+    marginBottom: scaleHeight(4),
   },
   gameLogo: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
+    width: scaleWidth(48),
+    height: scaleWidth(48),
+    borderRadius: scaleWidth(12),
   },
   gameInfo: {
     flex: 1,
   },
   gameName: {
-    fontSize: 15,
+    fontSize: scaleWidth(15),
     fontWeight: '600',
-    marginBottom: 4,
+    marginBottom: scaleHeight(4),
   },
   securityBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: scaleWidth(4),
   },
   securityText: {
-    fontSize: 11,
+    fontSize: scaleWidth(11),
     fontWeight: '500',
   },
   separator: {
-    fontSize: 10,
+    fontSize: scaleWidth(10),
   },
   optionsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
+    gap: scaleWidth(10),
   },
   // Vertical Diamond Card Styles (2 columns layout)
   diamondCard: {
     flexBasis: '47%',
     flexGrow: 1,
-    padding: 14,
+    padding: scaleWidth(14),
     borderWidth: 1,
     alignItems: 'center',
     position: 'relative',
@@ -661,84 +678,84 @@ const styles = StyleSheet.create({
   },
   selectedMark: {
     position: 'absolute',
-    top: 8,
-    right: 8,
+    top: scaleHeight(8),
+    right: scaleWidth(8),
     zIndex: 1,
   },
   modeLabel: {
-    fontSize: 9,
+    fontSize: scaleWidth(9),
     fontWeight: '700',
-    letterSpacing: 2,
+    letterSpacing: scaleWidth(2),
     textTransform: 'uppercase',
-    marginBottom: 2,
+    marginBottom: scaleHeight(2),
   },
   diamondIconImg: {
-    width: 70,
-    height: 70,
-    marginBottom: 8,
+    width: scaleWidth(70),
+    height: scaleWidth(70),
+    marginBottom: scaleHeight(8),
   },
   diamondCount: {
-    fontSize: 20,
+    fontSize: scaleWidth(20),
     fontWeight: '700',
-    letterSpacing: 0.5,
+    letterSpacing: scaleWidth(0.5),
     textAlign: 'center',
   },
   diamondPriceContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    marginTop: 8,
+    gap: scaleWidth(4),
+    marginTop: scaleHeight(8),
   },
   diamondPrice: {
-    fontSize: 11,
+    fontSize: scaleWidth(11),
     fontWeight: '600',
   },
   priceLine: {
-    width: 14,
+    width: scaleWidth(14),
     height: 1,
     opacity: 0.8,
   },
   passGrid: {
     flexDirection: 'row',
-    gap: 10,
+    gap: scaleWidth(10),
   },
   passCard: {
     flex: 1,
     borderWidth: 1,
-    padding: 14,
+    padding: scaleWidth(14),
     alignItems: 'center',
     position: 'relative',
     overflow: 'hidden',
   },
   passImage: {
     width: '100%',
-    height: 100,
+    height: scaleWidth(100),
   },
   selectedCheck: {
     position: 'absolute',
-    top: 8,
-    right: 8,
-    width: 22,
-    height: 22,
-    borderRadius: 11,
+    top: scaleHeight(8),
+    right: scaleWidth(8),
+    width: scaleWidth(22),
+    height: scaleWidth(22),
+    borderRadius: scaleWidth(11),
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1,
   },
   passTitle: {
-    fontSize: 15,
+    fontSize: scaleWidth(15),
     fontWeight: '700',
-    letterSpacing: 0.3,
+    letterSpacing: scaleWidth(0.3),
   },
   passPrice: {
-    fontSize: 11,
+    fontSize: scaleWidth(11),
     fontWeight: '600',
   },
   passPriceContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    marginTop: 6,
+    gap: scaleWidth(4),
+    marginTop: scaleHeight(6),
   },
   profileBox: {
     borderWidth: 1,

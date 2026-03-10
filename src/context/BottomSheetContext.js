@@ -29,7 +29,7 @@ import { NavigationService } from "../service/navigationService"
 import { useQueryClient } from "@tanstack/react-query"
 import OpponentSheetContent from "./component/OpponentSheetContent"
 import { ShakeText } from "../component/customer/animation"
-import { scaleWidth } from "../utils/scaling"
+import { scaleWidth, scaleHeight } from "../utils/scaling"
 import { useUtils } from "../queries/useUtils"
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window")
@@ -540,7 +540,7 @@ const JoinSheetContent = React.memo(
             {/* Make checkbox + terms text both toggleable */}
             <Pressable
               onPress={() => setPayload((prev) => ({ ...prev, rulesConfirmed: !prev.rulesConfirmed }))}
-              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+              hitSlop={{ top: scaleHeight(12), bottom: scaleHeight(12), left: scaleWidth(12), right: scaleWidth(12) }}
               style={styles.pressableArea}
               accessibilityRole="checkbox"
               accessibilityState={{ checked: !!payload.rulesConfirmed }}
@@ -1034,52 +1034,54 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   rulesContainer: {
-    marginVertical: 6,
-    paddingHorizontal: 5,
+    marginVertical: scaleHeight(6),
+    paddingHorizontal: scaleWidth(5),
     flexDirection: "row",
   },
   checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: scaleWidth(10),
+    flexWrap: 'wrap',
   },
   checkboxRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: scaleWidth(10),
   },
   pressableArea: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: scaleWidth(10),
     flex: 1,
+    minWidth: 0,
   },
   checkbox: {
-    width: 20,
-    height: 20,
-    borderWidth: 1,
-    borderRadius: 4,
+    width: scaleWidth(20),
+    height: scaleWidth(20),
+    borderWidth: scaleWidth(1),
+    borderRadius: scaleWidth(4),
     alignItems: "center",
     justifyContent: "center",
   },
   checkboxBox: {
-    width: 20,
-    height: 20,
-    borderWidth: 2,
-    borderRadius: 4,
+    width: scaleWidth(20),
+    height: scaleWidth(20),
+    borderWidth: scaleWidth(2),
+    borderRadius: scaleWidth(4),
     alignItems: 'center',
     justifyContent: 'center',
   },
   checkMark: {
-    fontSize: 12,
+    fontSize: scaleWidth(12),
     fontWeight: '700',
-    lineHeight: 12,
-    marginTop: -1,
+    lineHeight: scaleWidth(12),
+    marginTop: scaleHeight(-1),
   },
   rulesLink: {
     alignSelf: "flex-start",
-    paddingVertical: 5,
-    paddingHorizontal: 5,
+    paddingVertical: scaleHeight(5),
+    paddingHorizontal: scaleWidth(5),
   },
   rulesLinkText: {
     fontSize: scaleWidth(12),

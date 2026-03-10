@@ -54,9 +54,7 @@ const Auth = () => {
   const { data: banners = [] } = useBanners()
   const {data: utils = []} = useUtils()
 
-    useEffect(() => {
-    console.log("utils:", utils);
-  }, [utils])
+ 
   
 
   const shouldShowEmailLogin = !utils?.is_ios_active;

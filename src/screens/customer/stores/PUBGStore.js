@@ -10,6 +10,7 @@ import { CreateGameLayout, SectionTitle, DividerLine, TermsAgreement } from '../
 import { useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '../../../store/authStore'
 import { useStoreTopup } from '../../../queries/useMutation/useStoreTopup'
+import { scaleWidth, scaleHeight } from '../../../utils/scaling'
 
 // Monochrome accent colors
 const ACCENT_PRIMARY = (isLight) => isLight ? '#000000' : '#ffffff'
@@ -165,7 +166,9 @@ const PUBGStore = ({ route }) => {
   // Render UC option button (Vertical Card)
   const renderUCOption = (item, index) => {
     const isSelected = selectedItem?.id === item.id
-    const cardColor = ACCENT_PRIMARY(isLight)
+    const cardColor = isSelected
+      ? (isLight ? '#ffffff' : '#000000')
+      : (isLight ? '#000000' : '#ffffff')
     
     return (
       <Pressable
@@ -198,13 +201,20 @@ const PUBGStore = ({ route }) => {
         />
         
         {/* UC Label */}
-        <Text style={[styles.modeLabel, { color: cardColor }]}>UC</Text>
+        <Text 
+          style={[styles.modeLabel, { color: cardColor }]}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+        >
+          UC
+        </Text>
         <Text
           style={[styles.ucCount, {
             color: isSelected 
               ? (isLight ? '#ffffff' : '#000000')
               : (isLight ? '#1a1a1a' : '#ffffff'),
           }]}
+          numberOfLines={1}
         >
           {item.uc.toLocaleString()}
         </Text>
@@ -501,81 +511,81 @@ const PUBGStore = ({ route }) => {
 
 const styles = StyleSheet.create({
   section: {
-    marginBottom: 8,
+    marginBottom: scaleHeight(8),
   },
   gameHeader: {
     flexDirection: 'row',
-    padding: 14,
+    padding: scaleWidth(14),
     alignItems: 'center',
-    gap: 14,
-    marginBottom: 4,
+    gap: scaleWidth(14),
+    marginBottom: scaleHeight(4),
   },
   gameLogo: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
+    width: scaleWidth(48),
+    height: scaleWidth(48),
+    borderRadius: scaleWidth(12),
   },
   gameInfo: {
     flex: 1,
   },
   gameName: {
-    fontSize: 15,
+    fontSize: scaleWidth(15),
     fontWeight: '600',
-    marginBottom: 4,
+    marginBottom: scaleHeight(4),
   },
   securityBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: scaleWidth(4),
   },
   securityText: {
-    fontSize: 11,
+    fontSize: scaleWidth(11),
     fontWeight: '500',
   },
   separator: {
-    fontSize: 10,
+    fontSize: scaleWidth(10),
   },
   optionsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
+    gap: scaleWidth(10),
   },
   // Vertical UC Card Styles (2 columns layout)
   ucCard: {
     flexBasis: '47%',
     flexGrow: 1,
-    padding: 14,
+    padding: scaleWidth(14),
     borderWidth: 1,
     alignItems: 'center',
     position: 'relative',
     overflow: 'hidden',
   },
   modeLabel: {
-    fontSize: 9,
+    fontSize: scaleWidth(9),
     fontWeight: '700',
-    letterSpacing: 2,
+    letterSpacing: scaleWidth(2),
     textTransform: 'uppercase',
-    marginBottom: 2,
+    marginBottom: scaleHeight(2),
   },
   ucIconImg: {
-    width: 70,
-    height: 70,
-    marginBottom: 8,
+    width: scaleWidth(70),
+    height: scaleWidth(70),
+    marginBottom: scaleHeight(8),
   },
   ucCount: {
-    fontSize: 20,
+    fontSize: scaleWidth(20),
     fontWeight: '700',
-    letterSpacing: 0.5,
+    letterSpacing: scaleWidth(0.5),
     textAlign: 'center',
   },
   ucPriceContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    marginTop: 8,
+    gap: scaleWidth(4),
+    marginTop: scaleHeight(8),
   },
   ucPrice: {
-    fontSize: 11,
+    fontSize: scaleWidth(11),
     fontWeight: '600',
   },
   priceLine: {
