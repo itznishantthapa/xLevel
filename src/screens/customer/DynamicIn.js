@@ -12,21 +12,25 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useNavigation } from "@react-navigation/native"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { useThemeStore } from "../../store/themeStore"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import AppHeader from "./header/AppHeader"
 import CoolButton from "../../component/customer/common/CoolButton"
 import { scaleWidth, scaleHeight } from "../../utils/scaling"
 import QRCode from "react-native-qrcode-svg"
 import Toast from "react-native-simple-toast"
+import { GamePointAPI } from "../../api/pointsApi"
+import { useAuthStore } from "../../store/authStore"
 
 const DynamicIn = () => {
   const navigation = useNavigation()
   const insets = useSafeAreaInsets()
   const { isLight } = useThemeStore()
+  const { get_user } = useAuthStore()
   const [crownAmount, setCrownAmount] = useState("")
   const [showQR, setShowQR] = useState(false)
   const [qrValue, setQrValue] = useState("")
   const [loading, setLoading] = useState(false)
+  const [transactionId, setTransactionId] = useState("")
 
   const colors = {
     background: isLight ? "#ffffff" : "#000000",
@@ -34,6 +38,23 @@ const DynamicIn = () => {
     textSecondary: isLight ? "#666666" : "#999999",
     inputBorder: isLight ? "#000000" : "#ffffff",
   }
+
+  // Generate random star positions for background confetti
+  const backgroundStars = useMemo(() => {
+    const stars = []
+    const numberOfStars = 25 // Increased density
+    for (let i = 0; i < numberOfStars; i++) {
+      stars.push({
+        id: i,
+        top: Math.random() * 100, // percentage
+        left: Math.random() * 100, // percentage
+        size: scaleWidth(14 + Math.random() * 10), // varied sizes (14-24px)
+        opacity: 0.3 + Math.random() * 0.2, // more visible opacity 0.3-0.5
+        rotation: Math.random() * 360, // random rotation
+      })
+    }
+    return stars
+  }, [])
 
   const handleProceed = async () => {
     if (!crownAmount || crownAmount.trim() === '') {
@@ -59,28 +80,43 @@ const DynamicIn = () => {
     
     Keyboard.dismiss()
     setLoading(true)
-    console.log('Generating QR - API call started')
     
-    // Simulate API call for 3 seconds
-    await new Promise(resolve => setTimeout(resolve, 3000))
-    
-    // Generate mock payment link
-    const mockPaymentLink = `upi://pay?pa=merchant@upi&pn=XLevel&am=${crownAmount}&cu=INR&tn=Add ${crownAmount} Points`
-    setQrValue(mockPaymentLink)
-    setShowQR(true)
-    setLoading(false)
+    try {
+      // Call backend API to create dynamic transaction
+      const response = await GamePointAPI.createDynamicTransaction(amount)
+      
+      if (response.success) {
+        setTransactionId(response.transaction_id)
+        setQrValue(response.qr_data_url)
+        setShowQR(true)
+      } else {
+        Toast.show(response.message || 'Proceed Failed', Toast.SHORT)
+      }
+    } catch (error) {
+      const errorMessage = error?.message
+      Toast.show(errorMessage, Toast.LONG)
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleVerifyComplete = async () => {
+  const handleDone = async () => {
     setLoading(true)
-    console.log('Verifying payment - API call started')
-    
-    // Simulate API call - replace with actual payment verification API
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    setLoading(false)
-    console.log('Payment verified')
-    // Handle success/failure here
+    try {
+      // Refresh user data to get updated wallet balance
+      await get_user()
+      
+      // Navigate back to previous screen
+      navigation.goBack()
+    } catch (error) {
+      // Even if refresh fails, navigate back
+      if (__DEV__) {
+        console.error('Failed to refresh user data:', error)
+      }
+      navigation.goBack()
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -91,6 +127,30 @@ const DynamicIn = () => {
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }]}>
+
+        {/* Background Confetti Stars */}
+        <View style={styles.backgroundStarsContainer}>
+          {backgroundStars.map((star) => (
+            <View
+              key={star.id}
+              style={[
+                styles.backgroundStar,
+                {
+                  top: `${star.top}%`,
+                  left: `${star.left}%`,
+                  opacity: star.opacity,
+                  transform: [{ rotate: `${star.rotation}deg` }],
+                },
+              ]}
+            >
+              <MaterialCommunityIcons
+                name="star-four-points-outline"
+                size={star.size}
+                color="#00bf63"
+              />
+            </View>
+          ))}
+        </View>
 
         <AppHeader
           backButton={true}
@@ -161,7 +221,6 @@ const DynamicIn = () => {
                     styles.pointsIconContainer,
                     { 
                       backgroundColor: isLight ? '#14B8A6' : 'rgba(32, 201, 151, 0.2)',
-                      borderColor: isLight ? '#14B8A6' : '#20c997',
                     }
                   ]}>
                     <MaterialCommunityIcons
@@ -194,9 +253,9 @@ const DynamicIn = () => {
 
         <View style={styles.footer}>
           <CoolButton 
-            handlePress={showQR ? handleVerifyComplete : handleProceed} 
+            handlePress={showQR ? handleDone : handleProceed} 
             disableBtn={loading} 
-            title={showQR ? 'Verify & Complete' : 'Proceed'} 
+            title={showQR ? 'Done' : 'Proceed'} 
           />
         </View>
 
@@ -212,10 +271,22 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
   },
+  backgroundStarsContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 0,
+  },
+  backgroundStar: {
+    position: 'absolute',
+  },
   content: {
     flex: 1,
     paddingHorizontal: scaleWidth(20),
     justifyContent: 'center',
+    zIndex: 1,
   },
   paymentCard: {
     borderRadius: scaleWidth(4),
@@ -311,7 +382,6 @@ const styles = StyleSheet.create({
     borderRadius: scaleWidth(16),
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: scaleWidth(1),
   },
   input: {
     flex: 1,
@@ -336,5 +406,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: scaleWidth(20),
     paddingBottom: scaleHeight(10),
     marginTop: 'auto',
+    zIndex: 1,
   },
 })

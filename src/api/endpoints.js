@@ -29,6 +29,7 @@ export const endpoints = {
   getPointsIn: "/api/points/in/",
   getPointsOut: "/api/points/out/",
   getPointsHistory: "/api/points/history/",
+  createDynamicTransaction: "/api/points/create-dynamic-transaction/",
 
 
   // Notifications

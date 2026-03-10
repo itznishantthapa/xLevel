@@ -277,8 +277,14 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
                   timeSlot.is_full && styles.gameTimeButtonDisabled,
                   timeSlot.user_registered && styles.gameTimeButtonRegistered
                 ]}
-                onPress={() => !timeSlot.is_full && !timeSlot.user_registered && setSelectedGameTime(timeSlot.id)}
-                disabled={timeSlot.is_full || timeSlot.user_registered}
+                onPress={() => {
+                  if (timeSlot.user_registered) {
+                    navigation.navigate("userTournament")
+                  } else if (!timeSlot.is_full) {
+                    setSelectedGameTime(timeSlot.id)
+                  }
+                }}
+                disabled={timeSlot.is_full}
               >
                 <Ionicons 
                   name={timeSlot.user_registered ? "checkmark-circle" : "time-outline"}

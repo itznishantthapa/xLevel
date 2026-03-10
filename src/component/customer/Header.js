@@ -52,7 +52,7 @@ const Header = ({
     }
   })
 
-  // Cycle phrases every 5s with flip out/in
+  // Cycle phrases every 3s with flip out/in
   useEffect(() => {
     if (phrases.length <= 1) return
 
@@ -69,7 +69,7 @@ const Header = ({
       })
     }
 
-    const interval = setInterval(animateText, 5000)
+    const interval = setInterval(animateText, 3000)
     return () => clearInterval(interval)
   }, [phrases.length])
 

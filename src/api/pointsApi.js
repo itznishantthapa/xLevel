@@ -38,6 +38,11 @@ export const GamePointAPI = {
     const res = await API.get(url);
     return res.data;
   },
+
+  createDynamicTransaction: async (amount) => {
+    const res = await API.post(endpoints.createDynamicTransaction, { amount });
+    return res.data;
+  },
 };
 
 

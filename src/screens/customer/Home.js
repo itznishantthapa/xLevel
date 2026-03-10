@@ -96,9 +96,7 @@ const Home = () => {
   const {data: utils = []} = useUtils()
 
 
-  useEffect(() => {
-    console.log("Home Screen - Utils Data:", utils)
-  }, [utils])
+
   
 
  

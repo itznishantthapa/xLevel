@@ -70,56 +70,56 @@ const AccountDeletion = () => {
     setTimeout(() => {
 
 
-  
-    // Confirm sheet
-    showConfirmSheet({
-      title: "Delete Account?",
-      message: "Are you sure you want to permanently delete your account?",
-      confirmText: "Delete Account",
-      cancelText: "Cancel",
-      isDestructive: true,
-onConfirm: async () => {
-  const hasHardware = await LocalAuthentication.hasHardwareAsync();
-  const isEnrolled = await LocalAuthentication.isEnrolledAsync();
 
-  let canProceed = false;
+      // Confirm sheet
+      showConfirmSheet({
+        title: "Delete Account?",
+        message: "Are you sure you want to permanently delete your account?",
+        confirmText: "Delete Account",
+        cancelText: "Cancel",
+        isDestructive: true,
+        onConfirm: async () => {
+          const hasHardware = await LocalAuthentication.hasHardwareAsync();
+          const isEnrolled = await LocalAuthentication.isEnrolledAsync();
 
-  if (hasHardware && isEnrolled) {
-    const result = await LocalAuthentication.authenticateAsync({
-      promptMessage: "Confirm your identity",
-      fallbackLabel: "Use Passcode",
-    });
-    canProceed = result.success;
-  } else {
-    // No biometric or lock, continue deletion
-    canProceed = true;
-  }
+          let canProceed = false;
 
-  if (canProceed) {
-    setIsLoading(true);
+          if (hasHardware && isEnrolled) {
+            const result = await LocalAuthentication.authenticateAsync({
+              promptMessage: "Confirm your identity",
+              fallbackLabel: "Use Passcode",
+            });
+            canProceed = result.success;
+          } else {
+            // No biometric or lock, continue deletion
+            canProceed = true;
+          }
 
-    const payload = selectedReason === '8'
-      ? {
-          reason: 'Other',
-          reasonText: otherReason.trim(),
-        }
-      : {
-          reason: deletionReasons.find(reason => reason.id === selectedReason)?.label,
-          reasonText: null,
-        };
+          if (canProceed) {
+            setIsLoading(true);
 
-    try {
-      await delete_user(payload);
-    } catch (error) {
-      Toast.show(error?.message || "Account deletion failed. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  }  
-},
+            const payload = selectedReason === '8'
+              ? {
+                reason: 'Other',
+                reasonText: otherReason.trim(),
+              }
+              : {
+                reason: deletionReasons.find(reason => reason.id === selectedReason)?.label,
+                reasonText: null,
+              };
 
-    });
-      }, 100);
+            try {
+              await delete_user(payload);
+            } catch (error) {
+              Toast.show(error?.message || "Account deletion failed.");
+            } finally {
+              setIsLoading(false);
+            }
+          }
+        },
+
+      });
+    }, 100);
   };
 
 
@@ -238,8 +238,8 @@ onConfirm: async () => {
         <View style={[styles.infoContainer, { backgroundColor: colors.cardBackground }]}>
           <MaterialIcons name="info" size={18} color={colors.textSecondary} />
           <Text style={[styles.infoText, { color: colors.textSecondary }]}>
-            Once you confirm the deletion, your account will be instantly and permanently removed from our database.          
-            </Text>
+            Once you confirm the deletion, your account will be instantly and permanently removed from our database.
+          </Text>
         </View>
       </View>
     </CreateGameLayout>
