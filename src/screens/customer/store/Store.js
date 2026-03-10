@@ -30,7 +30,7 @@ import { usePurchaseGameAccount } from '../../../queries/useMutation/usePurchase
 import { useUtils } from '../../../queries/useUtils'
 
 const { width } = Dimensions.get('window')
-const CARD_WIDTH = width - 20 // Full width card with minimal padding
+const CARD_WIDTH = width - scaleWidth(20) // Full width card with minimal padding
 const IMAGE_HEIGHT = (CARD_WIDTH * 736) / 1600 // Maintain 1600x736 aspect ratio
 
 const getTimeAgo = (dateString) => {
@@ -92,17 +92,17 @@ const ProductCard = ({ product, index, isLight, onOrderPress, onDeletePress, use
         <Pagination.Custom
           progress={animatedProgress}
           data={product.images}
-          size={5}
+          size={scaleWidth(5)}
           dotStyle={{
-            borderRadius: 2.5,
+            borderRadius: scaleWidth(2.5),
             backgroundColor: 'rgba(255, 255, 255, 0.5)',
-            width: 5,
-            height: 5,
+            width: scaleWidth(5),
+            height: scaleWidth(5),
           }}
           activeDotStyle={{
-            borderRadius: 2.5,
-            width: 5,
-            height: 5,
+            borderRadius: scaleWidth(2.5),
+            width: scaleWidth(5),
+            height: scaleWidth(5),
             overflow: 'hidden',
             backgroundColor: '#ffffff',
           }}
@@ -147,7 +147,7 @@ const ProductCard = ({ product, index, isLight, onOrderPress, onDeletePress, use
                   <View style={[
                     styles.sellerAvatar,
                     { 
-                      borderWidth: 2,
+                      borderWidth: scaleWidth(2),
                       borderColor: isLight ? '#e0e0e0' : '#444444',
                       backgroundColor: isLight ? '#f5f5f5' : '#2a2a2a',
                     }
@@ -164,7 +164,7 @@ const ProductCard = ({ product, index, isLight, onOrderPress, onDeletePress, use
                       ]}>
                         <Octicons
                           name="feed-person"
-                          size={20}
+                          size={scaleWidth(20)}
                           color={isLight ? '#000000' : '#ffffff'}
                         />
                       </View>
@@ -212,7 +212,7 @@ const ProductCard = ({ product, index, isLight, onOrderPress, onDeletePress, use
                       shadowRadius: 4.5,
                     }
                   ]}>
-                    <Ionicons name="game-controller" size={12} color={isLight ? '#ffffff' : '#A855F7'} />
+                    <Ionicons name="game-controller" size={scaleWidth(12)} color={isLight ? '#ffffff' : '#A855F7'} />
                   </View>
                   <Text style={[
                     styles.pillText,
@@ -240,7 +240,7 @@ const ProductCard = ({ product, index, isLight, onOrderPress, onDeletePress, use
                       shadowRadius: 4.5,
                     }
                   ]}>
-                    <Ionicons name="checkmark" size={12} color={isLight ? '#ffffff' : '#00bf63'} />
+                    <Ionicons name="checkmark" size={scaleWidth(12)} color={isLight ? '#ffffff' : '#00bf63'} />
                   </View>
                   <Text style={[
                     styles.pillText,
@@ -296,7 +296,7 @@ const ProductCard = ({ product, index, isLight, onOrderPress, onDeletePress, use
             >
               <MaterialCommunityIcons
                 name="trash-can-outline"
-                size={18}
+                size={scaleWidth(18)}
                 color={isLight ? '#ffffff' : '#000000'}
               />
             </Pressable>
@@ -343,7 +343,7 @@ const EmptyListComponent = ({ isLight }) => (
   <View style={styles.emptyContainer}>
     <MaterialCommunityIcons
       name="store-off"
-      size={64}
+      size={scaleWidth(64)}
       color={isLight ? '#cccccc' : '#444444'}
     />
     <Text style={[styles.emptyTitle, { color: isLight ? '#1a1a1a' : '#ffffff' }]}>
@@ -580,19 +580,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: 10,
-    paddingHorizontal: 16,
-    marginBottom: 10,
+    paddingTop: scaleHeight(10),
+    paddingHorizontal: scaleWidth(16),
+    marginBottom: scaleHeight(10),
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: scaleWidth(18),
     fontWeight: '600',
   },
   headingUnderline: {
-    width: 80,
-    height: 2,
-    borderRadius: 1,
-    marginTop: 4,
+    width: scaleWidth(80),
+    height: scaleHeight(2),
+    borderRadius: scaleWidth(1),
+    marginTop: scaleHeight(4),
   },
   addIconContainer: {
     width: scaleWidth(40),
@@ -623,24 +623,24 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   listContainer: {
-    paddingHorizontal: 10,
-    paddingBottom: 20,
+    paddingHorizontal: scaleWidth(10),
+    paddingBottom: scaleHeight(20),
   },
   productCard: {
     width: CARD_WIDTH,
-    marginBottom: 16,
+    marginBottom: scaleHeight(16),
     borderTopRightRadius: scaleWidth(25),
     borderTopLeftRadius: scaleWidth(25),
     borderBottomRightRadius: scaleWidth(25),
     borderBottomLeftRadius: scaleWidth(25),
-    borderWidth: 1.5,
+    borderWidth: scaleWidth(1.5),
     overflow: 'hidden',
   },
   sellerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 6,
+    marginBottom: scaleHeight(6),
   },
   sellerLeft: {
     flexDirection: 'row',
@@ -648,11 +648,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   sellerAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: scaleWidth(40),
+    height: scaleWidth(40),
+    borderRadius: scaleWidth(20),
     overflow: 'hidden',
-    marginRight: 10,
+    marginRight: scaleWidth(10),
   },
   sellerImage: {
     width: '100%',
@@ -670,13 +670,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   sellerName: {
-    fontSize: 13,
+    fontSize: scaleWidth(13),
     fontWeight: '600',
-    marginBottom: 2,
+    marginBottom: scaleHeight(2),
     letterSpacing: 0.1,
   },
   sellerLabel: {
-    fontSize: 10,
+    fontSize: scaleWidth(10),
     fontWeight: '400',
     letterSpacing: 0.3,
   },
@@ -697,8 +697,8 @@ const styles = StyleSheet.create({
   },
   paginationContainer: {
     position: 'absolute',
-    bottom: 8,
-    gap: 4,
+    bottom: scaleHeight(8),
+    gap: scaleWidth(4),
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -714,103 +714,103 @@ const styles = StyleSheet.create({
   },
   outOfStockText: {
     color: '#ffffff',
-    fontSize: 12,
+    fontSize: scaleWidth(12),
     fontWeight: '600',
     textTransform: 'uppercase',
   },
   productInfo: {
-    padding: 12,
+    padding: scaleWidth(12),
   },
   chatBubbleWrapper: {
-    marginBottom: 10,
-    marginLeft: 8,
+    marginBottom: scaleHeight(10),
+    marginLeft: scaleWidth(8),
   },
   chatBubblePointer: {
     width: 0,
     height: 0,
-    borderLeftWidth: 6,
-    borderRightWidth: 6,
-    borderBottomWidth: 6,
+    borderLeftWidth: scaleWidth(6),
+    borderRightWidth: scaleWidth(6),
+    borderBottomWidth: scaleWidth(6),
     borderLeftColor: 'transparent',
     borderRightColor: 'transparent',
-    marginLeft: 12,
+    marginLeft: scaleWidth(12),
   },
   chatBubble: {
-    borderRadius: 12,
-    borderTopLeftRadius: 4,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    borderRadius: scaleWidth(12),
+    borderTopLeftRadius: scaleWidth(4),
+    paddingHorizontal: scaleWidth(12),
+    paddingVertical: scaleHeight(10),
   },
   productName: {
-    fontSize: 12,
+    fontSize: scaleWidth(12),
     fontWeight: '400',
-    lineHeight: 16,
+    lineHeight: scaleHeight(16),
     letterSpacing: 0.2,
   },
   descriptionSeparator: {
-    borderBottomWidth: 1,
-    marginBottom: 12,
+    borderBottomWidth: scaleWidth(1),
+    marginBottom: scaleHeight(12),
   },
   gamePill: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 20,
-    borderWidth: 1,
-    gap: 6,
+    paddingVertical: scaleHeight(6),
+    paddingHorizontal: scaleWidth(10),
+    borderRadius: scaleWidth(20),
+    borderWidth: scaleWidth(1),
+    gap: scaleWidth(6),
   },
   pillsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: scaleWidth(6),
   },
   iconWrapper: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
+    width: scaleWidth(22),
+    height: scaleWidth(22),
+    borderRadius: scaleWidth(11),
     alignItems: 'center',
     justifyContent: 'center',
   },
   pillText: {
-    fontSize: 11,
+    fontSize: scaleWidth(11),
     fontWeight: '600',
   },
   priceSection: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 5,
-    marginBottom: 12,
+    gap: scaleWidth(5),
+    marginBottom: scaleHeight(12),
   },
   priceLine: {
-    width: 20,
-    height: 1,
+    width: scaleWidth(20),
+    height: scaleHeight(1),
     opacity: 0.8,
   },
   priceText: {
-    fontSize: 16,
+    fontSize: scaleWidth(16),
     fontWeight: '700',
     color: '#00bf63',
   },
   pointsLabel: {
-    fontSize: 11,
+    fontSize: scaleWidth(11),
     fontWeight: '600',
     color: '#00bf63',
   },
   buyButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 12,
-    borderRadius: 8,
+    paddingVertical: scaleHeight(12),
+    borderRadius: scaleWidth(8),
   },
   buyButtonContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
+    gap: scaleWidth(5),
   },
   buyButtonText: {
-    fontSize: 14,
+    fontSize: scaleWidth(14),
     fontWeight: '700',
   },
   ownerRow: {
@@ -821,41 +821,41 @@ const styles = StyleSheet.create({
   listedInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: scaleWidth(6),
     flex: 1,
   },
   listedText: {
-    fontSize: 13,
+    fontSize: scaleWidth(13),
     fontWeight: '600',
     letterSpacing: 0.2,
   },
   removeIconButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: scaleWidth(36),
+    height: scaleWidth(36),
+    borderRadius: scaleWidth(18),
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 12,
+    marginLeft: scaleWidth(12),
   },
   buyButtonPointsLabel: {
-    fontSize: 11,
+    fontSize: scaleWidth(11),
     fontWeight: '500',
   },
   emptyContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 60,
+    paddingVertical: scaleHeight(60),
   },
   emptyTitle: {
-    fontSize: 18,
+    fontSize: scaleWidth(18),
     fontWeight: '600',
-    marginTop: 16,
+    marginTop: scaleHeight(16),
   },
   emptySubtitle: {
-    fontSize: 14,
-    marginTop: 8,
+    fontSize: scaleWidth(14),
+    marginTop: scaleHeight(8),
     textAlign: 'center',
-    paddingHorizontal: 40,
+    paddingHorizontal: scaleWidth(40),
   },
 })

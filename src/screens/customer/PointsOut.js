@@ -1,4 +1,4 @@
-import { StatusBar, StyleSheet, Text, View, Image, ScrollView, TextInput, Platform, Pressable } from 'react-native'
+import { StatusBar, StyleSheet, Text, View, Image, ScrollView, TextInput, Platform, Pressable, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import { useState } from 'react';
@@ -78,6 +78,8 @@ const PointsOut = () => {
   };
 
   const handleSubmit = async () => {
+
+    Keyboard.dismiss();
     if (!validateFields()) {
       return;
     }
@@ -114,113 +116,115 @@ const PointsOut = () => {
   return (
     <>
       <StatusBar translucent backgroundColor="transparent" barStyle={isLight ? "dark-content" : "light-content"} />
-      <View style={[styles.container, {
-        backgroundColor: colors.background,
-        paddingTop: insets.top,
-        paddingBottom: insets.bottom,
-      }]}>
+      <KeyboardAvoidingView
+        style={[styles.container, { backgroundColor: colors.background }]}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={0}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom }}>
+            <AppHeader
+              backButton={true}
+              title={'Redeem Points'}
+            />
 
-        <AppHeader
-          backButton={true}
-          title={'Redeem Points'}
-        />
-
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-
-          {/* Your QR Section */}
-          <View style={styles.uploadContainer}>
-            <Text style={[styles.inputLabel, { color: colors.text }]}>Provide Your QR</Text>
-            <Pressable
-              style={[
-                styles.uploadButton,
-                qrImage && styles.uploadButtonWithImage,
-                {
-                  borderColor: errors.qr ? '#FF4444' : colors.inputBorder,
-                  backgroundColor: colors.inputBg,
-                }
-              ]}
-              onPress={pickImage}
+            <ScrollView
+              contentContainerStyle={styles.scrollContent}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
             >
-              {qrImage ? (
-                <View style={styles.selectedImageContainer}>
-                  <Image source={{ uri: qrImage }} style={styles.selectedImage} />
-                  <View style={styles.imageTextContainer}>
-                    <Text style={[styles.imageFileName, { color: colors.text }]}>QR uploaded</Text>
-                    <Text style={[styles.changeImageText, { color: colors.textSecondary }]}>Tap to change</Text>
+
+              {/* Your QR Section */}
+              <View style={styles.uploadContainer}>
+                <Text style={[styles.inputLabel, { color: colors.text }]}>Provide Your QR</Text>
+                <Pressable
+                  style={[
+                    styles.uploadButton,
+                    qrImage && styles.uploadButtonWithImage,
+                    {
+                      borderColor: errors.qr ? '#FF4444' : colors.inputBorder,
+                      backgroundColor: colors.inputBg,
+                    }
+                  ]}
+                  onPress={pickImage}
+                >
+                  {qrImage ? (
+                    <View style={styles.selectedImageContainer}>
+                      <Image source={{ uri: qrImage }} style={styles.selectedImage} />
+                      <View style={styles.imageTextContainer}>
+                        <Text style={[styles.imageFileName, { color: colors.text }]}>QR uploaded</Text>
+                        <Text style={[styles.changeImageText, { color: colors.textSecondary }]}>Tap to change</Text>
+                      </View>
+                    </View>
+                  ) : (
+                    <View style={styles.uploadButtonContent}>
+                      <FontAwesome6 name="qrcode" size={scaleWidth(32)} color={colors.textSecondary} />
+                      <Text style={[styles.uploadButtonText, { color: colors.textSecondary }]}>Tap to upload your QR</Text>
+                    </View>
+                  )}
+                </Pressable>
+                {errors.qr ? (
+                  <View style={styles.errorContainer}>
+                    <Ionicons name="alert-circle" size={scaleWidth(14)} color="#FF4444" />
+                    <Text style={styles.errorText}>{errors.qr}</Text>
                   </View>
-                </View>
-              ) : (
-                <View style={styles.uploadButtonContent}>
-                  <FontAwesome6 name="qrcode" size={scaleWidth(32)} color={colors.textSecondary} />
-                  <Text style={[styles.uploadButtonText, { color: colors.textSecondary }]}>Tap to upload your QR</Text>
-                </View>
-              )}
-            </Pressable>
-            {errors.qr ? (
-              <View style={styles.errorContainer}>
-                <Ionicons name="alert-circle" size={scaleWidth(14)} color="#FF4444" />
-                <Text style={styles.errorText}>{errors.qr}</Text>
+                ) : null}
               </View>
-            ) : null}
-          </View>
 
-          {/* Points Amount Input */}
-          <View style={styles.inputContainer}>
-            <Text style={[styles.inputLabel, { color: colors.text }]}>Redeem Point</Text>
-            <View style={[styles.inputWrapper, {
-              borderColor: errors.amount ? '#FF4444' : colors.inputBorder,
-              backgroundColor: 'transparent',
-            }]}>
-              <View style={[
-                styles.pointsIconContainer,
-                { backgroundColor: isLight ? '#14B8A6' : 'rgba(32, 201, 151, 0.2)' },
-                isLight && {
-                  elevation: 6,
-                  shadowColor: '#000',
-                  shadowOffset: { width: 0, height: 3 },
-                  shadowOpacity: 0.35,
-                  shadowRadius: 4.5,
-                }
-              ]}>
-                <MaterialCommunityIcons
-                  name="star-four-points-outline"
-                  size={scaleWidth(16)}
-                  color={isLight ? "#ffffff" : "#20c997"}
-                />
+              {/* Points Amount Input */}
+              <View style={styles.inputContainer}>
+                <Text style={[styles.inputLabel, { color: colors.text }]}>Redeem Point</Text>
+                <View style={[styles.inputWrapper, {
+                  borderColor: errors.amount ? '#FF4444' : colors.inputBorder,
+                  backgroundColor: 'transparent',
+                }]}> 
+                  <View style={[
+                    styles.pointsIconContainer,
+                    { backgroundColor: isLight ? '#14B8A6' : 'rgba(32, 201, 151, 0.2)' },
+                    isLight && {
+                      elevation: 6,
+                      shadowColor: '#000',
+                      shadowOffset: { width: 0, height: 3 },
+                      shadowOpacity: 0.35,
+                      shadowRadius: 4.5,
+                    }
+                  ]}>
+                    <MaterialCommunityIcons
+                      name="star-four-points-outline"
+                      size={scaleWidth(16)}
+                      color={isLight ? "#ffffff" : "#20c997"}
+                    />
+                  </View>
+                  <TextInput
+                    style={[styles.input, { color: colors.text }]}
+                    placeholder="Enter amount (e.g., 100)"
+                    placeholderTextColor={colors.textSecondary}
+                    keyboardType="numeric"
+                    value={crownAmount}
+                    onChangeText={(text) => {
+                      setCrownAmount(text);
+                      if (errors.amount) {
+                        setErrors(prev => ({ ...prev, amount: '' }));
+                      }
+                    }}
+                  />
+                </View>
+                {errors.amount ? (
+                  <View style={styles.errorContainer}>
+                    <Ionicons name="alert-circle" size={scaleWidth(14)} color="#FF4444" />
+                    <Text style={styles.errorText}>{errors.amount}</Text>
+                  </View>
+                ) : null}
               </View>
-              <TextInput
-                style={[styles.input, { color: colors.text }]}
-                placeholder="Enter amount (e.g., 100)"
-                placeholderTextColor={colors.textSecondary}
-                keyboardType="numeric"
-                value={crownAmount}
-                onChangeText={(text) => {
-                  setCrownAmount(text);
-                  if (errors.amount) {
-                    setErrors(prev => ({ ...prev, amount: '' }));
-                  }
-                }}
-              />
+
+            </ScrollView>
+
+            <View style={[styles.footer,Platform.OS === "android" && { marginBottom: scaleHeight(10) }]}>
+              <CoolButton handlePress={handleSubmit} disableBtn={disableBtn} title={'Redeem'} />
             </View>
-            {errors.amount ? (
-              <View style={styles.errorContainer}>
-                <Ionicons name="alert-circle" size={scaleWidth(14)} color="#FF4444" />
-                <Text style={styles.errorText}>{errors.amount}</Text>
-              </View>
-            ) : null}
           </View>
-
-        </ScrollView>
-
-        <View style={styles.footer}>
-          <CoolButton handlePress={handleSubmit} disableBtn={disableBtn} title={'Redeem'} />
-        </View>
-
-      </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </>
   )
 }
@@ -234,7 +238,6 @@ const styles = StyleSheet.create({
   },
   footer: {
     paddingHorizontal: scaleWidth(20),
-    paddingBottom: scaleHeight(10),
   },
   scrollContent: {
     flexGrow: 1,

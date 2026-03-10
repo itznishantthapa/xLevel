@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Loader from '../../Loader';
 import CoolButton from '../common/CoolButton';
 import AppHeader from '../../../screens/customer/header/AppHeader';
+import { scaleHeight } from '../../../utils/scaling';
 
 /**
  * CreateGameLayout - Shared layout wrapper for all game creation screens
@@ -22,12 +23,12 @@ import AppHeader from '../../../screens/customer/header/AppHeader';
  * @param {string} props.loaderMessage - Message for the loader (default: "Creating match...")
  * @returns {JSX.Element}
  */
-const CreateGameLayout = ({ 
-  children, 
-  title, 
-  isLight, 
+const CreateGameLayout = ({
+  children,
+  title,
+  isLight,
   isLoading,
-  onSubmit, 
+  onSubmit,
   buttonTitle = "Create Match",
   loaderMessage = "Creating match...",
   buttonBackgroundColor,
@@ -45,7 +46,7 @@ const CreateGameLayout = ({
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          keyboardVerticalOffset={insets.bottom} 
+          keyboardVerticalOffset={insets.bottom}
         >
           <ScrollView
             style={styles.scrollView}
@@ -53,18 +54,21 @@ const CreateGameLayout = ({
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
           >
-            <View style={[styles.gameCard, { 
+            <View style={[styles.gameCard, {
               backgroundColor: isLight ? "#ffffff" : "#000000",
               borderColor: isLight ? "#333333" : "#dadada",
               borderWidth: 0,
               marginHorizontal: -2
-            }]}> 
+            }]}>
               {children}
             </View>
           </ScrollView>
 
           {/* Submit Button */}
-          <View style={{ marginHorizontal: 20, marginBottom: 10 }}>
+          <View style={[
+            { marginHorizontal: 20 },
+            Platform.OS === "android" && { marginBottom:scaleHeight(10) }
+          ]}>
             {aboveButtonContent}
             <CoolButton title={buttonTitle} handlePress={onSubmit} backgroundColor={buttonBackgroundColor} textColor={buttonTextColor} />
           </View>
@@ -91,7 +95,7 @@ const styles = StyleSheet.create({
   gameCard: {
     borderRadius: 12,
     paddingHorizontal: 16,
-    marginBottom: 20,
+    // marginBottom: 20,
   }
 });
 

@@ -234,7 +234,7 @@ const TournamentCard = ({ game }) => {
               {game.game_date && (
                 <View style={[
                   styles.dateDisplay,
-                  { backgroundColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)' }
+                  { backgroundColor: isLight ? '#e9ecef' : 'rgba(255, 255, 255, 0.1)' }
                 ]}>
                   <Ionicons name="calendar-outline" size={14} color={isLight ? '#666666' : '#cccccc'} />
                   <Text style={[styles.dateText, !isLight && styles.dateTextDark]}>
@@ -244,7 +244,7 @@ const TournamentCard = ({ game }) => {
               )}
               <View style={[
                 styles.timeSlotDisplay,
-                { backgroundColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)' }
+                { backgroundColor: isLight ? '#e9ecef' : 'rgba(255, 255, 255, 0.1)' }
               ]}>
                 <Ionicons name="time-outline" size={14} color={isLight ? '#666666' : '#cccccc'} />
                 <Text style={[styles.timeSlotText, !isLight && styles.timeSlotTextDark]}>

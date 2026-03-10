@@ -8,7 +8,10 @@ import {
   Pressable,
   Platform,
   Image,
-  Keyboard
+  Keyboard,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  ScrollView,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
@@ -200,12 +203,17 @@ const Login = () => {
         barStyle="light-content"
       />
 
-      <View style={[styles.container, {
-        backgroundColor: colors.background,
-        // paddingTop: insets.top
-      }]}>
-  {/* Header with logo */}
-  <View style={[styles.headerContainer, { backgroundColor: colors.headerBg }]}>
+      <KeyboardAvoidingView
+        style={[styles.container, {
+          backgroundColor: colors.background,
+        }]}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={0}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.innerContainer}>
+            {/* Header with logo */}
+            <View style={[styles.headerContainer, { backgroundColor: colors.headerBg }]}>
           <View style={[styles.headerContent]}>
             {
                   Platform.OS === 'ios' && (
@@ -228,10 +236,10 @@ const Login = () => {
               </View>
             </View>
           </View>
-        </View>
+            </View>
 
-        {/* Login Form Section - Animated */}
-        <Animated.View style={[
+            {/* Login Form Section - Animated */}
+            <Animated.View style={[
           styles.formSection, 
           {backgroundColor: colors.background},
           animatedFormStyle
@@ -331,8 +339,10 @@ const Login = () => {
               </View>
             </Pressable>
           </View>
-        </Animated.View>
-      </View>
+            </Animated.View>
+          </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </>
   )
 }
@@ -341,6 +351,9 @@ export default Login
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  innerContainer: {
     flex: 1,
   },
   headerContainer: {

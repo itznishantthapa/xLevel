@@ -40,9 +40,7 @@ const GamePoints = () => {
       index === self.findIndex(t => t.id === item.id)
     )
 
-  useEffect(() => {
-   console.log("Points history data:", pointsinout);
-  }, [pointsinout])
+ 
   
 
 

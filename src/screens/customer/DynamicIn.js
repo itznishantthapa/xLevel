@@ -7,6 +7,8 @@ import {
   Pressable,
   Platform,
   Keyboard,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
 } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useNavigation } from "@react-navigation/native"
@@ -124,14 +126,20 @@ const DynamicIn = () => {
   return (
     <>
       <StatusBar translucent backgroundColor="transparent" barStyle={isLight ? "dark-content" : "light-content"} />
-      <View style={[styles.container, {
-        backgroundColor: colors.background,
-        paddingTop: insets.top,
-        paddingBottom: insets.bottom,
-      }]}>
-
-        {/* Background Confetti Stars */}
-        <View style={styles.backgroundStarsContainer}>
+      <KeyboardAvoidingView
+        style={[styles.container, {
+          backgroundColor: colors.background,
+        }]}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={0}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={[styles.innerContainer, {
+            paddingTop: insets.top,
+            paddingBottom: insets.bottom,
+          }]}>
+            {/* Background Confetti Stars */}
+            <View style={styles.backgroundStarsContainer}>
           {backgroundStars.map((star) => (
             <View
               key={star.id}
@@ -154,14 +162,14 @@ const DynamicIn = () => {
           ))}
         </View>
 
-        <AppHeader
-          backButton={true}
-          title={'Add Points'}
-        />
+            <AppHeader
+              backButton={true}
+              title={'Add Points'}
+            />
 
-        <View style={styles.content}>
-          {/* Payment Card with Cyberpunk Geometry */}
-          <View style={[styles.paymentCard, {
+            <View style={styles.content}>
+          {/* Card with Cyberpunk Geometry */}
+          <View style={[styles.pointCard, {
             backgroundColor: isLight ? '#ffffff' : '#0f0f0f',
             borderColor: colors.text,
           }]}>
@@ -253,17 +261,18 @@ const DynamicIn = () => {
               borderColor: colors.text,
             }]} />
           </View>
-        </View>
+            </View>
 
-        <View style={styles.footer}>
-          <CoolButton 
-            handlePress={showQR ? handleDone : handleProceed} 
-            disableBtn={loading} 
-            title={showQR ? 'Done' : 'Proceed'} 
-          />
-        </View>
-
-      </View>
+            <View style={[styles.footer,Platform.OS === "android" && { marginBottom: scaleHeight(10) }]}>
+              <CoolButton 
+                handlePress={showQR ? handleDone : handleProceed} 
+                disableBtn={loading} 
+                title={showQR ? 'Done' : 'Proceed'} 
+              />
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </>
   )
 }
@@ -272,6 +281,10 @@ export default DynamicIn
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    width: "100%",
+  },
+  innerContainer: {
     flex: 1,
     width: "100%",
   },
@@ -292,7 +305,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     zIndex: 1,
   },
-  paymentCard: {
+  pointCard: {
     borderRadius: scaleWidth(4),
     borderWidth: scaleWidth(2),
     padding: scaleWidth(24),
@@ -408,7 +421,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     paddingHorizontal: scaleWidth(20),
-    paddingBottom: scaleHeight(10),
+    // paddingBottom: scaleHeight(10),
     marginTop: 'auto',
     zIndex: 1,
   },

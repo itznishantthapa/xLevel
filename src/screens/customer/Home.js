@@ -348,8 +348,6 @@ const Home = () => {
 
   const handleRegisterChallenge = async (id, accessCode, timeSlotId) => {
     try {
-
-      console.log("Attempting to join challenge with ID:", id, "access code:", accessCode, "time slot ID:", timeSlotId);
       setIsJoiningTournament(true);
 
       // Prepare registration payload

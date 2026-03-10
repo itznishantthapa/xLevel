@@ -8,6 +8,9 @@ import {
   Pressable,
   TextInput,
   Platform,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useNavigation } from "@react-navigation/native"
@@ -96,6 +99,8 @@ const PointsIn = () => {
 
   const handleSubmit = async () => {
 
+    Keyboard.dismiss();
+
     if (!validateFields()) {
       return;
     }
@@ -137,180 +142,182 @@ const PointsIn = () => {
   return (
     <>
       <StatusBar translucent backgroundColor="transparent" barStyle={isLight ? "dark-content" : "light-content"} />
-      <View style={[styles.container, {
-        backgroundColor: colors.background,
-        paddingTop: insets.top,
-        paddingBottom: insets.bottom,
-      }]}>
+      <KeyboardAvoidingView
+        style={[styles.container, { backgroundColor: colors.background }]}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={0}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom }}>
+            <AppHeader
+              backButton={true}
+              title={'Add Points'}
+            />
 
-        <AppHeader
-          backButton={true}
-          title={'Add Points'}
-        />
+            <ScrollView
+              contentContainerStyle={styles.scrollContent}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+            >
 
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
+              {/* U-Shaped Pocket Design */}
+              <View style={[styles.pocketContainer, {
+                backgroundColor: colors.cardBg,
+                borderColor: isLight ? colors.border : colors.inputBorder
+              }]}> 
 
-          {/* U-Shaped Pocket Design */}
-          <View style={[styles.pocketContainer, {
-            backgroundColor: colors.cardBg,
-            borderColor: isLight ? colors.border : colors.inputBorder
-          }]}>
+                {/* Instructions at the center of the pocket */}
+                <View style={styles.instructionsSection}>
+                  <Text style={[styles.instructionsTitle, { color: colors.text }]}>Important Instructions</Text>
 
-            {/* Instructions at the center of the pocket */}
-            <View style={styles.instructionsSection}>
-              <Text style={[styles.instructionsTitle, { color: colors.text }]}>Important Instructions</Text>
+                  <View style={styles.instructionsContainer}>
+                    <View style={styles.instructionRow}>
+                      <View style={[styles.stepBadge, { backgroundColor: isLight ? "#000000" : "#ffffff" }]}> 
+                        <Text style={[styles.stepNumber, { color: isLight ? "#ffffff" : "#000000" }]}>1</Text>
+                      </View>
+                      <Text style={[styles.instructionText, { color: colors.textSecondary }]}> 
+                        Request must be between 10 and 10,000  {"\n"} (Rs. 1 = 1 Point)
+                      </Text>
+                    </View>
 
-              <View style={styles.instructionsContainer}>
-                <View style={styles.instructionRow}>
-                  <View style={[styles.stepBadge, { backgroundColor: isLight ? "#000000" : "#ffffff" }]}>
-                    <Text style={[styles.stepNumber, { color: isLight ? "#ffffff" : "#000000" }]}>1</Text>
-                  </View>
-                  <Text style={[styles.instructionText, { color: colors.textSecondary }]}>
-                    Request must be between 10 and 10,000  {"\n"} (Rs. 1 = 1 Point)
-                  </Text>
-                </View>
+                    <View style={styles.instructionRow}>
+                      <View style={[styles.stepBadge, { backgroundColor: isLight ? "#000000" : "#ffffff" }]}> 
+                        <Text style={[styles.stepNumber, { color: isLight ? "#ffffff" : "#000000" }]}>2</Text>
+                      </View>
+                      <Text style={[styles.instructionText, { color: colors.textSecondary }]}> 
+                        Write your app's full Name in the remarks (Important).
+                      </Text>
+                    </View>
 
-                <View style={styles.instructionRow}>
-                  <View style={[styles.stepBadge, { backgroundColor: isLight ? "#000000" : "#ffffff" }]}>
-                    <Text style={[styles.stepNumber, { color: isLight ? "#ffffff" : "#000000" }]}>2</Text>
-                  </View>
-                  <Text style={[styles.instructionText, { color: colors.textSecondary }]}>
-                    Write your app's full Name in the remarks (Important).
-                  </Text>
-                </View>
-
-                <View style={styles.instructionRow}>
-                  <View style={[styles.stepBadge, { backgroundColor: isLight ? "#000000" : "#ffffff" }]}>
-                    <Text style={[styles.stepNumber, { color: isLight ? "#ffffff" : "#000000" }]}>3</Text>
-                  </View>
-                  <Text style={[styles.instructionText, { color: colors.textSecondary }]}>
-                    Upload screenshot below.
-                  </Text>
-                </View>
-              </View>
-            </View>
-          </View>
-
-          {/* QR Code positioned at the bottom border of the pocket */}
-          <View style={styles.qrSection}>
-            <View style={[styles.qrContainer, {
-              backgroundColor: colors.qrBg,
-              borderColor: isLight ? colors.border : colors.inputBorder
-            }]}>
-              {qrImageUrl ? (
-                <Image
-                  source={{ uri: qrImageUrl }}
-                  style={styles.qrLogo}
-                  resizeMode="contain"
-                />
-              ) : (
-                <View style={styles.qrPlaceholder}>
-                  <Ionicons name="qr-code-outline" size={scaleWidth(120)} color={colors.textSecondary} />
-                  <Text style={[styles.qrPlaceholderText, { color: colors.textSecondary }]}>
-                    Loading QR Code...
-                  </Text>
-                </View>
-              )}
-            </View>
-          </View>
-
-          {/* Form Fields */}
-          <View style={styles.formContainer}>
-            {/* Crown Amount Input */}
-            <View style={styles.inputContainer}>
-              <Text style={[styles.inputLabel, { color: colors.text }]}>Points Amount</Text>
-              <View style={[styles.inputWrapper, {
-                borderColor: errors.amount ? '#FF4444' : colors.inputBorder,
-                backgroundColor: 'transparent',
-              }]}>
-                <View style={[
-                  styles.pointsIconContainer,
-                  { backgroundColor: isLight ? '#14B8A6' : 'rgba(32, 201, 151, 0.2)' },
-                  isLight && {
-                    elevation: 6,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 3 },
-                    shadowOpacity: 0.35,
-                    shadowRadius: 4.5,
-                  }
-                ]}>
-                  <MaterialCommunityIcons
-                    name="star-four-points-outline"
-                    size={scaleWidth(16)}
-                    color={isLight ? "#ffffff" : "#20c997"}
-                  />
-                </View>
-                <TextInput
-                  style={[styles.input, { color: colors.text }]}
-                  placeholder="Enter amount (e.g., 100)"
-                  placeholderTextColor={colors.textSecondary}
-                  keyboardType="numeric"
-                  value={crownAmount}
-                  onChangeText={(text) => {
-                    setCrownAmount(text);
-                    if (errors.amount) {
-                      setErrors(prev => ({ ...prev, amount: '' }));
-                    }
-                  }}
-                />
-              </View>
-              {errors.amount ? (
-                <View style={styles.errorContainer}>
-                  <Ionicons name="alert-circle" size={scaleWidth(14)} color="#FF4444" />
-                  <Text style={styles.errorText}>{errors.amount}</Text>
-                </View>
-              ) : null}
-            </View>
-
-            {/* Upload Screenshot Section */}
-            <View style={styles.uploadContainer}>
-              <Text style={[styles.inputLabel, { color: colors.text }]}>Upload Screenshot</Text>
-              <Pressable
-                style={[
-                  styles.uploadButton,
-                  screenshot && styles.uploadButtonWithImage,
-                  {
-                    borderColor: errors.screenshot ? '#FF4444' : isLight ? "#000000" : "#ffffff",
-                    backgroundColor: colors.inputBg,
-                  }
-                ]}
-                onPress={pickImage}
-              >
-                {screenshot ? (
-                  <View style={styles.selectedImageContainer}>
-                    <Image source={{ uri: screenshot }} style={styles.selectedImage} />
-                    <View style={styles.imageTextContainer}>
-                      <Text style={[styles.imageFileName, { color: colors.text }]}>Screenshot uploaded</Text>
-                      <Text style={[styles.changeImageText, { color: colors.textSecondary }]}>Tap to change</Text>
+                    <View style={styles.instructionRow}>
+                      <View style={[styles.stepBadge, { backgroundColor: isLight ? "#000000" : "#ffffff" }]}> 
+                        <Text style={[styles.stepNumber, { color: isLight ? "#ffffff" : "#000000" }]}>3</Text>
+                      </View>
+                      <Text style={[styles.instructionText, { color: colors.textSecondary }]}> 
+                        Upload screenshot below.
+                      </Text>
                     </View>
                   </View>
-                ) : (
-                  <View style={styles.uploadButtonContent}>
-                    <Ionicons name="cloud-upload-outline" size={scaleWidth(32)} color={colors.textSecondary} />
-                    <Text style={[styles.uploadButtonText, { color: colors.textSecondary }]}>Tap to upload screenshot</Text>
-                  </View>
-                )}
-              </Pressable>
-              {errors.screenshot ? (
-                <View style={styles.errorContainer}>
-                  <Ionicons name="alert-circle" size={scaleWidth(14)} color="#FF4444" />
-                  <Text style={styles.errorText}>{errors.screenshot}</Text>
                 </View>
-              ) : null}
+              </View>
+
+              {/* QR Code positioned at the bottom border of the pocket */}
+              <View style={styles.qrSection}>
+                <View style={[styles.qrContainer, {
+                  backgroundColor: colors.qrBg,
+                  borderColor: isLight ? colors.border : colors.inputBorder
+                }]}> 
+                  {qrImageUrl ? (
+                    <Image
+                      source={{ uri: qrImageUrl }}
+                      style={styles.qrLogo}
+                      resizeMode="contain"
+                    />
+                  ) : (
+                    <View style={styles.qrPlaceholder}>
+                      <Ionicons name="qr-code-outline" size={scaleWidth(120)} color={colors.textSecondary} />
+                      <Text style={[styles.qrPlaceholderText, { color: colors.textSecondary }]}> 
+                        Loading QR Code...
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              </View>
+
+              {/* Form Fields */}
+              <View style={styles.formContainer}>
+                {/* Crown Amount Input */}
+                <View style={styles.inputContainer}>
+                  <Text style={[styles.inputLabel, { color: colors.text }]}>Points Amount</Text>
+                  <View style={[styles.inputWrapper, {
+                    borderColor: errors.amount ? '#FF4444' : colors.inputBorder,
+                    backgroundColor: 'transparent',
+                  }]}> 
+                    <View style={[
+                      styles.pointsIconContainer,
+                      { backgroundColor: isLight ? '#14B8A6' : 'rgba(32, 201, 151, 0.2)' },
+                      isLight && {
+                        elevation: 6,
+                        shadowColor: '#000',
+                        shadowOffset: { width: 0, height: 3 },
+                        shadowOpacity: 0.35,
+                        shadowRadius: 4.5,
+                      }
+                    ]}>
+                      <MaterialCommunityIcons
+                        name="star-four-points-outline"
+                        size={scaleWidth(16)}
+                        color={isLight ? "#ffffff" : "#20c997"}
+                      />
+                    </View>
+                    <TextInput
+                      style={[styles.input, { color: colors.text }]}
+                      placeholder="Enter amount (e.g., 100)"
+                      placeholderTextColor={colors.textSecondary}
+                      keyboardType="numeric"
+                      value={crownAmount}
+                      onChangeText={(text) => {
+                        setCrownAmount(text);
+                        if (errors.amount) {
+                          setErrors(prev => ({ ...prev, amount: '' }));
+                        }
+                      }}
+                    />
+                  </View>
+                  {errors.amount ? (
+                    <View style={styles.errorContainer}>
+                      <Ionicons name="alert-circle" size={scaleWidth(14)} color="#FF4444" />
+                      <Text style={styles.errorText}>{errors.amount}</Text>
+                    </View>
+                  ) : null}
+                </View>
+
+                {/* Upload Screenshot Section */}
+                <View style={styles.uploadContainer}>
+                  <Text style={[styles.inputLabel, { color: colors.text }]}>Upload Screenshot</Text>
+                  <Pressable
+                    style={[
+                      styles.uploadButton,
+                      screenshot && styles.uploadButtonWithImage,
+                      {
+                        borderColor: errors.screenshot ? '#FF4444' : isLight ? "#000000" : "#ffffff",
+                        backgroundColor: colors.inputBg,
+                      }
+                    ]}
+                    onPress={pickImage}
+                  >
+                    {screenshot ? (
+                      <View style={styles.selectedImageContainer}>
+                        <Image source={{ uri: screenshot }} style={styles.selectedImage} />
+                        <View style={styles.imageTextContainer}>
+                          <Text style={[styles.imageFileName, { color: colors.text }]}>Screenshot uploaded</Text>
+                          <Text style={[styles.changeImageText, { color: colors.textSecondary }]}>Tap to change</Text>
+                        </View>
+                      </View>
+                    ) : (
+                      <View style={styles.uploadButtonContent}>
+                        <Ionicons name="cloud-upload-outline" size={scaleWidth(32)} color={colors.textSecondary} />
+                        <Text style={[styles.uploadButtonText, { color: colors.textSecondary }]}>Tap to upload screenshot</Text>
+                      </View>
+                    )}
+                  </Pressable>
+                  {errors.screenshot ? (
+                    <View style={styles.errorContainer}>
+                      <Ionicons name="alert-circle" size={scaleWidth(14)} color="#FF4444" />
+                      <Text style={styles.errorText}>{errors.screenshot}</Text>
+                    </View>
+                  ) : null}
+                </View>
+              </View>
+
+            </ScrollView>
+
+            <View style={[styles.footer, Platform.OS === "android" && { marginBottom: scaleHeight(10) }]}>
+              <CoolButton handlePress={handleSubmit} disableBtn={disableBtn} title={'Add Points'} />
             </View>
           </View>
-
-        </ScrollView>
-
-        <View style={styles.footer}>
-          <CoolButton handlePress={handleSubmit} disableBtn={disableBtn} title={'Add Points'} />
-        </View>
-
-      </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </>
   )
 }
@@ -321,14 +328,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
+    // marginBottom: 10,
   },
   footer: {
     paddingHorizontal: scaleWidth(20),
-    paddingBottom: scaleHeight(10),
   },
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: scaleHeight(40),
+    // paddingBottom: scaleHeight(40),
   },
   pocketContainer: {
     marginHorizontal: scaleWidth(10),

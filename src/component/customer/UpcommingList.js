@@ -200,7 +200,7 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
             {game?.game_date && (
               <View style={[
                 styles.dateDisplay,
-                { backgroundColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)' }
+                { backgroundColor: isLight ? '#e9ecef' : 'rgba(255, 255, 255, 0.1)' }
               ]}>
                 <Ionicons name="calendar-outline" size={14} color={isLight ? '#666666' : '#cccccc'} />
                 <Text style={[styles.dateText, !isLight && styles.dateTextDark]}>
@@ -211,7 +211,7 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
             {/* Entry Fee Display */}
             <View style={[
               styles.entryFeeDisplay,
-              { backgroundColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)' }
+              { backgroundColor: isLight ? '#e9ecef' : 'rgba(255, 255, 255, 0.1)' }
             ]}>
               <Text style={[styles.entryLabel, !isLight && styles.entryLabelDark]}>Entry</Text>
               <View style={styles.entryAmountContainer}>
