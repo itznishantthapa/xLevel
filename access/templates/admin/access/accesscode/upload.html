@@ -1,0 +1,20 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}Bulk upload access codes{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1>Bulk upload access codes</h1>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <div class="module aligned">
+      {{ form.as_p }}
+    </div>
+    <div class="submit-row">
+      <input type="submit" value="Upload" class="default" />
+      <a href=".." class="button cancel-link">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

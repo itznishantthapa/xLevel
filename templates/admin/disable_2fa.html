@@ -1,0 +1,101 @@
+{% load static i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2FA Disabled | Level Esports</title>
+    <link rel="icon" href="{% static 'logo/logo.png' %}" type="image/png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        
+        .message-container {
+            width: 100%;
+            max-width: 480px;
+        }
+        
+        .message-card {
+            background: #fafafa;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background: #000000;
+            padding: 32px 40px;
+            text-align: center;
+        }
+        
+        .card-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        
+        .card-body {
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .message-text {
+            font-size: 15px;
+            color: #666666;
+            line-height: 1.6;
+            margin-bottom: 28px;
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: inherit;
+            text-decoration: none;
+            text-align: center;
+            background: #000000;
+            color: #ffffff;
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+    <div class="message-container">
+        <div class="message-card">
+            <div class="card-header">
+                <div class="card-title">Access Denied</div>
+            </div>
+            
+            <div class="card-body">
+                <p class="message-text">
+                    Two-factor authentication is mandatory for all admin accounts and cannot be disabled.
+                </p>
+                
+                <a href="{% url 'admin:index' %}" class="btn">Go Back</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

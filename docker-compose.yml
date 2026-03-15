@@ -1,0 +1,89 @@
+services:
+  # 1. PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 2. Redis (For Celery & Caching)
+  redis:
+    image: redis:7-alpine
+    restart: always
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 3. Django Web App with Gunicorn
+  web:
+    image: itznishantthapa/levelesports:latest
+    restart: always
+    ports:
+      - "80:8000"
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    command: web
+    environment:
+      - DJANGO_SETTINGS_MODULE=core.settings
+      - PORT=8000
+
+  # 4. Celery Worker (Processes Tasks - Game Results, Verifications, etc.)
+  worker:
+    image: itznishantthapa/levelesports:latest
+    restart: always
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      web:
+        condition: service_started
+    volumes:
+      - media_volume:/app/media
+    command: celery-worker
+    environment:
+      - DJANGO_SETTINGS_MODULE=core.settings
+
+  # 5. Celery Beat (Scheduled Tasks)
+  beat:
+    image: itznishantthapa/levelesports:latest
+    restart: always
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      web:
+        condition: service_started
+    command: celery-beat
+    environment:
+      - DJANGO_SETTINGS_MODULE=core.settings
+
+volumes:
+  postgres_data:
+  redis_data:
+  static_volume:
+  media_volume:

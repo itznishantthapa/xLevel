@@ -1,0 +1,506 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}All Participants | {{ tournament.title }} | {{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Home</a>
+  › <a href="{% url 'admin:tournament_tournament_changelist' %}">Tournaments</a>
+  › <a href="{% url 'admin:tournament_tournament_change' tournament.id %}">{{ tournament.title }}</a>
+  › All Participants
+</div>
+{% endblock %}
+
+{% block content %}
+<style>
+  * { box-sizing: border-box; }
+  
+  /* Page Header */
+  .page-header {
+    background: #000;
+    color: #fff;
+    padding: 32px;
+    margin: -20px -20px 32px -20px;
+    border-radius: 0;
+  }
+  
+  .page-header h1 {
+    margin: 0 0 8px 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.5px;
+  }
+  
+  .page-meta {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
+  }
+  
+  .header-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 24px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+  }
+  
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .meta-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 600;
+  }
+  
+  .meta-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+  }
+  
+  /* Stats Cards */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  
+  .stat-card {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.2s ease;
+  }
+  
+  .stat-card:hover {
+    border-color: #000;
+  }
+  
+  .stat-label {
+    font-size: 11px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  
+  .stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #000;
+  }
+  
+  /* Section Header */
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #000;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  /* Time Slots Grid */
+  .time-slots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  
+  .time-slot-card {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+  
+  .time-slot-card:hover {
+    border-color: #000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+  
+  .time-slot-card.inactive {
+    background: #fafafa;
+    border-color: #e5e5e5;
+  }
+  
+  .time-slot-card.inactive::after {
+    content: 'COMPLETED';
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: #000;
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  
+  .slot-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .slot-time {
+    font-size: 18px;
+    font-weight: 700;
+    color: #000;
+    margin: 0;
+    letter-spacing: -0.5px;
+  }
+  
+  .slot-status-badge {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .slot-status-badge.active {
+    background: #000;
+    color: #fff;
+  }
+  
+  .slot-status-badge.inactive {
+    background: #e5e5e5;
+    color: #666;
+  }
+  
+  .slot-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .slot-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .slot-meta-label {
+    font-size: 10px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+  
+  .slot-meta-value {
+    font-size: 15px;
+    font-weight: 700;
+    color: #000;
+  }
+  
+  .capacity-bar {
+    width: 100%;
+    height: 6px;
+    background: #f0f0f0;
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 12px 0;
+  }
+  
+  .capacity-fill {
+    height: 100%;
+    background: #000;
+    transition: width 0.3s ease;
+    width: var(--capacity-width, 0%);
+  }
+  
+  .capacity-fill.high {
+    background: #666;
+  }
+  
+  .capacity-fill.full {
+    background: #333;
+  }
+  
+  .credentials-info {
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    font-size: 12px;
+    color: #666;
+    border: 1px solid #e5e5e5;
+  }
+  
+  .credentials-info .label {
+    font-weight: 700;
+    color: #000;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    display: block;
+  }
+  
+  .credential-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+  }
+  
+  .credential-key {
+    font-size: 11px;
+    color: #666;
+    font-weight: 600;
+  }
+  
+  .credential-value {
+    font-size: 12px;
+    color: #000;
+    font-weight: 700;
+    font-family: monospace;
+  }
+  
+  .btn-view-participants {
+    display: block;
+    width: 100%;
+    background: #000;
+    color: #fff;
+    padding: 12px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+  }
+  
+  .btn-view-participants:hover {
+    background: #333;
+    color: #fff;
+    text-decoration: none;
+    transform: translateY(-1px);
+  }
+  
+  .btn-view-participants:active {
+    transform: translateY(0);
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+    background: #fafafa;
+    border-radius: 8px;
+    border: 1px solid #e5e5e5;
+  }
+  
+  .empty-state-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.3;
+  }
+  
+  .empty-state h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #666;
+    margin: 0 0 8px 0;
+  }
+  
+  .empty-state p {
+    margin: 0;
+    color: #999;
+    font-size: 13px;
+  }
+  
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #fff;
+    color: #000;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    font-size: 13px;
+  }
+  
+  .back-link:hover {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+    text-decoration: none;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-header {
+      padding: 24px 20px;
+    }
+    
+    .page-header h1 {
+      font-size: 20px;
+    }
+    
+    .header-meta {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .time-slots-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<div class="page-header">
+  <h1>{{ tournament.title }}</h1>
+  <p class="page-meta">
+    {{ tournament.game.name }} • {{ tournament.get_win_type_display }} • 
+    {% if tournament.is_free %}Free Entry{% else %}{{ tournament.entry_fee }} Entry Fee{% endif %}
+  </p>
+  
+  <div class="header-meta">
+    <div class="meta-item">
+      <span class="meta-label">Game Date</span>
+      <span class="meta-value">{{ tournament.game_date|date:"M d, Y" }}</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Capacity</span>
+      <span class="meta-value">{{ tournament.player_joined }}/{{ tournament.max_player }}</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Status</span>
+      <span class="meta-value">{{ tournament.get_status_display }}</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Win Type</span>
+      <span class="meta-value">{{ tournament.get_win_type_display }}</span>
+    </div>
+  </div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-label">Total Slots</div>
+    <div class="stat-value">{{ total_slots }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Active</div>
+    <div class="stat-value">{{ active_slots }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Completed</div>
+    <div class="stat-value">{{ inactive_slots }}</div>
+  </div>
+</div>
+
+{% if time_slots %}
+<div class="section-header">
+  <h2 class="section-title">Time Slots</h2>
+</div>
+
+<div class="time-slots-grid">
+  {% for slot in time_slots %}
+  <div class="time-slot-card {% if not slot.is_active %}inactive{% endif %}">
+    <div class="slot-header">
+      <h3 class="slot-time">{{ slot.time_slot }}</h3>
+      <span class="slot-status-badge {% if slot.is_active %}active{% else %}inactive{% endif %}">
+        {% if slot.is_active %}Active{% else %}Completed{% endif %}
+      </span>
+    </div>
+    
+    <div class="slot-meta">
+      <div class="slot-meta-item">
+        <span class="slot-meta-label">Participants</span>
+        <span class="slot-meta-value">{{ slot.participant_count }}/{{ slot.max_players }}</span>
+      </div>
+      <div class="slot-meta-item">
+        <span class="slot-meta-label">Capacity</span>
+        <span class="slot-meta-value">
+          {% widthratio slot.participant_count slot.max_players 100 %}%
+        </span>
+      </div>
+    </div>
+    
+    {% widthratio slot.participant_count slot.max_players 100 as capacity_percent %}
+    <div class="capacity-bar" style="--capacity-width: {% if slot.max_players > 0 %}{{ capacity_percent }}{% else %}0{% endif %}%;">
+      <div class="capacity-fill {% if capacity_percent >= 100 %}full{% elif capacity_percent >= 80 %}high{% endif %}"></div>
+    </div>
+    
+    {% if slot.room_id or slot.room_pass %}
+    <div class="credentials-info">
+      <span class="label">Credentials</span>
+      {% if slot.room_id %}
+      <div class="credential-row">
+        <span class="credential-key">Room ID</span>
+        <span class="credential-value">{{ slot.room_id }}</span>
+      </div>
+      {% endif %}
+      {% if slot.room_pass %}
+      <div class="credential-row">
+        <span class="credential-key">Password</span>
+        <span class="credential-value">{{ slot.room_pass }}</span>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+    
+    <a href="{% url 'view_tournament_time_participants' slot.id %}" class="btn-view-participants">
+      VIEW {{ slot.participant_count }} PARTICIPANT{{ slot.participant_count|pluralize }}
+    </a>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <h3>No Time Slots</h3>
+  <p>This tournament doesn't have any time slots yet.</p>
+</div>
+{% endif %}
+
+<div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #e5e5e5;">
+  <a href="{% url 'admin:tournament_tournament_change' tournament.id %}" class="back-link">
+    ← Back to Tournament
+  </a>
+</div>
+{% endblock %}

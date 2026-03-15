@@ -1,0 +1,125 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+{% block title %}Earnings Report{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+  .earnings-container { max-width: 1300px; margin:0 auto; padding:20px; }
+  .filters { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:20px; }
+  .filters input, .filters select { padding:6px 10px; border:1px solid #ccc; border-radius:6px; }
+  .filters button { padding:8px 16px; border:none; background:#2c3e50; color:#fff; border-radius:6px; cursor:pointer; }
+  .summary-cards { display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin-bottom:30px; }
+  .card { background:#fff; border:2px solid #e1e5e9; border-radius:12px; padding:18px; }
+  .card h3 { margin:0 0 8px; font-size:0.9rem; text-transform:uppercase; letter-spacing:0.5px; color:#6c757d; }
+  .card .value { font-size:1.6rem; font-weight:300; color:#2c3e50; }
+  table { width:100%; border-collapse:collapse; font-size:0.9rem; }
+  th, td { padding:8px 10px; border-bottom:1px solid #eee; text-align:left; }
+  th { background:#f8f9fa; position:sticky; top:0; z-index:2; }
+  tbody tr:hover { background:#f8f9fa; }
+  .badge { display:inline-block; padding:3px 8px; border-radius:12px; font-size:0.7rem; font-weight:600; letter-spacing:0.5px; }
+  .badge.OPEN_GAME { background:#e3f2fd; color:#0d47a1; }
+  .badge.TOURNAMENT { background:#fff8e1; color:#f57f17; }
+  .badge.ENHANCEMENT { background:#e8f5e9; color:#1b5e20; }
+  .badge.AD_WATCH { background:#fce4ec; color:#880e4f; }
+  .daily-table { margin-top:30px; }
+  .back-link { text-decoration:none; color:#3498db; font-weight:500; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="earnings-container">
+  <p><a href="{% url 'admin_dashboard' %}" class="back-link">← Back to Dashboard</a></p>
+  <h1 style="font-weight:300; margin-top:0;">Earnings Report</h1>
+  <form method="get" class="filters">
+    <div>
+      <label>Date:</label><br>
+      <input type="date" name="date" value="{{ date_str|default_if_none:'' }}">
+    </div>
+    <div>
+      <label>Start:</label><br>
+      <input type="date" name="start" value="{{ start_date }}">
+    </div>
+    <div>
+      <label>End:</label><br>
+      <input type="date" name="end" value="{{ end_date }}">
+    </div>
+    <div>
+      <label>Source:</label><br>
+      <select name="source">
+        <option value="ALL" {% if source_filter == 'ALL' %}selected{% endif %}>All Sources</option>
+        {% for key,label in sources %}
+          <option value="{{ key }}" {% if source_filter == key %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div style="align-self:flex-end;">
+      <button type="submit">Apply</button>
+    </div>
+  </form>
+  <div style="margin-bottom:15px;">
+    <a href="?{% if date_str %}date={{ date_str }}&{% else %}start={{ start_date }}&end={{ end_date }}&{% endif %}source={{ source_filter }}&export=csv" style="background:#2c3e50;color:#fff;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:0.85rem;">⬇️ Download CSV</a>
+  </div>
+
+  <div class="summary-cards">
+    <div class="card">
+      <h3>Total Earnings</h3>
+      <div class="value">{{ total_amount|floatformat:2 }}</div>
+    </div>
+    <div class="card">
+      <h3>Gross Base (if set)</h3>
+      <div class="value">{{ total_base|floatformat:2 }}</div>
+    </div>
+    {% for item in per_source %}
+    <div class="card">
+      <h3>{{ item.label }}</h3>
+      <div class="value">{{ item.total|floatformat:2 }}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if daily_rows %}
+  <h2 style="font-weight:400;">Daily Breakdown</h2>
+  <table class="daily-table">
+    <thead><tr><th>Date</th><th>Total</th></tr></thead>
+    <tbody>
+      {% for row in daily_rows %}
+        <tr><td>{{ row.date }}</td><td>{{ row.total|floatformat:2 }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+
+  <h2 style="font-weight:400;">Entries ({{ entries|length }})</h2>
+  <div style="max-height:500px; overflow:auto; border:1px solid #e1e5e9; border-radius:8px;">
+  <table>
+    <thead>
+      <tr>
+        <th>Time</th>
+        <th>Source</th>
+        <th>Amount</th>
+        <th>Base</th>
+        <th>%</th>
+        <th>Related</th>
+        <th>Note</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for e in entries %}
+        <tr>
+          <td>{{ e.created_at|date:"Y-m-d H:i" }}</td>
+          <td><span class="badge {{ e.source }}">{{ e.get_source_display }}</span></td>
+          <td>{{ e.amount|floatformat:2 }}</td>
+          <td>{{ e.base_amount|default_if_none:"-" }}</td>
+          <td>{% if e.percentage %}{{ e.percentage|floatformat:2 }}%{% else %}-{% endif %}</td>
+          <td>{% if e.related_object %}{{ e.related_object }}{% else %}-{% endif %}</td>
+          <td>{{ e.note }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="7" style="text-align:center; padding:20px;">No earnings found for selection.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+{% endblock %}

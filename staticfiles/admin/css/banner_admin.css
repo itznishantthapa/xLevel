@@ -1,0 +1,49 @@
+/* Banner Admin - Clean & Elegant Styles */
+
+/* Image preview in list view */
+.model-banner .field-image_preview {
+    text-align: center;
+    width: 120px;
+}
+
+.model-banner .field-image_info {
+    width: 100px;
+    text-align: center;
+}
+
+/* Form view - Image preview area */
+.model-banner .form-row .field-image_preview_large {
+    background: #f9f9f9;
+    border-radius: 6px;
+    padding: 20px;
+    margin: 15px 0;
+    text-align: center;
+}
+
+/* Clean file input styling */
+.model-banner input[type="file"] {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 100%;
+    background: #fff;
+}
+
+.model-banner input[type="file"]:focus {
+    outline: none;
+    border-color: #007cba;
+}
+
+/* URL input field */
+.model-banner .form-row .field-url input {
+    width: 100%;
+    max-width: 500px;
+}
+
+/* Responsive image preview */
+@media (max-width: 768px) {
+    .model-banner .field-image_preview img {
+        width: 80px !important;
+        height: 45px !important;
+    }
+}

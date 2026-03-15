@@ -1,0 +1,669 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+{% block title %}Participants | {{ challenge }} | {{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs" style="font-size: 12px; color: #666; padding: 12px 0; border-bottom: 1px solid #eee;">
+  <a href="{% url 'admin:index' %}" style="color: #333; text-decoration: none;">Home</a>
+  <span style="margin: 0 8px; color: #999;">›</span>
+  <a href="{% url 'admin:challenge_challenge_changelist' %}" style="color: #333; text-decoration: none;">Challenges</a>
+  <span style="margin: 0 8px; color: #999;">›</span>
+  <a href="{% url 'admin:challenge_challenge_change' challenge.id %}" style="color: #333; text-decoration: none;">{{ challenge }}</a>
+  <span style="margin: 0 8px; color: #999;">›</span>
+  <span style="color: #000;">Participants</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<style>
+  * { box-sizing: border-box; }
+  
+  /* Toolbar */
+  .participants-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #eee;
+  }
+  .participants-toolbar h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 500;
+    color: #000;
+    letter-spacing: -0.3px;
+  }
+  
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #fff;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-decoration: none;
+  }
+  .btn:hover {
+    background: #f5f5f5;
+    border-color: #ccc;
+  }
+  .btn-dark {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+  }
+  .btn-dark:hover {
+    background: #222;
+  }
+  .btn-outline-danger {
+    color: #333;
+    border-color: #333;
+  }
+  .btn-outline-danger:hover {
+    background: #000;
+    color: #fff;
+  }
+  
+  /* Search Form */
+  .participants-search-form {
+    margin-left: auto;
+    display: flex;
+    gap: 8px;
+  }
+  .participants-search-form input[type=text] {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    min-width: 260px;
+    font-size: 13px;
+    background: #fafafa;
+    transition: all 0.15s ease;
+  }
+  .participants-search-form input[type=text]:focus {
+    outline: none;
+    border-color: #000;
+    background: #fff;
+  }
+  .participants-search-form input[type=text]::placeholder {
+    color: #999;
+  }
+  
+  /* Table */
+  .participants-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .participants-table th {
+    background: #fafafa;
+    text-align: left;
+    padding: 12px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #666;
+    border-bottom: 1px solid #eee;
+  }
+  .participants-table td {
+    padding: 14px;
+    border-bottom: 1px solid #f5f5f5;
+    font-size: 13px;
+    vertical-align: top;
+    color: #333;
+  }
+  .participants-table tr:last-child td {
+    border-bottom: none;
+  }
+  .participants-table tr:hover {
+    background: #fafafa;
+  }
+  
+  /* Badge */
+  .badge-status {
+    display: inline-block;
+    padding: 4px 10px;
+    font-size: 11px;
+    border-radius: 4px;
+    font-weight: 500;
+    background: #f5f5f5;
+    color: #333;
+    border: 1px solid #eee;
+  }
+  .badge-won {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+  }
+  .badge-lost {
+    background: #fff;
+    color: #666;
+    border-color: #ddd;
+  }
+  
+  /* Meta text */
+  .meta {
+    color: #888;
+    font-size: 12px;
+  }
+  
+  /* Player name */
+  .player-name {
+    font-weight: 500;
+    color: #000;
+  }
+  
+  /* Email link */
+  .email-link {
+    color: #333;
+    text-decoration: none;
+  }
+  .email-link:hover {
+    text-decoration: underline;
+  }
+  
+  /* Empty state */
+  .empty-row td {
+    text-align: center;
+    padding: 48px 14px;
+    color: #999;
+    font-size: 14px;
+  }
+  
+  /* Winner indicator */
+  .winner-indicator {
+    color: #000;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  
+  /* Form inputs in table */
+  .participants-table input[type="radio"],
+  .participants-table input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #000;
+    cursor: pointer;
+  }
+  .kill-input {
+    width: 60px;
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 12px;
+    text-align: center;
+    background: #fafafa;
+  }
+  .kill-input:focus {
+    outline: none;
+    border-color: #000;
+    background: #fff;
+  }
+  
+  /* Prize Release Panel */
+  .prize-panel {
+    margin-top: 32px;
+    padding: 24px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+  }
+  .prize-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .prize-panel-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    color: #fff;
+    border-radius: 8px;
+    font-size: 16px;
+  }
+  .prize-panel h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: #000;
+  }
+  
+  /* Instructions box */
+  .instructions-box {
+    background: #fafafa;
+    padding: 14px 16px;
+    border-radius: 6px;
+    margin-bottom: 24px;
+    border-left: 3px solid #000;
+  }
+  .instructions-box p {
+    margin: 0;
+    color: #555;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  
+  /* Form grid */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 20px;
+    align-items: end;
+  }
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+  }
+  .form-group label .required {
+    color: #666;
+  }
+  .form-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    background: #fafafa;
+    transition: all 0.15s ease;
+  }
+  .form-input:focus {
+    outline: none;
+    border-color: #000;
+    background: #fff;
+  }
+  .form-input::placeholder {
+    color: #999;
+  }
+  
+  /* Message box */
+  #release-msg {
+    margin-top: 20px;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    display: none;
+  }
+  #release-msg.success {
+    background: #f5f5f5;
+    color: #000;
+    border: 1px solid #ddd;
+    display: block !important;
+  }
+  #release-msg.error {
+    background: #fff;
+    color: #333;
+    border: 1px solid #333;
+    display: block !important;
+  }
+  #release-msg.info {
+    background: #fafafa;
+    color: #666;
+    border: 1px solid #eee;
+    display: block !important;
+  }
+  
+  /* Responsive */
+  @media (max-width: 900px) {
+    .participants-table th:nth-child(4),
+    .participants-table td:nth-child(4) {
+      display: none;
+    }
+  }
+  @media (max-width: 768px) {
+    .form-grid {
+      grid-template-columns: 1fr !important;
+      gap: 16px !important;
+    }
+    .participants-search-form {
+      margin-left: 0;
+      width: 100%;
+    }
+    .participants-search-form input[type=text] {
+      flex: 1;
+      min-width: auto;
+    }
+  }
+  @media (max-width: 600px) {
+    .prize-panel {
+      padding: 16px;
+    }
+  }
+</style>
+
+<div class="participants-toolbar">
+  <h2>Participants ({{ total }})</h2>
+  <a class="btn" href="{% url 'admin:challenge_challenge_changelist' %}">← Back</a>
+  
+  {% if send_credentials_url %}
+    <button id="send-credentials-btn" type="button" class="btn">Send Credentials</button>
+  {% endif %}
+  
+  {% if can_refund %}
+    <button id="refund-btn" type="button" class="btn btn-outline-danger">Refund & Cancel</button>
+  {% endif %}
+  
+  <form method="get" class="participants-search-form">
+    <input type="text" name="q" value="{{ q }}" placeholder="Search name, email or ID..." />
+    <button type="submit" class="btn btn-dark">Search</button>
+  </form>
+</div>
+
+<table class="participants-table">
+  <thead>
+    <tr>
+      <th style="width:50px;">ID</th>
+      {% if has_prize_features %}
+        <th style="width:60px;">Winner</th>
+        {% if not is_per_kill %}
+          <th style="width:60px;">Top</th>
+        {% else %}
+          <th style="width:80px;">Kills</th>
+        {% endif %}
+      {% endif %}
+      <th>Player</th>
+      <th>Contact</th>
+      {% if challenge.enable_slots %}
+        <th style="width:60px;">Slot</th>
+      {% endif %}
+      <th style="width:110px;">Joined</th>
+      <th style="width:90px;">Status</th>
+      {% if is_per_kill and show_prize_column %}<th style="width:80px;">Kills</th>{% endif %}
+      {% if show_prize_column %}<th style="width:100px;">Prize</th>{% endif %}
+    </tr>
+  </thead>
+  <tbody>
+    {% if participants %}
+      {% for p in participants %}
+        <tr data-participant-id="{{ p.id }}">
+          <td><span class="meta">#{{ p.id }}</span></td>
+          {% if has_prize_features %}
+            <td style="text-align:center;">
+              {% if can_release %}
+                <input type="radio" name="winner" value="{{ p.id }}" class="winner-radio" />
+              {% else %}
+                {% if p.is_winner %}<span class="winner-indicator">✓</span>{% else %}<span class="meta">–</span>{% endif %}
+              {% endif %}
+            </td>
+            {% if not is_per_kill %}
+              <td style="text-align:center;">
+                {% if can_release %}
+                  <input type="checkbox" name="top" value="{{ p.id }}" class="top-checkbox" />
+                {% else %}
+                  {% if p.is_top_positioned %}<span class="winner-indicator">★</span>{% else %}<span class="meta">–</span>{% endif %}
+                {% endif %}
+              </td>
+            {% else %}
+              <td style="text-align:center;">
+                {% if can_release %}
+                  <input type="number" min="0" value="0" class="kill-input" data-participant-id="{{ p.id }}" />
+                {% else %}
+                  {% if p.kill_count %}{{ p.kill_count }}{% else %}0{% endif %}
+                {% endif %}
+              </td>
+            {% endif %}
+          {% endif %}
+          <td>
+            <span class="player-name">{{ p.in_game_name }}</span><br>
+            <span class="meta">{{ p.user.full_name }}</span>
+          </td>
+          <td>
+            <a href="mailto:{{ p.user.email }}" class="email-link">{{ p.user.email }}</a><br>
+            <span class="meta">Attempt {{ p.attempt_no }}</span>
+          </td>
+          {% if challenge.enable_slots %}
+          <td style="text-align:center;">
+            {% if p.slot_number %}
+              <strong style="color:#000; font-size:14px;">{{ p.slot_number }}</strong>
+            {% else %}
+              <span class="meta">–</span>
+            {% endif %}
+          </td>
+          {% endif %}
+          <td><span class="meta">{{ p.joined_at|date:'Y-m-d H:i' }}</span></td>
+          <td>
+            {% if p.result_status == 'won' %}
+              <span class="badge-status badge-won">{{ p.get_result_status_display }}</span>
+            {% elif p.result_status == 'lost' %}
+              <span class="badge-status badge-lost">{{ p.get_result_status_display }}</span>
+            {% else %}
+              <span class="badge-status">{{ p.get_result_status_display }}</span>
+            {% endif %}
+          </td>
+          {% if is_per_kill and show_prize_column %}
+            <td>{% if p.kill_count %}{{ p.kill_count }}{% else %}0{% endif %}</td>
+          {% endif %}
+          {% if show_prize_column %}
+            <td>
+              {% if p.prize_awarded %}
+                <strong style="color:#000;">{{ p.prize_awarded }}</strong>
+                {% if p.is_winner %}<br><span class="badge-status badge-won">Winner</span>{% endif %}
+              {% else %}
+                <span class="meta">–</span>
+              {% endif %}
+            </td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+    {% else %}
+      <tr class="empty-row">
+        <td colspan="8">No participants found{% if q %} matching "{{ q }}"{% endif %}.</td>
+      </tr>
+    {% endif %}
+  </tbody>
+</table>
+
+{% if has_prize_features and can_release %}
+<div id="prize-release-panel" class="prize-panel" data-is-per-kill="{{ is_per_kill|yesno:'true,false' }}">
+  <div class="prize-panel-header">
+    <div class="prize-panel-icon">★</div>
+    <h3>Release Prizes & Complete</h3>
+  </div>
+  
+  {% if not is_per_kill %}
+    <div class="instructions-box">
+      <p><strong>Instructions:</strong> Select top players (checkbox) to distribute prizes. Winner selection is optional.</p>
+    </div>
+    
+    <form id="release-form" onsubmit="return false;">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Top Player Prize <span class="required">*</span></label>
+          <input type="number" min="1" name="top_prize_amount" class="form-input" required placeholder="Amount..." />
+        </div>
+        <div class="form-group">
+          <label>Winner Bonus (optional)</label>
+          <input type="number" min="0" name="winner_extra_prize" class="form-input" placeholder="Extra amount..." />
+        </div>
+        <div class="form-group">
+          <button id="release-btn" type="button" class="btn btn-dark" style="padding: 10px 20px;">Release Prizes</button>
+        </div>
+      </div>
+    </form>
+  {% else %}
+    <div class="instructions-box">
+      <p><strong>Instructions:</strong> Enter kills for each player and provide per-kill value. Winner selection is optional.</p>
+    </div>
+    
+    <form id="release-form" onsubmit="return false;">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Per Kill Value <span class="required">*</span></label>
+          <input type="number" min="1" name="per_kill_value" class="form-input" required placeholder="Amount..." />
+        </div>
+        <div class="form-group">
+          <label>Winner Bonus (optional)</label>
+          <input type="number" min="0" name="winner_extra_prize" class="form-input" placeholder="Extra amount..." />
+        </div>
+        <div class="form-group">
+          <button id="release-btn" type="button" class="btn btn-dark" style="padding: 10px 20px;">Release Prizes</button>
+        </div>
+      </div>
+    </form>
+  {% endif %}
+  
+  <div id="release-msg"></div>
+</div>
+{% endif %}
+
+<script>
+  (function(){
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+    
+    // Send Credentials
+    const sendCredentialsBtn = document.getElementById('send-credentials-btn');
+    if(sendCredentialsBtn){
+      sendCredentialsBtn.addEventListener('click', function(){
+        const originalText = sendCredentialsBtn.textContent;
+        sendCredentialsBtn.disabled = true;
+        sendCredentialsBtn.textContent = 'Sending...';
+        sendCredentialsBtn.style.opacity = '0.5';
+        
+        fetch('{{ send_credentials_url }}', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken}
+        })
+        .then(r => r.json())
+        .then(data => {
+          alert(data.success ? `✓ ${data.message}` : `✗ ${data.error || 'Failed'}`);
+        })
+        .catch(() => alert('✗ Network error'))
+        .finally(() => {
+          sendCredentialsBtn.disabled = false;
+          sendCredentialsBtn.textContent = originalText;
+          sendCredentialsBtn.style.opacity = '1';
+        });
+      });
+    }
+    
+    // Refund
+    const refundBtn = document.getElementById('refund-btn');
+    if(refundBtn){
+      refundBtn.addEventListener('click', function(){
+        const entryFee = Number("{{ challenge.entry_fee|default:0 }}");
+        const count = Number("{{ total }}");
+        if(!confirm(`Refund ${entryFee} points to ${count} participant(s)?\n\nThis will cancel the tournament and cannot be undone.`)) return;
+        
+        const originalText = refundBtn.textContent;
+        refundBtn.disabled = true;
+        refundBtn.textContent = 'Processing...';
+        refundBtn.style.opacity = '0.5';
+        
+        fetch('{{ refund_url }}', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken}
+        })
+        .then(r => r.json())
+        .then(data => {
+          if(data.success){
+            alert(`✓ ${data.message}`);
+            setTimeout(() => window.location.href = '{% url "admin:challenge_challenge_changelist" %}', 1500);
+          } else {
+            alert(`✗ ${data.error || 'Failed'}`);
+            refundBtn.disabled = false;
+            refundBtn.textContent = originalText;
+            refundBtn.style.opacity = '1';
+          }
+        })
+        .catch(() => {
+          alert('✗ Network error');
+          refundBtn.disabled = false;
+          refundBtn.textContent = originalText;
+          refundBtn.style.opacity = '1';
+        });
+      });
+    }
+    
+    // Prize Release
+    const releaseBtn = document.getElementById('release-btn');
+    if(!releaseBtn) return;
+    
+    function showMessage(text, type){
+      const msg = document.getElementById('release-msg');
+      msg.textContent = text;
+      msg.className = type;
+      msg.style.display = 'block';
+    }
+    
+    releaseBtn.addEventListener('click', function(){
+      const winner = document.querySelector('.winner-radio:checked');
+      
+      const panel = document.getElementById('prize-release-panel');
+      const isPerKill = panel?.getAttribute('data-is-per-kill') === 'true';
+      const extraPrize = document.querySelector('input[name="winner_extra_prize"]').value;
+      let payload = {};
+      
+      // Winner is optional now
+      if(winner) {
+        payload.winner_id = parseInt(winner.value);
+      }
+      
+      if(isPerKill){
+        const perKillVal = document.querySelector('input[name="per_kill_value"]').value;
+        if(!perKillVal){ showMessage('Enter per kill value.', 'error'); return; }
+        const kills = {};
+        document.querySelectorAll('.kill-input').forEach(inp => {
+          const v = parseInt(inp.value);
+          if(v > 0) kills[inp.getAttribute('data-participant-id')] = v;
+        });
+        if(!Object.keys(kills).length){ showMessage('Enter kills for at least one participant.', 'error'); return; }
+        payload.kills = kills;
+        payload.per_kill_value = perKillVal;
+      } else {
+        const topIds = Array.from(document.querySelectorAll('.top-checkbox:checked')).map(cb => parseInt(cb.value));
+        if(!topIds.length){ showMessage('Select at least one top player.', 'error'); return; }
+        const topPrize = document.querySelector('input[name="top_prize_amount"]').value;
+        if(!topPrize){ showMessage('Enter top player prize.', 'error'); return; }
+        payload.top_ids = topIds;
+        payload.top_prize_amount = topPrize;
+      }
+      
+      if(extraPrize) payload.winner_extra_prize = extraPrize;
+      
+      releaseBtn.disabled = true;
+      releaseBtn.style.opacity = '0.5';
+      showMessage('Processing...', 'info');
+      
+      fetch('{{ release_url }}', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken},
+        body: JSON.stringify(payload)
+      })
+      .then(r => r.json())
+      .then(data => {
+        if(data.success){
+          showMessage('✓ ' + data.message, 'success');
+          setTimeout(() => location.reload(), 1500);
+        } else {
+          showMessage('✗ ' + (data.error || 'Failed'), 'error');
+          releaseBtn.disabled = false;
+          releaseBtn.style.opacity = '1';
+        }
+      })
+      .catch(() => {
+        showMessage('✗ Network error', 'error');
+        releaseBtn.disabled = false;
+        releaseBtn.style.opacity = '1';
+      });
+    });
+  })();
+</script>
+{% endblock %}

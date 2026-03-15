@@ -1,0 +1,716 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}Participants | {{ time_slot.tournament.title }} - {{ time_slot.time_slot }} | {{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+{% endblock %}
+
+{% block content %}
+<style>
+  * { box-sizing: border-box; }
+  
+  /* Toolbar */
+  .participants-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #eee;
+  }
+  .participants-toolbar h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 500;
+    color: #000;
+    letter-spacing: -0.3px;
+  }
+  .slot-info {
+    color: #666;
+    font-size: 14px;
+    margin-left: 12px;
+  }
+  
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #fff;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-decoration: none;
+  }
+  .btn:hover {
+    background: #f5f5f5;
+    border-color: #ccc;
+  }
+  .btn-dark {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+  }
+  .btn-dark:hover {
+    background: #222;
+  }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  /* Search Form */
+  .participants-search-form {
+    margin-left: auto;
+    display: flex;
+    gap: 8px;
+  }
+  .participants-search-form input[type=text] {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    min-width: 260px;
+    font-size: 13px;
+    background: #fafafa;
+    transition: all 0.15s ease;
+  }
+  .participants-search-form input[type=text]:focus {
+    outline: none;
+    border-color: #000;
+    background: #fff;
+  }
+  
+  /* Table */
+  .participants-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .participants-table th {
+    background: #fafafa;
+    text-align: left;
+    padding: 12px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #666;
+    border-bottom: 1px solid #eee;
+  }
+  .participants-table td {
+    padding: 14px;
+    border-bottom: 1px solid #f5f5f5;
+    font-size: 13px;
+    vertical-align: top;
+    color: #333;
+  }
+  .participants-table tr:last-child td {
+    border-bottom: none;
+  }
+  .participants-table tr:hover {
+    background: #fafafa;
+  }
+  
+  /* Badge */
+  .badge-status {
+    display: inline-block;
+    padding: 4px 10px;
+    font-size: 11px;
+    border-radius: 4px;
+    font-weight: 500;
+    background: #f5f5f5;
+    color: #333;
+    border: 1px solid #eee;
+  }
+  .badge-won {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+  }
+  
+  /* Meta text */
+  .meta {
+    color: #888;
+    font-size: 12px;
+  }
+  
+  /* Player name */
+  .player-name {
+    font-weight: 500;
+    color: #000;
+  }
+  
+  /* Email link */
+  .email-link {
+    color: #333;
+    text-decoration: none;
+  }
+  .email-link:hover {
+    text-decoration: underline;
+  }
+  
+  /* Empty state */
+  .empty-row td {
+    text-align: center;
+    padding: 48px 14px;
+    color: #999;
+    font-size: 14px;
+  }
+  
+  /* Form inputs in table */
+  .participants-table input[type="radio"],
+  .participants-table input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #000;
+    cursor: pointer;
+  }
+  .kill-input {
+    width: 60px;
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 12px;
+    text-align: center;
+    background: #fafafa;
+  }
+  .kill-input:focus {
+    outline: none;
+    border-color: #000;
+    background: #fff;
+  }
+  
+  /* Prize Release Panel */
+  .prize-panel {
+    margin-top: 32px;
+    padding: 24px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+  }
+  .prize-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .prize-panel-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    color: #fff;
+    border-radius: 8px;
+    font-size: 16px;
+  }
+  .prize-panel h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: #000;
+  }
+  
+  /* Instructions box */
+  .instructions-box {
+    background: #fafafa;
+    padding: 14px 16px;
+    border-radius: 6px;
+    margin-bottom: 24px;
+    border-left: 3px solid #000;
+  }
+  .instructions-box p {
+    margin: 0;
+    color: #555;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  
+  /* Form grid */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 20px;
+    align-items: end;
+  }
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+  }
+  .form-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    background: #fafafa;
+    transition: all 0.15s ease;
+  }
+  .form-input:focus {
+    outline: none;
+    border-color: #000;
+    background: #fff;
+  }
+  
+  /* Message box */
+  #release-msg {
+    margin-top: 20px;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    display: none;
+  }
+  #release-msg.success {
+    background: #f5f5f5;
+    color: #000;
+    border: 1px solid #ddd;
+    display: block !important;
+  }
+  #release-msg.error {
+    background: #fff;
+    color: #333;
+    border: 1px solid #333;
+    display: block !important;
+  }
+  #release-msg.info {
+    background: #fafafa;
+    color: #666;
+    border: 1px solid #eee;
+    display: block !important;
+  }
+
+  .btn-danger {
+    background: #dc2626;
+    color: #fff;
+    border-color: #dc2626;
+  }
+  .btn-danger:hover {
+    background: #b91c1c;
+  }
+
+  /* Cancel Panel */
+  .cancel-panel {
+    margin-top: 24px;
+    padding: 24px;
+    background: #000;
+    border: none;
+    border-radius: 8px;
+  }
+  .cancel-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .cancel-panel-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #dc2626;
+    color: #fff;
+    border-radius: 8px;
+    font-size: 16px;
+  }
+  .cancel-panel h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: #fff;
+  }
+  .cancel-panel p {
+    margin: 0 0 20px 0;
+    color: #a1a1aa;
+    font-size: 13px;
+  }
+  #cancel-msg {
+    margin-top: 16px;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    display: none;
+  }
+  #cancel-msg.success {
+    background: #166534;
+    color: #fff;
+    border: none;
+    display: block !important;
+  }
+  #cancel-msg.error {
+    background: #991b1b;
+    color: #fff;
+    border: none;
+    display: block !important;
+  }
+  #cancel-msg.info {
+    background: #27272a;
+    color: #a1a1aa;
+    border: none;
+    display: block !important;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .form-grid {
+      grid-template-columns: 1fr !important;
+      gap: 16px !important;
+    }
+    .participants-search-form {
+      margin-left: 0;
+      width: 100%;
+    }
+    .participants-search-form input[type=text] {
+      flex: 1;
+      min-width: auto;
+    }
+  }
+</style>
+
+<div class="participants-toolbar">
+  <div>
+    <h2>{{ time_slot.tournament.title }}</h2>
+    <div class="slot-info">
+      Time Slot: <strong>{{ time_slot.time_slot }}</strong>
+    </div>
+  </div>
+  
+  <form method="get" class="participants-search-form">
+    <input type="text" name="q" value="{{ q }}" placeholder="Search name, email or ID..." />
+    <button type="submit" class="btn btn-dark">Search</button>
+  </form>
+</div>
+
+<table class="participants-table">
+  <thead>
+    <tr>
+      <th style="width:50px;">ID</th>
+      {% if has_prize_features %}
+        <th style="width:60px;">Winner</th>
+        {% if not is_per_kill %}
+          <th style="width:60px;">Top</th>
+        {% else %}
+          <th style="width:80px;">Kills</th>
+        {% endif %}
+      {% endif %}
+      <th>Player</th>
+      <th>Contact</th>
+      {% if tournament.enable_slots %}
+        <th style="width:60px;">Slot</th>
+      {% endif %}
+      <th style="width:110px;">Joined</th>
+      <th style="width:90px;">Status</th>
+      {% if show_prize_column %}<th style="width:100px;">Prize</th>{% endif %}
+    </tr>
+  </thead>
+  <tbody>
+    {% if participants %}
+      {% for p in participants %}
+        <tr data-participant-id="{{ p.id }}">
+          <td>{{ p.id }}</td>
+          
+          {% if has_prize_features %}
+            <td style="text-align: center;">
+              <input type="radio" name="winner" value="{{ p.id }}" class="winner-radio" {% if not can_release %}disabled{% endif %} />
+            </td>
+            
+            {% if not is_per_kill %}
+              <td style="text-align: center;">
+                <input type="checkbox" value="{{ p.id }}" class="top-checkbox" {% if not can_release %}disabled{% endif %} />
+              </td>
+            {% else %}
+              <td style="text-align: center;">
+                <input type="number" min="0" value="{{ p.kill_count|default:0 }}" 
+                       class="kill-input" data-participant-id="{{ p.id }}" 
+                       {% if not can_release %}disabled{% endif %} />
+              </td>
+            {% endif %}
+          {% endif %}
+          
+          <td>
+            <div class="player-name">
+              {% if p.game_username %}{{ p.game_username }}{% else %}{{ p.user.full_name }}{% endif %}
+            </div>
+            <div class="meta">
+              {% if p.game_uid %}Game UID: {{ p.game_uid }}{% else %}User ID: {{ p.user.id }}{% endif %}
+            </div>
+          </td>
+          
+          <td>
+            <a href="mailto:{{ p.user.email }}" class="email-link">{{ p.user.email }}</a>
+            {% if p.user.phone_number %}
+              <div class="meta">{{ p.user.phone_number }}</div>
+            {% endif %}
+          </td>
+          
+          {% if tournament.enable_slots %}
+            <td style="text-align: center;">
+              {% if p.slot_number %}#{{ p.slot_number }}{% else %}-{% endif %}
+            </td>
+          {% endif %}
+          
+          <td>
+            <div>{{ p.registered_at|date:"M d, Y" }}</div>
+            <div class="meta">{{ p.registered_at|time:"g:i A" }}</div>
+          </td>
+          
+          <td>
+            <span class="badge-status {% if p.result_status == 'won' %}badge-won{% endif %}">
+              {{ p.get_result_status_display }}
+            </span>
+          </td>
+          
+          {% if show_prize_column %}
+            <td>
+              {% if p.prize_awarded %}
+                <strong>{{ p.prize_awarded }}</strong>
+                {% if p.is_winner %}
+                  <div class="meta">Winner Bonus</div>
+                {% endif %}
+              {% else %}
+                -
+              {% endif %}
+            </td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+    {% else %}
+      <tr class="empty-row">
+        <td colspan="10">No participants found{% if q %} matching "{{ q }}"{% endif %}.</td>
+      </tr>
+    {% endif %}
+  </tbody>
+</table>
+
+{% if has_prize_features and can_release %}
+<div id="prize-release-panel" class="prize-panel" data-is-per-kill="{{ is_per_kill|yesno:'true,false' }}">
+  <div class="prize-panel-header">
+    <div class="prize-panel-icon">★</div>
+    <h3>Release Prizes & Mark Time Slot as Inactive</h3>
+  </div>
+  
+  {% if not is_per_kill %}
+    <div class="instructions-box">
+      <p><strong>Instructions:</strong> Select top players (checkbox) to distribute prizes. Winner selection is optional. After releasing prizes, this time slot will be marked as inactive and hidden from user listings.</p>
+    </div>
+    
+    <form id="release-form" onsubmit="return false;">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Top Player Prize Amount</label>
+          <input type="number" name="top_prize_amount" class="form-input" placeholder="Enter amount" min="0" />
+        </div>
+        <div class="form-group">
+          <label>Winner Extra Prize (Optional)</label>
+          <input type="number" name="winner_extra_prize" class="form-input" placeholder="Bonus amount" min="0" />
+        </div>
+        <div class="form-group">
+          <button id="release-btn" type="button" class="btn btn-dark">Release Prizes</button>
+        </div>
+      </div>
+    </form>
+  {% else %}
+    <div class="instructions-box">
+      <p><strong>Instructions:</strong> Enter kills for each player and provide per-kill value. Winner selection is optional. After releasing prizes, this time slot will be marked as inactive and hidden from user listings.</p>
+    </div>
+    
+    <form id="release-form" onsubmit="return false;">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Per Kill Value</label>
+          <input type="number" name="per_kill_value" class="form-input" placeholder="Points per kill" min="0" />
+        </div>
+        <div class="form-group">
+          <label>Winner Extra Prize (Optional)</label>
+          <input type="number" name="winner_extra_prize" class="form-input" placeholder="Bonus amount" min="0" />
+        </div>
+        <div class="form-group">
+          <button id="release-btn" type="button" class="btn btn-dark">Release Prizes</button>
+        </div>
+      </div>
+    </form>
+  {% endif %}
+  
+  <div id="release-msg"></div>
+</div>
+{% endif %}
+
+{% if not time_slot.is_active %}
+  <div class="instructions-box" style="margin-top: 20px;">
+    <p><strong>Note:</strong> This time slot is inactive. Prizes have already been distributed and participants can no longer join this time slot.</p>
+  </div>
+{% endif %}
+
+{% if can_release %}
+<div class="cancel-panel">
+  <div class="cancel-panel-header">
+    <h3>Tournament Cancellation</h3>
+  </div>
+  <p>Cancel Tournament &amp; Refund Players</p>
+  <button id="cancel-tournament-btn" type="button" class="btn btn-danger">Cancel Tournament &amp; Refund All</button>
+  <div id="cancel-msg"></div>
+</div>
+{% endif %}
+
+<script>
+  (function(){
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '{{ csrf_token }}';
+    
+    // Send Credentials
+    const sendCredentialsBtn = document.getElementById('send-credentials-btn');
+    if(sendCredentialsBtn){
+      sendCredentialsBtn.addEventListener('click', function(){
+        const originalText = sendCredentialsBtn.textContent;
+        sendCredentialsBtn.disabled = true;
+        sendCredentialsBtn.textContent = 'Sending...';
+        
+        fetch('{{ send_credentials_url }}', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken}
+        })
+        .then(r => r.json())
+        .then(data => {
+          if(data.success) {
+            alert(`✓ ${data.message}`);
+          } else {
+            alert(`✗ ${data.error || 'Failed to send credentials'}`);
+            sendCredentialsBtn.disabled = false;
+            sendCredentialsBtn.textContent = originalText;
+          }
+        })
+        .catch(() => {
+          alert('✗ Network error');
+          sendCredentialsBtn.disabled = false;
+          sendCredentialsBtn.textContent = originalText;
+        });
+      });
+    }
+    
+    // Prize Release
+    const releaseBtn = document.getElementById('release-btn');
+    if(!releaseBtn) return;
+    
+    function showMessage(text, type){
+      const msg = document.getElementById('release-msg');
+      msg.textContent = text;
+      msg.className = type;
+      msg.style.display = 'block';
+    }
+    
+    releaseBtn.addEventListener('click', function(){
+      const winner = document.querySelector('.winner-radio:checked');
+      const panel = document.getElementById('prize-release-panel');
+      const isPerKill = panel?.getAttribute('data-is-per-kill') === 'true';
+      const extraPrize = document.querySelector('input[name="winner_extra_prize"]').value;
+      let payload = {};
+      
+      // Winner is optional
+      if(winner) {
+        payload.winner_id = parseInt(winner.value);
+      }
+      
+      if(isPerKill){
+        const perKillVal = document.querySelector('input[name="per_kill_value"]').value;
+        if(!perKillVal){ showMessage('Enter per kill value.', 'error'); return; }
+        const kills = {};
+        document.querySelectorAll('.kill-input').forEach(inp => {
+          const v = parseInt(inp.value) || 0;
+          if(v > 0) kills[inp.getAttribute('data-participant-id')] = v;
+        });
+        if(!Object.keys(kills).length){ showMessage('Enter kills for at least one participant.', 'error'); return; }
+        payload.kills = kills;
+        payload.per_kill_value = perKillVal;
+      } else {
+        const topIds = Array.from(document.querySelectorAll('.top-checkbox:checked')).map(cb => parseInt(cb.value));
+        if(!topIds.length){ showMessage('Select at least one top player.', 'error'); return; }
+        const topPrize = document.querySelector('input[name="top_prize_amount"]').value;
+        if(!topPrize){ showMessage('Enter top player prize.', 'error'); return; }
+        payload.top_ids = topIds;
+        payload.top_prize_amount = topPrize;
+      }
+      
+      if(extraPrize) payload.winner_extra_prize = extraPrize;
+      
+      if(!confirm('Are you sure you want to release prizes? This will mark the time slot as INACTIVE and cannot be undone.')) return;
+      
+      releaseBtn.disabled = true;
+      showMessage('Processing...', 'info');
+      
+      fetch('{{ release_url }}', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken},
+        body: JSON.stringify(payload)
+      })
+      .then(r => r.json())
+      .then(data => {
+        if(data.success) {
+          showMessage(`✓ ${data.message} Total distributed: $${data.total_distributed}`, 'success');
+          setTimeout(() => window.location.reload(), 2000);
+        } else {
+          showMessage(`✗ ${data.error || 'Failed'}`, 'error');
+          releaseBtn.disabled = false;
+        }
+      })
+      .catch(() => {
+        showMessage('✗ Network error', 'error');
+        releaseBtn.disabled = false;
+      });
+    });
+    
+    // Cancel Tournament
+    const cancelBtn = document.getElementById('cancel-tournament-btn');
+    if(cancelBtn){
+      function showCancelMsg(text, type){
+        const msg = document.getElementById('cancel-msg');
+        msg.textContent = text;
+        msg.className = type;
+        msg.style.display = 'block';
+      }
+      
+      cancelBtn.addEventListener('click', function(){
+        if(!confirm('⚠️ Are you sure you want to CANCEL this tournament time slot?\n\nThis will:\n• Refund all participants their entry fee\n• Send cancellation notifications\n• Mark this time slot as inactive\n\nThis action CANNOT be undone.')) return;
+        
+        cancelBtn.disabled = true;
+        cancelBtn.textContent = 'Cancelling...';
+        showCancelMsg('Processing cancellation...', 'info');
+        
+        fetch('{{ cancel_url }}', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken}
+        })
+        .then(r => r.json())
+        .then(data => {
+          if(data.success){
+            showCancelMsg('✓ ' + data.message, 'success');
+            setTimeout(() => window.location.reload(), 2000);
+          } else {
+            showCancelMsg('✗ ' + (data.error || 'Failed to cancel'), 'error');
+            cancelBtn.disabled = false;
+            cancelBtn.textContent = 'Cancel Tournament & Refund All';
+          }
+        })
+        .catch(() => {
+          showCancelMsg('✗ Network error', 'error');
+          cancelBtn.disabled = false;
+          cancelBtn.textContent = 'Cancel Tournament & Refund All';
+        });
+      });
+    }
+  })();
+</script>
+{% endblock %}

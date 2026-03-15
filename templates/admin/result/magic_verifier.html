@@ -1,0 +1,471 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+
+
+{% block extrahead %}
+    {{ block.super }}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Hide default Django header and all admin chrome */
+        #header, #branding, .breadcrumbs, h1.dashboard-title {
+            display: none !important;
+        }
+        
+        /* Hide Django sidebar */
+        #nav-sidebar {
+            display: none !important;
+        }
+        
+        /* Reset main content area */
+        #content-main, .main, #content {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+        }
+        
+        body {
+            background: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .page-container {
+            min-height: 100vh;
+            background: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 24px 32px;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            color: #000;
+            text-decoration: none;
+            transition: all 0.15s;
+            border: 1px solid #e5e5e5;
+            background: #fff;
+        }
+
+        .back-btn:visited, .back-btn:active, .back-btn:link {
+            color: #000;
+        }
+
+        .back-btn:hover {
+            background: #f5f5f5;
+            border-color: #ccc;
+            color: #000;
+        }
+
+        .back-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: #000000;
+            border-radius: 8px;
+            padding: 28px 24px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Magic Button */
+        .magic-button-container {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .magic-button {
+            padding: 14px 48px;
+            background: #000000;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .magic-button:hover:not(:disabled) {
+            background: #374151;
+        }
+
+        .magic-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Info Section */
+        .info-section {
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin-top: 24px;
+        }
+
+        .section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #000000;
+            margin: 0 0 16px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .info-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .info-list li {
+            color: #374151;
+            font-size: 0.8125rem;
+            line-height: 1.6;
+            padding: 8px 0;
+            border-bottom: 1px solid #E5E7EB;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .info-list li:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .info-list li strong {
+            color: #000000;
+            font-weight: 600;
+            min-width: 140px;
+            flex-shrink: 0;
+        }
+
+        /* Results Container */
+        .results-container {
+            background: #ffffff;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 20px 24px;
+            display: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 32px;
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid #E5E7EB;
+            border-top-color: #000000;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading p {
+            color: #6b7280;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .result-section {
+            margin-bottom: 20px;
+        }
+
+        .result-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .result-section h3 {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #000000;
+            margin: 0 0 12px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .result-list {
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            padding: 12px 16px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .result-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #E5E7EB;
+            color: #374151;
+            font-size: 0.8125rem;
+            line-height: 1.5;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .result-item.success {
+            color: #059669;
+        }
+
+        .result-item.warning {
+            color: #D97706;
+        }
+
+        .result-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .result-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .result-list::-webkit-scrollbar-thumb {
+            background: #D1D5DB;
+            border-radius: 2px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-container {
+                padding: 20px;
+            }
+
+            .top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .top-bar-stats {
+                width: 100%;
+            }
+
+            .stat-badge {
+                flex: 1;
+                justify-content: center;
+            }
+
+            .info-list li {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .info-list li strong {
+                min-width: auto;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .magic-button {
+                width: 100%;
+                padding: 14px 24px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block breadcrumbs %}
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <a href="{% url 'admin:index' %}" class="back-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+        </a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-value">{{ pending_challenges }}</span>
+                <span class="stat-label">Pending</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value" id="processed-count">0</span>
+                <span class="stat-label">Processed</span>
+            </div>
+        </div>
+
+        <!-- Magic Button -->
+        <div class="magic-button-container">
+            <button type="button" class="magic-button" id="magic-btn">
+                Run Magic Verification
+            </button>
+        </div>
+
+        <!-- Results Container -->
+        <div class="results-container" id="results-container">
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Processing verification...</p>
+            </div>
+            
+            <div id="results-content" style="display: none;">
+                <div class="result-section">
+                    <h3>Automatically Processed</h3>
+                    <div class="result-list" id="processed-list">
+                        <!-- Processed results will appear here -->
+                    </div>
+                </div>
+                
+                <div class="result-section">
+                    <h3>Needs Manual Review</h3>
+                    <div class="result-list" id="pending-list">
+                        <!-- Pending results will appear here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Section -->
+        <div class="info-section">
+            <h2 class="section-title">How It Works</h2>
+            <ul class="info-list">
+                <li><strong>Game Setting Issues</strong> Automatically detects and flags challenges with pending game setting issues (mistake settings only)</li>
+                <li><strong>Timeout Auto-Win</strong> If only one player submits within 10 minutes, they win automatically</li>
+                <li><strong>Clear Win Claims</strong> Auto-win when one claims victory and other claims loss (or no claim)</li>
+                <li><strong>Conflict Detection</strong> Win vs Win, Win vs Draw - all flagged for manual review</li>
+                <li><strong>Chess Draw Logic</strong> Both claim draw in chess = auto-refund with 10% service fee</li>
+                <li><strong>Smart Analysis</strong> Processes only crystal-clear cases, flags any ambiguity or game setting issues</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    $('#magic-btn').click(function() {
+        const button = $(this);
+        const resultsContainer = $('#results-container');
+        const loading = $('#loading');
+        const resultsContent = $('#results-content');
+        
+        // Disable button and show loading
+        button.prop('disabled', true).text('Processing...');
+        resultsContainer.show();
+        loading.show();
+        resultsContent.hide();
+        
+        // Make AJAX request
+        $.post('{% url "admin:result_magic_verifier" %}', {
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        })
+        .done(function(data) {
+            if (data.success) {
+                // Update processed count
+                $('#processed-count').text(data.processed);
+                
+                // Clear previous results
+                $('#processed-list').empty();
+                $('#pending-list').empty();
+                
+                // Add processed results
+                if (data.processed_details && data.processed_details.length > 0) {
+                    data.processed_details.forEach(function(detail) {
+                        $('#processed-list').append(`<div class="result-item success">${detail}</div>`);
+                    });
+                } else {
+                    $('#processed-list').append('<div class="result-item">No challenges were auto-processed</div>');
+                }
+                
+                // Add pending results
+                if (data.pending_details && data.pending_details.length > 0) {
+                    data.pending_details.forEach(function(detail) {
+                        $('#pending-list').append(`<div class="result-item warning">${detail}</div>`);
+                    });
+                } else {
+                    $('#pending-list').append('<div class="result-item">No challenges need manual review</div>');
+                }
+                
+                // Show results
+                loading.hide();
+                resultsContent.show();
+                
+                // Success message
+                button.text(`Complete! Processed: ${data.processed}, Pending: ${data.pending}`);
+                
+                // Re-enable button after 3 seconds
+                setTimeout(function() {
+                    button.prop('disabled', false).text('Run Magic Verification');
+                }, 3000);
+                
+            } else {
+                alert('Verification failed: ' + data.message);
+                button.prop('disabled', false).text('Run Magic Verification');
+                resultsContainer.hide();
+            }
+        })
+        .fail(function() {
+            alert('Verification failed. Please try again.');
+            button.prop('disabled', false).text('Run Magic Verification');
+            resultsContainer.hide();
+        });
+    });
+});
+</script>
+
+{% endblock %}

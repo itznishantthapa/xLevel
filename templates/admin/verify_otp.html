@@ -1,0 +1,292 @@
+{% load static i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify OTP | Level Esports</title>
+    <link rel="icon" href="{% static 'logo/logo.png' %}" type="image/png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        
+        .verify-container {
+            width: 100%;
+            max-width: 680px;
+        }
+        
+        .verify-card {
+            display: flex;
+            align-items: stretch;
+            background: #fafafa;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        
+        .brand-side {
+            flex: 0 0 280px;
+            background: #000000;
+            padding: 48px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .brand-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            object-fit: contain;
+            margin-bottom: 24px;
+            background: #ffffff;
+            padding: 8px;
+        }
+        
+        .brand-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.3px;
+            line-height: 1.3;
+        }
+        
+        .form-side {
+            flex: 1;
+            padding: 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .form-header {
+            margin-bottom: 28px;
+        }
+        
+        .form-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #000000;
+            margin-bottom: 6px;
+        }
+        
+        .form-subtitle {
+            font-size: 14px;
+            color: #888888;
+        }
+        
+        .messages-wrapper {
+            margin-bottom: 20px;
+        }
+        
+        .alert-message {
+            padding: 14px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+        
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .otp-input {
+            width: 100%;
+            padding: 18px;
+            font-size: 28px;
+            text-align: center;
+            letter-spacing: 14px;
+            color: #000000;
+            background: #ffffff;
+            border: 1px solid #e5e5e5;
+            border-radius: 10px;
+            font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+        }
+        
+        .otp-input:focus {
+            outline: none;
+            border-color: #000000;
+        }
+        
+        .otp-input::placeholder {
+            color: #cccccc;
+            letter-spacing: 10px;
+        }
+        
+        .otp-input.input-error {
+            border-color: #dc2626;
+            background: #fef2f2;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 16px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: inherit;
+            text-decoration: none;
+            text-align: center;
+            display: block;
+        }
+        
+        .btn-primary {
+            background: #000000;
+            color: #ffffff;
+        }
+        
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-secondary {
+            background: #e5e5e5;
+            color: #333333;
+        }
+        
+        .backup-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .backup-link a {
+            font-size: 13px;
+            color: #666666;
+            text-decoration: none;
+        }
+        
+        .backup-link a:hover {
+            color: #000000;
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 640px) {
+            .verify-card {
+                flex-direction: column;
+                max-width: 380px;
+                margin: 0 auto;
+            }
+            
+            .brand-side {
+                flex: none;
+                padding: 32px;
+            }
+            
+            .form-side {
+                padding: 36px 32px;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .otp-input {
+                font-size: 24px;
+                letter-spacing: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="verify-container">
+        <div class="verify-card">
+            <div class="brand-side">
+                <img src="{% static 'logo/logo.png' %}" alt="Logo" class="brand-logo">
+                <div class="brand-name">
+                    Level Esports
+                </div>
+            </div>
+            
+            <div class="form-side">
+                <div class="form-header">
+                    <div class="form-title">Two-Factor Authentication</div>
+                    <div class="form-subtitle">Enter the 6-digit code from your authenticator app</div>
+                </div>
+                
+                {% if messages %}
+                <div class="messages-wrapper">
+                    {% for message in messages %}
+                    {% if message.tags == 'error' %}
+                    <div class="alert-message alert-error">{{ message }}</div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <form method="post" id="otpForm">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="id_otp_token">Verification Code</label>
+                        <input 
+                            type="text" 
+                            name="otp_token" 
+                            id="id_otp_token" 
+                            class="otp-input{% if form.errors or error %} input-error{% endif %}"
+                            placeholder="000000"
+                            maxlength="6"
+                            pattern="[0-9]*"
+                            inputmode="numeric"
+                            autocomplete="one-time-code"
+                            autofocus
+                            required
+                        >
+                    </div>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    document.getElementById('id_otp_token').addEventListener('input', function(e) {
+        // Only allow digits
+        this.value = this.value.replace(/[^0-9]/g, '');
+        
+        // Auto-submit when 6 digits entered
+        if (this.value.length === 6) {
+            document.getElementById('otpForm').submit();
+        }
+    });
+    </script>
+</body>
+</html>

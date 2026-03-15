@@ -1,0 +1,1883 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=add,account_balance_wallet,swords,verified,credit_card,diamond_shine,report_problem,sports_esports,person_add,assessment,notifications_active,mail,show_chart,local_mall,bar_chart">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
+    
+<style>
+    @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons');
+    @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0');
+
+    /* Material Dashboard Redesign */
+    #header, #branding, .breadcrumbs, h1.dashboard-title { display: none !important; }
+    #nav-sidebar { display: none !important; }
+    #content-main, .main, #content { margin: 0 !important; padding: 0 !important; width: 100% !important; }
+    
+    body {
+        background: #eeeeee;
+        margin: 0;
+        padding: 0;
+        font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+        color: #3C4858;
+    }
+
+    /* Grid Wrapper */
+    .bento-dashboard-wrapper {
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 24px;
+        padding-top: 80px;
+        box-sizing: border-box;
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        grid-template-rows: auto auto auto;
+        gap: 30px;
+        align-items: stretch;
+    }
+
+    /* Shared Material Card Styles */
+    .bento-card {
+        background: #ffffff;
+        border-radius: 6px;
+        box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.14);
+        position: relative;
+        margin-bottom: 30px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .bento-padding { padding: 24px; }
+
+    /* Grid Zones Placement */
+    .bento-main-column,
+    .bento-sidebar-column { display: contents; }
+
+    .urgent-card { grid-column: span 4; grid-row: 1; align-self: stretch; height: 100%; }
+    .quick-actions-card { grid-column: span 8; grid-row: 2; align-self: stretch; height: 100%; }
+    .tournaments-card { grid-column: span 4; grid-row: 2; align-self: stretch; height: 100%; }
+    .bento-full-width { grid-column: span 12; grid-row: 3; margin-bottom: 40px; }
+
+    /* Custom Header - White Compact Style */
+        .custom-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            grid-column: 1 / -1;
+            grid-row: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background: #fff;
+            border-bottom: 1px solid #e5e5e5;
+            flex-shrink: 0;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            color: #000;
+            text-decoration: none;
+            transition: all 0.15s;
+            border: 1px solid #e5e5e5;
+        }
+
+        .nav-btn:visited, .nav-btn:active, .nav-btn:link {
+            color: #000;
+        }
+
+        .nav-btn:hover {
+            background: #f5f5f5;
+            border-color: #ccc;
+            color: #000;
+        }
+
+        .nav-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-title a {
+            display: inline-block;
+            perspective: 800px;
+        }
+
+        .header-logo {
+            height: 44px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .header-title h1 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #000;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .header-title p {
+            font-size: 12px;
+            color: #666;
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .header-refresh-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border: 1px solid #e5e5e5;
+            border-radius: 6px;
+            background: #fff;
+            font-size: 12px;
+            font-weight: 500;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        
+        .header-refresh-indicator:hover {
+            border-color: #000;
+            background: #f5f5f5;
+        }
+        
+        .refresh-icon {
+            font-size: 14px;
+            color: #000;
+            transition: transform 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .header-refresh-indicator:hover .refresh-icon {
+            transform: rotate(180deg);
+        }
+        
+        .refresh-text {
+            font-size: 11px;
+            color: #666;
+            pointer-events: none;
+        }
+        
+        .btn-header-logout {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border: 1px solid #e5e5e5;
+            border-radius: 6px;
+            background: #fff;
+            color: #000;
+            font-size: 12px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        
+        .btn-header-logout:hover {
+            background: #f5f5f5;
+            border-color: #000;
+            color: #000;
+            text-decoration: none;
+        }
+        
+        .btn-header-logout svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .btn-header {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #fff;
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            background: #e5e5e5;
+            color: #000;
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+        }
+
+        
+    /* Stats Grid Section (Material Style) */
+    .stats-grid-bento {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 30px;
+        grid-column: span 8;
+        grid-row: 1;
+        align-self: stretch;
+        height: 100%;
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+    .material-stat-card {
+        background: #ffffff;
+        border-radius: 6px;
+        box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.14);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        margin-top: 12px;
+        margin-bottom: 12px;
+        overflow: visible;
+    }
+
+    .material-stat-icon {
+        position: absolute;
+        top: -10px;
+        left: -8px;
+        padding: 12px;
+        border-radius: 3px;
+        color: #fff;
+        z-index: 1;
+    }
+
+    .material-stat-icon.warning { background: linear-gradient(60deg, #ffa726, #fb8c00); box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(255, 152, 0, 0.4); }
+    .material-stat-icon.success { background: linear-gradient(60deg, #66bb6a, #43a047); box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(76, 175, 80, 0.4); }
+    .material-stat-icon.danger { background: linear-gradient(60deg, #ef5350, #e53935); box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(244, 67, 54, 0.4); }
+    .material-stat-icon.info { background: linear-gradient(60deg, #26c6da, #00acc1); box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(0, 188, 212, 0.4); }
+    .material-stat-icon.primary { background: linear-gradient(60deg, #ab47bc, #8e24aa); box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(156, 39, 176, 0.4); }
+    .material-stat-icon.rose { background: linear-gradient(60deg, #ec407a, #d81b60); box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(233, 30, 99, 0.4); }
+
+.material-icons {
+    font-family: 'Material Icons' !important;
+    font-weight: normal !important;
+    font-style: normal !important;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    font-feature-settings: 'liga';
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+}
+
+.material-symbols-outlined {
+    font-family: 'Material Symbols Outlined' !important;
+    font-weight: normal !important;
+    font-style: normal !important;
+    display: inline-block;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    direction: ltr;
+    font-feature-settings: 'liga';
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+    .material-stat-icon .material-icons {
+        font-family: 'Material Icons';
+        font-weight: normal;
+        font-style: normal;
+        font-size: 32px;
+        line-height: 1;
+        width: 32px;
+        height: 32px;
+        text-align: center;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        font-feature-settings: 'liga';
+        -webkit-font-feature-settings: 'liga';
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .material-stat-content {
+        text-align: right;
+        padding-top: 12px;
+        padding-right: 20px;
+        padding-left: 12px;
+        min-height: 75px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    .material-stat-label {
+        color: #999999;
+        font-size: 12px;
+        margin: 0 0 8px 0;
+        font-weight: 400;
+        line-height: 1.3;
+        word-break: break-word;
+        white-space: normal;
+        max-width: 100%;
+    }
+
+    .material-stat-value {
+        color: #3C4858;
+        font-size: 1.75rem;
+        font-weight: 300;
+        margin: 0;
+        line-height: 1.2;
+        margin-top: auto;
+    }
+
+    .material-stat-footer {
+        border-top: 1px solid #eeeeee;
+        margin: 8px 20px 0;
+        padding: 10px 0;
+        display: flex;
+        align-items: center;
+        color: #999999;
+        font-size: 12px;
+    }
+
+    .material-stat-footer .material-icons {
+        font-family: 'Material Icons';
+        font-weight: normal;
+        font-style: normal;
+        font-size: 16px;
+        margin-right: 5px;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        font-feature-settings: 'liga';
+        -webkit-font-feature-settings: 'liga';
+        -webkit-font-smoothing: antialiased;
+    }
+
+    
+    /* Standard Material Cards */
+    .material-card {
+        background: #fff;
+        border-radius: 6px;
+        box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.14);
+        position: relative;
+        margin-bottom: 20px;
+        margin-top: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .material-card-header {
+        margin: -20px 15px 0;
+        border-radius: 3px;
+        padding: 24px 20px 20px 20px;
+        background-color: #999999;
+        box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(153, 153, 153, 0.4);
+        color: #fff;
+        z-index: 3;
+        position: relative;
+    }
+
+    .material-card-header.warning { background: linear-gradient(60deg, #ffa726, #fb8c00); box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(255, 152, 0, 0.4); }
+    .material-card-header.success { background: linear-gradient(60deg, #66bb6a, #43a047); box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(76, 175, 80, 0.4); }
+    .material-card-header.danger { background: linear-gradient(60deg, #ef5350, #e53935); box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(244, 67, 54, 0.4); }
+    .material-card-header.info { background: linear-gradient(60deg, #26c6da, #00acc1); box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(0, 188, 212, 0.4); }
+    .material-card-header.primary { background: linear-gradient(60deg, #ab47bc, #8e24aa); box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(156, 39, 176, 0.4); }
+    .material-card-header.rose { background: linear-gradient(60deg, #ec407a, #d81b60); box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(233, 30, 99, 0.4); }
+
+    .material-card-title {
+        margin-top: 0;
+        margin-bottom: 2px;
+        font-size: 1.25rem;
+        color: #fff;
+        font-weight: 500;
+        line-height: 1.3;
+        letter-spacing: 0.3px;
+    }
+
+    .material-card-category {
+        margin: 0;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.85);
+        line-height: 1.4;
+        font-weight: 400;
+        letter-spacing: 0.2px;
+    }
+
+    .material-card-body {
+        padding: 15px 20px;
+        flex: 1;
+    }
+    /* Quick Actions Grid */
+        .actions-bento-grid { 
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .action-card {
+            background: #ffffff;
+            border-radius: 12px;
+            border: none;
+            padding: 12px 14px;
+            text-decoration: none;
+            display: block;
+            position: relative;
+            transition: none;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12), 0 6px 10px rgba(15, 23, 42, 0.08);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #111827;
+        }
+
+        .action-card:hover {
+            transform: none;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12), 0 6px 10px rgba(15, 23, 42, 0.08);
+            text-decoration: none;
+        }
+
+        .action-text h4 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #000000;
+            margin: 0 0 4px 0;
+            text-decoration: none;
+        }
+
+        .action-text p {
+            font-size: 0.7rem;
+            color: #000000;
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .action-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            color: #111827;
+            background: transparent;
+            box-shadow: none;
+        }
+
+        .action-icon .material-icons {
+            font-size: 22px;
+        }
+
+        .action-icon .material-symbols-outlined {
+            font-size: 22px;
+            line-height: 1;
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .action-icon.accent-amber { color: #b45309; }
+        .action-icon.accent-blue { color: #1d4ed8; }
+        .action-icon.accent-purple { color: #7c3aed; }
+        .action-icon.accent-teal { color: #0f766e; }
+        .action-icon.accent-orange { color: #c2410c; }
+        .action-icon.accent-red { color: #b91c1c; }
+        .action-icon.accent-indigo { color: #4338ca; }
+        .action-icon.accent-slate { color: #475569; }
+        .action-icon.accent-cyan { color: #0e7490; }
+        .action-icon.accent-rose { color: #be123c; }
+        .action-icon.accent-emerald { color: #047857; }
+        .action-icon.accent-lime { color: #4d7c0f; }
+        .action-icon.accent-sky { color: #0ea5e9; }
+
+        .action-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 2px 8px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(99, 102, 241, 0.4);
+        }
+
+        .action-card.magic-verifier { background: #111827; border: none; }
+        .action-card.magic-verifier h4 { color: #fff !important; }
+        .action-card.magic-verifier p { color: #9ca3af; }
+        .action-card.magic-verifier:hover { background: #1f2937; }
+        
+        .action-card.send-alert { background: #ef4444; border-color: #ef4444; }
+        .action-card.send-alert { background: #ef4444; border-color: #ef4444; }
+        .action-card.send-alert .action-icon { background: #ffffff; color: #ef4444; }
+        .action-card.send-alert h4 { color: #ffffff !important; }
+        .action-card.send-alert p { color: #fecaca; }
+        .action-card.send-alert:hover { background: #dc2626; border-color: #dc2626; }
+
+        /* Cyberpunk Box adapted for Bento */
+        .cyberpunk-bento {
+            background: #111827;
+            color: #fff;
+            padding: 32px;
+            border-radius: 24px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            box-shadow: 0 10px 30px rgba(17, 24, 39, 0.2);
+        }
+
+        .cyberpunk-bento::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .cyberpunk-text {
+            flex: 1;
+            z-index: 1;
+        }
+
+        .cyberpunk-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #fff;
+            margin: 0 0 8px 0;
+            letter-spacing: -0.02em;
+        }
+
+        .cyberpunk-subtitle {
+            font-size: 0.9rem;
+            color: #9ca3af;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .cyberpunk-stats {
+            display: flex;
+            gap: 32px;
+            z-index: 1;
+        }
+
+        .cyberpunk-stat {
+            text-align: center;
+        }
+
+        .cyberpunk-stat-value {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: #f3f4f6;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .cyberpunk-stat-label {
+            font-size: 0.7rem;
+            color: #6b7280;
+            margin: 8px 0 0 0;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 700;
+        }
+
+        /* Sidebar Elements - Urgent & Tournaments */
+        .sidebar-section-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #111827;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin: 0 0 4px 0;
+        }
+        
+        .sidebar-section-subtitle {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin: 0 0 16px 0;
+        }
+
+        .urgent-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            max-height: calc(100vh - 400px); /* Leave room for tournaments */
+            padding-right: 8px;
+        }
+
+        /* Custom Scrollbar */
+        .urgent-list::-webkit-scrollbar, .tournament-list::-webkit-scrollbar { width: 4px; }
+        .urgent-list::-webkit-scrollbar-track, .tournament-list::-webkit-scrollbar-track { background: transparent; }
+        .urgent-list::-webkit-scrollbar-thumb, .tournament-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+        .urgent-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .urgent-item:hover {
+            transform: translateY(-1px) scale(1.01);
+            filter: brightness(0.97);
+            text-decoration: none;
+        }
+
+        .urgent-item.high { background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); }
+        .urgent-item.credit { background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); }
+        .urgent-item.withdraw { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); }
+        .urgent-item.low { background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%); }
+        .urgent-item.store { background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%); }
+        .urgent-item.buysell { background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); }
+
+        .urgent-type {
+            font-size: 0.65rem;
+            color: rgba(0,0,0,0.6);
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 2px;
+            letter-spacing: 0.05em;
+        }
+
+        .urgent-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .urgent-time {
+            font-size: 0.7rem;
+            color: rgba(0,0,0,0.5);
+            font-weight: 600;
+        }
+
+        .no-content-state {
+            text-align: center;
+            padding: 30px;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            font-weight: 500;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 1px dashed #cbd5e1;
+        }
+
+        /* All Models Section (Bottom) */
+        .models-bento-card {
+            padding: 24px;
+            padding-bottom: 40px;
+        }
+
+        .models-bento-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #111827;
+            margin: 0 0 16px 0;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .models-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px 24px;
+            padding: 20px 0;
+        }
+
+        .model-link-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #000000;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            padding: 6px 0;
+        }
+
+        .model-link-item:hover {
+            color: #000000;
+            text-decoration: none;
+            transform: translateX(2px);
+        }
+
+        .model-link-icon {
+            font-size: 0.625rem;
+            opacity: 0.4;
+            transition: all 0.15s ease;
+        }
+
+        .model-link-item:hover .model-link-icon {
+            opacity: 1;
+        }
+
+        /* Tournaments List */
+        .tournament-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            height: 520px;
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .tournament-card {
+            background: #f8f9fa;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 16px;
+        }
+
+        .tournament-card.in-progress {
+            border-left: 4px solid #3b82f6;
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+
+        .tournament-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .tournament-game {
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: #334155;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .tournament-status-badge {
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .tournament-status-badge.upcoming { background: #1e293b; color: #fff; }
+        .tournament-status-badge.in-progress { background: #3b82f6; color: #fff; }
+
+        .tournament-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0 0 10px 0;
+            line-height: 1.3;
+        }
+
+        .tournament-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 0.75rem;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #cbd5e1;
+            color: #475569;
+        }
+
+        .tournament-meta span.meta-label { font-weight: 500; }
+        .tournament-meta span.meta-value { font-weight: 700; color: #0f172a; }
+
+        .credential-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .credential-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-family: monospace;
+            background: #fff;
+            color: #0f172a;
+            font-weight: 600;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        .credential-input:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99,102,241,0.1); }
+
+        .btn-send-credentials {
+            width: 100%;
+            padding: 10px;
+            background: #1e293b;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-send-credentials:hover { background: #0f172a; }
+
+        .btn-view-details {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: #fff;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-align: center;
+            text-decoration: none;
+            box-sizing: border-box;
+            transition: all 0.2s;
+        }
+
+        .btn-view-details:hover { background: #f8f9fa; border-color: #94a3b8; color: #0f172a; text-decoration: none; }
+
+/* Urgent Items Card Override */
+    .material-card[style*="margin-top: 30px"] {
+        margin-top: 0 !important;
+    }
+
+    /* Tournament List Card Override */
+    .material-card[style*="flex: 1"] {
+        margin-top: 0 !important;
+        flex: 0 0 auto !important;
+    }
+
+    .bento-sidebar-column .material-card[style*="flex: 1"] .material-card-body {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+    }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 1200px) {
+            .stats-grid-bento,
+            .quick-actions-card { grid-column: span 7; }
+            .urgent-card,
+            .tournaments-card { grid-column: span 5; }
+        }
+
+        @media (max-width: 968px) {
+            .bento-dashboard-wrapper {
+                grid-template-columns: 1fr;
+                padding: 16px;
+                padding-top: 80px;
+            }
+            .stats-grid-bento,
+            .urgent-card,
+            .quick-actions-card,
+            .tournaments-card,
+            .bento-full-width {
+                grid-column: span 1;
+                grid-row: auto;
+            }
+            .cyberpunk-bento {
+                flex-direction: column;
+                align-items: flex-start;
+                text-align: left;
+            }
+            .models-list {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            }
+            .stats-grid-bento { gap: 20px; }
+        }
+
+        @media (max-width: 640px) {
+            .header-title h1 { font-size: 14px; }
+            .header-logo { height: 32px; }
+            .stats-grid-bento { grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 0; margin-bottom: 0;}
+            .bento-padding { padding: 16px; }
+            .cyberpunk-stats { flex-wrap: wrap; gap: 16px; }
+            .actions-bento-grid { grid-template-columns: 1fr 1fr; }
+            .material-stat-card { margin-top: 15px; margin-bottom: 15px; }
+        }
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+{% endblock %}
+
+{% block content %}
+<div class="bento-dashboard-wrapper">
+    <!-- Main Content Area (8 Columns on Desktop) -->
+    <div class="bento-main-column">
+        <!-- Custom Header -->
+        <div class="custom-header">
+            <div class="header-left">
+                <div class="header-title">
+                    <a href="{% url 'admin:index' %}">
+                        <img src="{% static 'logo/logo.png' %}" alt="Level Logo" class="header-logo">
+                    </a>
+                    <div>
+                        <h1>Level Esports</h1>
+                        <p>{{ user.email|truncatechars:30 }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="header-actions">
+                <div class="header-refresh-indicator" id="refresh-indicator">
+                    <span class="refresh-icon">⟳</span>
+                    <span class="refresh-text">Last updated: 0s ago</span>
+                </div>
+                
+                <div class="auto-verification-toggle-header">
+                    <span class="toggle-label-header">Auto Verification</span>
+                    <label class="toggle-switch-header">
+                        <input type="checkbox" id="autoVerificationToggle" {% if auto_verification_enabled %}checked{% endif %}>
+                        <span class="slider-header"></span>
+                    </label>
+                </div>
+                
+                <form method="post" action="{% url 'admin:logout' %}" style="margin: 0;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-header-logout">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        <span>Logout</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="stats-grid-bento">
+            <div class="material-stat-card">
+                <div class="material-stat-icon success">
+                    <i class="material-icons">flag</i>
+                </div>
+                <div class="material-stat-content">
+                    <p class="material-stat-label">Total Challenges</p>
+                    <h3 class="material-stat-value">{{ challenge_stats.total }}</h3>
+                </div>
+                <div class="material-stat-footer">
+                    <i class="material-icons">update</i>
+                    <span>{{ challenge_stats.today_created }} created today</span>
+                </div>
+            </div>
+            
+            <div class="material-stat-card">
+                <div class="material-stat-icon warning">
+                    <i class="material-icons">hourglass_empty</i>
+                </div>
+                <div class="material-stat-content">
+                    <p class="material-stat-label">Pending Results</p>
+                    <h3 class="material-stat-value">{{ result_stats.pending }}</h3>
+                </div>
+                <div class="material-stat-footer">
+                    <i class="material-icons">error_outline</i>
+                    <span>{{ result_stats.needs_verification }} need verification</span>
+                </div>
+            </div>
+            
+            <div class="material-stat-card">
+                <div class="material-stat-icon info">
+                    <i class="material-icons">account_balance_wallet</i>
+                </div>
+                <div class="material-stat-content">
+                    <p class="material-stat-label">Pending Transactions</p>
+                    <h3 class="material-stat-value">{{ transaction_stats.pending_verification }}</h3>
+                </div>
+                <div class="material-stat-footer">
+                    <i class="material-icons">date_range</i>
+                    <span>{{ transaction_stats.today }} today</span>
+                </div>
+            </div>
+            
+            <div class="material-stat-card">
+                <div class="material-stat-icon danger">
+                    <i class="material-icons">warning</i>
+                </div>
+                <div class="material-stat-content">
+                    <p class="material-stat-label">Pending Reports</p>
+                    <h3 class="material-stat-value">{{ report_stats.game_issue_pending }}</h3>
+                </div>
+                <div class="material-stat-footer">
+                    <i class="material-icons">local_offer</i>
+                    <span>Game Issues | {{ report_stats.today }} today</span>
+                </div>
+            </div>
+            
+            <div class="material-stat-card">
+                <div class="material-stat-icon primary">
+                    <i class="material-icons">wc</i>
+                </div>
+                <div class="material-stat-content">
+                    <p class="material-stat-label">Total Users</p>
+                    <h3 class="material-stat-value">{{ user_stats.total }}</h3>
+                </div>
+                <div class="material-stat-footer">
+                    <i class="material-icons">person_add</i>
+                    <span>{{ user_stats.new_today }} new today</span>
+                </div>
+            </div>
+            
+            <div class="material-stat-card">
+                <div class="material-stat-icon rose">
+                    <i class="material-icons">monetization_on</i>
+                </div>
+                <div class="material-stat-content">
+                    <p class="material-stat-label">Points in Circulation</p>
+                    <h3 class="material-stat-value">{{ financial_stats.total_circulation|floatformat:0 }}</h3>
+                </div>
+                <div class="material-stat-footer">
+                    <i class="material-icons">trending_up</i>
+                    <span>↑{{ financial_stats.highest_balance|floatformat:-2 }} ↓{{ financial_stats.lowest_balance|floatformat:-2 }}</span>
+                </div>
+            </div>
+            
+            <div class="material-stat-card">
+                <div class="material-stat-icon warning">
+                    <i class="material-icons">sports_esports</i>
+                </div>
+                <div class="material-stat-content">
+                    <p class="material-stat-label">Active Matches</p>
+                    <h3 class="material-stat-value">{{ challenge_stats.ongoing_matches }}</h3>
+                </div>
+                <div class="material-stat-footer">
+                    <i class="material-icons">info_outline</i>
+                    <span>{{ challenge_stats.in_progress_matches }} In Progress | {{ challenge_stats.completed_matches }} Done</span>
+                </div>
+            </div>
+            
+            <div class="material-stat-card">
+                <div class="material-stat-icon success">
+                    <i class="material-icons">add_circle_outline</i>
+                </div>
+                <div class="material-stat-content">
+                    <p class="material-stat-label">Pending Topups</p>
+                    <h3 class="material-stat-value">{{ transaction_stats.pending_topups }}</h3>
+                </div>
+                <div class="material-stat-footer">
+                    <i class="material-icons">update</i>
+                    <span>{{ transaction_stats.topups_today }} today</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="material-card quick-actions-card">
+            <div class="material-card-header info">
+                <h4 class="material-card-title">Quick Actions</h4>
+                <p class="material-card-category">Fast access to common tasks</p>
+            </div>
+            <div class="material-card-body">
+            <div class="actions-bento-grid">
+                {% for link in quick_links %}
+                <a href="{{ link.url }}" class="action-card{% if 'Magic' in link.title %} magic-verifier{% endif %}{% if 'Send Alert' in link.title %} send-alert{% endif %}">
+                    {% if link.icon %}
+                    <span class="action-icon {{ link.icon_class|default:'' }}">
+                        <span class="material-symbols-outlined">{{ link.icon }}</span>
+                    </span>
+                    {% endif %}
+                    <div class="action-text">
+                        <h4>{{ link.title }}</h4>
+                        <p>{{ link.description }}</p>
+                    </div>
+                    {% if link.count and link.count != 'New' and link.count != 'Broadcast' and link.count != 'Targeted' %}
+                    <span class="action-badge">{{ link.count }}</span>
+                    {% endif %}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        </div> <!-- End Material Card for Quick Actions -->
+    </div> <!-- End Bento Main Column -->
+
+    <!-- Sidebar Column (4 Columns on Desktop) -->
+    <div class="bento-sidebar-column">
+        <!-- Urgent Items Sidebar -->
+    <div class="material-card urgent-card" style="display: flex; flex-direction: column; overflow: hidden; margin-top: 30px;">
+        <div class="material-card-header rose">
+            <h4 class="material-card-title">Urgent Items</h4>
+            <p class="material-card-category">Items requiring immediate attention</p>
+        </div>
+        <div class="material-card-body">
+        
+        {% if urgent_items %}
+        <div class="urgent-list">
+            {% for item in urgent_items %}
+            <a href="{{ item.url }}" class="urgent-item {{ item.priority }}">
+                <div class="urgent-content">
+                    <div class="urgent-type">{{ item.type }}</div>
+                    <div class="urgent-title">{{ item.title }}</div>
+                    <div class="urgent-time">{{ item.time|timesince }} ago</div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-urgent-items">
+            No Urgent Items
+        </div>
+        {% endif %}
+        </div>
+    </div>
+
+        <!-- Upcoming Tournaments Section -->
+        <div class="material-card tournaments-card" style="display: flex; flex-direction: column; overflow: hidden; flex: 1;">
+            <div class="material-card-header warning">
+                <h4 class="material-card-title">Upcoming Tournaments</h4>
+                <p class="material-card-category">{{ tournament_stats.total_upcoming }} time slots scheduled</p>
+            </div>
+            <div class="material-card-body">
+            {% if upcoming_tournaments or current_tournaments %}
+            <div class="tournament-list">
+                {% for time_slot in upcoming_tournaments %}
+                <div class="tournament-card" data-timeslot-id="{{ time_slot.id }}">
+                    <div class="tournament-header">
+                        <div class="tournament-game">{{ time_slot.tournament.game.name }} &bull; #{{ time_slot.tournament.id }}</div>
+                        <div class="tournament-status-badge upcoming">{{ time_slot.time_slot }}</div>
+                    </div>
+                    
+                    <h3 class="tournament-title">{{ time_slot.tournament.title|truncatechars:35 }}</h3>
+                    
+                    <div class="tournament-meta">
+                        <span><span class="meta-label">Players</span> <span class="meta-value">{{ time_slot.participant_count }}/{{ time_slot.max_players }}</span></span>
+                        <span><span class="meta-label">Type</span> <span class="meta-value">{{ time_slot.tournament.get_win_type_display }}</span></span>
+                    </div>
+                    
+                    <div class="tournament-credentials">
+                        <div class="credential-inputs">
+                            <input type="text" class="credential-input room-id-input" placeholder="Room ID" value="{{ time_slot.room_id|default:'' }}" data-timeslot-id="{{ time_slot.id }}">
+                            <input type="text" class="credential-input room-pass-input" placeholder="Password" value="{{ time_slot.room_pass|default:'' }}" data-timeslot-id="{{ time_slot.id }}">
+                        </div>
+                        <button class="btn-send-credentials" data-timeslot-id="{{ time_slot.id }}">Send</button>
+                    </div>
+                    
+                    <div class="tournament-credentials" style="margin-top: 8px; text-align: center;">
+                        <a href="{% url 'view_tournament_time_participants' time_slot.id %}" class="btn-view-details">View Participants</a>
+                    </div>
+                </div>
+                {% endfor %}
+                
+                {% for time_slot in current_tournaments %}
+                <div class="tournament-card in-progress" data-timeslot-id="{{ time_slot.id }}">
+                    <div class="tournament-header">
+                        <div class="tournament-game">{{ time_slot.tournament.game.name }} &bull; #{{ time_slot.tournament.id }}</div>
+                        <div class="tournament-status-badge in-progress">Live - {{ time_slot.time_slot }}</div>
+                    </div>
+                    
+                    <h3 class="tournament-title">{{ time_slot.tournament.title|truncatechars:35 }}</h3>
+                    
+                    <div class="tournament-meta">
+                        <span><span class="meta-label">Players</span> <span class="meta-value">{{ time_slot.participant_count }}/{{ time_slot.max_players }}</span></span>
+                    </div>
+                    
+                    <div class="tournament-credentials" style="text-align: center;">
+                        <a href="{% url 'view_tournament_time_participants' time_slot.id %}" class="btn-view-details">View Participants</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="no-urgent-items">No Tournament Scheduled</div>
+            {% endif %}
+        </div>
+        </div>
+    </div> <!-- End Bento Sidebar Column -->
+
+    <!-- All Models Section -->
+        <div class="bento-full-width material-card" style="margin-top: 30px;">
+            <div class="material-card-header success">
+                <h4 class="material-card-title">System Models Matrix</h4>
+                <p class="material-card-category">Direct access to core database tables</p>
+            </div>
+            <div class="material-card-body">
+            <div class="models-list" style="padding: 10px 0;">
+                <a href="{% url 'admin:access_accesscode_changelist' %}" class="model-link-item">
+                    <span>Access Code</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+                
+                <a href="{% url 'admin:auth_group_changelist' %}" class="model-link-item">
+                    <span>Groups</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+
+                <a href="{% url 'admin:buysell_gameaccount_changelist' %}" class="model-link-item">
+                    <span>Game Account</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+
+                <a href="{% url 'admin:buysell_gameaccountscreenshot_changelist' %}" class="model-link-item">
+                    <span>Game Account Screenshot</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+                
+                <a href="{% url 'admin:challenge_challenge_changelist' %}" class="model-link-item">
+                    <span>Challenge</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+                
+                <a href="{% url 'admin:challenge_challengeparticipant_changelist' %}" class="model-link-item">
+                    <span>Challenge Participant</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+
+                <a href="{% url 'admin:challenge_refund_changelist' %}" class="model-link-item">
+                    <span>Refund</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+                
+                <a href="{% url 'admin:earning_earning_changelist' %}" class="model-link-item">
+                    <span>Earning</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+                
+                <a href="{% url 'admin:enhancer_enhancer_changelist' %}" class="model-link-item">
+                    <span>Enhancer</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+                
+                <a href="{% url 'admin:enhancer_userenhancer_changelist' %}" class="model-link-item">
+                    <span>User Enhancer</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+                
+                <a href="{% url 'admin:game_game_changelist' %}" class="model-link-item">
+                    <span>Game</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+                
+                <a href="{% url 'admin:game_gamemoderules_changelist' %}" class="model-link-item">
+                    <span>Game Mode Rules</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+                
+                <a href="{% url 'admin:game_playergameprofile_changelist' %}" class="model-link-item">
+                    <span>Player Profiles</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+                
+                <a href="{% url 'admin:guide_guide_changelist' %}" class="model-link-item">
+                    <span>Guide</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+
+                <a href="{% url 'admin:info_adminactivitylog_changelist' %}" class="model-link-item">
+                    <span>Admin Activity Log</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+                
+                <a href="{% url 'admin:notification_notification_changelist' %}" class="model-link-item">
+                    <span>Notification</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+                
+                <a href="{% url 'admin:notification_banner_changelist' %}" class="model-link-item">
+                    <span>Banner</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+                
+                <a href="{% url 'admin:notification_fcmtoken_changelist' %}" class="model-link-item">
+                    <span>FCM Token</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+
+                <a href="{% url 'admin:report_report_changelist' %}" class="model-link-item">
+                    <span>Report</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+                
+                <a href="{% url 'admin:result_result_changelist' %}" class="model-link-item">
+                    <span>Result</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+                
+                <a href="{% url 'admin:social_social_changelist' %}" class="model-link-item">
+                    <span>Social</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+
+                <a href="{% url 'admin:store_product_changelist' %}" class="model-link-item">
+                    <span>Store Product</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+
+                <a href="{% url 'admin:store_topuprequest_changelist' %}" class="model-link-item">
+                    <span>Topup Request</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+
+                <a href="{% url 'admin:tournament_tournament_changelist' %}" class="model-link-item">
+                    <span>Tournament</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+
+                <a href="{% url 'admin:tournament_tournamenttime_changelist' %}" class="model-link-item">
+                    <span>Tournament Time</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+
+                <a href="{% url 'admin:tournament_tournamentparticipant_changelist' %}" class="model-link-item">
+                    <span>Tournament Participant</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+                
+                <a href="{% url 'admin:transaction_transaction_changelist' %}" class="model-link-item">
+                    <span>Transaction</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+                
+                <a href="{% url 'admin:transaction_dynamictransaction_changelist' %}" class="model-link-item">
+                    <span>Dynamic Transaction</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+                
+                <a href="{% url 'admin:user_customuser_changelist' %}" class="model-link-item">
+                    <span>Custom User</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+
+                <a href="{% url 'admin:user_block_changelist' %}" class="model-link-item">
+                    <span>Block</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+
+                <a href="{% url 'admin:user_deletionreason_changelist' %}" class="model-link-item">
+                    <span>Deletion Reason</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+                
+                <a href="{% url 'admin:utils_qr_changelist' %}" class="model-link-item">
+                    <span>QR Code</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+                
+                <a href="{% url 'admin:utils_phrase_changelist' %}" class="model-link-item">
+                    <span>Phrase</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+
+                <a href="{% url 'admin:utils_systemsettings_changelist' %}" class="model-link-item">
+                    <span>System Settings</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+
+                <a href="{% url 'admin:utils_activeiosdevice_changelist' %}" class="model-link-item">
+                    <span>Active iOS Device</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+
+                <a href="{% url 'admin:utils_activestore_changelist' %}" class="model-link-item">
+                    <span>Active Store</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+
+                <a href="{% url 'admin:utils_activeloadway_changelist' %}" class="model-link-item">
+                    <span>Active Load Way</span>
+                    <span class="model-link-icon">↗</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Auto Verification Toggle - Minimal Header Style */
+    .auto-verification-toggle-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
+        border: 1px solid #e5e5e5;
+        border-radius: 6px;
+        background: #fff;
+        transition: all 0.2s ease;
+    }
+
+    .auto-verification-toggle-header:hover {
+        border-color: #000;
+    }
+
+    .toggle-label-header {
+        font-size: 12px;
+        font-weight: 500;
+        color: #000;
+        white-space: nowrap;
+    }
+
+    .toggle-switch-header {
+        position: relative;
+        display: inline-block;
+        width: 36px;
+        height: 20px;
+        cursor: pointer;
+    }
+
+    .toggle-switch-header input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider-header {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #e5e5e5;
+        transition: 0.3s;
+        border-radius: 20px;
+    }
+
+    .slider-header:before {
+        position: absolute;
+        content: "";
+        height: 14px;
+        width: 14px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: 0.3s;
+        border-radius: 50%;
+    }
+
+    input:checked + .slider-header {
+        background-color: #000;
+    }
+
+    input:checked + .slider-header:before {
+        transform: translateX(16px);
+    }
+
+    input:disabled + .slider-header {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .toggle-switch-header.loading .slider-header {
+        opacity: 0.6;
+    }
+
+    @media (max-width: 968px) {
+        .refresh-text {
+            display: none;
+        }
+        
+        .header-refresh-indicator {
+            padding: 6px;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .toggle-label-header {
+            display: none;
+        }
+        
+        .auto-verification-toggle-header {
+            padding: 6px;
+        }
+        
+        .btn-header-logout span {
+            display: none;
+        }
+        
+        .btn-header-logout {
+            padding: 6px;
+        }
+        
+        .header-actions {
+            gap: 6px;
+        }
+    }
+</style>
+
+<script>
+    // Auto-refresh dashboard every 3 minutes
+    let refreshInterval;
+    let lastRefreshTime = new Date();
+
+    function updateLastRefreshIndicator() {
+        const now = new Date();
+        const elapsed = Math.floor((now - lastRefreshTime) / 1000);
+        
+        const indicator = document.getElementById('refresh-indicator');
+        const refreshText = indicator?.querySelector('.refresh-text');
+        
+        if (refreshText) {
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            const timeStr = minutes > 0 ? `${minutes}m ${seconds}s ago` : `${seconds}s ago`;
+            refreshText.textContent = `Last updated: ${timeStr}`;
+        }
+    }
+
+    function showRefreshNotification() {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            z-index: 1001;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+            animation: slideIn 0.3s ease;
+        `;
+        notification.textContent = '✓ Dashboard updated';
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        }, 2000);
+    }
+
+    function refreshDashboard() {
+        // Show loading state
+        const refreshIndicator = document.getElementById('refresh-indicator');
+        const refreshText = refreshIndicator?.querySelector('.refresh-text');
+        
+        if (refreshText) {
+            refreshText.textContent = 'Refreshing...';
+            refreshIndicator.style.borderColor = '#6366f1';
+            refreshIndicator.style.background = '#eef2ff';
+        }
+
+        // Reload the page to fetch new data
+        window.location.reload();
+    }
+
+    function startAutoRefresh() {
+        // Update indicator every second
+        setInterval(updateLastRefreshIndicator, 1000);
+        
+        // Refresh dashboard every 3 minutes (180000 ms)
+        refreshInterval = setInterval(() => {
+            refreshDashboard();
+        }, 180000);
+    }
+
+    // Add CSS animations
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+
+
+    `;
+    document.head.appendChild(style);
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        startAutoRefresh();
+        updateLastRefreshIndicator();
+
+        // Show notification if page was just refreshed (not first load)
+        if (sessionStorage.getItem('dashboardAutoRefresh') === 'true') {
+            showRefreshNotification();
+            sessionStorage.removeItem('dashboardAutoRefresh');
+        }
+
+        // Add click to refresh manually
+        document.addEventListener('click', function(e) {
+            if (e.target.id === 'refresh-indicator') {
+                sessionStorage.setItem('dashboardAutoRefresh', 'true');
+                refreshDashboard();
+            }
+        });
+    });
+
+    // Set flag before auto-refresh
+    window.addEventListener('beforeunload', function() {
+        if (refreshInterval) {
+            sessionStorage.setItem('dashboardAutoRefresh', 'true');
+        }
+    });
+
+    // Tournament Credentials Functions
+    function sendCredentials(timeSlotId) {
+        const card = document.querySelector(`[data-timeslot-id="${timeSlotId}"]`);
+        if (!card) {
+            showNotificationMessage('Card not found', 'error');
+            return;
+        }
+
+        const roomIdInput = card.querySelector('.room-id-input');
+        const roomPassInput = card.querySelector('.room-pass-input');
+        const sendButton = card.querySelector('.btn-send-credentials');
+
+        const roomId = roomIdInput.value.trim();
+        const roomPass = roomPassInput.value.trim();
+
+        // Validation
+        if (!roomId && !roomPass) {
+            showNotificationMessage('Please enter Room ID or Password', 'error');
+            return;
+        }
+
+        // Confirm before sending
+        if (!confirm('Send credentials to all participants?\n\nYou can send multiple times if needed.')) {
+            return;
+        }
+
+        // Disable button during request
+        sendButton.disabled = true;
+        sendButton.textContent = 'Sending...';
+
+        // Get CSRF token
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                         getCookie('csrftoken');
+
+        // Send credentials
+        fetch(`/tournament/timeslot/${timeSlotId}/send-and-deactivate/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({
+                room_id: roomId,
+                room_pass: roomPass
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Check if async task was triggered
+                if (data.async) {
+                    showNotificationMessage(`✓ Sending credentials to ${data.total_participants} participants in background...`, 'success');
+                    sendButton.textContent = 'Queued ✓';
+                } else {
+                    showNotificationMessage(`✓ Credentials sent to ${data.sent_count || data.total_participants} participants!`, 'success');
+                    sendButton.textContent = 'Sent ✓';
+                }
+                
+                // Keep the card visible - don't remove it
+                // Admin can send credentials multiple times
+                // Reset button after delay
+                setTimeout(() => {
+                    sendButton.textContent = 'Send Again';
+                    sendButton.disabled = false;
+                }, 3000);
+            } else {
+                showNotificationMessage(`Error: ${data.error}`, 'error');
+                sendButton.disabled = false;
+                sendButton.textContent = 'Send';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotificationMessage('Failed to send credentials', 'error');
+            sendButton.disabled = false;
+            sendButton.textContent = 'Send';
+        });
+    }
+
+    // Event delegation for send credentials buttons
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('btn-send-credentials')) {
+            const timeSlotId = e.target.getAttribute('data-timeslot-id');
+            if (timeSlotId) {
+                sendCredentials(timeSlotId);
+            }
+        }
+    });
+
+    function showNotificationMessage(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            z-index: 1001;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.3s ease;
+            color: white;
+        `;
+
+        if (type === 'success') {
+            notification.style.background = 'linear-gradient(135deg, #10B981 0%, #34D399 100%)';
+        } else if (type === 'error') {
+            notification.style.background = 'linear-gradient(135deg, #EF4444 0%, #F87171 100%)';
+        } else {
+            notification.style.background = 'linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%)';
+        }
+
+        notification.textContent = message;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Auto Magic Verification Toggle Handler
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggle = document.getElementById('autoVerificationToggle');
+        const toggleSwitch = document.querySelector('.toggle-switch-header');
+        
+        if (!toggle || !toggleSwitch) return;
+        
+        toggle.addEventListener('change', function() {
+            const enabled = this.checked;
+            
+            // Add loading state
+            toggleSwitch.classList.add('loading');
+            toggle.disabled = true;
+            
+            // Make API call
+            fetch('/toggle-auto-verification/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    enabled: enabled
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success notification
+                    showNotificationMessage(
+                        'Auto verification ' + (data.enabled ? 'enabled' : 'disabled'),
+                        'success'
+                    );
+                } else {
+                    // Revert toggle on error
+                    toggle.checked = !enabled;
+                    showNotificationMessage('Error: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                // Revert toggle on error
+                toggle.checked = !enabled;
+                showNotificationMessage('Failed to update setting', 'error');
+                console.error('Error:', error);
+            })
+            .finally(() => {
+                // Remove loading state
+                toggleSwitch.classList.remove('loading');
+                toggle.disabled = false;
+            });
+        });
+    });
+
+</script>
+{% endblock %}

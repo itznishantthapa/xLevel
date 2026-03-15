@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evidence - Report #{{ report.id }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #000;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .report-header {
+            background: #1a1a1a;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #e74c3c;
+        }
+        .report-title {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .report-meta {
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+        .description-label {
+            color: #aaa;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .description-text {
+            color: #e0e0e0;
+            font-size: 15px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .evidence-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .evidence-item {
+            background: #1a1a1a;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+        .evidence-item:hover {
+            transform: scale(1.02);
+        }
+        .evidence-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            cursor: pointer;
+        }
+        .evidence-label {
+            padding: 12px;
+            color: #fff;
+            font-size: 14px;
+            text-align: center;
+            background: #2a2a2a;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.98);
+        }
+        .modal-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 20px;
+        }
+        .modal-image {
+            max-width: 95%;
+            max-height: 95vh;
+            object-fit: contain;
+        }
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #fff;
+            font-size: 40px;
+            cursor: pointer;
+            z-index: 10000;
+        }
+        .no-evidence {
+            color: #888;
+            text-align: center;
+            padding: 40px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Report Description Section -->
+        <div class="report-header">
+            <div class="report-title">Game Issue Report #{{ report.id }}</div>
+            <div class="report-meta">
+                Reporter: {{ report.user.full_name }} ({{ report.user.email }}) | 
+                Challenge: #{{ report.challenge.id }} | 
+                Reported: {{ report.reported_on|date:"M d, Y H:i" }}
+            </div>
+            {% if report.description %}
+            <div class="description-label">Description</div>
+            <div class="description-text">{{ report.description }}</div>
+            {% else %}
+            <div class="description-text" style="color: #666; font-style: italic;">No description provided</div>
+            {% endif %}
+        </div>
+
+        <!-- Evidence Images Section -->
+        {% if report.evidence_1 or report.evidence_2 or report.evidence_3 %}
+        <div class="evidence-grid">
+            {% if report.evidence_1 %}
+            <div class="evidence-item">
+                <img src="{{ report.evidence_1.url }}" alt="Evidence 1" class="evidence-image" onclick="openModal('{{ report.evidence_1.url }}')">
+                <div class="evidence-label">Evidence 1</div>
+            </div>
+            {% endif %}
+            {% if report.evidence_2 %}
+            <div class="evidence-item">
+                <img src="{{ report.evidence_2.url }}" alt="Evidence 2" class="evidence-image" onclick="openModal('{{ report.evidence_2.url }}')">
+                <div class="evidence-label">Evidence 2</div>
+            </div>
+            {% endif %}
+            {% if report.evidence_3 %}
+            <div class="evidence-item">
+                <img src="{{ report.evidence_3.url }}" alt="Evidence 3" class="evidence-image" onclick="openModal('{{ report.evidence_3.url }}')">
+                <div class="evidence-label">Evidence 3</div>
+            </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="no-evidence">No evidence available</div>
+        {% endif %}
+    </div>
+
+    <div id="modal" class="modal" onclick="closeModal()">
+        <span class="modal-close">&times;</span>
+        <div class="modal-content">
+            <img id="modalImg" class="modal-image" src="">
+        </div>
+    </div>
+
+    <script>
+        function openModal(src) {
+            document.getElementById('modal').style.display = 'block';
+            document.getElementById('modalImg').src = src;
+        }
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+</body>
+</html>

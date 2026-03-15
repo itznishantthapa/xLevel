@@ -1,0 +1,336 @@
+{% load static i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup 2FA | Level Esports</title>
+    <link rel="icon" href="{% static 'logo/logo.png' %}" type="image/png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        
+        .setup-container {
+            width: 100%;
+            max-width: 860px;
+        }
+        
+        .setup-card {
+            display: flex;
+            align-items: stretch;
+            background: #fafafa;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        
+        .qr-side {
+            flex: 0 0 340px;
+            background: #000000;
+            padding: 48px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .qr-wrapper {
+            background: #ffffff;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .qr-code {
+            width: 180px;
+            height: 180px;
+            display: block;
+        }
+        
+        .qr-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+        
+        .qr-subtitle {
+            font-size: 13px;
+            color: rgba(255,255,255,0.5);
+            line-height: 1.5;
+        }
+        
+        .form-side {
+            flex: 1;
+            padding: 48px 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .form-header {
+            margin-bottom: 28px;
+        }
+        
+        .form-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #000000;
+            margin-bottom: 6px;
+        }
+        
+        .form-subtitle {
+            font-size: 14px;
+            color: #888888;
+        }
+        
+        .manual-key {
+            background: #f0f0f0;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .manual-key-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #666666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        
+        .manual-key-value {
+            font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+            font-size: 13px;
+            color: #000000;
+            word-break: break-all;
+            line-height: 1.5;
+        }
+        
+        .messages-wrapper {
+            margin-bottom: 20px;
+        }
+        
+        .alert-message {
+            padding: 14px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .otp-input {
+            width: 100%;
+            padding: 16px;
+            font-size: 24px;
+            text-align: center;
+            letter-spacing: 12px;
+            color: #000000;
+            background: #ffffff;
+            border: 1px solid #e5e5e5;
+            border-radius: 10px;
+            font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+        }
+        
+        .otp-input:focus {
+            outline: none;
+            border-color: #000000;
+        }
+        
+        .otp-input::placeholder {
+            color: #cccccc;
+            letter-spacing: 8px;
+        }
+        
+        .otp-input.input-error {
+            border-color: #dc2626;
+            background: #fef2f2;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 16px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: inherit;
+            text-decoration: none;
+            text-align: center;
+            display: block;
+        }
+        
+        .btn-primary {
+            background: #000000;
+            color: #ffffff;
+        }
+        
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-secondary {
+            background: #e5e5e5;
+            color: #333333;
+        }
+        
+        .copyright {
+            text-align: center;
+            margin-top: 32px;
+            font-size: 12px;
+            color: #aaaaaa;
+        }
+        
+        @media (max-width: 768px) {
+            .setup-card {
+                flex-direction: column;
+                max-width: 400px;
+                margin: 0 auto;
+            }
+            
+            .qr-side {
+                flex: none;
+                padding: 36px 32px;
+            }
+            
+            .qr-code {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .form-side {
+                padding: 36px 32px;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 🔒 CRITICAL SECURITY WARNING:
+         This QR code is shown ONLY ONCE during initial 2FA setup.
+         After scanning and confirming, you can NEVER view this QR code again.
+         The secret is stored encrypted in the database (required for TOTP verification)
+         but the QR code itself is generated on-the-fly and never stored.
+         If you lose access to your authenticator app, you must contact the superadmin.
+    -->
+    <div class="setup-container">
+        <div class="setup-card">
+            <div class="qr-side">
+                <div class="qr-wrapper">
+                    <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code" class="qr-code">
+                </div>
+                <div class="qr-title">Scan QR Code</div>
+            </div>
+            
+            <div class="form-side">
+                <div class="form-header">
+                    <div class="form-title">Setup Two-Factor Authentication</div>
+                    <div class="form-subtitle">Scan the QR code with your authenticator app</div>
+                </div> 
+                
+                <div class="manual-key">
+                    <div class="manual-key-label">Manual Entry Key</div>
+                    <div class="manual-key-value">{{ secret_key }}</div>
+                </div>
+                
+                {% if messages %}
+                <div class="messages-wrapper">
+                    {% for message in messages %}
+                    <div class="alert-message alert-{% if message.tags == 'error' %}error{% else %}warning{% endif %}">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <form method="post" id="otpForm">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="id_otp_token">Verification Code</label>
+                        <input 
+                            type="text" 
+                            name="otp_token" 
+                            id="id_otp_token" 
+                            class="otp-input{% if form.errors %} input-error{% endif %}"
+                            placeholder="000000"
+                            maxlength="6"
+                            pattern="[0-9]*"
+                            inputmode="numeric"
+                            autocomplete="one-time-code"
+                            autofocus
+                            required
+                        >
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            2FA is mandatory for all admin accounts
+        </div>
+    </div>
+    
+    <script>
+    document.getElementById('id_otp_token').addEventListener('input', function(e) {
+        // Only allow digits
+        this.value = this.value.replace(/[^0-9]/g, '');
+        
+        // Auto-submit when 6 digits entered
+        if (this.value.length === 6) {
+            document.getElementById('otpForm').submit();
+        }
+    });
+    </script>
+</body>
+</html>

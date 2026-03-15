@@ -1,0 +1,82 @@
+{% extends "admin/change_form.html" %}
+{% load static %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/result_admin.css' %}">
+{% endblock %}
+
+{% block field_sets %}
+{% if original %}
+<div class="result-change-form">
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <h3>Quick Actions</h3>
+        <div class="action-buttons">
+            {% if original.status == 'pending' %}
+            <a href="{% url 'admin:result_verify' original.pk %}" class="btn btn-primary">
+                🔍 Verify Results
+            </a>
+            {% else %}
+            <span class="status-complete">✓ Already Reviewed</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Challenge Overview -->
+    <div class="challenge-overview">
+        <h3>Challenge Details</h3>
+        <div class="challenge-info-grid">
+            <div class="info-item">
+                <label>Challenge ID:</label>
+                <span>#{{ original.challenge.id }}</span>
+            </div>
+            <div class="info-item">
+                <label>Game:</label>
+                <span>{{ original.challenge.game.name }}</span>
+            </div>
+            <div class="info-item">
+                <label>Mode:</label>
+                <span>{{ original.challenge.game_mode|default:"Standard" }}</span>
+            </div>
+            <div class="info-item">
+                <label>Entry Fee:</label>
+                <span>${{ original.challenge.entry_fee|default:"Free" }}</span>
+            </div>
+            <div class="info-item">
+                <label>Status:</label>
+                <span class="status-badge status-{{ original.challenge.status }}">{{ original.challenge.get_status_display }}</span>
+            </div>
+            <div class="info-item">
+                <label>Player:</label>
+                <span>{{ original.participant.user.full_name }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screenshots Preview -->
+    <div class="screenshots-preview">
+        <h3>Submitted Screenshots</h3>
+        <div class="screenshot-grid">
+            {% if original.screenshot_1 %}
+            <div class="screenshot-container">
+                <h4>Screenshot 1</h4>
+                <img src="{{ original.screenshot_1.url }}" alt="Screenshot 1" class="screenshot-thumb" style="max-width: 200px; height: auto;">
+                <a href="{{ original.screenshot_1.url }}" target="_blank" class="view-full">View Full Size</a>
+            </div>
+            {% endif %}
+            
+            {% if original.screenshot_2 %}
+            <div class="screenshot-container">
+                <h4>Screenshot 2</h4>
+                <img src="{{ original.screenshot_2.url }}" alt="Screenshot 2" class="screenshot-thumb" style="max-width: 200px; height: auto;">
+                <a href="{{ original.screenshot_2.url }}" target="_blank" class="view-full">View Full Size</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{{ block.super }}
+{% endblock %}

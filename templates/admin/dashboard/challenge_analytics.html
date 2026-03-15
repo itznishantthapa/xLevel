@@ -1,0 +1,487 @@
+{% extends "admin/base_site.html" %}
+{% block title %}Challenge Analytics{% endblock %}
+{% block extrahead %}
+<style>
+  * { box-sizing: border-box; }
+  
+  body { 
+    background: #ffffff; 
+    color: #1a1a1a; 
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.6;
+  }
+  
+  .analytics-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 24px;
+  }
+  
+  .page-header {
+    margin-bottom: 48px;
+    padding-bottom: 24px;
+    border-bottom: 2px solid #000;
+  }
+  
+  .page-header h1 {
+    font-size: 2.5rem;
+    font-weight: 300;
+    letter-spacing: -0.5px;
+    margin: 0;
+    color: #000;
+  }
+  
+  .filters-section {
+    background: #f8f8f8;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 32px;
+    margin-bottom: 40px;
+  }
+  
+  .filters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+  
+  .filter-group label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #666;
+    margin-bottom: 8px;
+  }
+  
+  .filters input,
+  .filters select {
+    width: 100%;
+    min-width: 180px;
+    height: 44px;
+    padding: 10px 14px;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    background: #fff;
+    font-size: 0.95rem;
+    color: #1a1a1a;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    box-sizing: border-box;
+    line-height: 1.5;
+    vertical-align: top;
+  }
+  
+  .filters select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 14px center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    padding-right: 44px;
+    cursor: pointer;
+  }
+  
+  .filters input:focus,
+  .filters select:focus {
+    outline: none;
+    border-color: #000;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+  }
+  
+  .filter-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  
+  .btn {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+  }
+  
+  .btn-primary {
+    background: #000;
+    color: #fff;
+  }
+  
+  .btn-primary:hover {
+    background: #333;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .btn-secondary {
+    background: #fff;
+    color: #000;
+    border: 1px solid #000;
+  }
+  
+  .btn-secondary:hover {
+    background: #000;
+    color: #fff;
+  }
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+    margin-bottom: 48px;
+  }
+  
+  .stat-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 28px 24px;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: #000;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+  
+  .stat-card:hover {
+    border-color: #000;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
+  
+  .stat-card:hover::before {
+    transform: scaleX(1);
+  }
+  
+  .stat-card h3 {
+    margin: 0 0 12px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #666;
+    text-transform: uppercase;
+  }
+  
+  .stat-card .value {
+    font-size: 2.5rem;
+    font-weight: 200;
+    color: #000;
+    line-height: 1;
+  }
+  
+  .section {
+    margin-bottom: 48px;
+  }
+  
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .section-header h2 {
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin: 0;
+    color: #000;
+  }
+  
+  .table-container {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .scroll-box {
+    max-height: 500px;
+    overflow: auto;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  
+  thead {
+    background: #000;
+    color: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  
+  th {
+    padding: 14px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: none;
+  }
+  
+  td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #1a1a1a;
+  }
+  
+  tbody tr {
+    transition: background-color 0.15s ease;
+  }
+  
+  tbody tr:hover {
+    background: #f8f8f8;
+  }
+  
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+  
+  .badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  
+  .type-OPEN {
+    background: #000;
+    color: #fff;
+  }
+  
+  .type-TOURNAMENT {
+    background: #fff;
+    color: #000;
+    border: 1px solid #000;
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+  }
+  
+  .empty-state svg {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+    opacity: 0.3;
+  }
+  
+  @media (max-width: 768px) {
+    .analytics-container {
+      padding: 24px 16px;
+    }
+    
+    .page-header h1 {
+      font-size: 1.8rem;
+    }
+    
+    .filters {
+      grid-template-columns: 1fr;
+    }
+    
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .scroll-box {
+      max-height: 400px;
+    }
+    
+    table {
+      font-size: 0.8rem;
+    }
+    
+    th, td {
+      padding: 10px 12px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="analytics-container">
+  <div class="page-header">
+    <h1>Challenge Analytics</h1>
+  </div>
+
+  <div class="filters-section">
+    <form method="get">
+      <div class="filters">
+        <div class="filter-group">
+          <label>Date</label>
+          <input type="date" name="date" value="{{ date_str|default_if_none:'' }}">
+        </div>
+        <div class="filter-group">
+          <label>Start Date</label>
+          <input type="date" name="start" value="{{ start_date }}">
+        </div>
+        <div class="filter-group">
+          <label>End Date</label>
+          <input type="date" name="end" value="{{ end_date }}">
+        </div>
+        <div class="filter-group">
+          <label>Game</label>
+          <select name="game">
+            <option value="">All Games</option>
+            {% for g in games %}
+              <option value="{{ g.id }}" {% if game_id|default_if_none:'' == g.id|stringformat:'s' %}selected{% endif %}>{{ g.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Challenge Type</label>
+          <select name="type">
+            <option value="ALL" {% if ctype == 'ALL' %}selected{% endif %}>All Types</option>
+            <option value="OPEN" {% if ctype == 'OPEN' %}selected{% endif %}>Open</option>
+            <option value="TOURNAMENT" {% if ctype == 'TOURNAMENT' %}selected{% endif %}>Tournament</option>
+          </select>
+        </div>
+      </div>
+      <div class="filter-actions">
+        <button type="submit" class="btn btn-primary">Apply Filters</button>
+        <a class="btn btn-secondary" href="?{% if date_str %}date={{ date_str }}&{% else %}start={{ start_date }}&end={{ end_date }}&{% endif %}game={{ game_id|default_if_none:'' }}&type={{ ctype }}&export=csv">Download CSV</a>
+      </div>
+    </form>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <h3>Total Challenges</h3>
+      <div class="value">{{ total_count }}</div>
+    </div>
+    <div class="stat-card">
+      <h3>Open Challenges</h3>
+      <div class="value">{{ open_count }}</div>
+    </div>
+    <div class="stat-card">
+      <h3>Tournaments</h3>
+      <div class="value">{{ tournament_count }}</div>
+    </div>
+    <div class="stat-card">
+      <h3>Gross Pot (Sum)</h3>
+      <div class="value">{{ total_gross }}</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2>Per Game Breakdown</h2>
+    </div>
+    <div class="table-container">
+      <div class="scroll-box">
+        <table>
+          <thead>
+            <tr>
+              <th>Game</th>
+              <th>Total</th>
+              <th>Open</th>
+              <th>Tournaments</th>
+              <th>Gross Pot</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in per_game_rows %}
+              <tr>
+                <td><strong>{{ row.game__name|default:'(No Game)' }}</strong></td>
+                <td>{{ row.count }}</td>
+                <td>{{ row.open_games }}</td>
+                <td>{{ row.tournaments }}</td>
+                <td>{{ row.gross_sum|default:0 }}</td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="5" class="empty-state">
+                  <div>No challenges found for the selected filters.</div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2>Recent Challenges</h2>
+      <span style="color: #666; font-size: 0.9rem;">{{ recent|length }} results</span>
+    </div>
+    <div class="table-container">
+      <div class="scroll-box">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Created</th>
+              <th>Type</th>
+              <th>Game</th>
+              <th>Title</th>
+              <th>Entry Fee</th>
+              <th>Players</th>
+              <th>Status</th>
+              <th>Win Type</th>
+              <th>Gross Pot</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ch in recent %}
+            {% with is_staff=ch.created_by.is_staff %}
+            <tr>
+              <td><strong>{{ ch.id }}</strong></td>
+              <td>{{ ch.created_at|date:"Y-m-d H:i" }}</td>
+              <td>
+                <span class="badge type-{% if is_staff %}TOURNAMENT{% else %}OPEN{% endif %}">
+                  {% if is_staff %}Tournament{% else %}Open{% endif %}
+                </span>
+              </td>
+              <td>{{ ch.game.name }}</td>
+              <td>{{ ch.title|default:'-' }}</td>
+              <td>{{ ch.entry_fee|default:0 }}</td>
+              <td>{{ ch.player_joined|default:0 }}</td>
+              <td>{{ ch.status }}</td>
+              <td>{{ ch.win_type }}</td>
+              <td>{{ ch.entry_fee|default:0|add:'0'|floatformat:0|default_if_none:0|add:'0'|floatformat:0 }}</td>
+            </tr>
+            {% endwith %}
+            {% empty %}
+            <tr>
+              <td colspan="10" class="empty-state">
+                <div>No recent challenges to display.</div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

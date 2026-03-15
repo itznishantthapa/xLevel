@@ -1,0 +1,360 @@
+{% load static i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | Level Esports</title>
+    <link rel="icon" href="{% static 'logo/logo.png' %}" type="image/png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        
+        .login-container {
+            width: 100%;
+            max-width: 860px;
+        }
+        
+        .login-card {
+            display: flex;
+            align-items: stretch;
+            background: #fafafa;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        
+        /* Left Side - Branding */
+        .brand-side {
+            flex: 0 0 320px;
+            background: #000000;
+            padding: 48px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            object-fit: contain;
+            margin-bottom: 24px;
+            background: #ffffff;
+            padding: 8px;
+        }
+        
+        .brand-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.3px;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        
+        .brand-subtitle {
+            font-size: 14px;
+            color: rgba(255,255,255,0.6);
+            font-weight: 400;
+        }
+        
+        .security-badge {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .security-icon {
+            font-size: 14px;
+        }
+        
+        .security-text {
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+            font-weight: 500;
+        }
+        
+        /* Right Side - Form */
+        .form-side {
+            flex: 1;
+            padding: 48px 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .form-header {
+            margin-bottom: 32px;
+        }
+        
+        .form-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #000000;
+            margin-bottom: 6px;
+        }
+        
+        .form-subtitle {
+            font-size: 14px;
+            color: #888888;
+        }
+        
+        /* Messages */
+        .messages-wrapper {
+            margin-bottom: 24px;
+        }
+        
+        .alert-message {
+            padding: 14px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .alert-message:last-child {
+            margin-bottom: 0;
+        }
+        
+        .alert-icon {
+            flex-shrink: 0;
+            font-size: 15px;
+        }
+        
+        .alert-content {
+            flex: 1;
+            font-weight: 500;
+        }
+        
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .alert-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .alert-info {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+        
+        /* Form Error */
+        .form-error-box {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 14px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        /* Form Fields */
+        .form-group {
+            margin-bottom: 18px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 15px;
+            color: #000000;
+            background: #ffffff;
+            border: 1px solid #e5e5e5;
+            border-radius: 10px;
+            transition: all 0.15s ease;
+            font-family: inherit;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #000000;
+        }
+        
+        .form-input::placeholder {
+            color: #aaaaaa;
+        }
+        
+        /* Error state for inputs */
+        .form-input.input-error {
+            border-color: #dc2626;
+            background: #fef2f2;
+        }
+        
+        .form-input.input-error:focus {
+            border-color: #dc2626;
+        }
+        
+        /* Login Button */
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+            background: #000000;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: inherit;
+        }
+        
+        .btn-login:active {
+            transform: scale(0.98);
+        }
+        
+        /* Copyright */
+        .copyright {
+            text-align: center;
+            margin-top: 32px;
+            font-size: 12px;
+            color: #aaaaaa;
+        }
+        
+        /* Responsive - Stack on mobile */
+        @media (max-width: 768px) {
+            .login-card {
+                flex-direction: column;
+                max-width: 400px;
+                margin: 0 auto;
+            }
+            
+            .brand-side {
+                flex: none;
+                padding: 36px 32px;
+            }
+            
+            .form-side {
+                padding: 36px 32px;
+            }
+            
+            .security-badge {
+                margin-top: 24px;
+                padding-top: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <!-- Left Side - Branding -->
+            <div class="brand-side">
+                <img src="{% static 'logo/logo.png' %}" alt="Level Esports" class="logo">
+                <div class="brand-name">Level Esports</div>
+                
+                <div class="security-badge">
+                    <span class="security-text">2FA Protected</span>
+                </div>
+            </div>
+            
+            <!-- Right Side - Form -->
+            <div class="form-side">
+                <div class="form-header">
+                    <div class="form-title">Welcome back</div>
+                    <div class="form-subtitle">Sign in to your admin account</div>
+                </div>
+                
+                <!-- Django Messages -->
+                {% if messages %}
+                <div class="messages-wrapper">
+                    {% for message in messages %}
+                    <div class="alert-message alert-{% if message.tags == 'error' %}error{% elif message.tags == 'warning' %}warning{% elif message.tags == 'success' %}success{% else %}info{% endif %}">
+                        <span class="alert-icon">
+                            {% if message.tags == 'error' %}⚠{% elif message.tags == 'warning' %}🔐{% elif message.tags == 'success' %}✓{% else %}ℹ{% endif %}
+                        </span>
+                        <span class="alert-content">{{ message }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <!-- Login Form -->
+                <form method="post" action="{{ app_path }}">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="id_username">Email</label>
+                        <input 
+                            type="text" 
+                            name="username" 
+                            id="id_username" 
+                            class="form-input{% if form.errors %} input-error{% endif %}"
+                            placeholder="admin@level.com.np"
+                            autocomplete="username"
+                            autocapitalize="none"
+                            autofocus
+                            required
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="id_password">Password</label>
+                        <input 
+                            type="password" 
+                            name="password" 
+                            id="id_password" 
+                            class="form-input{% if form.errors %} input-error{% endif %}"
+                            placeholder="Enter password"
+                            autocomplete="current-password"
+                            required
+                        >
+                    </div>
+                    
+                    <input type="hidden" name="next" value="{{ next }}">
+                    
+                    <button type="submit" class="btn-login">Sign In</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Copyright -->
+        <div class="copyright">
+            © 2025 Level Esports. All rights reserved.
+        </div>
+    </div>
+</body>
+</html>

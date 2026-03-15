@@ -1,0 +1,938 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Hide default Django header and all admin chrome */
+        #header, #branding, .breadcrumbs, h1.dashboard-title {
+            display: none !important;
+        }
+        
+        /* Hide Django sidebar */
+        #nav-sidebar {
+            display: none !important;
+        }
+        
+        /* Reset main content area */
+        #content-main, .main, #content {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+        }
+        
+        body {
+            background: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .page-container {
+            min-height: 100vh;
+            background: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding-top: 64px;
+            padding-bottom: 100px;
+            overflow: visible;
+        }
+
+        /* Custom Header */
+        .custom-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background: #ffffff;
+            border-bottom: 1px solid #E5E7EB;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-logo {
+            height: 36px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .header-title h1 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #000000;
+            margin: 0;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 24px 16px 150px 16px;
+            overflow: visible;
+            min-height: calc(100vh - 64px);
+        }
+
+        /* Form Container */
+        .form-container {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 24px 24px 60px 24px;
+            box-shadow: 0 6px 20px 0 rgba(0,0,0,0.10);
+            overflow: visible;
+            min-height: 600px;
+        }
+
+        .section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #000000;
+            margin: 0 0 20px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            display: flex;
+            align-items: center;
+            text-align: center;
+        }
+
+        .section-title::before,
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #E5E7EB;
+        }
+
+        .section-title::before {
+            margin-right: 16px;
+        }
+
+        .section-title::after {
+            margin-left: 16px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 32px;
+            overflow: visible;
+        }
+
+        .form-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group {
+            margin-bottom: 0;
+            position: relative;
+            z-index: auto;
+            overflow: visible;
+        }
+
+        .form-group.standalone {
+            margin-bottom: 28px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #000000;
+            margin-bottom: 6px;
+            font-size: 0.75rem;
+        }
+
+        .required {
+            color: #EF4444;
+            margin-left: 2px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            background: #ffffff;
+            box-sizing: border-box;
+        }
+
+        .form-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23000' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+            cursor: pointer;
+            position: relative;
+            z-index: 10;
+            height: auto;
+            min-height: 42px;
+        }
+
+        .form-select option {
+            padding: 10px;
+            background: #ffffff;
+            color: #000000;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #000000;
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-select:focus {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23000' d='M6 4L1 9h10z'/%3E%3C/svg%3E");
+        }
+
+        .form-input::placeholder {
+            color: #9CA3AF;
+        }
+
+        .form-help {
+            font-size: 0.7rem;
+            color: #9CA3AF;
+            margin-top: 4px;
+        }
+
+        .char-counter {
+            text-align: right;
+            font-size: 0.7rem;
+            color: #9CA3AF;
+            margin-top: 4px;
+        }
+
+        .char-counter.warning { color: #F59E0B; }
+        .char-counter.danger { color: #EF4444; }
+
+        /* Time Slots */
+        .time-slot-entry {
+            margin-bottom: 8px;
+        }
+
+        .time-slot-input {
+            margin: 0 !important;
+        }
+
+        /* Checkbox Groups */
+        .checkbox-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .checkbox-group:hover {
+            border-color: #000000;
+        }
+
+        .checkbox-input {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: #000000;
+        }
+
+        .checkbox-label {
+            font-size: 0.8rem;
+            color: #000000;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* Win Type Selection */
+        .win-type-group {
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 16px;
+        }
+
+        .win-type-title {
+            font-weight: 600;
+            font-size: 0.7rem;
+            color: #000000;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .win-type-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .win-type-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px 10px;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #ffffff;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .win-type-option.selected {
+            border-color: #000000;
+            background: #F3F4F6;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        .win-type-option:hover {
+            border-color: #000000;
+        }
+
+        .win-type-option input {
+            display: none;
+        }
+
+        .win-type-option-title {
+            font-weight: 600;
+            color: #000000;
+            font-size: 0.8rem;
+            margin-bottom: 2px;
+        }
+
+        .win-type-option-description {
+            font-size: 0.65rem;
+            color: #9CA3AF;
+        }
+
+        /* Conditional Fields */
+        .conditional-fields {
+            display: none;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #E5E7EB;
+        }
+
+        .conditional-fields.active {
+            display: block;
+        }
+
+        /* Action Buttons */
+        .button-container {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            padding-top: 20px;
+            border-top: 1px solid #E5E7EB;
+            margin-top: 24px;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: #000000;
+            color: #ffffff;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #1f2937;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-secondary {
+            background: #F3F4F6;
+            color: #000000;
+            border: 1px solid #E5E7EB;
+        }
+
+        .btn-secondary:hover {
+            background: #E5E7EB;
+            border-color: #000000;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Status Messages */
+        .status-message {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .status-success {
+            background: #000000;
+            color: white;
+        }
+
+        .status-error {
+            background: #EF4444;
+            color: white;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loading-content {
+            background: #ffffff;
+            padding: 28px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 280px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid #E5E7EB;
+            border-top-color: #000000;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 14px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-content h3 {
+            margin: 0 0 6px 0;
+            color: #000000;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .loading-content p {
+            margin: 0;
+            color: #9CA3AF;
+            font-size: 0.8rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .main-content {
+                padding: 16px 12px;
+            }
+
+            .custom-header {
+                padding: 10px 12px;
+            }
+
+            .form-container {
+                padding: 16px;
+            }
+
+            .form-row,
+            .checkbox-row,
+            .win-type-options {
+                grid-template-columns: 1fr;
+            }
+
+            .button-container {
+                flex-direction: column-reverse;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block breadcrumbs %}
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <!-- Custom Header -->
+    <div class="custom-header">
+        <div class="header-left">
+            <div class="header-title">
+                <a href="{% url 'admin_dashboard' %}">
+                    <img src="{% static 'logo/logo.png' %}" alt="Logo" class="header-logo">
+                </a>
+                <h1>Create Tournament</h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Status Messages -->
+        <div id="status-message" class="status-message">
+            <span id="status-text"></span>
+        </div>
+
+        <div class="form-container">
+            <h2 class="section-title">Tournament Details</h2>
+            
+            <form id="tournament-form">
+                {% csrf_token %}
+                
+                <!-- Title -->
+                <div class="form-group standalone">
+                    <label for="title" class="form-label">Tournament Title <span class="required">*</span></label>
+                    <input type="text" 
+                           id="title" 
+                           name="title" 
+                           class="form-input" 
+                           placeholder="Enter tournament title..."
+                           maxlength="100"
+                           required>
+                    <div id="title-counter" class="char-counter">0 / 100</div>
+                </div>
+
+                <!-- Game, Mode & Date -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="game" class="form-label">Game <span class="required">*</span></label>
+                        <select id="game" name="game_id" class="form-select" required>
+                            <option value="">Select a game</option>
+                            {% for game in games %}
+                            <option value="{{ game.id }}">{{ game.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="game-mode" class="form-label">Game Mode</label>
+                        <input type="text" 
+                               id="game-mode" 
+                               name="game_mode" 
+                               class="form-input" 
+                               placeholder="e.g., Battle Royale, TDM">
+                    </div>
+                </div>
+
+                <!-- Tournament Date -->
+                <div class="form-group standalone">
+                    <label for="game-date" class="form-label">Tournament Date <span class="required">*</span></label>
+                    <input type="date" 
+                           id="game-date" 
+                           name="game_date" 
+                           class="form-input" 
+                           required>
+                    <div class="form-help">Date when the tournament will be held</div>
+                </div>
+
+                <!-- Win Type Selection -->
+                <div class="win-type-group">
+                    <div class="win-type-title">Win Type</div>
+                    <div class="win-type-options">
+                        <label class="win-type-option selected">
+                            <input type="radio" name="win_type" value="placement" checked>
+                            <div class="win-type-option-title">🥇 Placement</div>
+                            <div class="win-type-option-description">Top positions win prizes</div>
+                        </label>
+                        <label class="win-type-option">
+                            <input type="radio" name="win_type" value="per_kill">
+                            <div class="win-type-option-title">🎯 Per Kill</div>
+                            <div class="win-type-option-description">Earn points per kill</div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Prize Description -->
+                <div class="form-group standalone">
+                    <label for="prize" class="form-label">Prize Description</label>
+                    <input type="text" 
+                           id="prize" 
+                           name="prize" 
+                           class="form-input" 
+                           placeholder="e.g., Winner gets 5000 points + bonus rewards"
+                           maxlength="200">
+                    <div class="form-help">Describe the tournament prize (optional)</div>
+                </div>
+
+                <!-- Placement-specific fields -->
+                <div id="placement-fields" class="conditional-fields active">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="prize-position-upto" class="form-label">Top Positions</label>
+                            <input type="number" 
+                                   id="prize-position-upto" 
+                                   name="prize_position_upto" 
+                                   class="form-input" 
+                                   placeholder="e.g., 3"
+                                   min="1">
+                            <div class="form-help">How many get prizes</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="top-position-prize" class="form-label">Prize per Position</label>
+                            <input type="number" 
+                                   id="top-position-prize" 
+                                   name="top_position_prize" 
+                                   class="form-input" 
+                                   placeholder="e.g., 1000"
+                                   min="0">
+                            <div class="form-help">Amount per position</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Per-kill specific fields -->
+                <div id="per-kill-fields" class="conditional-fields">
+                    <div class="form-group">
+                        <label for="per-kill-value" class="form-label">Points Per Kill</label>
+                        <input type="number" 
+                               id="per-kill-value" 
+                               name="per_kill_point" 
+                               class="form-input" 
+                               placeholder="e.g., 50"
+                               min="1">
+                        <div class="form-help">Points awarded per kill</div>
+                    </div>
+                </div>
+
+                <!-- Entry Fee Row -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="checkbox-group">
+                            <input type="checkbox" 
+                                   id="is-free" 
+                                   name="is_free" 
+                                   class="checkbox-input">
+                            <span class="checkbox-label">💎 Free Tournament</span>
+                        </label>
+                    </div>
+
+                    <div class="form-group" id="entry-fee-group">
+                        <label for="entry-fee" class="form-label">Entry Fee (Crowns)</label>
+                        <input type="number" 
+                               id="entry-fee" 
+                               name="entry_fee" 
+                               class="form-input" 
+                               placeholder="e.g., 100"
+                               min="0">
+                    </div>
+                </div>
+
+                <!-- Options Row -->
+                <div class="checkbox-row">
+                    <label class="checkbox-group">
+                        <input type="checkbox" 
+                               id="enable-slots" 
+                               name="enable_slots" 
+                               class="checkbox-input">
+                        <span class="checkbox-label">🎯 Slot Assignment</span>
+                    </label>
+
+                    <label class="checkbox-group" id="access-based-group">
+                        <input type="checkbox" 
+                               id="access-based" 
+                               name="access_based" 
+                               class="checkbox-input">
+                        <span class="checkbox-label">🔐 Access Based</span>
+                    </label>
+                </div>
+
+                <!-- Max Players -->
+                <div class="form-group standalone">
+                    <label for="max-player" class="form-label">Max Players <span class="required">*</span></label>
+                    <input type="number" 
+                           id="max-player" 
+                           name="max_player" 
+                           class="form-input" 
+                           placeholder="e.g., 100"
+                           min="2"
+                           required>
+                    <div class="form-help">Total maximum players for this tournament</div>
+                </div>
+
+                <!-- Time Slots -->
+                <div class="form-group standalone">
+                    <label class="form-label">Time Slots</label>
+                    <div id="time-slots-container">
+                        <div class="time-slot-entry">
+                            <input type="text" 
+                                   class="form-input time-slot-input" 
+                                   placeholder="e.g., 9:00 AM, 2:30 PM"
+                                   style="width: 70%; display: inline-block;">
+                            <button type="button" class="btn btn-secondary" onclick="addTimeSlot()" style="width: 28%; margin-left: 2%; padding: 10px;">+ Add Slot</button>
+                        </div>
+                    </div>
+                    <div class="form-help">Add time slots for players to choose from</div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="button-container">
+                    <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" id="create-btn" class="btn btn-primary">
+                        Create Tournament
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loading-overlay" class="loading-overlay">
+    <div class="loading-content">
+        <div class="spinner"></div>
+        <h3>Creating Tournament...</h3>
+        <p>Setting up your tournament</p>
+    </div>
+</div>
+
+<script>
+function refreshWinTypeOptions() {
+    document.querySelectorAll('.win-type-option').forEach(option => {
+        const input = option.querySelector('input[type="radio"]');
+        option.classList.toggle('selected', Boolean(input && input.checked));
+    });
+}
+
+function toggleWinTypeFields() {
+    const winType = document.querySelector('input[name="win_type"]:checked').value;
+    const placementFields = document.getElementById('placement-fields');
+    const perKillFields = document.getElementById('per-kill-fields');
+    
+    if (winType === 'placement') {
+        placementFields.classList.add('active');
+        perKillFields.classList.remove('active');
+    } else {
+        placementFields.classList.remove('active');
+        perKillFields.classList.add('active');
+    }
+}
+
+function toggleEntryFee() {
+    const isFree = document.getElementById('is-free').checked;
+    const entryFeeGroup = document.getElementById('entry-fee-group');
+    const accessBasedGroup = document.getElementById('access-based-group');
+    
+    if (isFree) {
+        entryFeeGroup.style.display = 'none';
+        accessBasedGroup.style.display = 'none';
+        document.getElementById('entry-fee').value = '0';
+    } else {
+        entryFeeGroup.style.display = 'block';
+        accessBasedGroup.style.display = 'flex';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const titleInput = document.getElementById('title');
+    const titleCounter = document.getElementById('title-counter');
+    const isFreeCheckbox = document.getElementById('is-free');
+    const winTypeInputs = document.querySelectorAll('input[name="win_type"]');
+    const form = document.getElementById('tournament-form');
+
+    function updateCounter(input, counter, maxLength) {
+        const currentLength = input.value.length;
+        counter.textContent = `${currentLength} / ${maxLength}`;
+        
+        if (currentLength > maxLength * 0.9) {
+            counter.className = 'char-counter danger';
+        } else if (currentLength > maxLength * 0.7) {
+            counter.className = 'char-counter warning';
+        } else {
+            counter.className = 'char-counter';
+        }
+    }
+
+    titleInput.addEventListener('input', function() {
+        updateCounter(this, titleCounter, 100);
+    });
+
+    isFreeCheckbox.addEventListener('change', toggleEntryFee);
+
+    winTypeInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            refreshWinTypeOptions();
+            toggleWinTypeFields();
+        });
+    });
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        createTournament();
+    });
+
+    refreshWinTypeOptions();
+    toggleWinTypeFields();
+});
+
+function addTimeSlot() {
+    const container = document.getElementById('time-slots-container');
+    const newSlot = document.createElement('div');
+    newSlot.className = 'time-slot-entry';
+    newSlot.style.marginTop = '8px';
+    newSlot.innerHTML = `
+        <input type="text" 
+               class="form-input time-slot-input" 
+               placeholder="e.g., 9:00 AM, 2:30 PM"
+               style="width: 70%; display: inline-block;">
+        <button type="button" class="btn btn-secondary" onclick="removeTimeSlot(this)" style="width: 28%; margin-left: 2%; padding: 10px; background: #EF4444;">Remove</button>
+    `;
+    container.appendChild(newSlot);
+}
+
+function removeTimeSlot(button) {
+    button.parentElement.remove();
+}
+
+function collectTimeSlots() {
+    const inputs = document.querySelectorAll('.time-slot-input');
+    const timeSlots = [];
+    const maxPlayer = parseInt(document.getElementById('max-player').value) || 100;
+    
+    inputs.forEach(input => {
+        const value = input.value.trim();
+        if (value) {
+            timeSlots.push({
+                time_slot: value,
+                max_players: maxPlayer
+            });
+        }
+    });
+    
+    return timeSlots;
+}
+
+async function createTournament() {
+    const form = document.getElementById('tournament-form');
+    const createBtn = document.getElementById('create-btn');
+    const loadingOverlay = document.getElementById('loading-overlay');
+    
+    const formData = new FormData(form);
+    const data = {};
+    
+    formData.forEach((value, key) => {
+        if (key === 'is_free' || key === 'access_based' || key === 'enable_slots') {
+            data[key] = value === 'on';
+        } else if (value) {
+            data[key] = value;
+        }
+    });
+    
+    // Collect time slots
+    data.time_slots = collectTimeSlots();
+    
+    if (!data.title || !data.game_id || !data.max_player || !data.game_date) {
+        showStatus('Please fill in all required fields (Title, Game, Max Players, Date)', 'error');
+        return;
+    }
+    
+    createBtn.disabled = true;
+    createBtn.textContent = 'Creating...';
+    loadingOverlay.style.display = 'flex';
+    
+    try {
+        const response = await fetch('/admin/tournament/tournament/create-tournament/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        loadingOverlay.style.display = 'none';
+        
+        if (result.success) {
+            showStatus(`✓ Tournament created! ID: ${result.tournament_id}`, 'success');
+            setTimeout(() => {
+                window.location.href = '{% url "admin_dashboard" %}';
+            }, 1500);
+        } else {
+            showStatus(result.error || 'Failed to create tournament', 'error');
+            createBtn.textContent = 'Create Tournament';
+            createBtn.disabled = false;
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        loadingOverlay.style.display = 'none';
+        showStatus('Network error. Please try again.', 'error');
+        createBtn.textContent = 'Create Tournament';
+        createBtn.disabled = false;
+    }
+}
+
+function showStatus(message, type) {
+    const statusMessage = document.getElementById('status-message');
+    const statusText = document.getElementById('status-text');
+    
+    statusText.textContent = message;
+    statusMessage.className = `status-message status-${type}`;
+    statusMessage.style.display = 'block';
+    
+    if (type === 'success') {
+        setTimeout(() => {
+            statusMessage.style.display = 'none';
+        }, 5000);
+    }
+    
+    statusMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+</script>
+{% endblock %}

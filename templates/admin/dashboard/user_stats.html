@@ -1,0 +1,1055 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrahead %}
+{{ block.super }}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --bg-primary: #ffffff;
+        --bg-secondary: #ffffff;
+        --bg-tertiary: #ffffff;
+        --border-light: #e2e8f0;
+        --border-medium: #cbd5e1;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-muted: #94a3b8;
+        --accent-blue: #222222;
+        --accent-blue-light: #e5e7eb;
+        --accent-green: #10b981;
+        --accent-green-light: #ecfdf5;
+        --accent-amber: #f59e0b;
+        --accent-amber-light: #fffbeb;
+        --accent-red: #ef4444;
+        --accent-red-light: #fef2f2;
+        --accent-purple: #8b5cf6;
+        --accent-purple-light: #f5f3ff;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        --radius-sm: 6px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+    }
+
+    /* Reset Django admin */
+    #header, #branding, .breadcrumbs, h1.dashboard-title, #nav-sidebar { display: none !important; }
+    #content-main, .main, #content { margin: 0 !important; padding: 0 !important; width: 100% !important; }
+    * { box-sizing: border-box; }
+    body { 
+        background: var(--bg-primary); 
+        margin: 0; 
+        padding: 0; 
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .page-wrap { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    /* Hide vertical scrollbar for the whole page */
+    html, body, .page-wrap, .main-area, .dashboard {
+        overflow-y: hidden !important;
+    }
+
+    /* Top Header */
+    .top-header {
+        background: var(--bg-primary);
+        padding: 10px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+        flex-shrink: 0;
+        border-bottom: 1px solid var(--border-light);
+        position: relative;
+    }
+    .dashboard-link {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+            color: #111;
+            stroke: #111;
+        color: var(--accent-blue);
+        text-decoration: none;
+        transition: background 0.15s, box-shadow 0.15s;
+        box-shadow: 0 2px 8px 0 rgba(0,0,0,0.04);
+        z-index: 2;
+    }
+    .dashboard-link:hover {
+        background: var(--accent-blue);
+        color: #fff;
+        box-shadow: 0 4px 16px 0 rgba(0,0,0,0.10);
+        }
+        .dashboard-link:hover svg {
+            color: #fff;
+            stroke: #fff;
+    }
+    .dashboard-link svg {
+        width: 22px;
+        height: 22px;
+        display: block;
+    }
+    .nav-btn {
+        display: flex; align-items: center; justify-content: center;
+        width: 36px; height: 36px; border-radius: var(--radius-md);
+        color: var(--text-secondary); text-decoration: none; 
+        transition: all 0.2s ease;
+        background: var(--bg-primary);
+        border: none;
+    }
+    .nav-btn:hover { background: var(--bg-primary); color: var(--text-primary); }
+    .nav-btn svg { width: 18px; height: 18px; }
+    .brand { 
+        color: var(--text-primary); 
+        font-size: 16px; 
+        font-weight: 600; 
+        letter-spacing: -0.02em;
+    }
+    
+    .search-bar {
+        max-width: 520px;
+        margin: 0 auto;
+        display: flex; gap: 10px;
+        justify-content: center;
+        width: 100%;
+    }
+    .search-bar input {
+        flex: 1; padding: 10px 14px; font-size: 13px; font-family: inherit;
+        border: 1px solid var(--border-light); border-radius: var(--radius-md);
+        background: var(--bg-primary); color: var(--text-primary);
+        transition: all 0.2s ease;
+    }
+    .search-bar input::placeholder { color: var(--text-muted); }
+    .search-bar input:focus { 
+        outline: none; 
+        border-color: var(--accent-blue); 
+        background: var(--bg-primary);
+        box-shadow: 0 0 0 3px var(--accent-blue-light);
+    }
+    .search-divider {
+        display: flex; align-items: center;
+        color: var(--text-muted); font-size: 12px; font-weight: 500;
+        padding: 0 4px;
+    }
+    .search-bar button {
+        padding: 10px 20px; font-size: 13px; font-weight: 600; font-family: inherit;
+        border-radius: var(--radius-md); cursor: pointer;
+        background: var(--accent-blue); color: #fff; border: none;
+        transition: all 0.2s ease;
+    }
+    .search-bar button:hover { background: #111; transform: translateY(-1px); }
+
+    .user-badge { display: none; }
+
+    /* Main Content */
+    .main-area { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+    /* Error & Empty States */
+    .alert { 
+        padding: 12px 24px; 
+        font-size: 13px; 
+        background: var(--accent-amber-light); 
+        color: #92400e; 
+        border-bottom: 1px solid #fde68a;
+        font-weight: 500;
+    }
+    .empty-state { 
+        flex: 1; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; 
+        color: var(--text-muted); font-size: 14px;
+        gap: 8px;
+    }
+    .empty-state svg { width: 48px; height: 48px; opacity: 0.5; }
+
+    /* Dashboard Grid */
+    .dashboard { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+    
+    /* Top Stats Row */
+    .stats-row {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 24px;
+        padding: 16px 24px;
+        background: var(--bg-primary);
+        /* border-bottom removed for seamless transition to games row */
+        flex-shrink: 0;
+    }
+
+    /* Profile Card */
+    .profile-card {
+        display: flex; gap: 14px; align-items: center;
+    }
+    .profile-avatar {
+        width: 52px; height: 52px; border-radius: var(--radius-lg);
+        background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary)); 
+        display: flex; align-items: center; justify-content: center;
+        font-size: 18px; color: var(--text-muted); overflow: hidden; flex-shrink: 0;
+        border: 2px solid var(--border-light);
+    }
+    .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .profile-info { flex: 1; min-width: 0; }
+    .profile-name { 
+        font-size: 15px; font-weight: 600; color: var(--text-primary); 
+        margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        letter-spacing: -0.01em;
+    }
+    .profile-email { 
+        font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; 
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .profile-status {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+        text-transform: uppercase; letter-spacing: 0.03em;
+    }
+    .profile-status .status-dot {
+        width: 6px; height: 6px; border-radius: 50%;
+    }
+    .status-active { background: var(--accent-green-light); color: #059669; }
+    .status-active .status-dot { background: var(--accent-green); }
+    .status-banned { background: var(--accent-red-light); color: #dc2626; }
+    .status-banned .status-dot { background: var(--accent-red); }
+    .status-inactive { background: var(--bg-tertiary); color: var(--text-muted); }
+    .status-inactive .status-dot { background: var(--text-muted); }
+
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 12px;
+    }
+    .stat-box {
+        padding: 12px 14px;
+        background: var(--bg-primary);
+        border-radius: var(--radius-md);
+        box-shadow: 0 4px 16px 0 rgba(0,0,0,0.10);
+        border: none;
+    }
+    
+    .stat-label { 
+        font-size: 10px; color: var(--text-muted); 
+        text-transform: uppercase; letter-spacing: 0.05em; 
+        margin-bottom: 4px; font-weight: 500;
+    }
+    .stat-value { font-size: 20px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.02em; }
+    .stat-sub { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+
+    /* Games Row */
+    .games-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        padding: 12px 24px;
+        background: var(--bg-secondary);
+        /* border-bottom removed for seamless transition from stats row */
+        flex-shrink: 0;
+    }
+    .game-chip {
+        display: flex; align-items: center; gap: 20px;
+        padding: 18px 20px;
+        background: var(--bg-primary);
+        border-radius: var(--radius-md);
+        box-shadow: 0 4px 16px 0 rgba(0,0,0,0.10);
+        border: none;
+        transition: all 0.2s ease;
+        min-height: 90px;
+    }
+    .game-chip:hover { box-shadow: 0 6px 20px 0 rgba(0,0,0,0.13); }
+    .game-chip-icon { 
+        width: 64px; height: 64px; 
+        border-radius: var(--radius-md);
+        display: flex; align-items: center; justify-content: center;
+        overflow: hidden;
+        background: var(--bg-tertiary);
+        border: 1px solid var(--border-light);
+        flex-shrink: 0;
+    }
+    .game-chip-icon img {
+        width: 100%; height: 100%;
+        object-fit: contain;
+        padding: 6px;
+        background: none;
+    }
+    .game-chip-info { flex: 1; min-width: 0; }
+    .game-chip-name { font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+    .game-chip-detail { font-size: 11px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Notification message cell: allow 2+ lines, wrap text */
+    .notification-message-cell {
+        max-width: 380px;
+        min-width: 180px;
+        font-size: 13px;
+        color: var(--text-primary);
+        white-space: normal;
+        word-break: break-word;
+        overflow: visible;
+        line-height: 1.5;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        text-overflow: ellipsis;
+    }
+    .game-chip-na { color: var(--text-muted); }
+
+    /* Tab Navigation */
+    .tab-nav {
+        display: flex;
+        gap: 4px;
+        padding: 0 24px;
+        background: var(--bg-primary);
+        border-bottom: 1px solid var(--border-light);
+        flex-shrink: 0;
+    }
+    .tab-btn {
+        padding: 14px 20px;
+        font-size: 13px;
+        font-weight: 500;
+        font-family: inherit;
+        color: var(--text-muted);
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-bottom: -1px;
+    }
+    .tab-btn:hover { color: var(--text-secondary); }
+    .tab-btn.active { 
+        color: var(--accent-blue); 
+        border-bottom-color: var(--accent-blue); 
+        font-weight: 600;
+    }
+    .tab-count {
+        display: inline-flex; align-items: center; justify-content: center;
+        min-width: 22px; height: 20px; padding: 0 7px;
+        background: var(--bg-primary); border-radius: 10px;
+        font-size: 11px; font-weight: 600; margin-left: 8px;
+        color: var(--text-secondary);
+    }
+    .tab-btn.active .tab-count { background: var(--accent-blue); color: #fff; }
+
+    /* Tab Content */
+    .tab-content { flex: 1; overflow: hidden; display: none; flex-direction: column; }
+    .tab-content.active { display: flex; }
+
+    /* Table Container */
+    .table-wrap {
+        flex: 1;
+        overflow-y: auto !important;
+        overflow-x: hidden;
+        padding: 0;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE 10+ */
+    }
+    .table-wrap::-webkit-scrollbar {
+        display: none; /* Chrome/Safari/Webkit */
+    }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .data-table thead { background: var(--bg-primary); position: sticky; top: 0; z-index: 10; }
+    .data-table th {
+        text-align: left; padding: 12px 20px; font-weight: 600; color: var(--text-secondary);
+        border-bottom: 1px solid var(--border-light); white-space: nowrap;
+        font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .data-table td { 
+        padding: 12px 20px; 
+        border-bottom: 1px solid var(--bg-tertiary); 
+        color: var(--text-primary);
+    }
+    .data-table tbody tr { transition: background 0.15s ease; }
+    .data-table tbody tr:hover { background: var(--bg-primary); }
+
+    /* Badges */
+    .badge {
+        display: inline-flex; align-items: center; justify-content: center;
+        padding: 4px 18px;
+        border-radius: 20px;
+        font-size: 11px; font-weight: 600;
+        text-transform: uppercase; letter-spacing: 0.02em;
+        min-width: 80px;
+        max-width: 120px;
+        width: 100px;
+        box-sizing: border-box;
+        text-align: center;
+    }
+    .badge-dark { background: var(--text-primary); color: #fff; }
+    .badge-light { background: #64748b; color: #fff; }
+    .badge-success { background: var(--accent-green); color: #fff; }
+    .badge-warning { background: var(--accent-amber); color: #fff; }
+    .badge-danger { background: var(--accent-red); color: #fff; }
+    .badge-muted { background: #64748b; color: #fff; }
+    .badge-blue { background: var(--accent-blue); color: #fff; }
+    .badge-purple { background: var(--accent-purple); color: #fff; }
+
+    .link { 
+        color: var(--accent-blue); font-weight: 600; text-decoration: none; 
+        transition: color 0.15s ease;
+    }
+    .link:hover { color: #111; text-decoration: underline; }
+    .muted { color: var(--text-muted); }
+
+    /* Pagination */
+    .pagination-bar {
+        display: flex; justify-content: center; align-items: center; gap: 8px;
+        padding: 12px 24px; background: var(--bg-primary); 
+        border-top: 1px solid var(--border-light); flex-shrink: 0;
+    }
+    .pg-btn {
+        padding: 8px 14px; font-size: 12px; font-weight: 500; font-family: inherit;
+        border: 1px solid var(--border-light); border-radius: var(--radius-sm); 
+        background: var(--bg-primary); color: var(--text-secondary);
+        cursor: pointer; transition: all 0.2s ease;
+    }
+    .pg-btn:hover:not(:disabled) { 
+        background: var(--bg-secondary); 
+        border-color: var(--border-medium);
+        color: var(--text-primary);
+    }
+    .pg-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .pg-btn.active { background: var(--accent-blue); color: #fff; border-color: var(--accent-blue); }
+    .pg-info { font-size: 12px; color: var(--text-muted); padding: 0 8px; font-weight: 500; }
+
+    /* Transaction Summary */
+    .txn-summary {
+        display: grid; grid-template-columns: repeat(3, 1fr);
+        gap: 16px; padding: 16px 24px;
+        background: var(--bg-primary); border-bottom: 1px solid var(--border-light); flex-shrink: 0;
+    }
+    .txn-card {
+        padding: 16px 20px; background: var(--bg-primary);
+        border: 1px solid var(--border-light); border-radius: var(--radius-md);
+        display: flex; align-items: center; gap: 14px;
+    }
+    .txn-card-icon {
+        width: 44px; height: 44px; border-radius: var(--radius-md);
+        display: flex; align-items: center; justify-content: center;
+    }
+    .txn-card-icon svg { width: 22px; height: 22px; }
+    .txn-card-icon.in { background: var(--accent-green-light); color: var(--accent-green); }
+    .txn-card-icon.out { background: var(--accent-red-light); color: var(--accent-red); }
+    .txn-card-icon.balance { background: var(--accent-blue-light); color: var(--accent-blue); }
+    .txn-card-content { flex: 1; }
+    .txn-card-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500; }
+    .txn-card-value { font-size: 22px; font-weight: 700; color: var(--text-primary); margin-top: 2px; letter-spacing: -0.02em; }
+
+    /* Room Details */
+    .room-info { font-size: 11px; line-height: 1.6; color: var(--text-secondary); }
+    .room-info strong { color: var(--text-primary); font-weight: 600; }
+
+    /* Participants List */
+    .participants-container {
+        max-width: 600px;
+        margin: 24px auto;
+        padding: 0 24px;
+    }
+    .participants-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 16px;
+        text-align: center;
+    }
+    .participants-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+    .participant-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px;
+        background: var(--bg-primary);
+        border-radius: var(--radius-md);
+        box-shadow: 0 4px 16px 0 rgba(0,0,0,0.10);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+    .participant-card:hover {
+        box-shadow: 0 6px 20px 0 rgba(0,0,0,0.13);
+        transform: translateY(-2px);
+    }
+    .participant-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: var(--radius-md);
+        background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        color: var(--text-muted);
+        overflow: hidden;
+        flex-shrink: 0;
+        border: 2px solid var(--border-light);
+    }
+    .participant-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .participant-info {
+        flex: 1;
+        min-width: 0;
+    }
+    .participant-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .participant-email {
+        font-size: 11px;
+        color: var(--text-secondary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .participant-role {
+        font-size: 10px;
+        padding: 3px 8px;
+        border-radius: 12px;
+        background: var(--accent-blue-light);
+        color: var(--accent-blue);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        margin-top: 4px;
+        display: inline-block;
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+        .stats-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (max-width: 900px) {
+        .stats-row { grid-template-columns: 1fr; }
+        .stats-grid { grid-template-columns: repeat(3, 1fr); }
+        .games-row { grid-template-columns: repeat(2, 1fr); }
+        .txn-summary { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+        .top-header { flex-wrap: wrap; padding: 12px 16px; }
+        .search-bar { max-width: 100%; order: 3; width: 100%; margin-top: 10px; flex-wrap: wrap; }
+        .search-bar input { min-width: 100%; }
+        .search-divider { width: 100%; text-align: center; padding: 4px 0; }
+        .user-badge { display: none; }
+        .tab-btn { padding: 12px 14px; font-size: 12px; }
+        .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        .games-row { grid-template-columns: 1fr; padding: 12px 16px; }
+        .stats-row, .tab-nav { padding-left: 16px; padding-right: 16px; }
+        .participants-list { grid-template-columns: 1fr; }
+        .participants-container { padding: 0 16px; }
+    }
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div class="page-wrap">
+    <!-- Top Header -->
+    <div class="top-header">
+                <a href="/admin/" class="dashboard-link" title="Dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="13" width="7" height="8" rx="2"/>
+                        <rect x="14" y="8" width="7" height="13" rx="2"/>
+                        <rect x="8" y="3" width="8" height="7" rx="2"/>
+                    </svg>
+                </a>
+        <form method="post" class="search-bar">
+            {% csrf_token %}
+            <input type="text" name="search_query" placeholder="Enter user email or challenge ID..." value="{{ user_email|default:'' }}">
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    <!-- Main Area -->
+    <div class="main-area">
+        {% if error_message %}
+        <div class="alert">{{ error_message }}</div>
+        {% endif %}
+
+        {% if challenge_participants %}
+        <div class="participants-container">
+            <div class="participants-title">Challenge Participants - Click to View User Stats</div>
+            <div class="participants-list">
+                {% for participant in challenge_participants %}
+                <form method="post" style="display: contents;">
+                    {% csrf_token %}
+                    <input type="hidden" name="search_query" value="{{ participant.email }}">
+                    <button type="submit" class="participant-card" style="border: none; width: 100%; text-align: left;">
+                        <div class="participant-avatar">
+                            {% if participant.profile_picture %}
+                                <img src="{{ participant.profile_picture }}" alt="">
+                            {% else %}
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:20px;height:20px;">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                            {% endif %}
+                        </div>
+                        <div class="participant-info">
+                            <div class="participant-name">{{ participant.full_name }}</div>
+                            <div class="participant-email">{{ participant.email }}</div>
+                            <span class="participant-role">{{ participant.role }}</span>
+                        </div>
+                    </button>
+                </form>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if user_data %}
+        <div class="dashboard">
+            <!-- Stats Row -->
+            <div class="stats-row">
+                <!-- Profile Card -->
+                <div class="profile-card">
+                    <div class="profile-avatar">
+                        {% if user_data.user.profile_picture %}
+                            <img src="{{ user_data.user.profile_picture.url }}" alt="">
+                        {% else %}
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:24px;height:24px;">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                        {% endif %}
+                    </div>
+                    <div class="profile-info">
+                        <div class="profile-name">{{ user_data.user.full_name|default:"Unknown User" }}</div>
+                        <div class="profile-email">{{ user_data.user.email }}</div>
+                        <span class="profile-status {% if user_data.user.is_negative %}status-banned{% elif user_data.user.is_active %}status-active{% else %}status-inactive{% endif %}">
+                            <span class="status-dot"></span>
+                            {% if user_data.user.is_negative %}Banned{% elif user_data.user.is_active %}Active{% else %}Inactive{% endif %}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-label">Balance</div>
+                        <div class="stat-value">{{ user_data.user.wallet_balance|floatformat:0 }}</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Points In</div>
+                        <div class="stat-value">{{ user_data.total_points_in|floatformat:0 }}</div>
+                        <div class="stat-sub">{{ user_data.count_points_in }} transactions</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Withdrawn</div>
+                        <div class="stat-value">{{ user_data.total_withdraw|floatformat:0 }}</div>
+                        <div class="stat-sub">{{ user_data.count_withdraw }} transactions</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Win Rate</div>
+                        <div class="stat-value">{{ user_data.win_rate }}%</div>
+                        <div class="stat-sub">{{ user_data.won_paid_matches }}W / {{ user_data.lost_paid_matches }}L</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Matches</div>
+                        <div class="stat-value">{{ user_data.total_matches }}</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Blocked By</div>
+                        <div class="stat-value">{{ user_data.blocked_by_others }}</div>
+                        <div class="stat-sub">users</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">User Blocked</div>
+                        <div class="stat-value">{{ user_data.users_blocked_by_this_user }}</div>
+                        <div class="stat-sub">users</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Games Row -->
+            <div class="games-row">
+                <div class="game-chip">
+                    <span class="game-chip-icon">
+                        <img src="{% static 'assets/freefire.png' %}" alt="Free Fire">
+                    </span>
+                    <div class="game-chip-info">
+                        <div class="game-chip-name">Free Fire</div>
+                        {% if user_data.freefire_profile %}
+                            <div class="game-chip-detail">
+                                {{ user_data.freefire_profile.profile.game_username|default:"N/A" }} | UID: {{ user_data.freefire_profile.uid|default:"N/A" }}
+                            </div>
+                            {% if user_data.freefire_profile.level %}
+                                <div class="game-chip-detail">Level: {{ user_data.freefire_profile.level }}</div>
+                            {% endif %}
+                            {% if user_data.freefire_profile.rating %}
+                                <div class="game-chip-detail">Rating: {{ user_data.freefire_profile.rating }}</div>
+                            {% endif %}
+                        {% else %}
+                            <div class="game-chip-detail game-chip-na">Not linked</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="game-chip">
+                    <span class="game-chip-icon">
+                        <img src="{% static 'assets/pubg.png' %}" alt="PUBG">
+                    </span>
+                    <div class="game-chip-info">
+                        <div class="game-chip-name">PUBG</div>
+                        {% if user_data.pubg_profile %}
+                            <div class="game-chip-detail">
+                                {{ user_data.pubg_profile.profile.game_username|default:"N/A" }} | UID: {{ user_data.pubg_profile.uid|default:"N/A" }}
+                            </div>
+                            {% if user_data.pubg_profile.level %}
+                                <div class="game-chip-detail">Level: {{ user_data.pubg_profile.level }}</div>
+                            {% endif %}
+                            {% if user_data.pubg_profile.rating %}
+                                <div class="game-chip-detail">Rating: {{ user_data.pubg_profile.rating }}</div>
+                            {% endif %}
+                        {% else %}
+                            <div class="game-chip-detail game-chip-na">Not linked</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="game-chip">
+                    <span class="game-chip-icon">
+                        <img src="{% static 'assets/efootball.png' %}" alt="eFootball">
+                    </span>
+                    <div class="game-chip-info">
+                        <div class="game-chip-name">eFootball</div>
+                        {% if user_data.efootball_profile %}
+                            <div class="game-chip-detail">
+                                {{ user_data.efootball_profile.profile.game_username|default:"N/A" }}{% if user_data.efootball_profile.current_division %} | {{ user_data.efootball_profile.current_division }}{% endif %}
+                            </div>
+                            {% if user_data.efootball_profile.hd or user_data.efootball_profile.cd or user_data.efootball_profile.ca %}
+                                <div class="game-chip-detail">
+                                    {% if user_data.efootball_profile.hd %}HD: {{ user_data.efootball_profile.hd }}{% endif %}{% if user_data.efootball_profile.hd and user_data.efootball_profile.cd %} | {% endif %}
+                                    {% if user_data.efootball_profile.cd %}CD: {{ user_data.efootball_profile.cd }}{% endif %}{% if user_data.efootball_profile.cd and user_data.efootball_profile.ca %} | {% endif %}
+                                    {% if user_data.efootball_profile.ca %}C-A: {{ user_data.efootball_profile.ca }}{% endif %}
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <div class="game-chip-detail game-chip-na">Not linked</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="game-chip">
+                    <span class="game-chip-icon">
+                        <img src="{% static 'assets/mlbb.png' %}" alt="MLBB">
+                    </span>
+                    <div class="game-chip-info">
+                        <div class="game-chip-name">MLBB</div>
+                        {% if user_data.mlbb_profile %}
+                            <div class="game-chip-detail">
+                                {{ user_data.mlbb_profile.profile.game_username|default:"N/A" }}{% if user_data.mlbb_profile.uid %} | UID: {{ user_data.mlbb_profile.uid }}{% endif %}
+                            </div>
+                            {% if user_data.mlbb_profile.current_rank or user_data.mlbb_profile.highest_rank %}
+                                <div class="game-chip-detail">
+                                    {% if user_data.mlbb_profile.current_rank %}Rank: {{ user_data.mlbb_profile.current_rank }}{% endif %}{% if user_data.mlbb_profile.current_rank and user_data.mlbb_profile.highest_rank %} | {% endif %}{% if user_data.mlbb_profile.highest_rank %}Highest: {{ user_data.mlbb_profile.highest_rank }}{% endif %}
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <div class="game-chip-detail game-chip-na">Not linked</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="tab-nav">
+                <button class="tab-btn active" onclick="switchTab('matches')">
+                    Matches<span class="tab-count">{{ user_data.recent_matches.paginator.count }}</span>
+                </button>
+                <button class="tab-btn" onclick="switchTab('transactions')">
+                    Transactions &amp; Orders<span class="tab-count">{{ user_data.transactions_history.paginator.count }}</span>
+                </button>
+                <button class="tab-btn" onclick="switchTab('notifications')">
+                    Notifications<span class="tab-count">{{ user_data.notifications.paginator.count }}</span>
+                </button>
+            </div>
+
+            <!-- Matches Tab -->
+            <div class="tab-content active" id="tab-matches">
+                <div class="table-wrap">
+                    {% if user_data.recent_matches.object_list %}
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>ID</th>
+                                <th>Type</th>
+                                <th>Game</th>
+                                <th>Mode</th>
+                                <th>Fee</th>
+                                <th>Status</th>
+                                <th>Result</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for match in user_data.recent_matches.object_list %}
+                            <tr>
+                                <td>{{ match.created_at_dt|date:"M d, H:i" }}</td>
+                                <td><a href="{% url 'admin:challenge_challenge_change' match.id %}" class="link" target="_blank">{{ match.id }}</a></td>
+                                <td>
+                                    {% if match.created_by.role == 'admin' %}
+                                        <span class="badge badge-purple">Tournament</span>
+                                    {% elif match.is_free or match.entry_fee == 0 %}
+                                        <span class="badge badge-light">Free</span>
+                                    {% else %}
+                                        <span class="badge badge-warning">Paid</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ match.game.name|default:"N/A" }}</td>
+                                <td>{{ match.game.game_mode|default:"—" }}</td>
+                                <td style="font-weight: 600;">{{ match.entry_fee|default:0 }}</td>
+                                <td>
+                                    <span class="badge {% if match.status == 'completed' %}badge-success{% elif match.status == 'cancelled' or match.status == 'expired' %}badge-muted{% elif match.status == 'in_progress' %}badge-warning{% else %}badge-light{% endif %}">
+                                        {{ match.status|upper }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if match.status == 'resolved' %}
+                                        <span class="badge badge-blue">Refunded</span>
+                                    {% elif match.status == 'completed' %}
+                                        {% if match.winner == user_data.user.id %}
+                                            <span class="badge badge-success">Won</span>
+                                        {% else %}
+                                            <span class="badge badge-danger">Lost</span>
+                                        {% endif %}
+                                    {% elif match.status == 'cancelled' %}
+                                        <span class="badge badge-muted">Cancelled</span>
+                                    {% else %}
+                                        <span class="muted">—</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                        No matches found
+                    </div>
+                    {% endif %}
+                </div>
+                {% if user_data.recent_matches.paginator.num_pages > 1 %}
+                <div class="pagination-bar">
+                    <form method="post" style="display: contents;">
+                        {% csrf_token %}
+                        <input type="hidden" name="search_query" value="{{ user_email }}">
+                        {% if user_data.recent_matches.has_previous %}
+                            <button type="submit" name="page" value="{{ user_data.recent_matches.previous_page_number }}" class="pg-btn">← Prev</button>
+                        {% else %}
+                            <button type="button" class="pg-btn" disabled>← Prev</button>
+                        {% endif %}
+                        <span class="pg-info">{{ user_data.recent_matches.number }} / {{ user_data.recent_matches.paginator.num_pages }}</span>
+                        {% if user_data.recent_matches.has_next %}
+                            <button type="submit" name="page" value="{{ user_data.recent_matches.next_page_number }}" class="pg-btn">Next →</button>
+                        {% else %}
+                            <button type="button" class="pg-btn" disabled>Next →</button>
+                        {% endif %}
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Transactions Tab -->
+            <div class="tab-content" id="tab-transactions">
+                <div class="table-wrap">
+                    {% if user_data.transactions_history.object_list %}
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>ID</th>
+                                <th>Type</th>
+                                <th>Label</th>
+                                <th>Points</th>
+                                <th>Status</th>
+                                <th>Processed By</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for txn in user_data.transactions_history.object_list %}
+                            <tr>
+                                <td>{{ txn.created_at|date:"M d, H:i" }}</td>
+                                <td>
+                                    {% if txn.source == 'transaction' %}
+                                        <a href="{% url 'admin:transaction_transaction_change' txn.id %}" class="link" target="_blank">TR{{ txn.id }}</a>
+                                    {% else %}
+                                        <span style="color:#8b5cf6; font-weight:600;">SR{{ txn.id }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if txn.type == 'pointsin' %}
+                                        <span class="badge badge-success">In</span>
+                                    {% elif txn.type == 'pointsout' %}
+                                        <span class="badge badge-danger">Out</span>
+                                    {% elif txn.type == 'store' %}
+                                        <span class="badge badge-purple">Store</span>
+                                    {% else %}
+                                        <span class="badge badge-light">{{ txn.type|upper }}</span>
+                                    {% endif %}
+                                </td>
+                                <td style="font-size:12px; color:#475569;">
+                                    {% if txn.label %}{{ txn.label }}{% else %}<span class="muted">—</span>{% endif %}
+                                </td>
+                                <td style="font-weight: 700;">{{ txn.amount|floatformat:0 }}</td>
+                                <td>
+                                    <span class="badge {% if txn.status == 'success' or txn.status == 'completed' %}badge-success{% elif txn.status == 'pending' %}badge-warning{% else %}badge-danger{% endif %}">
+                                        {{ txn.status|upper }}
+                                    </span>
+                                </td>
+                                <td>{% if txn.processed_by %}{{ txn.processed_by.full_name|default:txn.processed_by.email }}{% else %}<span class="muted">—</span>{% endif %}</td>
+                                <td style="max-width: 150px; font-size: 12px;">{% if txn.admin_notes %}{{ txn.admin_notes|truncatechars:40 }}{% else %}<span class="muted">—</span>{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        No transactions found
+                    </div>
+                    {% endif %}
+                </div>
+                {% if user_data.transactions_history.paginator.num_pages > 1 %}
+                <div class="pagination-bar">
+                    <form method="post" style="display: contents;">
+                        {% csrf_token %}
+                        <input type="hidden" name="search_query" value="{{ user_email }}">
+                        <input type="hidden" name="page" value="{{ user_data.recent_matches.number }}">
+                        <input type="hidden" name="notification_page" value="{{ user_data.notifications.number }}">
+                        {% if user_data.transactions_history.has_previous %}
+                            <button type="submit" name="transaction_page" value="{{ user_data.transactions_history.previous_page_number }}" class="pg-btn">← Prev</button>
+                        {% else %}
+                            <button type="button" class="pg-btn" disabled>← Prev</button>
+                        {% endif %}
+                        <span class="pg-info">{{ user_data.transactions_history.number }} / {{ user_data.transactions_history.paginator.num_pages }}</span>
+                        {% if user_data.transactions_history.has_next %}
+                            <button type="submit" name="transaction_page" value="{{ user_data.transactions_history.next_page_number }}" class="pg-btn">Next →</button>
+                        {% else %}
+                            <button type="button" class="pg-btn" disabled>Next →</button>
+                        {% endif %}
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Notifications Tab -->
+            <div class="tab-content" id="tab-notifications">
+                <div class="table-wrap">
+                    {% if user_data.notifications.object_list %}
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Message</th>
+                                <th>Challenge</th>
+                                <th>Room Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for notification in user_data.notifications.object_list %}
+                            <tr>
+                                <td>{{ notification.created_at|date:"M d, H:i" }}</td>
+                                <td>
+                                    <span class="badge {% if notification.notification_type == 'game' %}badge-purple{% elif notification.notification_type == 'system' %}badge-warning{% else %}badge-light{% endif %}">
+                                        {{ notification.notification_type|upper }}
+                                    </span>
+                                </td>
+                                <td class="notification-message-cell">{{ notification.message }}</td>
+                                <td>
+                                    {% if notification.challenge %}
+                                        <a href="{% url 'admin:challenge_challenge_change' notification.challenge.id %}" class="link" target="_blank">{{ notification.challenge.id }}</a>
+                                    {% else %}
+                                        <span class="muted">—</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if notification.room_id or notification.room_pass or notification.team_code or notification.lobby_id %}
+                                        <div class="room-info">
+                                            {% if notification.room_id %}<strong>ID:</strong> {{ notification.room_id }}<br>{% endif %}
+                                            {% if notification.room_pass %}<strong>Pass:</strong> {{ notification.room_pass }}<br>{% endif %}
+                                            {% if notification.team_code %}<strong>Team:</strong> {{ notification.team_code }}<br>{% endif %}
+                                            {% if notification.lobby_id %}<strong>Lobby:</strong> {{ notification.lobby_id }}{% endif %}
+                                        </div>
+                                    {% else %}
+                                        <span class="muted">—</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                        </svg>
+                        No notifications found
+                    </div>
+                    {% endif %}
+                </div>
+                {% if user_data.notifications.paginator.num_pages > 1 %}
+                <div class="pagination-bar">
+                    <form method="post" style="display: contents;">
+                        {% csrf_token %}
+                        <input type="hidden" name="search_query" value="{{ user_email }}">
+                        <input type="hidden" name="page" value="{{ user_data.recent_matches.number }}">
+                        {% if user_data.notifications.has_previous %}
+                            <button type="submit" name="notification_page" value="{{ user_data.notifications.previous_page_number }}" class="pg-btn">← Prev</button>
+                        {% else %}
+                            <button type="button" class="pg-btn" disabled>← Prev</button>
+                        {% endif %}
+                        <span class="pg-info">{{ user_data.notifications.number }} / {{ user_data.notifications.paginator.num_pages }}</span>
+                        {% if user_data.notifications.has_next %}
+                            <button type="submit" name="notification_page" value="{{ user_data.notifications.next_page_number }}" class="pg-btn">Next →</button>
+                        {% else %}
+                            <button type="button" class="pg-btn" disabled>Next →</button>
+                        {% endif %}
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% elif not error_message and not challenge_participants %}
+        <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width: 56px; height: 56px; opacity: 0.4;">
+                <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            <span style="font-weight: 500; margin-top: 4px;">Enter a user email or challenge ID to view analytics</span>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function switchTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.closest('.tab-btn').classList.add('active');
+    
+    // Update tab content
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    document.getElementById('tab-' + tabName).classList.add('active');
+}
+</script>
+{% endblock %}

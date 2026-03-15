@@ -1,0 +1,94 @@
+/* Custom Admin Theme: Level Esports */
+:root {
+  --level-bg: #000000;
+  --level-fg: #ffffff;
+  --level-accent: #00bf63;
+  --level-muted: #1a1a1a;
+  --level-border: #222;
+}
+
+/* Base layout */
+html, body {
+  background: var(--level-bg) !important;
+  color: var(--level-fg) !important;
+}
+
+#header, .breadcrumbs {
+  background: var(--level-muted) !important;
+  border-bottom: 1px solid var(--level-border) !important;
+}
+
+#header #site-name a,
+#header a:link, #header a:visited {
+  color: var(--level-accent) !important;
+  text-decoration: none;
+}
+
+#user-tools, .breadcrumbs a, .breadcrumbs {
+  color: var(--level-fg) !important;
+}
+
+.module, .app-auth .module, .dashboard .module, .content, .object-tools a:link,
+#changelist, .change-list, .change-form, .inline-group, .inline-related, fieldset,
+.module caption, .module h2, .module h3 {
+  background: var(--level-muted) !important;
+  color: var(--level-fg) !important;
+  border-color: var(--level-border) !important;
+}
+
+/* Links */
+a, a:link, a:visited { color: var(--level-accent) !important; }
+a:hover, a:focus { color: #00e07a !important; }
+
+/* Buttons */
+.button, input[type="submit"], input[type="button"], .object-tools a,
+.submit-row input, .deletelink, .default, .addlink, .changelink {
+  background: var(--level-accent) !important;
+  color: var(--level-bg) !important;
+  border: none !important;
+}
+
+.button:hover, input[type="submit"]:hover, input[type="button"]:hover,
+.object-tools a:hover, .submit-row input:hover {
+  filter: brightness(1.1);
+}
+
+/* Tables */
+#changelist-form table, .results, table {
+  background: var(--level-muted) !important;
+  color: var(--level-fg) !important;
+  border-color: var(--level-border) !important;
+}
+
+th, td { border-color: var(--level-border) !important; }
+
+tr:nth-child(even) { background: #0e0e0e !important; }
+tr:hover { background: #121212 !important; }
+
+/* Forms */
+input, select, textarea, .vTextField, .vLargeTextField, .vDateField, .vTimeField {
+  background: #0a0a0a !important;
+  color: var(--level-fg) !important;
+  border: 1px solid var(--level-border) !important;
+}
+
+.help, .helptext, .help-tooltip { color: #cfd8dc !important; }
+
+/* Login page */
+.login .container, .login #content, .login .form-row {
+  background: var(--level-muted) !important;
+  color: var(--level-fg) !important;
+}
+
+/* Messages */
+.messagelist .success, .success { background: #033b24 !important; color: #9affc9 !important; }
+.messagelist .error, .errors { background: #3b0303 !important; color: #ffb3b3 !important; }
+.messagelist .warning { background: #3b2f03 !important; color: #ffe6a3 !important; }
+
+/* Accents */
+hr, .inline-group h2, .module h2 { border-color: var(--level-accent) !important; }
+
+/* Tiny elegant touches */
+#header #site-name { letter-spacing: 0.5px; }
+.module { border-radius: 8px; }
+.button, input[type="submit"], input[type="button"], .object-tools a { border-radius: 6px; }

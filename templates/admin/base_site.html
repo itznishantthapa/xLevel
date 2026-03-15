@@ -1,0 +1,51 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}Level Esports{% endblock %}
+
+{% block extrahead %}
+  {{ block.super }}
+  <!-- Favicon & App Icons -->
+  <link rel="icon" type="image/png" sizes="192x192" href="{% static 'logo/icon-192x192.png' %}">
+  <link rel="icon" type="image/png" sizes="512x512" href="{% static 'logo/icon-512x512.png' %}">
+  <link rel="shortcut icon" type="image/png" href="{% static 'logo/icon-192x192.png' %}">
+  
+  <!-- Montserrat Font - Very Heavy & Bold -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <style>
+    /* Apply Montserrat font globally to admin - Very Heavy & Bold */
+    body, input, select, textarea, button, .button, 
+    #header, #branding, .breadcrumbs, 
+    .module h2, .module caption, 
+    table, th, td, 
+    .form-row label, 
+    #content-main,
+    .dashboard,
+    * {
+      font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.01em;
+    }
+    
+    /* Smooth font rendering */
+    body {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+  </style>
+{% endblock %}
+
+{% block branding %}
+  <h1 id="site-name">
+    <a href="{% url 'admin_dashboard' %}">Level Esports</a>
+  </h1>
+{% endblock %}
+
+{% block nav-global %}
+{% endblock %}
