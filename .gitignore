@@ -45,6 +45,9 @@ yarn-error.log*
 # Media files (uploaded content)
 media/
 
+# Nginx configuration and SSL certificates
+nginx/
+
 # Security audit files (temporary)
 SECURITY_*.md
 *_SECURITY_*.md

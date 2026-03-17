@@ -1,0 +1,462 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Level Esports Privacy Policy - Learn how we collect, use, and protect your data.">
+    <title>Privacy Policy - Level Esports</title>
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'logo/icon-192x192.png' %}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{% static 'logo/icon-512x512.png' %}">
+    <link rel="shortcut icon" href="{% static 'logo/icon-192x192.png' %}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: #000;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            line-height: 1.6;
+        }
+
+        .main-container {
+            max-width: 56rem;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+        }
+
+        /* Header Section */
+        .header-section {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo-container img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            line-height: 1;
+        }
+
+        .subtitle {
+            font-size: 1.125rem;
+            color: #d1d5db;
+            margin-bottom: 2rem;
+            max-width: 42rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .date-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: #9ca3af;
+        }
+
+        /* Table of Contents */
+        .toc-container {
+            margin-bottom: 4rem;
+        }
+
+        .toc-container h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+        }
+
+        .toc-list {
+            list-style: none;
+        }
+
+        .toc-list li {
+            margin: 0;
+        }
+
+        .toc-list button {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: background-color 0.3s ease;
+        }
+
+        .toc-list button:hover {
+            background-color: #111;
+        }
+
+        .toc-number {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.875rem;
+            width: 2rem;
+            color: #9ca3af;
+        }
+
+        .toc-text {
+            margin-left: 1rem;
+        }
+
+        /* Content Sections */
+        .content-sections {
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+        }
+
+        section {
+            scroll-margin-top: 5rem;
+        }
+
+        section h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #fff;
+        }
+
+        section > div {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        p {
+            color: #d1d5db;
+            line-height: 1.625;
+        }
+
+        .important-box {
+            margin: 1.5rem 0;
+            padding: 1rem;
+            border-left: 4px solid #fff;
+            background-color: #111;
+        }
+
+        .important-box p {
+            color: #fff;
+            font-weight: bold;
+        }
+
+        /* Contact Section */
+        .contact-section {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #fff;
+        }
+
+        .contact-content {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .contact-content h3 {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .contact-content > div {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .contact-email {
+            font-weight: bold;
+        }
+
+        .contact-company {
+            color: #d1d5db;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #374151;
+            text-align: center;
+        }
+
+        footer > div {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        footer .company-name {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        footer .tagline {
+            color: #d1d5db;
+        }
+
+        footer .credit {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        /* Scroll to Top Button */
+        .scroll-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 3rem;
+            height: 3rem;
+            background-color: #fff;
+            color: #000;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0;
+            transition: background-color 0.3s ease;
+        }
+
+        .scroll-to-top:hover {
+            background-color: #d1d5db;
+        }
+
+        .scroll-to-top.show {
+            display: flex;
+        }
+
+        @media (max-width: 640px) {
+            .main-container {
+                padding: 1.5rem 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            section h2 {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="logo-container">
+                <img src="{% static 'logo/icon-192x192.png' %}" alt="Level Esports logo">
+            </div>
+            <h1>Privacy Policy</h1>
+            <div class="date-info">
+                <div>Effective Date: September 20, 2025</div>
+                <div>Last Updated: September 12, 2025</div>
+            </div>
+        </div>
+
+        <!-- Table of Contents -->
+        <div class="toc-container">
+            <h2>Table of Contents</h2>
+            <ul class="toc-list">
+                <li><button onclick="scrollToSection('overview')"><span class="toc-number">01.</span><span class="toc-text">Overview</span></button></li>
+                <li><button onclick="scrollToSection('information-collect')"><span class="toc-number">02.</span><span class="toc-text">Information We Collect</span></button></li>
+                <li><button onclick="scrollToSection('how-we-use')"><span class="toc-number">03.</span><span class="toc-text">How We Use Your Information</span></button></li>
+                <li><button onclick="scrollToSection('data-retention')"><span class="toc-number">04.</span><span class="toc-text">Data Retention and Deletion</span></button></li>
+                <li><button onclick="scrollToSection('security')"><span class="toc-number">05.</span><span class="toc-text">Security of Your Information</span></button></li>
+                <li><button onclick="scrollToSection('your-rights')"><span class="toc-number">06.</span><span class="toc-text">Your Rights and Control Over Information</span></button></li>
+                <li><button onclick="scrollToSection('third-party')"><span class="toc-number">07.</span><span class="toc-text">Third Party Services</span></button></li>
+                <li><button onclick="scrollToSection('international')"><span class="toc-number">08.</span><span class="toc-text">International Data Transfers</span></button></li>
+                <li><button onclick="scrollToSection('data-protection')"><span class="toc-number">09.</span><span class="toc-text">Data Protection Commitment</span></button></li>
+                <li><button onclick="scrollToSection('policy-updates')"><span class="toc-number">10.</span><span class="toc-text">Policy Updates</span></button></li>
+                <li><button onclick="scrollToSection('contact')"><span class="toc-number">11.</span><span class="toc-text">Contact Information</span></button></li>
+            </ul>
+        </div>
+
+        <!-- Content Sections -->
+        <div class="content-sections">
+            <!-- Overview -->
+            <section id="overview">
+                <h2>Overview</h2>
+                <div>
+                    <p>This Privacy Policy explains how BlackOneDevs ("we," "our," or "us") collects, uses, protects, and shares information when you use Level Esports and related services. We are a group of passionate Nepali student developers who are gamers ourselves, creating this platform with love for the gaming community.</p>
+                    <p>Level Esports is a comprehensive platform specifically designed to connect gamers and provide them with opportunities to practice their skills, compete against others, and participate in organized tournaments across multiple popular games. Our Service currently supports competitive matches in Free Fire, PUBG Mobile, Chess, and eFootball, with plans to expand our game library based on user demand and community feedback.</p>
+                    <p>Our "services" refer to the Level Esports app, available on mobile devices. The app lets players create and join matches for free. We also feature official tournaments that are exclusively organized and managed by our administrative team, providing premium competitive experiences that are completely free to enter and intended purely for entertainment purposes.</p>
+                    <div class="important-box">
+                        <p>Important: Our Service is only available to individuals aged 18 and above.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Information We Collect -->
+            <section id="information-collect">
+                <h2>Information We Collect</h2>
+                <div>
+                    <p>When you create an account with Level Esports, we collect your full name and email address through our supported third-party authentication providers. We support Google OAuth authentication, which is available across all platforms and devices where our Service is accessible. For users accessing our Service through iOS devices, we also support Sign in with Apple, Apple's proprietary authentication service.</p>
+                    <p>You have the option to provide a profile picture to personalize your account. This is optional and not required to use our Service. All profile images must be appropriate and free from sensitive, offensive, or otherwise inappropriate material.</p>
+                    <p>To enable match creation and participation, we collect specific game-related details including your in-game unique identifier (UID), game username, current game level, rating, and match history across supported games (Free Fire, PUBG Mobile, Chess, and eFootball). We use this information for fair matchmaking, skill verification, and maintaining competitive integrity.</p>
+                    <p>We collect and store notification tokens through Firebase Cloud Messaging (FCM) to send you important notifications about match updates, challenges, and tournament announcements. We also implement caching mechanisms to improve app performance and enable offline access to certain features.</p>
+                    <p>We want to be absolutely clear about the limits of our data collection. We do not collect device identifiers, browsing history, cookies, location data, or any other unrelated personal information. Our app is designed to respect your privacy, and we only collect the information that is strictly required to provide the core functionality of creating, joining, and participating in eSport practice matches.</p>
+                </div>
+            </section>
+
+            <!-- How We Use Your Information -->
+            <section id="how-we-use">
+                <h2>How We Use Your Information</h2>
+                <div>
+                    <p>We use the data we collect solely to provide and enhance Level Esports services, ensuring a seamless and fair experience for all users. The information you provide allows us to create and maintain your account, display your game profile for fair matchmaking, send important notifications about match updates and tournaments, and manage official competitions organized by our administrative team.</p>
+                    <p>On a technical level, we analyze certain data to improve app performance, guarantee fair play through our match verification system, maintain the integrity of our leaderboards, and prevent fraudulent activity across the platform.</p>
+                    <div class="important-box">
+                        <p>Important: We never sell or trade your information to third parties for advertising or marketing purposes.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Data Retention and Deletion -->
+            <section id="data-retention">
+                <h2>Data Retention and Deletion</h2>
+                <div>
+                    <p>We retain your information only for as long as it is necessary to provide Level Esports services and support your account. We are committed to a transparent and secure deletion process that complies with international privacy standards. When you choose to delete your account, we permanently and irrevocably erase your personal data from our systems.</p>
+                    <p>You can remove your data by using the account deletion feature available directly within the app, or by sending an email request to support@level.com.np. To help us verify your identity and process your request securely and promptly, please include your account details in the email. Upon account deletion, we permanently and irrevocably erase your personal data from our systems.</p>
+                </div>
+            </section>
+
+            <!-- Security -->
+            <section id="security">
+                <h2>Security of Your Information</h2>
+                <div>
+                    <p>Protecting your information is one of our highest priorities. We employ a range of industry-standard security measures to safeguard your data throughout its lifecycle. For instance, we use encryption for both data transmission and storage to ensure your information is protected from unauthorized access. We also restrict access to your data to only authorized personnel and apply commercially acceptable protection measures to maintain the confidentiality and integrity of your information.</p>
+                </div>
+            </section>
+
+            <!-- Your Rights and Control -->
+            <section id="your-rights">
+                <h2>Your Rights and Control Over Information</h2>
+                <div>
+                    <p>You retain full control over your personal information.</p>
+                    <p>You can access and edit your details, update your information through the app, and delete your account at any time. These controls are designed to give you direct and transparent management over the personal information associated with your profile.</p>
+                    <p>Where applicable under applicable privacy laws, you can request access to your data, ask us to correct errors, or object to certain types of processing. We review and respond to such requests in line with our legal obligations and the principles of fairness and transparency.</p>
+                </div>
+            </section>
+
+            <!-- Third Party Services -->
+            <section id="third-party">
+                <h2>Third Party Services</h2>
+                <div>
+                    <p>Level Esports integrates with trusted third-party services for enhanced functionality:</p>
+                    <p>These services collect limited data solely to support essential app functions including authentication, notifications, and performance optimization. They are not permitted to use your information for commercial purposes beyond providing our Service.</p>
+                </div>
+            </section>
+
+            <!-- International Data Transfers -->
+            <section id="international">
+                <h2>International Data Transfers</h2>
+                <div>
+                    <p>Our use of services like Firebase Cloud Messaging and authentication providers means that your data may be stored or processed on servers located in different countries. While this is necessary for Level Esports to operate and provide reliable service, we ensure that your information remains secure regardless of its processing location. By using our Service, you consent to these necessary data transfers, which are essential for us to provide our comprehensive esports matchmaking platform.</p>
+                </div>
+            </section>
+
+            <!-- Data Protection Commitment -->
+            <section id="data-protection">
+                <h2>Data Protection Commitment</h2>
+                <div>
+                    <p>BlackOneDevs is deeply committed to maintaining the highest privacy standards and implementing appropriate security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. As fellow gamers who understand the importance of trust in the gaming community, we handle all user data with integrity, confidentiality, and care in accordance with international privacy laws and regulations.</p>
+                    <p>Questions or concerns? Contact us at support@level.com.np for prompt assistance.</p>
+                </div>
+            </section>
+
+            <!-- Policy Updates -->
+            <section id="policy-updates">
+                <h2>Policy Updates</h2>
+                <div>
+                    <p>We may update this Privacy Policy to reflect changes in our practices, technology, or legal obligations. We will notify you of any significant changes via email or in-app notifications. If a revision is material, we will provide at least 30 days notice prior to any new policy taking effect.</p>
+                    <p>Your continued use of Level Esports after policy changes are communicated indicates your acceptance of the revised Privacy Policy. If you do not agree to the new policy, you must stop using our Service.</p>
+                </div>
+            </section>
+
+            <!-- Contact Information -->
+            <section id="contact">
+                <h2>Contact Information</h2>
+                <div>
+                    <p>For questions, complaints, or requests related to your data and privacy, please contact BlackOneDevs through the following channels. As fellow gamers, we value transparency and trust in our gaming community.</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- Contact Section -->
+        <div class="contact-section">
+            <div class="contact-content">
+                <h3>Get in Touch</h3>
+                <div>
+                    <div class="contact-email">support@level.com.np</div>
+                    <div class="contact-company">BlackOneDevs - Gamers for Gamers</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <div>
+                <div class="company-name">BlackOneDevs</div>
+                <p class="tagline">Made with love for the gaming community by fellow gamers</p>
+                <p class="credit">Made with ❤️ by BlackOneDevs - Gamers for Gamers (Nepali Honi)</p>
+                <div style="margin-top: 1rem; display: flex; align-items: center; justify-content: center; gap: 1.5rem; font-size: 0.875rem;">
+                    <a href="{% url 'support_page' %}" style="color: #d1d5db; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#d1d5db'">Help & Support</a>
+                    <a href="{% url 'terms_of_service' %}" style="color: #d1d5db; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#d1d5db'">Terms of Service</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-to-top" id="scrollTopBtn" onclick="scrollToTop();">↑</button>
+
+    <script>
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.addEventListener('scroll', function() {
+            const scrollTopBtn = document.getElementById('scrollTopBtn');
+            if (window.scrollY > 400) {
+                scrollTopBtn.classList.add('show');
+            } else {
+                scrollTopBtn.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -94,6 +94,7 @@ urlpatterns = [
     path('api/utils/', include('utils.urls')),
     path('api/store/', include('store.urls')),
     path('api/buysell/', include('buysell.urls')),
+    path('', include('info.urls')),  # Legal pages: policy, terms
 ]
 
 # Serve media files in all environments (including production)

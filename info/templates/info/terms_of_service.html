@@ -1,0 +1,495 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Level Esports Terms of Service - Complete legal agreement for using our esports platform.">
+    <title>Terms of Service - Level Esports</title>
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'logo/icon-192x192.png' %}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{% static 'logo/icon-512x512.png' %}">
+    <link rel="shortcut icon" href="{% static 'logo/icon-192x192.png' %}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: #000;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            line-height: 1.6;
+        }
+
+        .main-container {
+            max-width: 56rem;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+        }
+
+        /* Header Section */
+        .header-section {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo-container img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            line-height: 1;
+        }
+
+        .subtitle {
+            font-size: 1.125rem;
+            color: #d1d5db;
+            margin-bottom: 2rem;
+            max-width: 42rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .date-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: #9ca3af;
+        }
+
+        /* Table of Contents */
+        .toc-container {
+            margin-bottom: 4rem;
+        }
+
+        .toc-container h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+        }
+
+        .toc-list {
+            list-style: none;
+        }
+
+        .toc-list li {
+            margin: 0;
+        }
+
+        .toc-list button {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: background-color 0.3s ease;
+        }
+
+        .toc-list button:hover {
+            background-color: #111;
+        }
+
+        .toc-number {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.875rem;
+            width: 2rem;
+            color: #9ca3af;
+        }
+
+        .toc-text {
+            margin-left: 1rem;
+        }
+
+        /* Content Sections */
+        .content-sections {
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+        }
+
+        section {
+            scroll-margin-top: 5rem;
+        }
+
+        section h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #fff;
+        }
+
+        section > div {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        p {
+            color: #d1d5db;
+            line-height: 1.625;
+        }
+
+        .important-box {
+            margin: 1.5rem 0;
+            padding: 1rem;
+            border-left: 4px solid #fff;
+            background-color: #111;
+        }
+
+        .important-box p {
+            color: #fff;
+            font-weight: bold;
+        }
+
+        /* Contact Section */
+        .contact-section {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #fff;
+        }
+
+        .contact-content {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .contact-content h3 {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .contact-content > div {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .contact-email {
+            font-weight: bold;
+        }
+
+        .contact-company {
+            color: #d1d5db;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #374151;
+            text-align: center;
+        }
+
+        footer > div {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        footer .company-name {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        footer .tagline {
+            color: #d1d5db;
+        }
+
+        footer .credit {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        /* Scroll to Top Button */
+        .scroll-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 3rem;
+            height: 3rem;
+            background-color: #fff;
+            color: #000;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0;
+            transition: background-color 0.3s ease;
+        }
+
+        .scroll-to-top:hover {
+            background-color: #d1d5db;
+        }
+
+        .scroll-to-top.show {
+            display: flex;
+        }
+
+        @media (max-width: 640px) {
+            .main-container {
+                padding: 1.5rem 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            section h2 {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="logo-container">
+                <img src="{% static 'logo/icon-192x192.png' %}" alt="Level Esports logo">
+            </div>
+            <h1>Terms of Service</h1>
+            <div class="date-info">
+                <div>Effective Date: September 23, 2025</div>
+                <div>Last Updated: September 23, 2025</div>
+            </div>
+        </div>
+
+        <!-- Table of Contents -->
+        <div class="toc-container">
+            <h2>Table of Contents</h2>
+            <ul class="toc-list">
+                <li><button onclick="scrollToSection('introduction')"><span class="toc-number">01.</span><span class="toc-text">Introduction</span></button></li>
+                <li><button onclick="scrollToSection('who-we-are')"><span class="toc-number">02.</span><span class="toc-text">Who We Are</span></button></li>
+                <li><button onclick="scrollToSection('age-requirements')"><span class="toc-number">03.</span><span class="toc-text">Age Requirements and Eligibility</span></button></li>
+                <li><button onclick="scrollToSection('your-account')"><span class="toc-number">04.</span><span class="toc-text">Your Account</span></button></li>
+                <li><button onclick="scrollToSection('using-service')"><span class="toc-number">05.</span><span class="toc-text">Using Level Esports</span></button></li>
+                <li><button onclick="scrollToSection('game-points')"><span class="toc-number">06.</span><span class="toc-text">Game Points System</span></button></li>
+                <li><button onclick="scrollToSection('player-conduct')"><span class="toc-number">07.</span><span class="toc-text">Player Conduct and Community Guidelines</span></button></li>
+                <li><button onclick="scrollToSection('reporting')"><span class="toc-number">08.</span><span class="toc-text">Reporting and Enforcement</span></button></li>
+                <li><button onclick="scrollToSection('intellectual-property')"><span class="toc-number">09.</span><span class="toc-text">Intellectual Property</span></button></li>
+                <li><button onclick="scrollToSection('privacy')"><span class="toc-number">10.</span><span class="toc-text">Privacy and Data Protection</span></button></li>
+                <li><button onclick="scrollToSection('disclaimers')"><span class="toc-number">11.</span><span class="toc-text">Disclaimers and Limitations</span></button></li>
+                <li><button onclick="scrollToSection('termination')"><span class="toc-number">12.</span><span class="toc-text">Termination</span></button></li>
+                <li><button onclick="scrollToSection('changes')"><span class="toc-number">13.</span><span class="toc-text">Changes to Terms</span></button></li>
+                <li><button onclick="scrollToSection('contact')"><span class="toc-number">14.</span><span class="toc-text">Contact Information</span></button></li>
+            </ul>
+        </div>
+
+        <!-- Content Sections -->
+        <div class="content-sections">
+            <!-- Introduction -->
+            <section id="introduction">
+                <h2>Introduction</h2>
+                <div>
+                    <p>Welcome to Level Esports! These Terms of Service, which we'll refer to as "Terms" throughout this document, govern your use of Level Esports's services, including our mobile application and any related services that we collectively refer to as the "Service." These Terms represent a legally binding agreement between you and us, and we want to ensure you fully understand what you're agreeing to when you use our platform.</p>
+                    <p>Please read these Terms carefully and completely before accessing or using our Service. By accessing, downloading, installing, or using Level Esports in any way, you acknowledge that you have read, understood, and agree to be bound by these Terms in their entirety. If you don't agree to these Terms, or if you cannot legally agree to them, you may not access or use our Service under any circumstances. Your continued use of our Service constitutes ongoing acceptance of these Terms, including any modifications we may make from time to time.</p>
+                </div>
+            </section>
+
+            <!-- Who We Are -->
+            <section id="who-we-are">
+                <h2>Who We Are</h2>
+                <div>
+                    <p>Level Esports is developed, owned, and operated by BlackOneDevs, a group of passionate student developers who are gamers ourselves. Throughout these Terms, we may refer to ourselves as "Level Esports," "we," "us," or "our," and when we do, we're referring to BlackOneDevs and all of its related entities. Our team is committed to providing a high-quality esports matchmaking platform that connects players worldwide and facilitates competitive gaming experiences across multiple popular games.</p>
+                    <p>You can reach us through multiple channels for any questions, concerns, or issues related to our Service. Our primary support email is support@level.com.np, where our dedicated support team responds to inquiries and provides assistance with account issues, technical problems, and general questions about our Service. You can also visit our official website at level.com.np, where you'll find additional information about our team, services, and updates about new features or changes to our platform.</p>
+                </div>
+            </section>
+
+            <!-- Age Requirements and Eligibility -->
+            <section id="age-requirements">
+                <h2>Age Requirements and Eligibility</h2>
+                <div>
+                    <p>The use of Level Esports is restricted to individuals who are at least eighteen years of age or older. This age restriction is absolute and applies regardless of your location, local laws regarding the age of majority, or parental consent. We have implemented this requirement to ensure compliance with various international laws and regulations, as well as to maintain the mature and competitive nature of our gaming community.</p>
+                    <p>By using our Service, you represent and warrant that you are at least eighteen years old and have reached the age of majority in your jurisdiction. You further represent that you have the full legal capacity and authority to enter into these Terms and that your agreement to these Terms creates a valid and legally binding obligation. If you are accessing our Service on behalf of a company, organization, or other legal entity, you represent and warrant that you have the authority to bind that entity to these Terms.</p>
+                    <div class="important-box">
+                        <p>Important: You must be 18 years or older to use our Service, regardless of local age of majority laws.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Your Account -->
+            <section id="your-account">
+                <h2>Your Account</h2>
+                <div>
+                    <p>Creating and maintaining an account with Level Esports is essential for accessing our Service and participating in our gaming community. We have designed our account creation process to be secure, straightforward, and integrated with trusted authentication providers to ensure the highest level of security for our users while eliminating the need for traditional password management.</p>
+                    <p>To create an account with Level Esports, you must authenticate through one of our supported third-party authentication providers. We support Google OAuth authentication, which is available across all platforms and devices where our Service is accessible. For users accessing our Service through iOS devices, we also support Sign in with Apple, Apple's proprietary authentication service.</p>
+                    <p>You are solely responsible for maintaining the security of your authenticated account and for all activities that occur under your account, whether authorized by you or not. You must ensure that all information associated with your account remains accurate, current, and complete at all times.</p>
+                    <div class="important-box">
+                        <p>Important: You may not create fake accounts, impersonate others, create multiple accounts, or share your account with others.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Using Level Esports -->
+            <section id="using-service">
+                <h2>Using Level Esports</h2>
+                <div>
+                    <p>Level Esports is a comprehensive platform specifically designed to connect gamers worldwide and provide them with opportunities to practice their skills, compete against others, and participate in organized tournaments across multiple popular games. Our Service currently supports competitive matches in Free Fire, PUBG Mobile, Chess, and eFootball, with plans to expand our game library based on user demand and community feedback.</p>
+                    <p>Our platform's core functionality revolves around enabling players to create, discover, and participate in matches that suit their preferences and skill levels. When you use our Service, you gain access to a robust match creation system that allows you to set up custom games with specific parameters, rules, and entry requirements.</p>
+                    <p>After each match concludes, our verification system requires all participants to upload screenshots of the match results. This verification process is crucial for maintaining the integrity of our leaderboard system, Game Points distribution, and overall community trust. Our administration team reviews these submissions to verify match outcomes and prevent fraudulent activity.</p>
+                    <p>We also feature official tournaments that are exclusively organized and managed by our administrative team. These tournaments provide a premium competitive experience with higher stakes and more structured formats. There is no entry fee for official tournaments, and they do not require any Game Points to join. They are completely free to enter and are intended purely for entertainment purposes.</p>
+                </div>
+            </section>
+
+            <!-- Game Points System -->
+            <section id="game-points">
+                <h2>Game Points System</h2>
+                <div>
+                    <p>Game Points are a core feature of Level Esports, serving as a measure of player skill and engagement within our platform. They function strictly as a non-monetary, in-game measure of achievement to reward participation and competitive success.</p>
+                    <p><strong>Earning Game Points</strong><br>Players can earn Game Points solely through in-app activities that demonstrate skill or engagement, including:<br><br>Winning Matches: Gaining points for victorious outcomes in free versus matches and tournaments.<br><br>Watching Advertisements: Receiving a small number of points for optionally viewing rewarded advertisements.</p>
+                    <p><strong>Using Game Points</strong><br>Game Points are an internal scoring mechanism and not a form of real-world currency. They are used exclusively within the application for the following non-monetary, cosmetic, and display purposes:<br><br>Leaderboard Display: Earning and maintaining a high point total is required to display your real name and placement on the various leaderboards.<br><br>In-Game Tags: Points can be exchanged to acquire non-monetary, cosmetic in-game tags and badges, such as 'Pro', 'Hacker', and 'Profile Exposure', which are displayed on your profile. These tags are purely for recognition and do not confer any in-game advantage or special power.</p>
+                    <p><strong>Important Declarations</strong><br>Game Points have absolutely no real-world monetary value. They are solely a score for achievement and cannot be:<br><br>Sold, traded, or transferred to other users or accounts.<br><br>Exchanged or withdrawn for cash, real-world currency, goods, services, or any other consideration of value outside of the Level Esports application.<br><br>Used to purchase, unlock, or access core gameplay functionality.</p>
+                </div>
+            </section>
+
+            <!-- Player Conduct and Community Guidelines -->
+            <section id="player-conduct">
+                <h2>Player Conduct and Community Guidelines</h2>
+                <div>
+                    <p>To maintain a safe, fair, and positive environment for everyone, we require all users to adhere to a set of community guidelines. When you use our Service, you agree to respect your fellow players and the integrity of the games you play. Any form of cheating, hacking, or exploiting game mechanics is strictly prohibited.</p>
+                    <p>This includes, but is not limited to, using third-party software to gain an unfair advantage, manipulating match results, or creating scripts or bots to automate gameplay. We have a zero-tolerance policy for this kind of behavior, and any confirmed violations will result in swift and severe action, including permanent suspension.</p>
+                    <p>In addition to maintaining game integrity, you must also act respectfully toward other users. We do not tolerate harassment, bullying, hate speech, or any other form of abusive behavior. Your profile images, usernames, and any content you upload must be appropriate and free from sensitive, offensive, or otherwise inappropriate material.</p>
+                </div>
+            </section>
+
+            <!-- Reporting and Enforcement -->
+            <section id="reporting">
+                <h2>Reporting and Enforcement</h2>
+                <div>
+                    <p>We rely on our community to help us identify and address violations of these Terms. Our platform includes a user-friendly reporting system that allows you to flag players, matches, or content that you believe violates our rules. When you submit a report, our dedicated administrative team reviews the evidence and takes appropriate action.</p>
+                    <p>We take all reports seriously, and you agree to use the reporting system responsibly and not to submit false or malicious reports. Our enforcement actions may include warnings, temporary suspensions, permanent bans, or removal of content, depending on the severity and nature of the violation.</p>
+                </div>
+            </section>
+
+            <!-- Intellectual Property -->
+            <section id="intellectual-property">
+                <h2>Intellectual Property</h2>
+                <div>
+                    <p>All content, features, and functionality of our Service, including but not limited to text, graphics, logos, icons, images, audio clips, digital downloads, data compilations, and software, are the exclusive property of BlackOneDevs or our licensors and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.</p>
+                    <p>You are granted a limited, non-exclusive, non-transferable, revocable license to access and use our Service for your personal, non-commercial use only. You may not reproduce, distribute, modify, create derivative works of, publicly display, publicly perform, republish, download, store, or transmit any of the material on our Service without our prior written consent.</p>
+                </div>
+            </section>
+
+            <!-- Privacy and Data Protection -->
+            <section id="privacy">
+                <h2>Privacy and Data Protection</h2>
+                <div>
+                    <p>Your privacy is important to us. Our collection, use, and protection of your personal information is governed by our Privacy Policy, which is incorporated into these Terms by reference. By using our Service, you consent to the collection and use of your information as described in our Privacy Policy.</p>
+                    <p>We implement appropriate security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. However, no method of transmission over the internet or electronic storage is completely secure, and we cannot guarantee absolute security.</p>
+                </div>
+            </section>
+
+            <!-- Disclaimers and Limitations -->
+            <section id="disclaimers">
+                <h2>Disclaimers and Limitations</h2>
+                <div>
+                    <p>Our Service is provided on an "as is" and "as available" basis without any warranties of any kind, either express or implied. We do not warrant that our Service will be uninterrupted, error-free, or completely secure. Your use of our Service is at your own risk.</p>
+                    <p>To the fullest extent permitted by law, BlackOneDevs shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, or any loss of data, use, goodwill, or other intangible losses resulting from your use of our Service.</p>
+                </div>
+            </section>
+
+            <!-- Termination -->
+            <section id="termination">
+                <h2>Termination</h2>
+                <div>
+                    <p>We may terminate or suspend your account and bar access to our Service immediately, without prior notice or liability, under our sole discretion, for any reason whatsoever, including but not limited to a breach of these Terms. You may also terminate your account at any time by following the account deletion process outlined in our Privacy Policy.</p>
+                    <p>Upon termination, your right to use our Service will cease immediately. All provisions of these Terms that by their nature should survive termination shall survive, including but not limited to ownership provisions, warranty disclaimers, indemnity, and limitations of liability.</p>
+                </div>
+            </section>
+
+            <!-- Changes to Terms -->
+            <section id="changes">
+                <h2>Changes to Terms</h2>
+                <div>
+                    <p>We reserve the right to modify or replace these Terms at any time at our sole discretion. If a revision is material, we will provide at least 30 days notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion.</p>
+                    <p>By continuing to access or use our Service after any revisions become effective, you agree to be bound by the revised terms. If you do not agree to the new terms, you must stop using our Service.</p>
+                </div>
+            </section>
+
+            <!-- Contact Information -->
+            <section id="contact">
+                <h2>Contact Information</h2>
+                <div>
+                    <p>If you have any questions about these Terms of Service, please contact BlackOneDevs through the following channels.</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- Contact Section -->
+        <div class="contact-section">
+            <div class="contact-content">
+                <h3>Get in Touch</h3>
+                <div>
+                    <div class="contact-email">support@level.com.np</div>
+                    <div class="contact-company">BlackOneDevs - Gamers for Gamers</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <div>
+                <div class="company-name">BlackOneDevs</div>
+                <p class="tagline">Made with love for the gaming community by fellow gamers</p>
+                <p class="credit">Made with ❤️ by BlackOneDevs - Gamers for Gamers</p>
+                <div style="margin-top: 1rem; display: flex; align-items: center; justify-content: center; gap: 1.5rem; font-size: 0.875rem;">
+                    <a href="{% url 'support_page' %}" style="color: #d1d5db; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#d1d5db'">Help & Support</a>
+                    <a href="{% url 'privacy_policy' %}" style="color: #d1d5db; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#d1d5db'">Privacy Policy</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-to-top" id="scrollTopBtn" onclick="scrollToTop();">↑</button>
+
+    <script>
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.addEventListener('scroll', function() {
+            const scrollTopBtn = document.getElementById('scrollTopBtn');
+            if (window.scrollY > 400) {
+                scrollTopBtn.classList.add('show');
+            } else {
+                scrollTopBtn.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

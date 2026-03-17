@@ -1,0 +1,560 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Level Esports Help & Support - FAQs about account management, tournaments, and gameplay.">
+    <title>Help & Support - Level Esports</title>
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'logo/icon-192x192.png' %}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{% static 'logo/icon-512x512.png' %}">
+    <link rel="shortcut icon" href="{% static 'logo/icon-192x192.png' %}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: #000;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            line-height: 1.6;
+        }
+
+        main {
+            max-width: 64rem;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo-container img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+
+        h1 {
+            font-size: 2.25rem;
+            font-weight: bold;
+            tracking-tight: tight;
+        }
+
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 3rem;
+            }
+        }
+
+        .subtitle {
+            margin-top: 1rem;
+            color: #d1d5db;
+            max-width: 42rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Search Bar */
+        .search-section {
+            margin-bottom: 3rem;
+        }
+
+        .search-container {
+            max-width: 42rem;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            padding-left: 0.75rem;
+            color: #9ca3af;
+            pointer-events: none;
+        }
+
+        .search-icon svg {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        #searchInput {
+            width: 100%;
+            border-radius: 0.75rem;
+            background-color: rgba(17, 24, 39, 0.8);
+            color: #fff;
+            padding-left: 2.5rem;
+            padding-right: 1rem;
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+            outline: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        #searchInput::placeholder {
+            color: #6b7280;
+        }
+
+        #searchInput:focus {
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            margin-bottom: 3rem;
+        }
+
+        .faq-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .faq-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .faq-item {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .faq-item:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .faq-item.hidden {
+            display: none;
+        }
+
+        .faq-question {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .faq-question-text {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        @media (min-width: 768px) {
+            .faq-question-text {
+                font-size: 1.125rem;
+            }
+        }
+
+        .faq-toggle {
+            color: #9ca3af;
+            transition: transform 0.3s ease;
+            flex-shrink: 0;
+            margin-top: 0.25rem;
+        }
+
+        .faq-toggle svg {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        .faq-item.open .faq-toggle {
+            transform: rotate(45deg);
+        }
+
+        .faq-answer {
+            margin-top: 0.75rem;
+            color: #d1d5db;
+            line-height: 1.625;
+            display: none;
+        }
+
+        .faq-item.open .faq-answer {
+            display: block;
+        }
+
+        .no-results {
+            color: #9ca3af;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        /* Contact Section */
+        .contact-section {
+            margin-bottom: 4rem;
+        }
+
+        .contact-box {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .contact-box {
+                padding: 2rem;
+            }
+        }
+
+        .contact-box h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        @media (min-width: 768px) {
+            .contact-box h3 {
+                font-size: 1.5rem;
+            }
+        }
+
+        .contact-box p {
+            margin-top: 0.5rem;
+            color: #d1d5db;
+        }
+
+        .contact-email {
+            margin-top: 1rem;
+        }
+
+        .contact-email a {
+            display: inline-block;
+            border-radius: 0.75rem;
+            background-color: #fff;
+            color: #000;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .contact-email a:hover {
+            background-color: #d1d5db;
+        }
+
+        /* Contact Form */
+        .contact-form {
+            margin-top: 2rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 0.875rem;
+            color: #9ca3af;
+            margin-bottom: 0.25rem;
+        }
+
+        input, textarea {
+            border-radius: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 0.75rem;
+            outline: none;
+            font-family: inherit;
+            background-color: transparent;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: #6b7280;
+        }
+
+        input:focus, textarea:focus {
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+        }
+
+        textarea {
+            min-height: 6rem;
+            resize: vertical;
+        }
+
+        .form-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-top: 1rem;
+            grid-column: 1 / -1;
+        }
+
+        .form-footer p {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .form-footer button {
+            border-radius: 0.75rem;
+            background-color: #fff;
+            color: #000;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-footer button:hover {
+            background-color: #d1d5db;
+        }
+
+        /* Footer */
+        footer {
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            font-size: 0.875rem;
+            color: #9ca3af;
+        }
+
+        .footer-links {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .footer-links a {
+            color: #9ca3af;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #fff;
+        }
+
+        footer p {
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 640px) {
+            main {
+                padding: 1.5rem 1rem;
+            }
+
+            h1 {
+                font-size: 1.875rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <!-- Header -->
+        <header>
+            <div class="logo-container">
+                <img src="{% static 'logo/icon-192x192.png' %}" alt="Level Esports logo">
+            </div>
+            <h1>Help & Support</h1>
+            <p class="subtitle">We're here to help you with any issues related to login, tournaments, or gameplay.</p>
+        </header>
+
+        <!-- Search Bar -->
+        <section class="search-section">
+            <div class="search-container">
+                <div class="search-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="M21 21l-3.5-3.5"></path>
+                    </svg>
+                </div>
+                <input type="text" id="searchInput" placeholder="Search help topics…">
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-section">
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq-list" id="faqList">
+                <!-- FAQs populated by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="contact-section">
+            <div class="contact-box">
+                <h3>Need More Help?</h3>
+                <p>Please email us your issue, and we'll try to resolve it within 24 hours.</p>
+                <div class="contact-email">
+                    <a href="mailto:support@level.com.np">support@level.com.np</a>
+                </div>
+
+                <!-- Contact Form -->
+                <form onsubmit="handleContactSubmit(event)" class="contact-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="nameInput">Name</label>
+                            <input type="text" id="nameInput" placeholder="Your name">
+                        </div>
+                        <div class="form-group">
+                            <label for="emailInput">Email</label>
+                            <input type="email" id="emailInput" placeholder="you@example.com" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="messageInput">Message</label>
+                            <textarea id="messageInput" placeholder="Describe your issue…" required></textarea>
+                        </div>
+                        <div class="form-footer">
+                            <p>Submitting will open your email client with a pre-filled message to our support team.</p>
+                            <button type="submit">Send Email</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-links">
+                <a href="{% url 'privacy_policy' %}">Privacy Policy</a>
+                <a href="{% url 'terms_of_service' %}">Terms of Service</a>
+            </div>
+            <p>© 2026 Level Esports • BlackOneDevs</p>
+        </footer>
+    </main>
+
+    <script>
+        // FAQ Data
+        const FAQS = [
+            {
+                q: "How can I delete my account?",
+                a: "Tap your profile picture at the top-left of the Home screen, scroll to the Account section, then choose Delete Account and confirm."
+            },
+            {
+                q: "How can I unblock a user?",
+                a: "Tap your profile picture (top-left on Home), go to the Actions section, open Blocked Users, and tap Unblock next to the user."
+            },
+            {
+                q: "How do I report a user I played with?",
+                a: "Go to My Matches, find the match you played, tap the report icon, choose \"Report & Block User\", add details, and submit. You can also block them there."
+            },
+            {
+                q: "How do I report an unfair match?",
+                a: "Go to My Matches, open the match, tap the report icon, select the issue type (e.g., Game Settings, Opponent Not Joined, Opponent Didn't Provide Credentials, Wrong Room ID/Password/Credentials), and submit your report."
+            },
+            {
+                q: "How can I get a refund if my connection was lost?",
+                a: "Go to My Matches, locate the match where the issue occurred, report it by selecting Offline/Connection Lost. Refunds are processed when both players mutually agree."
+            },
+            {
+                q: "How do I join a tournament and get the Room ID/password?",
+                a: "From Home, open Tournaments (via the Access Bar), join a tournament, and check the match: the Room ID and password are provided about 5 minutes before start."
+            },
+            {
+                q: "How can I change my profile picture or Enhancers (Pro Tag, Hacker Tag, Profile Exposure)?",
+                a: "Tap your profile picture (top-left), then the pencil icon to open Edit Profile. You can change your profile photo and turn Enhancer tags on or off."
+            },
+            {
+                q: "What are \"Practice With\", \"Free Entry\", and \"Game Points\"?",
+                a: "\"Practice with Free Entry\" lets you create matches for free to practice—your score won't increase and you're not eligible for Game Points. \"Practice for Game Points\" means you're eligible to earn Game Points when you win."
+            }
+        ];
+
+        function renderFAQs(faqs) {
+            const faqList = document.getElementById('faqList');
+            faqList.innerHTML = '';
+
+            if (faqs.length === 0) {
+                faqList.innerHTML = '<div class="no-results">No results. Try different keywords.</div>';
+                return;
+            }
+
+            faqs.forEach((item, idx) => {
+                const faqItem = document.createElement('div');
+                faqItem.className = 'faq-item';
+                faqItem.innerHTML = `
+                    <div class="faq-question">
+                        <span class="faq-question-text">${item.q}</span>
+                        <span class="faq-toggle">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 5v14M5 12h14"></path>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="faq-answer">${item.a}</div>
+                `;
+                faqItem.addEventListener('click', () => {
+                    faqItem.classList.toggle('open');
+                });
+                faqList.appendChild(faqItem);
+            });
+        }
+
+        function filterFAQs() {
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            if (!query) {
+                renderFAQs(FAQS);
+                return;
+            }
+            const filtered = FAQS.filter(f =>
+                f.q.toLowerCase().includes(query) || f.a.toLowerCase().includes(query)
+            );
+            renderFAQs(filtered);
+        }
+
+        function handleContactSubmit(event) {
+            event.preventDefault();
+            const name = document.getElementById('nameInput').value;
+            const email = document.getElementById('emailInput').value;
+            const message = document.getElementById('messageInput').value;
+
+            const subject = `Support Request - ${name || 'Level Esports user'}`;
+            const body = `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`;
+            const mailto = `mailto:support@level.com.np?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.location.href = mailto;
+        }
+
+        // Initialize
+        document.getElementById('searchInput').addEventListener('input', filterFAQs);
+        renderFAQs(FAQS);
+    </script>
+</body>
+</html>
