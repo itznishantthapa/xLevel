@@ -46,7 +46,7 @@ const CreateGameLayout = ({
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          keyboardVerticalOffset={insets.bottom}
+           keyboardVerticalOffset={Platform.OS === 'ios' ? insets.bottom - 20 : insets.bottom }
         >
           <ScrollView
             style={styles.scrollView}

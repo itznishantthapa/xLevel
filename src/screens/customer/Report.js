@@ -170,14 +170,14 @@ const Report = ({ route }) => {
     );
 
     // Image picker button component
-    const ImagePickerButton = ({ evidence, onPress, title }) => (
+    const ImagePickerButton = ({ evidence, onPress, title, isLight }) => (
         <View style={styles.imagePickerSection}>
             <Pressable
                 style={[
                     styles.imagePickerButton,
                     {
-                        backgroundColor: isLight ? "#f5f5f5" : "#1a1a1a",
-                        borderColor: isLight ? "#cccccc" : "#333333",
+                        backgroundColor: isLight ? "#ffffff" : "#0a0a0a",
+                        borderColor: isLight ? "#000000" : "#ffffff",
                         height: evidence ? 100 : 150,
                     }
                 ]}
@@ -199,9 +199,9 @@ const Report = ({ route }) => {
                         <Pressable onPress={onPress}>
                             <Text style={[
                                 styles.imagePickerText,
-                                { color: isLight ? "#666666" : "#cccccc" }
+                                { color: isLight ? "#000000" : "#ffffff" }
                             ]}>
-                                Change Screenshot
+                                CHANGE
                             </Text>
                         </Pressable>
                     </View>
@@ -210,17 +210,17 @@ const Report = ({ route }) => {
                         <MaterialIcons
                             name="add-photo-alternate"
                             size={32}
-                            color={isLight ? "#666666" : "#999999"}
+                            color={isLight ? "#000000" : "#ffffff"}
                         />
                         <Text style={[
                             styles.imagePickerText,
-                            { color: isLight ? "#666666" : "#cccccc", marginTop: 8 }
+                            { color: isLight ? "#000000" : "#ffffff", marginTop: 8 }
                         ]}>
-                            Tap to Upload
+                            TAP TO UPLOAD
                         </Text>
                         <Text style={[
                             styles.imagePickerText,
-                            { color: isLight ? "#ff4444" : "#ff6666", marginTop: 4, fontSize: 13, fontWeight: '700' }
+                            { color: isLight ? "#000000" : "#ffffff", marginTop: 4, fontSize: 12, fontWeight: '600', opacity: 0.7, letterSpacing: 0.5 }
                         ]}>
                             {title}
                         </Text>
@@ -252,9 +252,9 @@ const Report = ({ route }) => {
 
                     <Text style={[
                         styles.subtitle,
-                        { color: isLight ? '#666666' : '#cccccc' }
+                        { color: isLight ? '#333333' : '#ffffff', fontWeight: '600', letterSpacing: 0.5 }
                     ]}>
-                        Select the type of report you want to submit.
+                        SELECT REPORT TYPE
                     </Text>
 
                     {/* Report Type Buttons */}
@@ -264,25 +264,26 @@ const Report = ({ route }) => {
                                 styles.reportTypeButton,
                                 {
                                     backgroundColor: reportType === 'game_issue'
-                                        ? '#ff4444'
-                                        : (isLight ? '#f5f5f5' : '#1a1a1a'),
-                                    borderColor: reportType === 'game_issue' ? '#ff4444' : (isLight ? '#cccccc' : '#333333'),
-
-
+                                        ? (isLight ? '#000000' : '#ffffff')
+                                        : (isLight ? '#ffffff' : '#0a0a0a'),
+                                    borderColor: reportType === 'game_issue' ? (isLight ? '#ffffff' : '#000000') : (isLight ? '#000000' : '#ffffff'),
                                 }
                             ]}
                             onPress={() => setReportType('game_issue')}
                         >
-                            <Text style={[
-                                styles.reportTypeButtonText,
-                                {
-                                    color: reportType === 'game_issue'
-                                        ? '#ffffff'
-                                        : (isLight ? '#666666' : '#999999')
-                                }
-                            ]}>
-                                Game Issue
-                            </Text>
+                            <View style={styles.buttonContent}>
+                                <Text style={[
+                                    styles.reportTypeButtonText,
+                                    {
+                                        color: reportType === 'game_issue'
+                                            ? (isLight ? '#ffffff' : '#000000')
+                                            : (isLight ? '#000000' : '#ffffff'),
+                                        letterSpacing: 1.2,
+                                    }
+                                ]}>
+                                    ISSUE
+                                </Text>
+                            </View>
                         </Pressable>
 
                         <Pressable
@@ -290,65 +291,94 @@ const Report = ({ route }) => {
                                 styles.reportTypeButton,
                                 {
                                     backgroundColor: reportType === 'refund_agreement'
-                                        ? '#00bf63'
-                                        : (isLight ? '#f5f5f5' : '#1a1a1a'),
-                                    borderColor: reportType === 'refund_agreement' ? '#00bf63' : (isLight ? '#cccccc' : '#333333'),
-
+                                        ? (isLight ? '#000000' : '#ffffff')
+                                        : (isLight ? '#ffffff' : '#0a0a0a'),
+                                    borderColor: reportType === 'refund_agreement' ? (isLight ? '#ffffff' : '#000000') : (isLight ? '#000000' : '#ffffff'),
                                 }
                             ]}
                             onPress={() => setReportType('refund_agreement')}
                         >
-                            <Text style={[
-                                styles.reportTypeButtonText,
-                                {
-                                    color: reportType === 'refund_agreement'
-                                        ? '#ffffff'
-                                        : (isLight ? '#666666' : '#999999')
-                                }
-                            ]}>
-                                Refund Agreement
-                            </Text>
+                            <View style={styles.buttonContent}>
+                                <Text style={[
+                                    styles.reportTypeButtonText,
+                                    {
+                                        color: reportType === 'refund_agreement'
+                                            ? (isLight ? '#ffffff' : '#000000')
+                                            : (isLight ? '#000000' : '#ffffff'),
+                                        letterSpacing: 1.2,
+                                    }
+                                ]}>
+                                    REFUND
+                                </Text>
+                            </View>
                         </Pressable>
                     </View>
                 </View>
 
                 {/* Report Details Section */}
-                <View style={styles.section}>
-                    <SectionTitle
-                        title="Report Details"
-                        isLight={isLight}
-                    />
-
-                    <Text style={[
-                        styles.subtitle,
-                        { color: isLight ? '#666666' : '#cccccc' }
+                <View style={styles.detailsSection}>
+                    <View style={[
+                        styles.detailsContainer,
+                        { borderColor: isLight ? '#000000' : '#ffffff' }
                     ]}>
-                        {reportType === 'refund_agreement'
-                            ? 'Both players le Refund Agreement garnu vyo vni Entry Point refund paunu huncha. \n(Notification & Guide will be delivered to your opponent)'
-                            : 'Tapai ko match ma k-kasto problem aako chha hami lai explain garnus and screenshots pni dinu hos. All 3 screenshots are required for better and strong report claim. \n(False info may result in a -20 point fine.)'}
-                    </Text>
+                        {/* Header with accent line */}
+                        <View style={styles.detailsHeader}>
+                            <View style={[
+                                styles.accentLine,
+                                { backgroundColor: isLight ? '#000000' : '#ffffff' }
+                            ]} />
+                            <SectionTitle
+                                title="REPORT DETAILS"
+                                isLight={isLight}
+                            />
+                        </View>
+
+                        {/* Details content */}
+                        <View style={styles.detailsContent}>
+                            <Text style={[
+                                styles.detailsText,
+                                { color: isLight ? '#333333' : '#ffffff' }
+                            ]}>
+                                {reportType === 'refund_agreement'
+                                    ? 'Both players le Refund Agreement garnu vyo vni Entry Point refund paunu huncha.\n(Notification & Guide will be delivered to your opponent)'
+                                    : 'Tapai ko match ma k-kasto problem aako chha hami lai explain garnus and screenshots pni dinu hos. All 3 screenshots required.\n(False info may result in -20 points)'}
+                            </Text>
+                        </View>
+
+                        {/* Bottom accent line */}
+                        <View style={[
+                            styles.bottomAccentLine,
+                            { backgroundColor: isLight ? '#000000' : '#ffffff' }
+                        ]} />
+                    </View>
 
                     {/* Description and Evidence Upload Section - Only for Game Issue */}
                     {reportType === 'game_issue' && (
                         <>
                             {/* Description Input */}
                             <View style={styles.descriptionSection}>
+                                <View style={styles.inputLabel}>
+                                    <View style={[styles.labelDot, { backgroundColor: isLight ? '#000000' : '#ffffff' }]} />
+                                    <Text style={[styles.labelText, { color: isLight ? '#000000' : '#ffffff' }]}>
+                                        DESCRIPTION
+                                    </Text>
+                                </View>
                                 <View
                                     style={[
                                         styles.descriptionContainer,
                                         {
-                                            backgroundColor: isLight ? "#f5f5f5" : "#1a1a1a",
-                                            borderColor: isLight ? "#cccccc" : "#333333",
+                                            backgroundColor: isLight ? '#ffffff' : '#0a0a0a',
+                                            borderColor: isLight ? '#000000' : '#ffffff',
                                         }
                                     ]}
                                 >
                                     <TextInput
                                         style={[
                                             styles.descriptionInput,
-                                            { color: isLight ? "#333333" : "#ffffff" }
+                                            { color: isLight ? "#000000" : "#ffffff" }
                                         ]}
-                                        placeholder="Describe your issue in detail..."
-                                        placeholderTextColor={isLight ? "#666666" : "#999999"}
+                                        placeholder="Describe the issue in detail..."
+                                        placeholderTextColor={isLight ? "#999999" : "#666666"}
                                         value={description}
                                         onChangeText={setDescription}
                                         multiline
@@ -358,21 +388,32 @@ const Report = ({ route }) => {
                             </View>
 
                             {/* Evidence Upload */}
-                            <ImagePickerButton
-                                evidence={evidence1}
-                                onPress={() => pickImage(setEvidence1, setImageResult1)}
-                                title="Evidence 1 (Required)"
-                            />
-                            <ImagePickerButton
-                                evidence={evidence2}
-                                onPress={() => pickImage(setEvidence2, setImageResult2)}
-                                title="Evidence 2 (Required)"
-                            />
-                            <ImagePickerButton
-                                evidence={evidence3}
-                                onPress={() => pickImage(setEvidence3, setImageResult3)}
-                                title="Evidence 3 (Required)"
-                            />
+                            <View style={styles.evidenceSection}>
+                                <View style={styles.inputLabel}>
+                                    <View style={[styles.labelDot, { backgroundColor: isLight ? '#000000' : '#ffffff' }]} />
+                                    <Text style={[styles.labelText, { color: isLight ? '#000000' : '#ffffff' }]}>
+                                        EVIDENCE
+                                    </Text>
+                                </View>
+                                <ImagePickerButton
+                                    evidence={evidence1}
+                                    onPress={() => pickImage(setEvidence1, setImageResult1)}
+                                    title="Screenshot 1"
+                                    isLight={isLight}
+                                />
+                                <ImagePickerButton
+                                    evidence={evidence2}
+                                    onPress={() => pickImage(setEvidence2, setImageResult2)}
+                                    title="Screenshot 2"
+                                    isLight={isLight}
+                                />
+                                <ImagePickerButton
+                                    evidence={evidence3}
+                                    onPress={() => pickImage(setEvidence3, setImageResult3)}
+                                    title="Screenshot 3"
+                                    isLight={isLight}
+                                />
+                            </View>
                         </>
                     )}
                 </View>
@@ -435,50 +476,124 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
     },
     subtitle: {
-        fontSize: 13,
+        fontSize: 12,
         marginBottom: 16,
+        textTransform: 'uppercase',
+        fontWeight: '700',
+        letterSpacing: 1,
     },
     reportTypeContainer: {
         flexDirection: 'row',
-        gap: 12,
-        marginBottom: 16,
+        gap: 14,
+        marginBottom: 24,
     },
     reportTypeButton: {
         flex: 1,
-        paddingVertical: 16,
-        paddingHorizontal: 12,
-        borderWidth: 1,
+        paddingVertical: 18,
+        paddingHorizontal: 16,
+        borderWidth: 2,
         alignItems: 'center',
         justifyContent: 'center',
-        flexDirection: 'row',
+        borderRadius: 1,
+    },
+    buttonContent: {
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     reportTypeButtonText: {
-        fontSize: 15,
-        fontWeight: '700',
+        fontSize: 16,
+        fontWeight: '800',
+        letterSpacing: 1.5,
+        textTransform: 'uppercase',
     },
+    
+    // Details Section Styles
+    detailsSection: {
+        marginBottom: 20,
+    },
+    detailsContainer: {
+        borderWidth: 2,
+        borderRadius: 1,
+        overflow: 'hidden',
+        marginBottom: 20,
+    },
+    detailsHeader: {
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+    },
+    accentLine: {
+        width: 4,
+        height: 24,
+    },
+    detailsContent: {
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        minHeight: 60,
+        justifyContent: 'center',
+    },
+    detailsText: {
+        fontSize: 13,
+        lineHeight: 20,
+        fontWeight: '500',
+        letterSpacing: 0.3,
+    },
+    bottomAccentLine: {
+        height: 2,
+        width: '100%',
+    },
+    
+    // Input Section Styles
+    inputLabel: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        marginBottom: 12,
+        paddingVertical: 8,
+    },
+    labelDot: {
+        width: 6,
+        height: 6,
+        borderRadius: 1,
+    },
+    labelText: {
+        fontSize: 12,
+        fontWeight: '800',
+        letterSpacing: 1.2,
+        textTransform: 'uppercase',
+    },
+    
     descriptionSection: {
-        marginBottom: 16,
+        marginBottom: 20,
     },
     descriptionContainer: {
         width: '100%',
-        borderWidth: 1,
-        borderRadius: 0,
+        borderWidth: 2,
+        borderRadius: 1,
         overflow: 'hidden',
-        padding: 12,
+        padding: 14,
         minHeight: 120,
     },
     descriptionInput: {
         flex: 1,
         fontSize: 14,
+        lineHeight: 20,
         textAlignVertical: 'top',
+        fontWeight: '500',
+    },
+    
+    evidenceSection: {
+        marginBottom: 16,
     },
     imagePickerSection: {
-        marginBottom: 16,
+        marginBottom: 14,
     },
     imagePickerButton: {
         width: '100%',
-        borderWidth: 1,
-        borderRadius: 0,
+        borderWidth: 2,
+        borderRadius: 1,
         overflow: 'hidden',
         justifyContent: 'center',
         alignItems: 'center',
@@ -488,6 +603,7 @@ const styles = StyleSheet.create({
         height: '100%',
         justifyContent: 'center',
         alignItems: 'center',
+        gap: 4,
     },
     selectedImageContainer: {
         width: '100%',
@@ -500,12 +616,14 @@ const styles = StyleSheet.create({
     selectedImage: {
         width: 70,
         height: 70,
-        borderRadius: 4,
+        borderRadius: 2,
     },
     imagePickerText: {
-        fontSize: 14,
-        fontWeight: '500',
-        paddingVertical: 8,
+        fontSize: 13,
+        fontWeight: '700',
+        letterSpacing: 0.8,
+        textAlign: 'center',
+        textTransform: 'uppercase',
     },
 });
 

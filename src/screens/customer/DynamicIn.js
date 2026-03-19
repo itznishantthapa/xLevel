@@ -195,7 +195,7 @@ const DynamicIn = () => {
               </Text>
               {showQR ? (
                 <Text style={[styles.cardSubtitle, { color: colors.textSecondary }]}>
-                  This QR code contains your points amount and app email.{'\n'}Scan with eSewa or Khalti to complete payment.
+                  This QR code contains your points amount and app email. Scan with eSewa or Khalti to complete payment.
                 </Text>
               ) : (
                 <Text style={[styles.cardSubtitle, { color: colors.textSecondary }]}>
