@@ -1,1 +1,7 @@
-<resources/>
+<resources>
+  <color name="splashscreen_background">#000000</color>
+  <color name="colorPrimary">#023c69</color>
+  <color name="colorPrimaryDark">#000000</color>
+  <!-- Used to tint notification small icon (status bar) on some devices -->
+  <color name="notification_color">#000000</color>
+</resources>

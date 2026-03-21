@@ -18,14 +18,12 @@ import {
 // This is the default configuration
 configureReanimatedLogger({
   level: ReanimatedLogLevel.warn,
-  strict: false, // Reanimated runs in strict mode by default
+  strict: false, 
 });
 
 
 export default function App() {
   const { isLight } = useThemeStore()
-
-
 
   const asyncStoragePersister = createAsyncStoragePersister({
     storage: AsyncStorage,
