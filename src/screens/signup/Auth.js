@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import { AntDesign, FontAwesome6 } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import Toast from 'react-native-simple-toast';
@@ -35,8 +35,6 @@ import { scaleWidth, scaleHeight } from '../../utils/scaling';
 
 // Constants
 const GOOGLE_WEB_CLIENT_ID = "901665380294-lhur8lkcqkdt1d0e9b5q3p25mknfejbs.apps.googleusercontent.com";
-const PRIVACY_URL = "https://level.com.np/privacy";
-const TERMS_URL = "https://level.com.np/terms";
 
 const Auth = () => {
   // Hooks
@@ -53,11 +51,6 @@ const Auth = () => {
   // API data queries
   const { data: banners = [] } = useBanners()
   const {data: utils = []} = useUtils()
-
- 
-  
-
-  const shouldShowEmailLogin = !utils?.is_ios_active;
 
   // State
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -121,9 +114,7 @@ const Auth = () => {
 
 
 
-  const handleEmailLogin = () => {
-    navigation.navigate('login');
-  };
+
 
   const handleAppleSignIn = async () => {
     if (!isConnected) {
@@ -202,16 +193,6 @@ const Auth = () => {
 
 
 
-    if (Platform.OS === 'ios' && shouldShowEmailLogin) {
-      buttons.push({
-        id: 'email',
-        icon: <FontAwesome6 name="envelope" size={scaleWidth(20)} color={colors.text} />,
-        text: 'Continue with Email',
-        onPress: handleEmailLogin,
-        disabled: false
-      });
-    }
-
 
 
     return buttons;
@@ -261,40 +242,7 @@ const Auth = () => {
     </View>
   );
 
-  const handleOpenTerms = () => {
-    Linking.openURL(TERMS_URL).catch(err => {
-      if (__DEV__) console.error('Error opening terms URL:', err);
-      Toast.show('Could not open Terms of Service', Toast.SHORT);
-    });
-  };
 
-  const handleOpenPrivacy = () => {
-    Linking.openURL(PRIVACY_URL).catch(err => {
-      if (__DEV__) console.error('Error opening privacy URL:', err);
-      Toast.show('Could not open Privacy Policy', Toast.SHORT);
-    });
-  };
-
-  const renderTermsAndPrivacy = () => (
-    <View style={styles.termsContainer}>
-      <Text style={[styles.termsText, { color: colors.textSecondary }]}>
-        <Text>By continuing, you agree to our </Text>
-        <Text
-          style={[styles.termsLink, { color: colors.success }]}
-          onPress={handleOpenTerms}
-        >
-          Terms of Service
-        </Text>
-        <Text> and </Text>
-        <Text
-          style={[styles.termsLink, { color: colors.success }]}
-          onPress={handleOpenPrivacy}
-        >
-          Privacy Policy
-        </Text>
-      </Text>
-    </View>
-  );
 
   return (
     <>
@@ -325,7 +273,6 @@ const Auth = () => {
           </View>
 
           {renderAuthButtons()}
-          {renderTermsAndPrivacy()}
         </View>
       </View>
     </>
@@ -420,18 +367,7 @@ const styles = StyleSheet.create({
     fontSize: scaleWidth(16),
     fontWeight: '600',
   },
-  termsContainer: {
-    paddingHorizontal: scaleWidth(10),
-  },
-  termsText: {
-    fontSize: scaleWidth(12),
-    textAlign: 'center',
-    lineHeight: scaleHeight(18),
-  },
-  termsLink: {
-    fontWeight: '600',
-    textDecorationLine: 'underline',
-  },
+
 });
 
 export default Auth;

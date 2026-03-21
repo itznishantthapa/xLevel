@@ -3,11 +3,10 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Home from '../screens/customer/Home';
 import OpenGames from '../screens/customer/OpenGames';
 import { StyleSheet, Text, View, TouchableOpacity, Platform } from 'react-native';
-import { MaterialCommunityIcons, Feather, Entypo, Octicons, Foundation } from "@expo/vector-icons";
+import { MaterialCommunityIcons, Feather, Octicons, Foundation } from "@expo/vector-icons";
 import { useThemeStore } from '../store/themeStore';
 import Notify from '../screens/customer/Notify';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Store from '../screens/customer/store/Store';
 import { useUtils } from '../queries/useUtils';
 
 const Tab = createBottomTabNavigator();
@@ -16,7 +15,6 @@ export default function CustomerTabNavigator() {
     const insets = useSafeAreaInsets();
     const { isLight } = useThemeStore();
     const { data: utils = [] } = useUtils();
-    const isIOSActive = !!utils?.is_ios_active;
 
     return (
 
@@ -104,36 +102,6 @@ export default function CustomerTabNavigator() {
                     ),
                 }}
             />
-         
-                <Tab.Screen
-                    name="StoreTab"
-                    component={Store}
-                    options={{
-                        tabBarLabel: ({ focused, color }) => (
-                            <Text style={{
-                                color,
-                                fontSize: 11,
-                                fontWeight: focused ? '600' : '500',
-                                marginTop: 4,
-                            }}>
-                               {isIOSActive ? 'Buy & Sell' : 'Product'}
-                            </Text>
-                        ),
-                        tabBarIcon: ({ focused, color }) => (
-                            <View style={[
-                                styles.tabIconContainer,
-                                focused && styles.focusedIconContainer
-                            ]}>
-                                <MaterialCommunityIcons
-                                    name={focused ? "store-plus" : "store-plus-outline"}
-                                    size={28}
-                                    color={color}
-                                />
-                            </View>
-                        ),
-                    }}
-                />
-            
 
             <Tab.Screen
                 name="Notification"

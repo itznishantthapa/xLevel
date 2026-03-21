@@ -21,9 +21,7 @@ import { scaleWidth } from "../../utils/scaling"
  * Clean, organized profile with user info, game profiles, and settings
  */
 const Profile = () => {
-  // Constants for legal URLs
-  const PRIVACY_URL = "https://level.com.np/privacy";
-  const TERMS_URL = "https://level.com.np/terms";
+
 
   // Global state and hooks
   const navigation = useNavigation()
@@ -57,19 +55,7 @@ const Profile = () => {
     })
   }
 
-  const handleOpenPrivacyPolicy = () => {
-    Linking.openURL(PRIVACY_URL).catch(err => {
-      if (__DEV__) console.error('Error opening privacy URL:', err);
-      Toast.show('Could not open Privacy Policy', Toast.SHORT);
-    });
-  };
 
-  const handleOpenTermsOfService = () => {
-    Linking.openURL(TERMS_URL).catch(err => {
-      if (__DEV__) console.error('Error opening terms URL:', err);
-      Toast.show('Could not open Terms of Service', Toast.SHORT);
-    });
-  };
 
   const colors = {
     background: isLight ? "#ffffff" : "#000000",
@@ -206,22 +192,7 @@ const Profile = () => {
               )}
             </View>
 
-                        {/* Actions Section */}
-            <View style={styles.section}>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>Exchange</Text>
-              <View style={[styles.actionCard, { backgroundColor: colors.cardBackground }]}>
-                <Pressable
-                  style={[styles.actionRow]}
-                  onPress={() => navigation.navigate("exchange")}
-                >
-                  <View style={styles.actionContent}>
-                    <Ionicons name="sparkles-outline" size={20} color={colors.text} />
-                    <Text style={[styles.actionText, { color: colors.text }]}>Enhancements</Text>
-                  </View>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
-                </Pressable>
-                </View>
-            </View>
+
 
             {/* Account Info Section */}
             <View style={styles.section}>
@@ -248,114 +219,19 @@ const Profile = () => {
                   </View>
                 </Pressable>
               </View>
-              <View style={[styles.settingsCard, { backgroundColor: colors.cardBackground }]}>
-                <Pressable onPress={() => navigation.navigate('accessBar')} style={styles.settingRow}>
-                  <View style={styles.settingInfo}>
-                    <Text style={[styles.settingTitle, { color: colors.text }]}>AccessBar</Text>
-                    <Text style={[styles.settingDescription, { color: colors.textTertiary }]}>
-                      Personalize your accessbar
-                    </Text>
-                  </View>
-                  <View style={styles.themeToggle}>
-                    <AntDesign name={'swap'} size={24} color={colors.text} />
-                  </View>
-                </Pressable>
-              </View>
-            </View>
 
-            {/* Actions Section */}
-            <View style={styles.section}>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>Actions</Text>
-              <View style={[styles.actionCard, { backgroundColor: colors.cardBackground }]}>
-                <Pressable
-                  style={[styles.actionRow, styles.actionRowBorder, { borderBottomColor: colors.border }]}
-                  onPress={() => navigation.navigate("match")}
-                >
-                  <View style={styles.actionContent}>
-                    <MaterialIcons name="history" size={20} color={colors.text} />
-                    <Text style={[styles.actionText, { color: colors.text }]}>Game History</Text>
-                  </View>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
-                </Pressable>
-
-                <Pressable
-                  style={[styles.actionRow, styles.actionRowBorder, { borderBottomColor: colors.border }]}
-                  onPress={() => navigation.navigate("reportList")}
-                >
-                  <View style={styles.actionContent}>
-                    <MaterialIcons name="flag" size={20} color={colors.text} />
-                    <Text style={[styles.actionText, { color: colors.text }]}>My Reports</Text>
-                  </View>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
-                </Pressable>
-
-                <Pressable
-                  style={styles.actionRow}
-                  onPress={() => navigation.navigate("blockedUserList")}
-                >
-                  <View style={styles.actionContent}>
-                    <FontAwesome5 name="users-slash" size={18} color={colors.text} />
-                    <Text style={[styles.actionText, { color: colors.text }]}>Blocked Users</Text>
-                  </View>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
-                </Pressable>
-              </View>
             </View>
 
 
-            {/* Legal Section */}
-            <View style={styles.section}>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>Legal</Text>
-              <View style={[styles.actionCard, { backgroundColor: colors.cardBackground }]}>
-                <Pressable
-                  style={[styles.actionRow, styles.actionRowBorder, { borderBottomColor: colors.border }]}
-                  onPress={handleOpenPrivacyPolicy}
-                >
-                  <View style={styles.actionContent}>
-                    <MaterialIcons name="privacy-tip" size={20} color={colors.text} />
-                    <Text style={[styles.actionText, { color: colors.text }]}>Privacy Policy</Text>
-                  </View>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
-                </Pressable>
 
-                <Pressable
-                  style={[styles.actionRow, styles.actionRowBorder, { borderBottomColor: colors.border }]}
-                  onPress={handleOpenTermsOfService}
-                >
-                  <View style={styles.actionContent}>
-                    <MaterialIcons name="gavel" size={20} color={colors.text} />
-                    <Text style={[styles.actionText, { color: colors.text }]}>Terms of Service</Text>
-                  </View>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
-                </Pressable>
-                <Pressable
-                  style={styles.actionRow}
-                  onPress={() => navigation.navigate("credits")}
-                >
-                  <View style={styles.actionContent}>
-                    <AntDesign name="copyright" size={20} color={colors.text} />
-                    <Text style={[styles.actionText, { color: colors.text }]}>Credits & Attributions</Text>
-                  </View>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
-                </Pressable>
-              </View>
-            </View>
+
+
 
             {/* Account Section */}
             <View style={styles.section}>
               <Text style={[styles.sectionTitle, { color: colors.text }]}>Account</Text>
               <View style={[styles.actionCard, { backgroundColor: colors.cardBackground }]}>
-                <Pressable
-                  style={[styles.actionRow, styles.actionRowBorder, { borderBottomColor: colors.border }]}
-                  onPress={() => navigation.navigate("accountDeletion")
-                  }
-                >
-                  <View style={styles.actionContent}>
-                    <MaterialCommunityIcons name="delete-variant" size={20} color={colors.text} />
-                    <Text style={[styles.actionText, { color: colors.text }]}>Deletion</Text>
-                  </View>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
-                </Pressable>
+
                 <Pressable
                   style={styles.actionRow}
                   onPress={() =>
@@ -379,9 +255,7 @@ const Profile = () => {
             </View>
           </View>
 
-          <View style={styles.versionFooter}>
-            <Text style={[styles.versionText, { color: colors.textTertiary }]}>Version 5.3 (53)</Text>
-          </View>
+
 
        
         </ScrollView>
@@ -579,15 +453,5 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
 
-  // Version Footer
-  versionFooter: {
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 24,
- 
-  },
-  versionText: {
-    fontSize: 12,
-    fontWeight: "500",
-  },
+
 })

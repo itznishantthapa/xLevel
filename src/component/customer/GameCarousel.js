@@ -8,11 +8,8 @@ import {
     ImageBackground,
     Dimensions,
     Image,
-    Platform,
 } from 'react-native';
-import { Entypo } from "@expo/vector-icons"
 import { useThemeStore } from '../../store/themeStore';
-import { useUtils } from '../../queries/useUtils';
 import { scaleWidth, scaleHeight } from '../../utils/scaling';
 
 const { width } = Dimensions.get('window');
@@ -22,15 +19,12 @@ const CARD_HEIGHT = scaleHeight(130);
 
 
 const GameCarousel = ({ games, handleGameCardPress }) => {
-    const { data: utils = [] } = useUtils()
-
-    const shouldShowLabel = Platform.OS === 'android' || !!utils?.is_ios_active;
     const { isLight } = useThemeStore();
     return (
         <View style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
-                <Text style={[styles.title, isLight ? { color: '#000000' } : { color: '#EAEAEA' }]}>{shouldShowLabel ? 'Games & Store' : 'Create Match'}</Text>
+                <Text style={[styles.title, isLight ? { color: '#000000' } : { color: '#EAEAEA' }]}>Create Match</Text>
             </View>
 
             {/* Games Carousel */}
@@ -61,11 +55,7 @@ const GameCarousel = ({ games, handleGameCardPress }) => {
                             styles.gameName,
                             isLight ? { color: '#333333' } : { color: '#EAEAEA' }
                         ]}>
-                            {shouldShowLabel ?
-                                game.game_name :
-                                (
-                                    <View style={{ width: scaleWidth(50), height: scaleHeight(2), backgroundColor: isLight ? '#000000' : '#EAEAEA', alignItems: "center", justifyContent: 'center', borderRadius: scaleWidth(10) }}></View>
-                                )}
+                            {game.game_name}
                         </Text>
                     </Pressable>
                 ))}

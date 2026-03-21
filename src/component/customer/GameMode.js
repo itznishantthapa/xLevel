@@ -35,56 +35,9 @@ const GameMode = ({ game_mode, handleGameMode, game }) => {
     return "gamepad"
   }
 
-  const getStoreButtonText = () => {
-    if (!game?.game_name) return "Game Store";
-    
-    const gameName = game.game_name.toLowerCase();
-    if (gameName.includes('free fire') || gameName.includes('freefire')) {
-      return "FreeFire Store";
-    } else if (gameName.includes('pubg')) {
-      return "PUBG Store";
-    } else if (gameName.includes('efootball')) {
-      return "Efootball Store";
-    } else if (gameName.includes('mlbb')) {
-      return "MLBB Store";
-    } else if (gameName.includes('chess')) {
-      return "Chess Store";
-    }
-    return "Game Store";
-  }
 
-  const getStoreIcon = () => {
-    if (!game?.game_name) return "storefront-outline";
-    
-    const gameName = game.game_name.toLowerCase();
-    if (gameName.includes('free fire') || gameName.includes('freefire')) {
-      return "diamond-outline";
-    } else if (gameName.includes('pubg')) {
-      return "cube-outline"; // Represents UC/items boxes
-    } else if (gameName.includes('efootball')) {
-      return "football-outline";
-    } else if (gameName.includes('mlbb')) {
-      return "diamond-outline"; // MLBB also uses diamonds
-    } else if (gameName.includes('chess')) {
-      return "trophy-outline";
-    }
-    return "storefront-outline";
-  }
 
-  const handleStoreNavigation = () => {
-    if (!game?.game_name) return;
-    
-    const gameName = game.game_name.toLowerCase();
-    if (gameName.includes('free fire') || gameName.includes('freefire')) {
-      navigation.navigate('freeFireStore', { game });
-    } else if (gameName.includes('pubg')) {
-      navigation.navigate('pubgStore', { game });
-    } else if (gameName.includes('efootball')) {
-      navigation.navigate('efootballStore', { game });
-    } else if (gameName.includes('mlbb')) {
-      navigation.navigate('mlbbStore', { game });
-    }
-  }
+
 
   const renderGameCard = ({ item, index }) => {
     const iconName = getGameModeIcon(item)
@@ -193,53 +146,7 @@ const GameMode = ({ game_mode, handleGameMode, game }) => {
               <View style={[styles.dividerLine, isLight ? styles.dividerLight : styles.dividerDark]} />
             </View>
 
-            {/* Store Card */}
-            <Pressable
-              style={[
-                styles.gameCard,
-                isLight ? styles.gameCardLight : styles.gameCardDark
-              ]}
-              onPress={handleStoreNavigation}
-            >
-              {/* Geometric Corner Accents */}
-              <View pointerEvents="none" style={[styles.cornerAccent, styles.cornerTopLeft, { borderColor: isLight ? '#1a1a1a' : '#ffffff' }]} />
-              <View pointerEvents="none" style={[styles.cornerAccent, styles.cornerBottomRight, { borderColor: isLight ? '#555555' : '#aaaaaa' }]} />
-              
-              {/* Left Side - Icon */}
-              <View style={styles.indexContainer}>
-                <Ionicons 
-                  name={getStoreIcon()} 
-                  size={20} 
-                  color={isLight ? '#1a1a1a' : '#ffffff'} 
-                />
-                <View style={[styles.indexLine, { backgroundColor: isLight ? '#1a1a1a' : '#ffffff' }]} />
-              </View>
 
-              {/* Center Content */}
-              <View style={styles.cardContent}>
-                <View style={[styles.iconWrapper, isLight ? styles.iconWrapperLight : styles.iconWrapperDark, { borderColor: isLight ? '#1a1a1a' : '#ffffff' }]}>
-                  <Ionicons 
-                    name="storefront-outline" 
-                    size={24} 
-                    color={isLight ? '#1a1a1a' : '#ffffff'} 
-                  />
-                </View>
-                <View style={styles.textContent}>
-                  <Text style={[styles.modeLabel, { color: isLight ? '#1a1a1a' : '#ffffff' }]}>STORE</Text>
-                  <Text style={[styles.modeName, isLight ? styles.nameLight : styles.nameDark]}>{getStoreButtonText()}</Text>
-                </View>
-              </View>
-
-              {/* Right Arrow */}
-              <View style={styles.arrowContainer}>
-                <View style={[styles.arrowLine, { backgroundColor: isLight ? '#1a1a1a' : '#ffffff' }]} />
-                <Ionicons 
-                  name="chevron-forward" 
-                  size={20} 
-                  color={isLight ? '#1a1a1a' : '#ffffff'} 
-                />
-              </View>
-            </Pressable>
           </View>
         ) : null}
       />
