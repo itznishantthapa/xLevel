@@ -49,9 +49,9 @@ const StatusDisplay = ({ game, isLight, win_pot, user }) => {
 
     return {
       text: "defeated",
-      color: "#ff4757",
+      color: "#ffffff",
       accentColor: accentColor,
-      amountColor: "#ff4757",
+      amountColor: "#ffffff",
       backgroundColor: bgColor,
     }
   }

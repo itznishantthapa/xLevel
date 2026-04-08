@@ -158,6 +158,7 @@ const EfootballStore = ({ route }) => {
       <View style={[styles.gameHeader, { 
         backgroundColor: isLight ? "#f5f5f5" : "#1a1a1a",
         borderColor: isLight ? "#cccccc" : "#333333",
+        borderRadius: 12,
       }]}>
         <Image source={{ uri: game?.game_logo_url }} style={styles.gameLogo} />
         <View style={styles.gameInfo}>

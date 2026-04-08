@@ -160,6 +160,12 @@ const PUBGStore = ({ route }) => {
     return ''
   }
 
+  // Get item type header label
+  const getItemTypeHeader = (item) => {
+    if (item.type === 'uc') return 'UC'
+    return ''
+  }
+
   // Black and white theme
   const themeColor = isLight ? '#000000' : '#ffffff'
 
@@ -178,7 +184,7 @@ const PUBGStore = ({ route }) => {
           {
             backgroundColor: isSelected 
               ? (isLight ? '#000000' : '#ffffff')
-              : (isLight ? '#ffffff' : '#141414'),
+              : (isLight ? '#f5f5f5' : '#141414'),
             borderColor: isSelected
               ? (isLight ? '#000000' : '#ffffff')
               : (isLight ? '#e0e0e0' : '#2a2a2a'),
@@ -252,14 +258,7 @@ const PUBGStore = ({ route }) => {
         selectedItem && (
           <Animated.View 
             style={[styles.selectedItemDisplay, {
-              backgroundColor: isLight ? '#ffffff' : '#111111',
-              borderColor: isLight ? '#e0e0e0' : '#333333',
-              shadowColor: isLight ? '#000000' : '#000000',
-              shadowOffset: { width: 0, height: -2 },
-              shadowOpacity: isLight ? 0.08 : 0.3,
-              shadowRadius: 8,
-              elevation: 20,
-              overflow: 'hidden',
+              backgroundColor: 'transparent',
               position: 'relative',
               transform: [
                 { translateY: slideAnim.interpolate({
@@ -274,38 +273,45 @@ const PUBGStore = ({ route }) => {
               opacity: slideAnim,
             }]}
           >
-            <View style={styles.selectedItemRow}>
-              <View style={styles.selectedItemLeft}>
-                <View style={[styles.selectedItemIconWrapper, {
-                  backgroundColor: isLight ? '#f5f5f5' : '#1a1a1a',
+            <View style={styles.selectedItemContainer}>
+              <Text style={[styles.selectedItemHeader, { color: ACCENT_PRIMARY(isLight) }]}>
+                {getItemTypeHeader(selectedItem)}
+              </Text>
+              <View style={styles.selectedItemRow}>
+                <View style={styles.selectedItemLeft}>
+                  <View style={[styles.selectedItemIconWrapper, {
+                    backgroundColor: 'transparent',
+                  }]}>
+                    <Image 
+                      source={selectedItem.image} 
+                      style={styles.selectedItemIcon}
+                      resizeMode="contain"
+                    />
+                  </View>
+                  <View>
+                    <Text style={[styles.modeLabel, { color: ACCENT_PRIMARY(isLight) }]}>
+                      YOUR TOP-UP
+                    </Text>
+                    <Text style={[styles.selectedItemTitle, { color: isLight ? '#000000' : '#ffffff' }]}>
+                      {getSelectedTitle(selectedItem)}
+                    </Text>
+                  </View>
+                </View>
+                <View style={[styles.selectedItemRight, {
+                  backgroundColor: 'transparent',
+                  borderColor: isLight ? '#e0e0e0' : '#333333',
                 }]}>
-                  <Image 
-                    source={selectedItem.image} 
-                    style={styles.selectedItemIcon}
-                    resizeMode="contain"
+                  <View style={[styles.priceLine, { backgroundColor: isLight ? '#cccccc' : '#444444' }]} />
+                  <MaterialCommunityIcons 
+                    name="star-four-points-outline" 
+                    size={14} 
+                    color="#00bf63" 
                   />
-                </View>
-                <View>
-                  <Text style={[styles.modeLabel, { color: ACCENT_PRIMARY(isLight) }]}>
-                    YOUR TOP-UP
+                  <Text style={[styles.selectedItemPoints, { color: '#00bf63' }]}>
+                    {selectedItem.points} point
                   </Text>
-                  <Text style={[styles.selectedItemTitle, { color: isLight ? '#000000' : '#ffffff' }]}>
-                    {getSelectedTitle(selectedItem)}
-                  </Text>
+                  <View style={[styles.priceLine, { backgroundColor: isLight ? '#cccccc' : '#444444' }]} />
                 </View>
-              </View>
-              <View style={[styles.selectedItemRight, {
-                backgroundColor: isLight ? '#f0fdf4' : 'rgba(0, 191, 99, 0.1)',
-                borderColor: isLight ? '#dcfce7' : 'rgba(0, 191, 99, 0.2)',
-              }]}>
-                <MaterialCommunityIcons 
-                  name="star-four-points" 
-                  size={14} 
-                  color="#00bf63" 
-                />
-                <Text style={styles.selectedItemPoints}>
-                  {selectedItem.points}
-                </Text>
               </View>
             </View>
           </Animated.View>
@@ -316,6 +322,7 @@ const PUBGStore = ({ route }) => {
       <View style={[styles.gameHeader, { 
         backgroundColor: isLight ? "#f5f5f5" : "#1a1a1a",
         borderColor: isLight ? "#cccccc" : "#333333",
+        borderRadius: 12,
       }]}>
         <Image source={{ uri: game?.game_logo_url }} style={styles.gameLogo} />
         <View style={styles.gameInfo}>
@@ -555,10 +562,10 @@ const styles = StyleSheet.create({
     flexBasis: '47%',
     flexGrow: 1,
     padding: scaleWidth(14),
-    borderWidth: 1,
     alignItems: 'center',
     position: 'relative',
     overflow: 'hidden',
+    borderRadius: 12,
   },
   modeLabel: {
     fontSize: scaleWidth(9),
@@ -600,16 +607,20 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   profileBox: {
-    borderWidth: 1,
-    padding: 14,
+    borderWidth: 1.5,
+    padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
     overflow: 'hidden',
     position: 'relative',
+    borderRadius: 16,
+    marginTop: 12,
   },
   profileItem: {
     flex: 1,
     alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
   },
   profileDivider: {
     width: 1,
@@ -624,6 +635,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
     marginBottom: 12,
+    marginTop: 8,
   },
   profileToggleOption: {
     flex: 1,
@@ -633,6 +645,7 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingVertical: 14,
     borderWidth: 1.5,
+    borderRadius: 14,
     overflow: 'hidden',
     position: 'relative',
   },
@@ -642,6 +655,7 @@ const styles = StyleSheet.create({
   },
   customProfileContainer: {
     gap: 10,
+    marginTop: 12,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -649,7 +663,8 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingHorizontal: 14,
     paddingVertical: 12,
-    borderWidth: 1,
+    borderWidth: 1.5,
+    borderRadius: 14,
     overflow: 'hidden',
     position: 'relative',
   },
@@ -663,9 +678,18 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     paddingVertical: 12,
     paddingHorizontal: 14,
-    borderWidth: 1,
     overflow: 'hidden',
     position: 'relative',
+  },
+  selectedItemContainer: {
+    width: '100%',
+  },
+  selectedItemHeader: {
+    fontSize: scaleWidth(10),
+    fontWeight: '800',
+    letterSpacing: scaleWidth(1.5),
+    textTransform: 'uppercase',
+    marginBottom: scaleHeight(10),
   },
   selectedItemRow: {
     flexDirection: 'row',
@@ -694,14 +718,13 @@ const styles = StyleSheet.create({
   selectedItemRight: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
     borderRadius: 20,
-    borderWidth: 1,
   },
   selectedItemPoints: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '700',
     color: '#00bf63',
   },

@@ -258,7 +258,7 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
         <View style={[styles.gameTimesSection, !isLight && styles.gameTimesSectionDark]}>
           <ShakeText ref={shakeTimeRef}>
             <Text style={[styles.gameTimesLabel, !isLight && styles.gameTimesLabelDark]}>
-              Select Game Time   ({game?.game_times?.length} Tournaments)
+              Select Game Time
             </Text>
           </ShakeText>
           <ScrollView 
@@ -274,7 +274,7 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
                   isLight ? styles.gameTimeButtonLight : styles.gameTimeButtonDark,
                   selectedGameTime === timeSlot.id && styles.gameTimeButtonSelected,
                   selectedGameTime === timeSlot.id && (isLight ? styles.gameTimeButtonSelectedLight : styles.gameTimeButtonSelectedDark),
-                  timeSlot.is_full && styles.gameTimeButtonDisabled,
+                  timeSlot.is_full && !timeSlot.user_registered && styles.gameTimeButtonDisabled,
                   timeSlot.user_registered && styles.gameTimeButtonRegistered
                 ]}
                 onPress={() => {
@@ -284,7 +284,7 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
                     setSelectedGameTime(timeSlot.id)
                   }
                 }}
-                disabled={timeSlot.is_full}
+                disabled={timeSlot.is_full && !timeSlot.user_registered}
               >
                 <Ionicons 
                   name={timeSlot.user_registered ? "checkmark-circle" : "time-outline"}
@@ -301,9 +301,6 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
                 ]}>
                   {timeSlot.time_slot}
                 </Text>
-                {timeSlot.is_full && (
-                  <Text style={styles.fullBadge}>Full</Text>
-                )}
                 {timeSlot.user_registered && (
                   <Text style={styles.registeredBadge}>Registered</Text>
                 )}
