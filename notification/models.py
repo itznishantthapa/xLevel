@@ -66,6 +66,7 @@ class AdminNotification(models.Model):
     active_for_game_issue = models.BooleanField(default=True, help_text="Notify on game issues/disputes")
     active_for_account_purchase = models.BooleanField(default=True, help_text="Notify on account purchases")
     active_for_tournaments = models.BooleanField(default=True, help_text="Notify on tournament events")
+    active_for_admin_login = models.BooleanField(default=True, help_text="Notify on admin login attempts and security alerts")
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -87,31 +87,27 @@ def send_lockout_notification(sender, request, username, ip_address, **kwargs):
 
 def send_admin_login_notification(admin_email, status, request=None):
     """
-    🔒 SECURITY: Send push notification to superadmin about admin login attempts
+    🔒 SECURITY: Send push notification to all admins with login alerts enabled
     AND save to notification database
     
     Args:
         admin_email (str): Email of admin attempting to login
-        status (str): 'success', 'failed_password', 'failed_otp'
+        status (str): 'success', 'failed_password', 'failed_otp', 'locked_out'
         request (HttpRequest): Request object to get IP and user agent
     """
     try:
         from user.models import CustomUser
-        from notification.models import FCMToken, Notification
+        from notification.models import FCMToken, Notification, AdminNotification
         from notification.tasks import send_push_notification_task
         
-        # Get superadmin user (itznishantthapa@gmail.com)
-        try:
-            superadmin = CustomUser.objects.get(email='itznishantthapa@gmail.com')
-        except CustomUser.DoesNotExist:
-            logger.warning("Superadmin itznishantthapa@gmail.com not found for security alert")
-            return
+        # Get all admins with login alerts enabled
+        admin_notifications = AdminNotification.objects.filter(
+            active_for_admin_login=True
+        ).values_list('admin_email', flat=True)
         
-        # Get active FCM tokens for superadmin
-        active_tokens = FCMToken.objects.filter(
-            user=superadmin,
-            is_active=True
-        ).values_list('token', flat=True)
+        if not admin_notifications:
+            logger.info(f"No admins have admin_login notifications enabled")
+            return
         
         # Get IP address
         ip_address = 'Unknown'
@@ -144,14 +140,6 @@ def send_admin_login_notification(admin_email, status, request=None):
             f"Time: {time_str}"
         )
         
-        # 💾 Save notification to database
-        notification = Notification.objects.create(
-            user=superadmin,
-            notification_type='normal',
-            message=f"{title}\n\n{body}"
-        )
-        logger.info(f"Security notification saved to DB (ID: {notification.id})")
-        
         data = {
             'type': 'admin_security_alert',
             'admin_email': admin_email,
@@ -160,20 +148,41 @@ def send_admin_login_notification(admin_email, status, request=None):
             'timestamp': time_str
         }
         
-        # Send push notifications to all active devices
-        if active_tokens:
-            for token in active_tokens:
-                send_push_notification_task.delay(
-                    token=token,
-                    title=title,
-                    body=body,
-                    data=data,
-                    importance='high',
-                    use_large_icon=True
-                )
-            logger.info(f"Security alert sent | Admin: {admin_email} | Status: {status} | IP: {ip_address}")
-        else:
-            logger.info(f"No active FCM tokens for superadmin, but notification saved to DB")
+        # Send to all admins with admin_login notifications enabled
+        for notif_admin_email in admin_notifications:
+            try:
+                notify_user = CustomUser.objects.get(email=notif_admin_email)
+            except CustomUser.DoesNotExist:
+                logger.warning(f"Admin user {notif_admin_email} not found for admin_login notification")
+                continue
+            
+            # 💾 Save notification to database
+            notification = Notification.objects.create(
+                user=notify_user,
+                notification_type='normal',
+                message=f"{title}\n\n{body}"
+            )
+            logger.info(f"Security notification saved to DB for {notif_admin_email} (ID: {notification.id})")
+            
+            # Send push notifications to all active devices
+            active_tokens = FCMToken.objects.filter(
+                user=notify_user,
+                is_active=True
+            ).values_list('token', flat=True)
+            
+            if active_tokens:
+                for token in active_tokens:
+                    send_push_notification_task.delay(
+                        token=token,
+                        title=title,
+                        body=body,
+                        data=data,
+                        importance='high',
+                        use_large_icon=True
+                    )
+                logger.info(f"Security alert sent to {notif_admin_email} | Attempted by: {admin_email} | Status: {status} | IP: {ip_address}")
+            else:
+                logger.info(f"No active FCM tokens for {notif_admin_email}, but notification saved to DB")
         
     except Exception as e:
         logger.error(f"Error sending admin login notification: {str(e)}")

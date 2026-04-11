@@ -172,6 +172,8 @@ admin.site.register(FCMToken)
 class AdminNotificationAdmin(LoggingModelAdmin):
     list_display = ['admin_email', 'active_status_summary', 'updated_at']
     readonly_fields = ['created_at', 'updated_at']
+    search_fields = ['admin_email']
+    list_filter = ['created_at', 'updated_at']
     
     fieldsets = (
         ('Admin Email', {
@@ -187,6 +189,7 @@ class AdminNotificationAdmin(LoggingModelAdmin):
                 'active_for_game_issue',
                 'active_for_account_purchase',
                 'active_for_tournaments',
+                'active_for_admin_login',
             ),
             'description': 'Toggle notifications for different events'
         }),
@@ -195,14 +198,6 @@ class AdminNotificationAdmin(LoggingModelAdmin):
             'classes': ('collapse',)
         }),
     )
-    
-    def has_add_permission(self, request):
-        # Prevent adding multiple instances (Singleton-like pattern)
-        return not AdminNotification.objects.exists()
-    
-    def has_delete_permission(self, request, obj=None):
-        # Prevent deletion of settings
-        return False
     
     def active_status_summary(self, obj):
         """Display count of active notification types"""
@@ -214,10 +209,11 @@ class AdminNotificationAdmin(LoggingModelAdmin):
             obj.active_for_game_issue,
             obj.active_for_account_purchase,
             obj.active_for_tournaments,
+            obj.active_for_admin_login,
         ])
-        status_color = '#28a745' if active_count == 7 else '#ffc107' if active_count > 0 else '#dc3545'
+        status_color = '#28a745' if active_count == 8 else '#ffc107' if active_count > 0 else '#dc3545'
         return format_html(
-            '<span style="color: {}; font-weight: bold;">{}/7 Active</span>',
+            '<span style="color: {}; font-weight: bold;">{}/8 Active</span>',
             status_color,
             active_count
         )
