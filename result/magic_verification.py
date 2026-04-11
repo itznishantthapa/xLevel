@@ -132,10 +132,10 @@ def _process_single_challenge(*, challenge_id: int, now, logger) -> Optional[tup
     if not results:
         return None
 
-    # Case 1: Only one player submitted (5 minute timeout)
+    # Case 1: Only one player submitted (4 minute timeout)
     if len(results) == 1:
         result = results[0]
-        time_threshold = result.created_at + timedelta(minutes=5)
+        time_threshold = result.created_at + timedelta(minutes=4)
 
         if now > time_threshold:
             winner = result.participant.user

@@ -365,11 +365,11 @@ AXES_SENSITIVE_PARAMETERS = ['password', 'token']
 # Celery Beat Schedule for Periodic Tasks
 # ================================================================
 CELERY_BEAT_SCHEDULE = {
-    'auto-magic-verification-every-5-minutes': {
+    'auto-magic-verification-every-2-5-minutes': {
         'task': 'result.auto_magic_verification',
-        'schedule': 300.0,  # 300 seconds = 5 minutes
+        'schedule': 150.0,  # 150 seconds = 2.5 minutes
         'options': {
-            'expires': 240.0,  # Task expires after 4 minutes if not executed
+            'expires': 120.0,  # Task expires after 2 minutes if not executed
         }
     },
 }

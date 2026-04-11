@@ -52,3 +52,27 @@ class FCMToken(models.Model):
 
     def __str__(self):
         return f"{self.user.username}'s FCM Token"
+
+
+class AdminNotification(models.Model):
+    """Singleton model to manage admin notification preferences for different events."""
+    admin_email = models.EmailField(unique=True)
+    
+    # Notification toggles for different events
+    active_for_topup = models.BooleanField(default=True, help_text="Notify on account top-ups")
+    active_for_point_load = models.BooleanField(default=True, help_text="Notify on point loads")
+    active_for_withdraw = models.BooleanField(default=True, help_text="Notify on withdrawal requests")
+    active_for_result_process = models.BooleanField(default=True, help_text="Notify on result processing")
+    active_for_game_issue = models.BooleanField(default=True, help_text="Notify on game issues/disputes")
+    active_for_account_purchase = models.BooleanField(default=True, help_text="Notify on account purchases")
+    active_for_tournaments = models.BooleanField(default=True, help_text="Notify on tournament events")
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Admin Notification"
+        verbose_name_plural = "Admin Notifications"
+
+    def __str__(self):
+        return f"Admin Notifications - {self.admin_email}"

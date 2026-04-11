@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from PIL import Image
 import os
 from info.admin_base import LoggingModelAdmin
-from .models import Notification, Banner, FCMToken
+from .models import Notification, Banner, FCMToken, AdminNotification
 
 
 class BannerAdminForm(forms.ModelForm):
@@ -166,3 +166,59 @@ class BannerAdmin(LoggingModelAdmin):
 # Register other models with basic admin
 admin.site.register(Notification)
 admin.site.register(FCMToken)
+
+
+@admin.register(AdminNotification)
+class AdminNotificationAdmin(LoggingModelAdmin):
+    list_display = ['admin_email', 'active_status_summary', 'updated_at']
+    readonly_fields = ['created_at', 'updated_at']
+    
+    fieldsets = (
+        ('Admin Email', {
+            'fields': ('admin_email',),
+            'description': 'Email address to send admin notifications to'
+        }),
+        ('Notification Preferences', {
+            'fields': (
+                'active_for_topup',
+                'active_for_point_load',
+                'active_for_withdraw',
+                'active_for_result_process',
+                'active_for_game_issue',
+                'active_for_account_purchase',
+                'active_for_tournaments',
+            ),
+            'description': 'Toggle notifications for different events'
+        }),
+        ('Metadata', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def has_add_permission(self, request):
+        # Prevent adding multiple instances (Singleton-like pattern)
+        return not AdminNotification.objects.exists()
+    
+    def has_delete_permission(self, request, obj=None):
+        # Prevent deletion of settings
+        return False
+    
+    def active_status_summary(self, obj):
+        """Display count of active notification types"""
+        active_count = sum([
+            obj.active_for_topup,
+            obj.active_for_point_load,
+            obj.active_for_withdraw,
+            obj.active_for_result_process,
+            obj.active_for_game_issue,
+            obj.active_for_account_purchase,
+            obj.active_for_tournaments,
+        ])
+        status_color = '#28a745' if active_count == 7 else '#ffc107' if active_count > 0 else '#dc3545'
+        return format_html(
+            '<span style="color: {}; font-weight: bold;">{}/7 Active</span>',
+            status_color,
+            active_count
+        )
+    active_status_summary.short_description = 'Status'
