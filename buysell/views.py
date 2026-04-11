@@ -318,6 +318,109 @@ def purchase_game_account(request):
             game_account.buyer = user
             game_account.requested_at = timezone.now()
             game_account.save(update_fields=['status', 'buyer', 'requested_at'])
+            
+            # Notify admins with active_for_account_purchase preference
+            try:
+                from notification.models import FCMToken, AdminNotification, Notification
+                from notification.utils.fcm import send_push_notification
+                
+                # Get AdminNotifications with active_for_account_purchase enabled
+                admin_notifications = AdminNotification.objects.filter(active_for_account_purchase=True)
+                
+                account_type = game_account.get_account_type_display()
+                notification_title = "Hi Boss 👾"
+                push_body = f"A user has purchased {account_type} Account for {price} points"
+                in_app_message = f"Hi Boss 👾 \n{user.full_name} has purchased \n{account_type} Account for {price} points"
+                
+                for admin_notif in admin_notifications:
+                    try:
+                        # Find admin user by email and send notification
+                        from user.models import CustomUser
+                        admin_users = CustomUser.objects.filter(email=admin_notif.admin_email, is_active=True)
+                        
+                        for admin_user in admin_users:
+                            # Create in-app notification for the admin user
+                            Notification.objects.create(
+                                user=admin_user,
+                                notification_type="normal",
+                                message=in_app_message,
+                            )
+                            
+                            # Send push notification to admin
+                            fcm_tokens = FCMToken.objects.filter(user=admin_user, is_active=True)
+                            for fcm_token in fcm_tokens:
+                                try:
+                                    send_push_notification(
+                                        token=fcm_token.token,
+                                        title=notification_title,
+                                        body=push_body,
+                                        data={
+                                            "type": "account_purchase",
+                                            "account_id": str(game_account.id),
+                                            "buyer_email": user.email,
+                                            "seller_email": game_account.seller.email,
+                                            "account_type": account_type,
+                                            "amount": str(price),
+                                        }
+                                    )
+                                    logger.info(f"Push notification sent to admin {admin_user.email}")
+                                except Exception as push_error:
+                                    logger.warning(f"Failed to send push to admin {admin_user.email}: {push_error}")
+                    except Exception as admin_error:
+                        logger.warning(f"Error notifying admin {admin_notif.admin_email}: {admin_error}")
+                
+                logger.info(f"Account purchase notifications sent for account {game_account.id}")
+                
+            except Exception as notification_error:
+                # Don't fail the transaction if notification fails
+                logger.error(f"Failed to notify admins about account purchase {game_account.id}: {notification_error}")
+            
+            # Notify seller about the purchase
+            try:
+                from notification.models import Notification, FCMToken
+                from notification.utils.fcm import send_push_notification
+                
+                seller = game_account.seller
+                notification_message = (
+                    f" {user.full_name} wants to buy your {account_type} Account for {price} points!\n\n"
+                    f"Admin will take 10 minutes to review the account . \nPlease stay in contact.\n\n"
+                    f"Check Status -> [Go to Home, Click on Request] to see status]"
+                )
+                
+                # Create in-app notification
+                Notification.objects.create(
+                    user=seller,
+                    notification_type="store",
+                    message=notification_message,
+                )
+                
+                # Send push notification to seller
+                push_notification_title = "Game Account 🎮"
+                push_notification_body = f"Your {account_type} Account has been requested for purchase. Now admin will review it for 10 minutes."
+                
+                fcm_tokens = FCMToken.objects.filter(user=seller, is_active=True)
+                for fcm_token in fcm_tokens:
+                    try:
+                        send_push_notification(
+                            token=fcm_token.token,
+                            title=push_notification_title,
+                            body=push_notification_body,
+                            data={
+                                "type": "account_purchased",
+                                "account_id": str(game_account.id),
+                                "buyer_name": user.full_name,
+                                "buyer_email": user.email,
+                                "amount": str(price),
+                            }
+                        )
+                        logger.info(f"Push notification sent to seller {seller.email}")
+                    except Exception as push_error:
+                        logger.warning(f"Failed to send push to seller {seller.email}: {push_error}")
+                
+                logger.info(f"Seller notification sent to {seller.email} for account {game_account.id}")
+                
+            except Exception as seller_notification_error:
+                logger.error(f"Failed to notify seller about account purchase {game_account.id}: {seller_notification_error}")
 
         # Return in transaction format for shared Request screen
         transaction_data = {

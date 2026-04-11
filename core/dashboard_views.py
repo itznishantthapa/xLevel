@@ -1406,6 +1406,10 @@ def user_stats_page(request):
                     # Preserve original datetime for template formatting
                     challenge_data['created_at_dt'] = challenge.created_at
                     
+                    # Get the result ID for this challenge (if exists)
+                    result = challenge.results.first()
+                    challenge_data['result_id'] = result.id if result else None
+                    
                     # If user is the creator, include participant information
                     if challenge.created_by == user:
                         participants = ChallengeParticipant.objects.filter(

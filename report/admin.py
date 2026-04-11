@@ -191,8 +191,9 @@ class ReportAdmin(LoggingModelAdmin):
                 # Send notification to reporter about rejection
                 from notification.models import Notification, FCMToken
                 from notification.utils.fcm import send_push_notification
+                from challenge.models import ChallengeParticipant
                 
-                notification_message = f"Report Rejected\nYour report claim is not strong for Match [#{report.challenge.id}]\nOr\n[ Admin already review this Match ]"
+                notification_message = f"Report Rejected\nYour report claim is not strong for Match [#{report.challenge.id}]\nOr\n[ Admin already review this Match Report]"
                 
                 Notification.objects.create(
                     user=report.user,
@@ -206,10 +207,36 @@ class ReportAdmin(LoggingModelAdmin):
                 if fcm_token:
                     send_push_notification(
                         token=fcm_token.token,
-                        title="Report Rejected",
+                        title="Report Rejected ❌",
                         body=f"Your report claim is not strong for Match [#{report.challenge.id}]",
                         data={"screen": "match", "challenge_id": str(report.challenge.id)}
                     )
+                
+                # Send notifications to other participants (opponent)
+                participants = ChallengeParticipant.objects.filter(
+                    challenge=report.challenge
+                ).select_related('user').exclude(user=report.user)
+                
+                for participant in participants:
+                    opponent_message = f"Your opponent's report has been rejected \nby admin for Match [#{report.challenge.id}]"
+                    
+                    # Create in-app notification
+                    Notification.objects.create(
+                        user=participant.user,
+                        notification_type="normal",
+                        message=opponent_message,
+                        challenge=report.challenge
+                    )
+                    
+                    # Send push notification
+                    opponent_fcm_token = FCMToken.objects.filter(user=participant.user, is_active=True).first()
+                    if opponent_fcm_token:
+                        send_push_notification(
+                            token=opponent_fcm_token.token,
+                            title="Opponent Report Rejected 🤩",
+                            body=f"Your opponent's report for Match [#{report.challenge.id}] was rejected",
+                            data={"screen": "match", "challenge_id": str(report.challenge.id)}
+                        )
                 
                 logger.info(f"Admin {request.user.email} rejected report #{report.id}")
                 

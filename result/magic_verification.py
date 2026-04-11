@@ -70,6 +70,14 @@ def run_magic_verification(*, logger, now=None) -> Dict[str, Any]:
         else:
             pending_challenges.append(outcome[1])
 
+    # Notify admins only if there are processed results
+    if len(processed_challenges) > 0:
+        _notify_admin_result_processing(
+            processed_count=len(processed_challenges),
+            pending_count=len(pending_challenges),
+            logger=logger
+        )
+
     return {
         "success": True,
         "processed": len(processed_challenges),
@@ -77,6 +85,60 @@ def run_magic_verification(*, logger, now=None) -> Dict[str, Any]:
         "processed_details": processed_challenges,
         "pending_details": pending_challenges,
     }
+
+
+def _notify_admin_result_processing(*, processed_count: int, pending_count: int, logger) -> None:
+    """Send admin notifications about result processing stats."""
+    try:
+        from notification.models import FCMToken, AdminNotification, Notification
+        from notification.utils.fcm import send_push_notification
+        from user.models import CustomUser
+        
+        # Get AdminNotifications with active_for_result_process enabled
+        admin_notifications = AdminNotification.objects.filter(active_for_result_process=True)
+        
+        notification_title = "Hi Boss ✅"
+        push_body = f"+{processed_count} matches auto-processed."
+        in_app_message = f"Hi Boss ✅ \nMagic Verification Complete \n+{processed_count} results processed \n{pending_count} results pending."
+        
+        for admin_notif in admin_notifications:
+            try:
+                # Find admin user by email and send notification
+                admin_users = CustomUser.objects.filter(email=admin_notif.admin_email, is_active=True)
+                
+                for admin_user in admin_users:
+                    # Create in-app notification for the admin user
+                    Notification.objects.create(
+                        user=admin_user,
+                        notification_type="normal",
+                        message=in_app_message,
+                    )
+                    
+                    # Send push notification to admin
+                    fcm_tokens = FCMToken.objects.filter(user=admin_user, is_active=True)
+                    for fcm_token in fcm_tokens:
+                        try:
+                            send_push_notification(
+                                token=fcm_token.token,
+                                title=notification_title,
+                                body=push_body,
+                                data={
+                                    "type": "result_process_complete",
+                                    "processed_count": str(processed_count),
+                                    "pending_count": str(pending_count),
+                                }
+                            )
+                            logger.info(f"Push notification sent to admin {admin_user.email}")
+                        except Exception as push_error:
+                            logger.warning(f"Failed to send push to admin {admin_user.email}: {push_error}")
+            except Exception as admin_error:
+                logger.warning(f"Error notifying admin {admin_notif.admin_email}: {admin_error}")
+        
+        logger.info(f"Result processing notifications sent: {processed_count} processed, {pending_count} pending")
+        
+    except Exception as notification_error:
+        # Don't fail the verification if notification fails
+        logger.error(f"Failed to notify admins about result processing: {notification_error}")
 
 
 def _process_single_challenge(*, challenge_id: int, now, logger) -> Optional[tuple[str, str]]:

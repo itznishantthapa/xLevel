@@ -16,6 +16,61 @@ _GAME_REQUIRED_FIELDS = {
 }
 
 
+def _notify_admin_topup(user, product_label, points_deducted, order_id):
+    """Send admin notifications for topup requests."""
+    try:
+        from notification.models import FCMToken, AdminNotification, Notification
+        from notification.utils.fcm import send_push_notification
+        
+        # Get AdminNotifications with active_for_topup enabled
+        admin_notifications = AdminNotification.objects.filter(active_for_topup=True)
+        
+        notification_title = "Hi Boss 🛍️"
+        push_body = f"+{product_label} topup requested."
+        in_app_message = f"Hi Boss 🛍️ \n{user.full_name} has requested topup of \n{product_label} for {points_deducted} points"
+        
+        for admin_notif in admin_notifications:
+            try:
+                # Find admin user by email and send notification
+                admin_users = CustomUser.objects.filter(email=admin_notif.admin_email, is_active=True)
+                
+                for admin_user in admin_users:
+                    # Create in-app notification for the admin user
+                    Notification.objects.create(
+                        user=admin_user,
+                        notification_type="normal",
+                        message=in_app_message,
+                    )
+                    
+                    # Send push notification to admin
+                    fcm_tokens = FCMToken.objects.filter(user=admin_user, is_active=True)
+                    for fcm_token in fcm_tokens:
+                        try:
+                            send_push_notification(
+                                token=fcm_token.token,
+                                title=notification_title,
+                                body=push_body,
+                                data={
+                                    "type": "topup_request",
+                                    "order_id": str(order_id),
+                                    "buyer_email": user.email,
+                                    "product_label": product_label,
+                                    "amount": str(points_deducted),
+                                }
+                            )
+                            logger.info(f"Push notification sent to admin {admin_user.email}")
+                        except Exception as push_error:
+                            logger.warning(f"Failed to send push to admin {admin_user.email}: {push_error}")
+            except Exception as admin_error:
+                logger.warning(f"Error notifying admin {admin_notif.admin_email}: {admin_error}")
+        
+        logger.info(f"Topup notifications sent for order {order_id}")
+        
+    except Exception as notification_error:
+        # Don't fail the transaction if notification fails
+        logger.error(f"Failed to notify admins about topup order {order_id}: {notification_error}")
+
+
 def _build_order_response(order, label):
     return {
         "id": f"SR{order.id}",
@@ -65,6 +120,9 @@ def _efootball_topup(request):
             request_item_image=screenshot,
             points_deducted=game_points,
         )
+        
+        # Notify admins about topup request
+        _notify_admin_topup(user_locked, "eFootball Item", game_points, order.id)
 
     logger.info(f"eFootball TopupRequest created: ID={order.id}, User={user_locked.email}, Points={game_points}")
     return Response(
@@ -145,6 +203,9 @@ def place_topup_request(request):
                 password=request.data.get("password"),
                 points_deducted=product.points,
             )
+            
+            # Notify admins about topup request
+            _notify_admin_topup(user_locked, product.label, product.points, order.id)
 
         logger.info(f"TopupRequest created: ID={order.id}, User={user_locked.email}, Product={product}, Points={product.points}")
         return Response(

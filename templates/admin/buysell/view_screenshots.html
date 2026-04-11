@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screenshots - Game Account #{{ game_account.id }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #000;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .account-header {
+            background: #1a1a1a;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #007cba;
+        }
+        .account-title {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .account-meta {
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+        .account-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .info-item {
+            background: #2a2a2a;
+            padding: 12px;
+            border-radius: 6px;
+        }
+        .info-label {
+            color: #aaa;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+        .info-value {
+            color: #e0e0e0;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .description-label {
+            color: #aaa;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            margin-top: 16px;
+        }
+        .description-text {
+            color: #e0e0e0;
+            font-size: 15px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .screenshots-section {
+            margin-top: 30px;
+        }
+        .screenshots-title {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        .screenshot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .screenshot-item {
+            background: #1a1a1a;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+        .screenshot-item:hover {
+            transform: scale(1.02);
+        }
+        .screenshot-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            cursor: pointer;
+        }
+        .screenshot-label {
+            padding: 12px;
+            color: #fff;
+            font-size: 14px;
+            text-align: center;
+            background: #2a2a2a;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.98);
+        }
+        .modal-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 20px;
+        }
+        .modal-image {
+            max-width: 95%;
+            max-height: 95vh;
+            object-fit: contain;
+        }
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #fff;
+            font-size: 40px;
+            cursor: pointer;
+            z-index: 10000;
+        }
+        .no-screenshots {
+            color: #888;
+            text-align: center;
+            padding: 40px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Account Information Section -->
+        <div class="account-header">
+            <div class="account-title">🎮 {{ game_account.get_account_type_display }} Account #{{ game_account.id }}</div>
+            <div class="account-meta">
+                Seller: {{ game_account.seller.full_name }} ({{ game_account.seller.email }}) | 
+                Status: {{ game_account.get_status_display }} | 
+                Listed: {{ game_account.created_at|date:"M d, Y H:i" }}
+            </div>
+            
+            <!-- Account Details Grid -->
+            <div class="account-info-grid">
+                <div class="info-item">
+                    <div class="info-label">Account Type</div>
+                    <div class="info-value">{{ game_account.get_account_type_display }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Login Method</div>
+                    <div class="info-value">{{ game_account.get_login_method_display }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Price</div>
+                    <div class="info-value">₹{{ game_account.price }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Seller Contact</div>
+                    <div class="info-value">{{ game_account.seller_contact_number }}</div>
+                </div>
+                {% if game_account.buyer %}
+                <div class="info-item">
+                    <div class="info-label">Buyer</div>
+                    <div class="info-value">{{ game_account.buyer.email }}</div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Description Section -->
+            {% if game_account.description %}
+            <div class="description-label">Description</div>
+            <div class="description-text">{{ game_account.description }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Screenshots Section -->
+        <div class="screenshots-section">
+            <div class="screenshots-title">📸 Provided Screenshots</div>
+            
+            {% if screenshots %}
+            <div class="screenshot-grid">
+                {% for screenshot in screenshots %}
+                <div class="screenshot-item">
+                    <img src="{{ screenshot.image.url }}" alt="Screenshot {{ screenshot.order }}" class="screenshot-image" onclick="openModal('{{ screenshot.image.url }}')">
+                    <div class="screenshot-label">Screenshot {{ screenshot.order }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="no-screenshots">No screenshots available</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div id="modal" class="modal" onclick="closeModal()">
+        <span class="modal-close">&times;</span>
+        <div class="modal-content">
+            <img id="modalImg" class="modal-image" src="">
+        </div>
+    </div>
+
+    <script>
+        function openModal(src) {
+            document.getElementById('modal').style.display = 'block';
+            document.getElementById('modalImg').src = src;
+        }
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+</body>
+</html>

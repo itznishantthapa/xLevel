@@ -41,7 +41,7 @@
 
 {% block content %}
 <div class="result-verification-container">
-    {% if has_pair %}
+    {% if has_any_submission %}
     <!-- Minimal Challenge Info -->
     <div class="challenge-info">
         <span>{{ challenge.game.name }} Match #{{ challenge.id }}</span>
@@ -57,44 +57,71 @@
 
     <!-- Screenshots Comparison - Main Content -->
     <div class="screenshots-grid">
-        {% for result in all_results %}
-        <div class="screenshot-section">
+        {% for data in results_data %}
+        <div class="screenshot-section {% if not data.is_submitted %}unsubmitted{% endif %}">
             <div class="player-name">
-                {{ result.participant.user.game_display_name }}
-                <span>(Claims: {{ result.game_result|title|default:"Not specified" }})</span>
+                {{ data.game_display_name }}
+                <span class="email-tag">{{ data.email }}</span>
+                {% if data.is_submitted %}
+                    <span class="claim-status">(Claims: {{ data.game_result|title|default:"Not specified" }})</span>
+                {% else %}
+                    <span class="not-submitted-badge">⏳ NOT SUBMITTED</span>
+                {% endif %}
             </div>
             
             <div class="screenshots-container">
-                {% if result.screenshot_1 %}
-                <div class="screenshot-wrapper">
-                    <img src="{{ result.screenshot_1.url }}" 
-                         alt="Screenshot 1" 
-                         class="screenshot-image"
-                         onclick="openImageModal('{{ result.screenshot_1.url }}', '{{ result.participant.user.game_display_name }}')">
-                    <div class="screenshot-download" onclick="downloadImage('{{ result.screenshot_1.url }}', '{{ result.participant.user.game_display_name }}_1.jpg')" title="Download Screenshot">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                            <polyline points="7,10 12,15 17,10"/>
-                            <line x1="12" y1="15" x2="12" y2="3"/>
-                        </svg>
+                {% if data.is_submitted %}
+                    <!-- Display submitted screenshots -->
+                    {% if data.screenshot_1 %}
+                    <div class="screenshot-wrapper">
+                        <img src="{{ data.screenshot_1.url }}" 
+                             alt="Screenshot" 
+                             class="screenshot-image"
+                             onclick="openImageModal('{{ data.screenshot_1.url }}', '{{ data.game_display_name }}')">
+                        <div class="screenshot-download" onclick="downloadImage('{{ data.screenshot_1.url }}', '{{ data.game_display_name }}_screenshot.jpg')" title="Download Screenshot">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7,10 12,15 17,10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                        </div>
                     </div>
-                </div>
-                {% endif %}
-                
-                {% if result.screenshot_2 %}
-                <div class="screenshot-wrapper">
-                    <img src="{{ result.screenshot_2.url }}" 
-                         alt="Screenshot 2" 
-                         class="screenshot-image"
-                         onclick="openImageModal('{{ result.screenshot_2.url }}', '{{ result.participant.user.game_display_name }}')">
-                    <div class="screenshot-download" onclick="downloadImage('{{ result.screenshot_2.url }}', '{{ result.participant.user.game_display_name }}_2.jpg')" title="Download Screenshot">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                            <polyline points="7,10 12,15 17,10"/>
-                            <line x1="12" y1="15" x2="12" y2="3"/>
-                        </svg>
+                    {% endif %}
+                    
+                    {% if data.screenshot_2 %}
+                    <div class="screenshot-wrapper">
+                        <img src="{{ data.screenshot_2.url }}" 
+                             alt="Screenshot 2" 
+                             class="screenshot-image"
+                             onclick="openImageModal('{{ data.screenshot_2.url }}', '{{ data.game_display_name }}')">
+                        <div class="screenshot-download" onclick="downloadImage('{{ data.screenshot_2.url }}', '{{ data.game_display_name }}_screenshot_2.jpg')" title="Download Screenshot">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7,10 12,15 17,10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                        </div>
                     </div>
-                </div>
+                    {% endif %}
+                    
+                    {% if not data.screenshot_1 %}
+                    <div class="no-screenshot">
+                        <p>No screenshot provided</p>
+                    </div>
+                    {% endif %}
+                {% else %}
+                    <!-- Placeholder for unsubmitted player -->
+                    <div class="placeholder-screenshot">
+                        <div class="placeholder-content">
+                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="16" x2="12" y2="12"/>
+                                <line x1="12" y1="8" x2="12.01" y2="8"/>
+                            </svg>
+                            <p>Awaiting Result Submission</p>
+                            <small>Player has not submitted their result yet</small>
+                        </div>
+                    </div>
                 {% endif %}
             </div>
         </div>
@@ -102,6 +129,7 @@
     </div>
 
     <!-- Minimalist Winner Selection -->
+    {% if result.status != 'approved' %}
     <div class="winner-selection">
         <div class="winner-options">
             {% for participant in participants %}
@@ -135,11 +163,17 @@
             </button>
         </div>
     </div>
+    {% else %}
+    <div class="winner-selection" style="padding: 20px; text-align: center; background: #f0f8ff; border-radius: 8px; margin-top: 20px;">
+        <p style="color: #28a745; font-weight: 600; font-size: 16px;">✓ Result Already Approved</p>
+        <p style="color: #666; font-size: 14px; margin-top: 8px;">This result has been verified and cannot be modified.</p>
+    </div>
+    {% endif %}
 
     {% else %}
-    <!-- Minimal Incomplete Results Notice -->
+    <!-- No Submissions Notice -->
     <div class="challenge-info">
-        <p>This challenge has only {{ all_results.count }} of 2 required result submissions.</p>
+        <p>⏳ This challenge has no result submissions yet.</p>
         <button type="button" class="btn" onclick="window.history.back()">
             Back to Results
         </button>

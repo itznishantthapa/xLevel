@@ -799,7 +799,13 @@
                             {% for match in user_data.recent_matches.object_list %}
                             <tr>
                                 <td>{{ match.created_at_dt|date:"M d, H:i" }}</td>
-                                <td><a href="{% url 'admin:challenge_challenge_change' match.id %}" class="link" target="_blank">{{ match.id }}</a></td>
+                                <td>
+                                    {% if match.result_id %}
+                                        <a href="{% url 'admin:result_verify' match.result_id %}" class="link" target="_blank">{{ match.id }}</a>
+                                    {% else %}
+                                        <a href="{% url 'admin:challenge_challenge_change' match.id %}" class="link" target="_blank">{{ match.id }}</a>
+                                    {% endif %}
+                                </td>
                                 <td>
                                     {% if match.created_by.role == 'admin' %}
                                         <span class="badge badge-purple">Tournament</span>

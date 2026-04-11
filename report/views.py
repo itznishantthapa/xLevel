@@ -108,6 +108,60 @@ def create_report(request):
             
             Report.objects.create(**report_data)
             
+            # Notify admins about game issue report
+            if report_type == 'game_issue':
+                try:
+                    from notification.models import AdminNotification
+                    
+                    # Get AdminNotifications with active_for_game_issue enabled
+                    admin_notifications = AdminNotification.objects.filter(active_for_game_issue=True)
+                    
+                    notification_title = "Hi Boss ⚠️"
+                    push_body = f"A player reported Game Issue on Match [#{challenge.id}]"
+                    in_app_message = f"Hi Boss ⚠️ \n{request.user.full_name} has reported \nGame Issue on Match [#{challenge.id}] \n\n{description}"
+                    
+                    for admin_notif in admin_notifications:
+                        try:
+                            # Find admin user by email and send notification
+                            admin_users = CustomUser.objects.filter(email=admin_notif.admin_email, is_active=True)
+                            
+                            for admin_user in admin_users:
+                                # Create in-app notification for the admin user
+                                Notification.objects.create(
+                                    user=admin_user,
+                                    notification_type="normal",
+                                    message=in_app_message,
+                                    challenge=challenge
+                                )
+                                
+                                # Send push notification to admin
+                                fcm_tokens = FCMToken.objects.filter(user=admin_user, is_active=True)
+                                for fcm_token in fcm_tokens:
+                                    try:
+                                        send_push_notification(
+                                            token=fcm_token.token,
+                                            title=notification_title,
+                                            body=push_body,
+                                            data={
+                                                "type": "game_issue_report",
+                                                "report_id": str(report_id),
+                                                "challenge_id": str(challenge.id),
+                                                "reporter_email": request.user.email,
+                                                "description": description,
+                                            }
+                                        )
+                                        logger.info(f"Push notification sent to admin {admin_user.email}")
+                                    except Exception as push_error:
+                                        logger.warning(f"Failed to send push to admin {admin_user.email}: {push_error}")
+                        except Exception as admin_error:
+                            logger.warning(f"Error notifying admin {admin_notif.admin_email}: {admin_error}")
+                    
+                    logger.info(f"Game issue notifications sent for report on challenge {challenge.id}")
+                    
+                except Exception as notification_error:
+                    # Don't fail the report if notification fails
+                    logger.error(f"Failed to notify admins about game issue report: {notification_error}")
+            
             # Check for mutual Refund Agreement - if both players agree, process refund immediately
             mutual_refund_processed = False
             if report_type == 'refund_agreement':

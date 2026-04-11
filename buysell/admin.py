@@ -1,8 +1,9 @@
 from django.contrib import admin
 from django.utils import timezone
 from django.utils.html import format_html
-from django.urls import path
-from django.shortcuts import get_object_or_404
+from django.utils.safestring import mark_safe
+from django.urls import path, reverse
+from django.shortcuts import get_object_or_404, render
 from django.http import JsonResponse
 from django.db import transaction as db_transaction
 from .models import GameAccount, GameAccountScreenshot
@@ -27,7 +28,7 @@ class GameAccountAdmin(admin.ModelAdmin):
     list_display = [
         'id', 'account_type_display', 'seller_info', 'buyer_info',
         'login_method_display', 'login_credentials', 'buyer_contact',
-        'price', 'status_display', 'quick_actions', 'created_at',
+        'price', 'status_display', 'view_ss_button', 'quick_actions', 'created_at',
     ]
 
     list_display_links = None
@@ -43,6 +44,7 @@ class GameAccountAdmin(admin.ModelAdmin):
             path('<int:pk>/review/', self.admin_site.admin_view(self.review_account), name='gameaccount_review'),
             path('<int:pk>/sold/', self.admin_site.admin_view(self.sold_account), name='gameaccount_sold'),
             path('<int:pk>/reject/', self.admin_site.admin_view(self.reject_account), name='gameaccount_reject'),
+            path('<int:pk>/view-screenshots/', self.view_screenshots, name='gameaccount_view_screenshots'),
         ]
         return custom_urls + urls
 
@@ -103,6 +105,34 @@ class GameAccountAdmin(admin.ModelAdmin):
             colors.get(obj.status, '#6c757d'), obj.get_status_display(),
         )
     status_display.short_description = 'Status'
+
+    def view_ss_button(self, obj):
+        """Display View SS button for screenshot viewing"""
+        screenshot_count = obj.screenshots.count()
+        if screenshot_count == 0:
+            return format_html('<span style="color: #999;">-</span>')
+        
+        screenshot_url = reverse('admin:gameaccount_view_screenshots', args=[obj.pk])
+        return format_html(
+            '<a href="{}" target="_blank" style="background: #007cba; color: white; padding: 4px 8px; border-radius: 4px; text-decoration: none; font-size: 11px; font-weight: 500;">View SS ({}) →</a>',
+            screenshot_url, screenshot_count
+        )
+    view_ss_button.short_description = 'Screenshots'
+
+    def view_screenshots(self, request, pk):
+        """View to display all game account screenshots"""
+        game_account = get_object_or_404(GameAccount.objects.prefetch_related('screenshots'), pk=pk)
+        
+        context = {
+            'title': f'Screenshots for {game_account.get_account_type_display()} Account #{game_account.id}',
+            'game_account': game_account,
+            'screenshots': game_account.screenshots.all().order_by('order'),
+            'opts': self.model._meta,
+            'app_label': self.model._meta.app_label,
+            'has_view_permission': True,
+        }
+        
+        return render(request, 'admin/buysell/view_screenshots.html', context)
 
     def quick_actions(self, obj):
         if obj.status == 'pending':

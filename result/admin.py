@@ -128,14 +128,16 @@ class ResultAdmin(LoggingModelAdmin):
     
     def actions_column(self, obj):
         """Display clean action button"""
+        # Show Verify/View button for all pending results, regardless of submission count
         if obj.status == 'pending':
             return format_html(
-                '<a href="{}" class="verify-btn">Verify</a>',
+                '<a href="{}" class="verify-btn">View</a>',
                 reverse('admin:result_verify', args=[obj.pk])
             )
         else:
             return format_html(
-                '<span>✓</span>'
+                '<a href="{}" class="verify-btn view-approved">View</a>',
+                reverse('admin:result_verify', args=[obj.pk])
             )
     actions_column.short_description = 'Actions'
     
@@ -164,8 +166,13 @@ class ResultAdmin(LoggingModelAdmin):
             challenge=result.challenge
         ).select_related('user')
         
-        # Attach game usernames directly to results and participants
+        # Build result data with screenshots
+        results_data = []
+        submitted_user_ids = set()
+        
+        # Attach game usernames and build result data for submitted results
         for res in all_results:
+            submitted_user_ids.add(res.participant.user_id)
             try:
                 game_profile = PlayerGameProfile.objects.get(
                     user=res.participant.user, 
@@ -174,7 +181,45 @@ class ResultAdmin(LoggingModelAdmin):
                 res.participant.user.game_display_name = game_profile.game_username or res.participant.user.full_name
             except PlayerGameProfile.DoesNotExist:
                 res.participant.user.game_display_name = res.participant.user.full_name
+            
+            # Build result data - use screenshot_1 as the primary screenshot
+            results_data.append({
+                'user': res.participant.user,
+                'game_display_name': res.participant.user.game_display_name,
+                'email': res.participant.user.email,
+                'game_result': res.game_result,
+                'screenshot_1': res.screenshot_1,
+                'screenshot_2': res.screenshot_2,
+                'status': res.status,
+                'is_submitted': True,
+                'created_at': res.created_at,
+            })
         
+        # Add placeholder data for players who haven't submitted
+        for participant in participants:
+            if participant.user_id not in submitted_user_ids:
+                try:
+                    game_profile = PlayerGameProfile.objects.get(
+                        user=participant.user, 
+                        game=result.challenge.game
+                    )
+                    game_display_name = game_profile.game_username or participant.user.full_name
+                except PlayerGameProfile.DoesNotExist:
+                    game_display_name = participant.user.full_name
+                
+                results_data.append({
+                    'user': participant.user,
+                    'game_display_name': game_display_name,
+                    'email': participant.user.email,
+                    'game_result': None,
+                    'screenshot_1': None,
+                    'screenshot_2': None,
+                    'status': 'not_submitted',
+                    'is_submitted': False,
+                    'created_at': None,
+                })
+        
+        # Attach game usernames to participants
         for participant in participants:
             try:
                 game_profile = PlayerGameProfile.objects.get(
@@ -190,8 +235,10 @@ class ResultAdmin(LoggingModelAdmin):
             'result': result,
             'challenge': result.challenge,
             'all_results': all_results,
+            'results_data': results_data,
             'participants': participants,
             'has_pair': len(all_results) >= 2,
+            'has_any_submission': len(all_results) > 0,
             'opts': self.model._meta,
             'app_label': self.model._meta.app_label,
         }

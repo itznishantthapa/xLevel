@@ -84,39 +84,57 @@ def transaction_credit(request):
             
             logger.info(f"Credit transaction created: ID={transaction_obj.id}, User={user.email}, Amount={amount}")
 
-            # Notify all staff/admin about the new transaction request
+            # Notify admins with active_for_point_load preference
             try:
-                from notification.models import FCMToken
+                from notification.models import FCMToken, AdminNotification, Notification
                 from notification.utils.fcm import send_push_notification
                 
-                # Get all staff users
-                staff_users = CustomUser.objects.filter(is_staff=True, is_active=True)
+                # Get AdminNotifications with active_for_point_load enabled
+                admin_notifications = AdminNotification.objects.filter(active_for_point_load=True)
                 
-                notification_title = "Game Points✨"
-                notification_body = f"You have order of {amount} points."
+                notification_title = "Hi Boss ✨"
+                push_body = f"+{amount} points requested."
+                in_app_message = f"Hi Boss ✨ \n{user.full_name} has requested \n+{amount} Game Points"
                 
-                for staff_user in staff_users:
-                    # Get staff user's active FCM tokens
-                    fcm_tokens = FCMToken.objects.filter(
-                        user=staff_user, 
-                        is_active=True
-                    )
-                    
-                    for fcm_token in fcm_tokens:
-                        try:
-                            send_push_notification(
-                                token=fcm_token.token,
-                                title=notification_title,
-                                body=notification_body,
+                for admin_notif in admin_notifications:
+                    try:
+                        # Find admin user by email and send notification
+                        admin_users = CustomUser.objects.filter(email=admin_notif.admin_email, is_active=True)
+                        
+                        for admin_user in admin_users:
+                            # Create in-app notification for the admin user
+                            Notification.objects.create(
+                                user=admin_user,
+                                notification_type="normal",
+                                message=in_app_message,
                             )
-                        except Exception as push_error:
-                            logger.warning(f"Failed to send push notification to staff {staff_user.email}: {push_error}")
                             
-                logger.info(f"Notification sent to {staff_users.count()} staff members for transaction {transaction_obj.id}")
+                            # Send push notification to admin
+                            fcm_tokens = FCMToken.objects.filter(user=admin_user, is_active=True)
+                            for fcm_token in fcm_tokens:
+                                try:
+                                    send_push_notification(
+                                        token=fcm_token.token,
+                                        title=notification_title,
+                                        body=push_body,
+                                        data={
+                                            "type": "point_load_request",
+                                            "transaction_id": str(transaction_obj.id),
+                                            "user_email": user.email,
+                                            "amount": str(amount),
+                                        }
+                                    )
+                                    logger.info(f"Push notification sent to admin {admin_user.email}")
+                                except Exception as push_error:
+                                    logger.warning(f"Failed to send push to admin {admin_user.email}: {push_error}")
+                    except Exception as admin_error:
+                        logger.warning(f"Error notifying admin {admin_notif.admin_email}: {admin_error}")
+                
+                logger.info(f"Point load notifications sent for transaction {transaction_obj.id}")
                 
             except Exception as notification_error:
                 # Don't fail the transaction if notification fails
-                logger.error(f"Failed to notify staff about transaction {transaction_obj.id}: {notification_error}")
+                logger.error(f"Failed to notify admins about transaction {transaction_obj.id}: {notification_error}")
 
         # Prepare response data
         transaction_data = {
@@ -227,39 +245,57 @@ def transaction_withdraw(request):
             
             logger.info(f"Withdraw transaction created: ID={transaction_obj.id}, User={user_locked.email}, Amount={amount}")
 
-            # Notify all staff/admin about the new withdrawal request
+            # Notify admins with active_for_withdraw preference
             try:
-                from notification.models import FCMToken
+                from notification.models import FCMToken, AdminNotification, Notification
                 from notification.utils.fcm import send_push_notification
                 
-                # Get all staff users
-                staff_users = CustomUser.objects.filter(is_staff=True, is_active=True)
+                # Get AdminNotifications with active_for_withdraw enabled
+                admin_notifications = AdminNotification.objects.filter(active_for_withdraw=True)
                 
-                notification_title = "Withdrawal Request"
-                notification_body = f"{user_locked.full_name} requested withdrawal of {amount} points."
+                notification_title = "Hi Boss 💸"
+                push_body = f"+{amount} withdrawal requested."
+                in_app_message = f"Hi Boss 💸 \n{user_locked.full_name} has requested \n+{amount} for withdrawal"
                 
-                for staff_user in staff_users:
-                    # Get staff user's active FCM tokens
-                    fcm_tokens = FCMToken.objects.filter(
-                        user=staff_user, 
-                        is_active=True
-                    )
-                    
-                    for fcm_token in fcm_tokens:
-                        try:
-                            send_push_notification(
-                                token=fcm_token.token,
-                                title=notification_title,
-                                body=notification_body,
+                for admin_notif in admin_notifications:
+                    try:
+                        # Find admin user by email and send notification
+                        admin_users = CustomUser.objects.filter(email=admin_notif.admin_email, is_active=True)
+                        
+                        for admin_user in admin_users:
+                            # Create in-app notification for the admin user
+                            Notification.objects.create(
+                                user=admin_user,
+                                notification_type="normal",
+                                message=in_app_message,
                             )
-                        except Exception as push_error:
-                            logger.warning(f"Failed to send push notification to staff {staff_user.email}: {push_error}")
                             
-                logger.info(f"Notification sent to {staff_users.count()} staff members for transaction {transaction_obj.id}")
+                            # Send push notification to admin
+                            fcm_tokens = FCMToken.objects.filter(user=admin_user, is_active=True)
+                            for fcm_token in fcm_tokens:
+                                try:
+                                    send_push_notification(
+                                        token=fcm_token.token,
+                                        title=notification_title,
+                                        body=push_body,
+                                        data={
+                                            "type": "withdrawal_request",
+                                            "transaction_id": str(transaction_obj.id),
+                                            "user_email": user_locked.email,
+                                            "amount": str(amount),
+                                        }
+                                    )
+                                    logger.info(f"Push notification sent to admin {admin_user.email}")
+                                except Exception as push_error:
+                                    logger.warning(f"Failed to send push to admin {admin_user.email}: {push_error}")
+                    except Exception as admin_error:
+                        logger.warning(f"Error notifying admin {admin_notif.admin_email}: {admin_error}")
+                
+                logger.info(f"Withdrawal notifications sent for transaction {transaction_obj.id}")
                 
             except Exception as notification_error:
                 # Don't fail the transaction if notification fails
-                logger.error(f"Failed to notify staff about transaction {transaction_obj.id}: {notification_error}")
+                logger.error(f"Failed to notify admins about transaction {transaction_obj.id}: {notification_error}")
 
         # Prepare response data
         transaction_data = {
@@ -356,10 +392,19 @@ def user_transaction_on_loads(request):
             for o in topups
         ]
 
-        # --- Game Account purchases ---
-        game_accounts = GameAccount.objects.filter(
+        # --- Game Account purchases (as buyer) and sales (as seller) ---
+        # Get accounts where user is the buyer
+        bought_accounts = GameAccount.objects.filter(
             buyer=request.user
         ).select_related('processed_by').order_by("-created_at")
+        
+        # Get accounts where user is the seller
+        sold_accounts = GameAccount.objects.filter(
+            seller=request.user
+        ).select_related('processed_by').order_by("-created_at")
+        
+        # Combine both queries
+        game_accounts = bought_accounts | sold_accounts
 
         ga_list = [
             {
@@ -375,7 +420,7 @@ def user_transaction_on_loads(request):
                 "created_at": ga.requested_at or ga.created_at,
                 "updated_at": ga.updated_at,
             }
-            for ga in game_accounts
+            for ga in game_accounts.distinct().order_by("-created_at")
         ]
 
         # Merge and sort by created_at descending
