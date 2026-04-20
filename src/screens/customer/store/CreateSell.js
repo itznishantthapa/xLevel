@@ -8,8 +8,9 @@ import {
   Image,
   TextInput,
 } from 'react-native'
-import { MaterialCommunityIcons, Ionicons, AntDesign, Feather, FontAwesome } from '@expo/vector-icons'
+import { MaterialCommunityIcons, Ionicons, AntDesign, Feather, FontAwesome, MaterialIcons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
+import * as yup from 'yup'
 import Toast from 'react-native-simple-toast'
 import { useThemeStore } from '../../../store/themeStore'
 import { useAuthStore } from '../../../store/authStore'
@@ -30,6 +31,39 @@ const GAME_OPTIONS = [
   { label: 'PUBG', value: 'PUBG' },
   { label: 'MLBB', value: 'MLBB' },
 ]
+
+// Validation Schema
+const validationSchema = yup.object().shape({
+  images: yup.array().min(1, 'Please add at least one screenshot').required(),
+  description: yup
+    .string()
+    .required('Please add a description')
+    .min(1, 'Please add a description'),
+  selectedGame: yup
+    .string()
+    .required('Please select a game')
+    .nullable(),
+  loginMethod: yup
+    .string()
+    .required('Please select a login method')
+    .nullable(),
+  loginEmail: yup
+    .string()
+    .required('Please enter your login email')
+    .min(1, 'Please enter your login email'),
+  loginPassword: yup
+    .string()
+    .required('Please enter the account password')
+    .min(1, 'Please enter the account password'),
+  sellerPhone: yup
+    .string()
+    .required('Please enter your WhatsApp number')
+    .matches(/^\d{10}$/, 'WhatsApp number must be exactly 10 digits'),
+  price: yup
+    .number()
+    .required('Please enter a valid price')
+    .min(1, 'Please enter a valid price'),
+})
 
 const CreateSell = () => {
   const { isLight } = useThemeStore()
@@ -57,7 +91,7 @@ const CreateSell = () => {
   const colors = {
     text: isLight ? '#1a1a1a' : '#ffffff',
     textSecondary: isLight ? '#666666' : '#999999',
-    inputBg: isLight ? 'transparent' : '#1a1a1a',
+    inputBg: isLight ? '#f5f5f5' : '#1a1a1a',
     inputBorder: isLight ? '#cccccc' : '#333333',
     accent: '#00bf63',
     danger: '#FF4444',
@@ -91,44 +125,30 @@ const CreateSell = () => {
     setImages(prev => prev.filter((_, i) => i !== index))
   }
 
-  const validateForm = () => {
-    if (images.length === 0) {
-      Toast.show('Please add at least one screenshot', Toast.SHORT)
+  const validateForm = async () => {
+    try {
+      await validationSchema.validate(
+        {
+          images,
+          description,
+          selectedGame,
+          loginMethod,
+          loginEmail,
+          loginPassword,
+          sellerPhone,
+          price: numericPrice,
+        },
+        { abortEarly: true }
+      )
+      return true
+    } catch (error) {
+      Toast.show(error.message, Toast.SHORT)
       return false
     }
-    if (!description.trim()) {
-      Toast.show('Please add a description', Toast.SHORT)
-      return false
-    }
-    if (!selectedGame) {
-      Toast.show('Please select a game', Toast.SHORT)
-      return false
-    }
-    if (!loginMethod) {
-      Toast.show('Please select a login method', Toast.SHORT)
-      return false
-    }
-    if (!loginEmail.trim()) {
-      Toast.show(`Please enter your ${loginMethod === 'facebook' ? 'phone/email' : 'Gmail'}`, Toast.SHORT)
-      return false
-    }
-    if (!loginPassword.trim()) {
-      Toast.show('Please enter the account password', Toast.SHORT)
-      return false
-    }
-    if (!sellerPhone.trim()) {
-      Toast.show('Please enter your contact number', Toast.SHORT)
-      return false
-    }
-    if (numericPrice < 1) {
-      Toast.show('Please enter a valid price', Toast.SHORT)
-      return false
-    }
-    return true
   }
 
-  const handleSubmit = useCallback(() => {
-    if (!validateForm()) return
+  const handleSubmit = useCallback(async () => {
+    if (!(await validateForm())) return
 
     const formData = new FormData()
     formData.append('game', selectedGame)
@@ -203,8 +223,8 @@ const CreateSell = () => {
       loaderMessage="Listing account..."
     >
       {/* Security Notice */}
-      <View style={[styles.infoContainer, { borderColor: isLight ? '#000000' : '#ffffff' }]}>
-        <Text style={[styles.infoText, { color: isLight ? '#000000' : '#ffffff' }]}>
+      <View style={[styles.securityNoticeContainer, { borderColor: isLight ? '#000000' : '#ffffff', backgroundColor: colors.inputBg }]}>
+        <Text style={[styles.securityNoticeText, { color: isLight ? '#000000' : '#ffffff' }]}>
           Login credentials are only accessed by admin for verification. After a successful purchase, login details are securely transferred to the buyer.
         </Text>
       </View>
@@ -398,15 +418,21 @@ const CreateSell = () => {
 
       {/* Seller Phone */}
       <View style={styles.inputGroup}>
-        <Text style={[styles.fieldLabel, { color: colors.text }]}>Contact Number *</Text>
+        <Text style={[styles.fieldLabel, { color: colors.text }]}>WhatsApp Number *</Text>
         <TextInput
           style={[styles.input, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.text }]}
-          placeholder="Your contact number"
+          placeholder="For buyer to message you"
           placeholderTextColor={colors.textSecondary}
           value={sellerPhone}
-          onChangeText={setSellerPhone}
+          onChangeText={(text) => setSellerPhone(text.replace(/[^0-9]/g, '').slice(0, 10))}
           keyboardType="phone-pad"
+          maxLength={10}
         />
+        {sellerPhone && sellerPhone.length !== 10 && (
+          <Text style={[styles.errorText, { color: colors.danger }]}>
+            WhatsApp number must be exactly 10 digits
+          </Text>
+        )}
       </View>
 
       {/* Price Input */}
@@ -444,10 +470,11 @@ const CreateSell = () => {
         </View>
       )}
 
-      {/* Deposit Info - noticeContainer style */}
-      <View style={styles.noticeContainer}>
-        <Text style={[styles.noticeText, { color: isLight ? '#000000' : '#ffffff' }]}>
-          "A refundable deposit of {REQUIRED_DEPOSIT} points is required to list your account. This will be returned to you after a successful sale"
+      {/* Deposit Info - info container style like deletion screen */}
+      <View style={[styles.infoContainer, { backgroundColor: colors.inputBg }]}>
+        <MaterialIcons name="info" size={18} color={colors.textSecondary} />
+        <Text style={[styles.infoText, { color: colors.textSecondary }]}>
+          A refundable deposit of {REQUIRED_DEPOSIT} points is required to list your account. This will be returned to you after a successful sale.
         </Text>
       </View>
 
@@ -475,7 +502,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
 
-  // Notice (matches EditGameInfo noticeContainer)
+  // Notice (updated to infoContainer style)
   noticeContainer: {
     marginTop: 16,
   },
@@ -485,18 +512,33 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  // Info container (for balance warning)
-  infoContainer: {
+  // Security Notice Container (outlined design)
+  securityNoticeContainer: {
     padding: 12,
     borderRadius: 8,
     borderWidth: 1,
     marginTop: 8,
   },
-  infoText: {
+  securityNoticeText: {
     fontSize: 13,
     fontWeight: '500',
     textAlign: 'center',
     lineHeight: 18,
+  },
+
+  // Info container (matches AccountDeletion style - with icon)
+  infoContainer: {
+    flexDirection: 'row',
+    padding: 14,
+    borderRadius: 12,
+    alignItems: 'flex-start',
+    gap: 10,
+    marginTop: 16,
+  },
+  infoText: {
+    fontSize: 12,
+    lineHeight: 18,
+    flex: 1,
   },
 
   // Images
@@ -657,5 +699,10 @@ const styles = StyleSheet.create({
   priceDivider: {
     borderTopWidth: 1,
     marginBottom: 8,
+  },
+  errorText: {
+    fontSize: 12,
+    fontWeight: '500',
+    marginTop: 4,
   },
 })

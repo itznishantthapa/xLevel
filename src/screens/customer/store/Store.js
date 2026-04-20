@@ -8,6 +8,7 @@ import {
   Pressable,
   Image,
   RefreshControl,
+  Linking,
 } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -46,6 +47,27 @@ const getTimeAgo = (dateString) => {
   if (days < 30) return `${days}d ago`
   const months = Math.floor(days / 30)
   return `${months}mo ago`
+}
+
+const handleOpenWhatsApp = async (sellerPhone) => {
+  try {
+
+    
+    if (!sellerPhone) {
+      Toast.show('Seller contact number not available', Toast.SHORT)
+      console.log('No seller phone available')
+      return
+    }
+    
+    const whatsappUrl = `https://wa.me/977${sellerPhone}`
+
+    
+    Toast.show('Opening WhatsApp...', Toast.SHORT)
+    await Linking.openURL(whatsappUrl)
+  } catch (error) {
+    console.log('Error opening WhatsApp:', error)
+    Toast.show('Please install WhatsApp', Toast.SHORT)
+  }
 }
 
 const ProductCard = ({ product, index, isLight, onOrderPress, onDeletePress, userEmail, isIOSActive }) => {
@@ -197,8 +219,8 @@ const ProductCard = ({ product, index, isLight, onOrderPress, onDeletePress, use
                 <View style={[
                   styles.gamePill,
                   { 
-                    backgroundColor: isLight ? '#ffffff' : '#1a1a1a',
-                    borderColor: isLight ? '#e0e0e0' : '#333333',
+                      backgroundColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)',
+                      borderWidth: 0,
                   }
                 ]}>
                   <View style={[
@@ -222,16 +244,18 @@ const ProductCard = ({ product, index, isLight, onOrderPress, onDeletePress, use
                   </Text>
                 </View>
 
-                <View style={[
-                  styles.gamePill,
-                  { 
-                    backgroundColor: isLight ? '#ffffff' : '#1a1a1a',
-                    borderColor: isLight ? '#e0e0e0' : '#333333',
-                  }
-                ]}>
+                <Pressable 
+                  onPress={() => handleOpenWhatsApp(product.seller?.contact_number)}
+                  style={[
+                    styles.gamePill,
+                    { 
+                      backgroundColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)',
+                      borderWidth: 0,
+                    }
+                  ]}>
                   <View style={[
                     styles.iconWrapper,
-                    { backgroundColor: isLight ? '#00bf63' : 'rgba(0, 191, 99, 0.2)' },
+                    { backgroundColor: '#25D366' },
                     isLight && {
                       elevation: 6,
                       shadowColor: '#000',
@@ -240,15 +264,15 @@ const ProductCard = ({ product, index, isLight, onOrderPress, onDeletePress, use
                       shadowRadius: 4.5,
                     }
                   ]}>
-                    <Ionicons name="checkmark" size={scaleWidth(12)} color={isLight ? '#ffffff' : '#00bf63'} />
+                    <MaterialCommunityIcons name="whatsapp" size={scaleWidth(12)} color="#ffffff" />
                   </View>
                   <Text style={[
                     styles.pillText,
                     { color: isLight ? '#333333' : '#ffffff' }
                   ]}>
-                    Verified
+                    Chat
                   </Text>
-                </View>
+                </Pressable>
               </View>
             </View>
 
@@ -416,6 +440,8 @@ const Store = () => {
     isFetching,
     error,
   } = useGameAccounts(5)
+
+
 
  
   const handleWalletPress = useCallback(() => {

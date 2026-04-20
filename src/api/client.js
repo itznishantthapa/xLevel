@@ -7,7 +7,7 @@ import { endpoints } from "./endpoints";
 
 // Central API client
 export const API = axios.create({
-  baseURL: "https://level.com.np", 
+  baseURL: "https://level.com.np", // Update with your backend URL
   headers: { "Content-Type": "application/json" },
   timeout: 30000,
 });

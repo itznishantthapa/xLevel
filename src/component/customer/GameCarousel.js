@@ -10,7 +10,7 @@ import {
     Image,
     Platform,
 } from 'react-native';
-import { Entypo } from "@expo/vector-icons"
+import { Entypo, Feather } from "@expo/vector-icons"
 import { useThemeStore } from '../../store/themeStore';
 import { useUtils } from '../../queries/useUtils';
 import { scaleWidth, scaleHeight } from '../../utils/scaling';
@@ -30,7 +30,10 @@ const GameCarousel = ({ games, handleGameCardPress }) => {
         <View style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
-                <Text style={[styles.title, isLight ? { color: '#000000' } : { color: '#EAEAEA' }]}>{shouldShowLabel ? 'Games & Store' : 'Create Match'}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                    <Text style={[styles.title, isLight ? { color: '#000000' } : { color: '#EAEAEA' }]}>{shouldShowLabel ? 'Games & Store' : 'Create Match'}</Text>
+                    {shouldShowLabel && <Feather name="shopping-bag" size={20} color={isLight ? '#000000' : '#EAEAEA'} />}
+                </View>
             </View>
 
             {/* Games Carousel */}

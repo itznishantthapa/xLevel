@@ -24,7 +24,7 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler"
 import { useThemeStore } from "../store/themeStore"
 // Removed unused icon imports
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons"
+import { MaterialCommunityIcons, Ionicons, MaterialIcons } from "@expo/vector-icons"
 import { NavigationService } from "../service/navigationService"
 import { useQueryClient } from "@tanstack/react-query"
 import OpponentSheetContent from "./component/OpponentSheetContent"
@@ -712,9 +712,10 @@ const PurchaseSheetContent = React.memo(({ payload, isDark, insets, handleCancel
 
         {/* Verification Info */}
         {isIOSActive && (
-          <View style={purchaseStyles.noticeContainer}>
+          <View style={[purchaseStyles.noticeContainer, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.03)' }]}>
+            <MaterialIcons name="info" size={18} color={isDark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'} />
             <Text style={[purchaseStyles.noticeText, { color: isDark ? '#ffffff' : '#000000' }]}>
-              "After you purchase, admin will login & review the account. Once verified, you will receive the account credentials to your app email."
+              After you purchase, point will be deducted from your account,and admin will login & review the account. Once verified, Admin will send you this account credentials & give you 60 minutes to change the credentials & implement 2FA. After the 60 minutes, admin will release the point to the seller account.
             </Text>
           </View>
         )}
@@ -774,13 +775,19 @@ const purchaseStyles = StyleSheet.create({
     letterSpacing: 0.3,
   },
   noticeContainer: {
-    padding: 12,
+    flexDirection: 'row',
+    padding: 14,
+    borderRadius: 12,
+    alignItems: 'flex-start',
+    gap: 10,
     marginTop: 16,
+    marginBottom: 10,
   },
   noticeText: {
-    fontSize: 13,
+    fontSize: 12,
+    lineHeight: 18,
+    flex: 1,
     fontWeight: '500',
-    textAlign: 'center',
   },
 })
 

@@ -499,6 +499,7 @@ const EditGameInfo = () => {
 
         Keyboard.dismiss()
       await saveProfile(apiData)
+      Toast.show("We've got your profile ✅", Toast.LONG)
       navigation.goBack()
     } catch (error) {
       Toast.show(error?.message , Toast.SHORT)
