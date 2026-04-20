@@ -24,6 +24,7 @@ def _game_account_to_json(account: GameAccount, request):
     seller_info = {
         "full_name": seller.full_name,
         "email": seller.email,
+        "contact_number": account.seller_contact_number,
         "profile_picture": request.build_absolute_uri(seller.profile_picture.url) if seller.profile_picture else None,
     }
     
