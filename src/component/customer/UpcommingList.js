@@ -44,8 +44,9 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
   const joinedPercentage = Math.min((playersJoined / maxPlayers) * 100, 100)
   const spotsLeft = Math.max(maxPlayers - playersJoined, 0)
   const isAlmostFull = spotsLeft <= Math.ceil(maxPlayers * 0.2) // 20% or less spots remaining
-
- 
+  
+  // Check if tournament is full
+  const isTournamentFull = spotsLeft === 0
 
 
 
@@ -55,6 +56,11 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
    * Handles join button press with profile and balance validation
    */
   const handleJoinPress = () => {
+    // Don't allow joining if tournament is full
+    if (isTournamentFull) {
+      return
+    }
+
     // Check if time slot selection is required and validate
     if (game.game_times && game.game_times.length > 0 && !selectedGameTime) {
       shakeTimeRef.current?.shake()
@@ -333,13 +339,15 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
               styles.joinButton,
               isLight ? styles.joinButtonLight : styles.joinButtonDark,
               isAlmostFull && styles.joinButtonUrgent,
+              isTournamentFull && styles.joinButtonDisabled,
             ]}
             onPress={handleJoinPress}
             activeOpacity={0.8}
+            disabled={isTournamentFull}
           >
             <View style={styles.joinButtonContent}>
-              <Text style={[styles.joinButtonText, isLight ? { color: "#ffffff" } : { color: "#000000" }]}>
-                {game.is_free ? 'Join for Free' : `Join ${game.entry_fee}`}
+              <Text style={[styles.joinButtonText, isLight ? { color: "#ffffff" } : { color: "#000000" }, isTournamentFull && { color: "#999999" }]}>
+                {isTournamentFull ? 'Tournament Full' : (game.is_free ? 'Join for Free' : `Join ${game.entry_fee}`)}
               </Text>
             </View>
           </Pressable>
@@ -807,6 +815,9 @@ const styles = StyleSheet.create({
   },
   joinButtonDark: {
     backgroundColor: "#eaf4f4",
+  },
+  joinButtonDisabled: {
+    opacity: 0.5,
   },
   joinButtonContent: {
     flexDirection: "row",

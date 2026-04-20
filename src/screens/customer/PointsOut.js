@@ -104,6 +104,7 @@ const PointsOut = () => {
           { name: 'gamePoints' }
         ],
       });
+      Toast.show('Redeem requested successfully ✅', Toast.LONG)
     } catch (err) {
       Toast.show(err?.message || 'Failed to submit redeem request.', Toast.SHORT)
     } finally {

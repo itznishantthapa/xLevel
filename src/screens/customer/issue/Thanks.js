@@ -1,7 +1,7 @@
 import React from 'react'
 import { StyleSheet, Text, View, Dimensions, StatusBar, Pressable } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { MaterialIcons, FontAwesome5, AntDesign, Entypo, Octicons, Ionicons } from '@expo/vector-icons'
+import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import { useThemeStore } from '../../../store/themeStore'
 
@@ -13,9 +13,9 @@ const Thanks = () => {
   const route = useRoute()
   const insets = useSafeAreaInsets()
 
-  // Get route params to determine if this is an exchange or issue report
-  const { type, enhancementTitle, enhancementPrice, enhancementType } = route.params || {}
-  const isExchange = type === 'exchange'
+  // Get route params
+  const { type = 'report' } = route.params || {}
+  const isBlock = type === 'block'
 
   const colors = {
     background: isLight ? "#ffffff" : "#000000",
@@ -23,19 +23,6 @@ const Thanks = () => {
     textSecondary: isLight ? "rgba(51, 51, 51, 0.7)" : "rgba(255, 255, 255, 0.7)",
     cardBackground: isLight ? "rgba(0, 0, 0, 0.05)" : "rgba(255, 255, 255, 0.1)",
     success: "#00bf63",
-    warning: "#ff9500",
-    premium: "#6366f1",
-  }
-
-  // Enhancement metadata for colors
-  const enhancementColors = {
-    pro_tag: colors.premium,
-    hacker_tag: colors.warning,
-    exposer: colors.success,
-  }
-
-  const getEnhancementColor = () => {
-    return enhancementColors[enhancementType] || colors.success
   }
 
   return (
@@ -73,71 +60,40 @@ const Thanks = () => {
           <View style={[
             styles.iconWrapper, 
             { 
-              backgroundColor: isExchange ? getEnhancementColor() : colors.cardBackground 
+              backgroundColor: colors.cardBackground 
             }
           ]}>
-            {isExchange ? (
-               <Ionicons name="sparkles-sharp" size={32}  color="#ffffff" />
-            ) : (
-              <FontAwesome5 
-                name="exclamation-circle" 
-                size={32} 
-                color={colors.text} 
-              />
-            )}
+            <FontAwesome5 
+              name="exclamation-circle" 
+              size={32} 
+              color={colors.text} 
+            />
           </View>
         </View>
 
         {/* Thank You Message */}
         <View style={styles.messageContainer}>
           <Text style={[styles.title, { color: colors.text }]}>
-            {isExchange ? 'Congratulations!' : 'Thank You!'}
+            Thank You!
           </Text>
           
           <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-            {isExchange 
-              ? `Successfully exchanged ${enhancementTitle}!`
-              : 'Your report has been submitted successfully'
-            }
+            Your report has been submitted successfully
           </Text>
           
-          {isExchange ? (
-            <View style={styles.exchangeDetailsContainer}>
-              <View style={[styles.exchangeCard, { backgroundColor: colors.cardBackground }]}>
-                <View style={styles.exchangeInfo}>
-                  <Text style={[styles.exchangeTitle, { color: colors.text }]}>
-                    {enhancementTitle}
-                  </Text>
-                  <Text style={[styles.exchangePrice, { color: getEnhancementColor() }]}>
-                    {enhancementPrice} Points
-                  </Text>
-                </View>
-                <View style={[styles.checkmarkBadge, { backgroundColor: getEnhancementColor() }]}>
-                 <Entypo name="check" size={16} color={isLight ? "#ffffff" : "#000000"} />
-                </View>
-              </View>
-              
-              <View style={[styles.congratsMessage, { backgroundColor: colors.cardBackground }]}>
-                <Text style={[styles.congratsText, { color: colors.textSecondary }]}>
-                  Your enhancement is now active and will be displayed across all your game profiles!
-                </Text>
-              </View>
-            </View>
-          ) : (
-            <View style={[styles.descriptionContainer, { backgroundColor: colors.cardBackground }]}>
-              <Text style={[styles.description, { color: colors.textSecondary }]}>
-                Our moderation team will review this report and take appropriate action within 24-48 hours.
-              </Text>
-            </View>
-          )}
+          <View style={[styles.descriptionContainer, { backgroundColor: colors.cardBackground }]}>
+            <Text style={[styles.description, { color: colors.textSecondary }]}>
+              Our moderation team will review this report and take appropriate action within 24-48 hours.
+            </Text>
+          </View>
         </View>
 
         {/* Back instruction */}
         <View style={styles.backInstructionContainer}>
           <Text style={[styles.backInstructionText, { color: colors.textSecondary }]}>
-            {isExchange 
-              ? 'Your enhancement is now active!'
-              : 'You have blocked the user. Refresh to update.'
+            {isBlock 
+              ? 'You have blocked the user. Refresh to update.'
+              : 'Your report has been received.'
             }
           </Text>
         </View>
@@ -167,8 +123,6 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     paddingHorizontal: 24,
     paddingVertical: 40,
   },

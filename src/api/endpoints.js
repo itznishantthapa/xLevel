@@ -20,11 +20,6 @@ export const endpoints = {
   unblockUser:"/api/user/unblock-user/",
   getBlockedUsers:"/api/user/blocked-users/",
 
-  //enhancements
-  getEnhancements: "/api/enhancer/get-enhancers/",
-  exchangeEnhancements: "/api/enhancer/exchange/",
-  updateTagStatus:"/api/enhancer/update-tag-status/",
-
   //points
   getPointsIn: "/api/points/in/",
   getPointsOut: "/api/points/out/",
@@ -77,16 +72,6 @@ export const endpoints = {
 
   //utils
   getUtils:"/api/utils/",
-
-  //store
-  getStoreItems: "/api/store/items/",
-  placeTopup: "/api/store/topup/",
-
-  //buysell
-  getGameAccountsOnLoads: "/api/buysell/accounts/",
-  createGameAccount: "/api/buysell/accounts/create/",
-  deleteGameAccount: "/api/buysell/accounts/delete/",
-  purchaseGameAccount: "/api/buysell/accounts/purchase/",
   
 };
 

@@ -1,13 +1,13 @@
 import { StyleSheet, Text, View, Pressable, TextInput, Alert, Platform, KeyboardAvoidingView, Keyboard } from 'react-native'
 import React, { useState, useRef } from 'react'
 import { MaterialIcons } from '@expo/vector-icons'
-import { useThemeStore } from '../../../store/themeStore'
-import { CreateGameLayout } from '../../../component/customer/createGame'
-import { useAuthStore } from '../../../store/authStore'
-import { useBottomSheet } from '../../../context/BottomSheetContext'
+import { useThemeStore } from '../../store/themeStore'
+import { CreateGameLayout } from '../../component/customer/createGame'
+import { useAuthStore } from '../../store/authStore'
+import { useBottomSheet } from '../../context/BottomSheetContext'
 import Toast from "react-native-simple-toast"
 import * as LocalAuthentication from "expo-local-authentication";
-import { ShakeText } from '../../../component/customer/animation'
+import { ShakeText } from '../../component/customer/animation'
 
 const AccountDeletion = () => {
   const { isLight } = useThemeStore()
@@ -48,11 +48,6 @@ const AccountDeletion = () => {
     }
   }
 
-
-
-
-
-
   const handleDeleteAccount = async () => {
     if (!selectedReason) {
       shakeRef.current?.shake()
@@ -64,13 +59,9 @@ const AccountDeletion = () => {
       return
     }
 
-
     Keyboard.dismiss()
 
     setTimeout(() => {
-
-
-
       // Confirm sheet
       showConfirmSheet({
         title: "Delete Account?",
@@ -117,11 +108,9 @@ const AccountDeletion = () => {
             }
           }
         },
-
       });
     }, 100);
   };
-
 
   const renderReasonOption = (reason, index) => {
     const isSelected = selectedReason === reason.id
@@ -162,7 +151,6 @@ const AccountDeletion = () => {
       </Pressable>
     )
   }
-
 
   return (
     <CreateGameLayout

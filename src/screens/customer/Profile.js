@@ -110,36 +110,6 @@ const Profile = () => {
                   <Octicons name="feed-person" size={32} color={colors.text} />
                 </View>
               )}
-              
-              {/* Pro/Hckr Tag - Only show if user owns AND has it active */}
-              {(user?.enhancer?.active_pro_tag || user?.enhancer?.active_hacker_tag) && (
-                <View style={{
-                  position: 'absolute',
-                  bottom: -6,
-                  left: '50%',
-                  transform: [{ translateX: -12 }],
-                  backgroundColor: isLight ? '#000000' : '#ffffff',
-                  paddingHorizontal: scaleWidth(6),
-                  paddingVertical: scaleWidth(2),
-                  borderRadius: scaleWidth(8),
-                  borderWidth: scaleWidth(1),
-                  borderColor: isLight ? '#ffffff' : '#000000',
-                  shadowColor: '#000000',
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 3.84,
-                  elevation: 5,
-                }}>
-                  <Text style={{
-                    color: isLight ? '#ffffff' : '#000000',
-                    fontSize: scaleWidth(8),
-                    fontWeight: 'bold',
-                    textAlign: 'center'
-                  }}>
-                    {user?.enhancer?.active_hacker_tag ? 'Hckr' : 'Pro'}
-                  </Text>
-                </View>
-              )}
             </View>
 
             <View style={styles.profileInfo}>
@@ -206,23 +176,6 @@ const Profile = () => {
               )}
             </View>
 
-                        {/* Actions Section */}
-            <View style={styles.section}>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>Exchange</Text>
-              <View style={[styles.actionCard, { backgroundColor: colors.cardBackground }]}>
-                <Pressable
-                  style={[styles.actionRow]}
-                  onPress={() => navigation.navigate("exchange")}
-                >
-                  <View style={styles.actionContent}>
-                    <Ionicons name="sparkles-outline" size={20} color={colors.text} />
-                    <Text style={[styles.actionText, { color: colors.text }]}>Enhancements</Text>
-                  </View>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
-                </Pressable>
-                </View>
-            </View>
-
             {/* Account Info Section */}
             <View style={styles.section}>
               <Text style={[styles.sectionTitle, { color: colors.text }]}>Account Info</Text>
@@ -269,90 +222,11 @@ const Profile = () => {
               <View style={[styles.actionCard, { backgroundColor: colors.cardBackground }]}>
                 <Pressable
                   style={[styles.actionRow, styles.actionRowBorder, { borderBottomColor: colors.border }]}
-                  onPress={() => navigation.navigate("match")}
+                  onPress={() => navigation.navigate("accountDeletion")}
                 >
                   <View style={styles.actionContent}>
-                    <MaterialIcons name="history" size={20} color={colors.text} />
-                    <Text style={[styles.actionText, { color: colors.text }]}>Game History</Text>
-                  </View>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
-                </Pressable>
-
-                <Pressable
-                  style={[styles.actionRow, styles.actionRowBorder, { borderBottomColor: colors.border }]}
-                  onPress={() => navigation.navigate("reportList")}
-                >
-                  <View style={styles.actionContent}>
-                    <MaterialIcons name="flag" size={20} color={colors.text} />
-                    <Text style={[styles.actionText, { color: colors.text }]}>My Reports</Text>
-                  </View>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
-                </Pressable>
-
-                <Pressable
-                  style={styles.actionRow}
-                  onPress={() => navigation.navigate("blockedUserList")}
-                >
-                  <View style={styles.actionContent}>
-                    <FontAwesome5 name="users-slash" size={18} color={colors.text} />
-                    <Text style={[styles.actionText, { color: colors.text }]}>Blocked Users</Text>
-                  </View>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
-                </Pressable>
-              </View>
-            </View>
-
-
-            {/* Legal Section */}
-            <View style={styles.section}>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>Legal</Text>
-              <View style={[styles.actionCard, { backgroundColor: colors.cardBackground }]}>
-                <Pressable
-                  style={[styles.actionRow, styles.actionRowBorder, { borderBottomColor: colors.border }]}
-                  onPress={handleOpenPrivacyPolicy}
-                >
-                  <View style={styles.actionContent}>
-                    <MaterialIcons name="privacy-tip" size={20} color={colors.text} />
-                    <Text style={[styles.actionText, { color: colors.text }]}>Privacy Policy</Text>
-                  </View>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
-                </Pressable>
-
-                <Pressable
-                  style={[styles.actionRow, styles.actionRowBorder, { borderBottomColor: colors.border }]}
-                  onPress={handleOpenTermsOfService}
-                >
-                  <View style={styles.actionContent}>
-                    <MaterialIcons name="gavel" size={20} color={colors.text} />
-                    <Text style={[styles.actionText, { color: colors.text }]}>Terms of Service</Text>
-                  </View>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
-                </Pressable>
-                <Pressable
-                  style={styles.actionRow}
-                  onPress={() => navigation.navigate("credits")}
-                >
-                  <View style={styles.actionContent}>
-                    <AntDesign name="copyright" size={20} color={colors.text} />
-                    <Text style={[styles.actionText, { color: colors.text }]}>Credits & Attributions</Text>
-                  </View>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
-                </Pressable>
-              </View>
-            </View>
-
-            {/* Account Section */}
-            <View style={styles.section}>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>Account</Text>
-              <View style={[styles.actionCard, { backgroundColor: colors.cardBackground }]}>
-                <Pressable
-                  style={[styles.actionRow, styles.actionRowBorder, { borderBottomColor: colors.border }]}
-                  onPress={() => navigation.navigate("accountDeletion")
-                  }
-                >
-                  <View style={styles.actionContent}>
-                    <MaterialCommunityIcons name="delete-variant" size={20} color={colors.text} />
-                    <Text style={[styles.actionText, { color: colors.text }]}>Deletion</Text>
+                    <MaterialIcons name="delete-outline" size={20} color={colors.text} />
+                    <Text style={[styles.actionText, { color: colors.text }]}>Delete Account</Text>
                   </View>
                   <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
                 </Pressable>
@@ -370,20 +244,16 @@ const Profile = () => {
                   }
                 >
                   <View style={styles.actionContent}>
-                    <Ionicons name="log-out-outline" size={20} color={colors.destructive} />
-                    <Text style={[styles.actionText, { color: colors.destructive }]}>Logout</Text>
+                    <Ionicons name="log-out-outline" size={20} color={colors.text} />
+                    <Text style={[styles.actionText, { color: colors.text }]}>Logout</Text>
                   </View>
                   <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
                 </Pressable>
               </View>
             </View>
-          </View>
 
-          <View style={styles.versionFooter}>
-            <Text style={[styles.versionText, { color: colors.textTertiary }]}>Version 5.5 (55)</Text>
-          </View>
 
-       
+          </View>
         </ScrollView>
       </SafeAreaView>
     </View>
@@ -579,15 +449,5 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
 
-  // Version Footer
-  versionFooter: {
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 24,
  
-  },
-  versionText: {
-    fontSize: 12,
-    fontWeight: "500",
-  },
 })

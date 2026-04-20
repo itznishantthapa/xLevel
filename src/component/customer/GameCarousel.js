@@ -31,8 +31,7 @@ const GameCarousel = ({ games, handleGameCardPress }) => {
             {/* Header */}
             <View style={styles.header}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                    <Text style={[styles.title, isLight ? { color: '#000000' } : { color: '#EAEAEA' }]}>{shouldShowLabel ? 'Games & Store' : 'Create Match'}</Text>
-                    {shouldShowLabel && <Feather name="shopping-bag" size={20} color={isLight ? '#000000' : '#EAEAEA'} />}
+                    <Text style={[styles.title, isLight ? { color: '#000000' } : { color: '#EAEAEA' }]}>{'Create Match'}</Text>
                 </View>
             </View>
 

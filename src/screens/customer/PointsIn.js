@@ -129,6 +129,8 @@ const PointsIn = () => {
         ],
       });
 
+       Toast.show('Point requested successfully ✅', Toast.LONG)
+
 
     } catch (err) {
       Toast.show(err?.message || 'Failed to submit credit request.', Toast.SHORT)

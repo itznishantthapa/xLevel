@@ -275,26 +275,7 @@ const Auth = () => {
     });
   };
 
-  const renderTermsAndPrivacy = () => (
-    <View style={styles.termsContainer}>
-      <Text style={[styles.termsText, { color: colors.textSecondary }]}>
-        <Text>By continuing, you agree to our </Text>
-        <Text
-          style={[styles.termsLink, { color: colors.success }]}
-          onPress={handleOpenTerms}
-        >
-          Terms of Service
-        </Text>
-        <Text> and </Text>
-        <Text
-          style={[styles.termsLink, { color: colors.success }]}
-          onPress={handleOpenPrivacy}
-        >
-          Privacy Policy
-        </Text>
-      </Text>
-    </View>
-  );
+ 
 
   return (
     <>
@@ -325,7 +306,6 @@ const Auth = () => {
           </View>
 
           {renderAuthButtons()}
-          {renderTermsAndPrivacy()}
         </View>
       </View>
     </>
@@ -420,18 +400,7 @@ const styles = StyleSheet.create({
     fontSize: scaleWidth(16),
     fontWeight: '600',
   },
-  termsContainer: {
-    paddingHorizontal: scaleWidth(10),
-  },
-  termsText: {
-    fontSize: scaleWidth(12),
-    textAlign: 'center',
-    lineHeight: scaleHeight(18),
-  },
-  termsLink: {
-    fontWeight: '600',
-    textDecorationLine: 'underline',
-  },
+ 
 });
 
 export default Auth;
