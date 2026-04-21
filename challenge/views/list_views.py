@@ -6,7 +6,6 @@ from challenge.models import Challenge, ChallengeParticipant, ChessSettings, EFo
 from tournament.models import Tournament, TournamentTime, TournamentParticipant
 from game.models import ChessGameProfile, EFootballGameProfile, FreeFireGameProfile, Game, MLBBGameProfile, PlayerGameProfile, PubgGameProfile
 from user.models import Block
-from enhancer.models import get_user_enhancer_data
 from django.utils import timezone
 from django.db.models import Count, Q
 from datetime import timedelta
@@ -133,24 +132,7 @@ def _creator_info_for_challenge(challenge: Challenge, request):
         "profile_picture": profile_picture,
     }
     
-    # Get enhancer data using utility function
-    enhancer_data = get_user_enhancer_data(user)
-    base_info.update({
-        # Ownership status (user owns these enhancers)
-        "have_pro_tag": enhancer_data['have_pro_tag'],
-        "have_hacker_tag": enhancer_data['have_hacker_tag'],
-        "have_exposer": enhancer_data['have_exposer'],
-        
-        # Active status (currently displayed tags)
-        "active_pro_tag": enhancer_data['active_pro_tag'],
-        "active_hacker_tag": enhancer_data['active_hacker_tag'],
-        "active_exposer": enhancer_data['active_exposer'],
-        
-        # Legacy and summary fields
-        "active_tags": enhancer_data['active_tags'],
-        "has_any_enhancer": enhancer_data['has_any_enhancer'],
-        "has_active_enhancer": enhancer_data['has_active_enhancer']
-    })
+
     
     try:
         player_profile = PlayerGameProfile.objects.get(user=user, game=challenge.game)

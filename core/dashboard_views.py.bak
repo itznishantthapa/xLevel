@@ -21,7 +21,6 @@ from challenge.models import Challenge, ChallengeParticipant
 from earning.models import Earning
 from result.models import Result
 from report.models import Report
-from store.models import TopupRequest
 from transaction.models import Transaction
 from user.models import CustomUser
 from notification.models import Notification

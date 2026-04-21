@@ -1,12 +1,10 @@
 from django.urls import path
-from .views import signup, login, update_profile, google_auth, get_user, refresh_token
+from .views import update_profile, google_auth, get_user, refresh_token
 from .views.auth_views import apple_auth
 from .views.auth_views import delete_account, update_wallet_from_ads
 from .views.user_views import leaderboards_user_on_loads, block_user, unblock_user, get_blocked_users
 
 urlpatterns = [
-    path('signup/', signup, name='signup'),
-    path('login/', login, name='login'),
     path('update-profile/', update_profile, name='update_profile'),
     path('google/auth/', google_auth, name='google_auth'),
     path('apple/auth/', apple_auth, name='apple_auth'),

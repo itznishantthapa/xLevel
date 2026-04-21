@@ -73,16 +73,13 @@ INSTALLED_APPS = [
     'social',
     'result',
     'access',
-    'enhancer',
     'earning',
     'info',  # Admin Activity Logs
     'storages',
     'guide',
     'utils',
     'report',
-    'store',
     'tournament',
-    'buysell',  # Buy/Sell Game Accounts
 ]
 
 # Custom user model

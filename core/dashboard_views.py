@@ -21,8 +21,6 @@ from challenge.models import Challenge, ChallengeParticipant
 from earning.models import Earning
 from result.models import Result
 from report.models import Report
-from store.models import TopupRequest
-from buysell.models import GameAccount
 from tournament.models import Tournament
 from transaction.models import Transaction
 from user.models import CustomUser
@@ -224,8 +222,6 @@ def admin_dashboard(request):
         'pending': Transaction.objects.filter(status='pending').count(),
         'today': Transaction.objects.filter(created_at__gte=today_start).count(),
         'pending_verification': Transaction.objects.filter(status='pending').count(),
-        'pending_topups': TopupRequest.objects.filter(status='pending').count(),
-        'topups_today': TopupRequest.objects.filter(created_at__gte=today_start).count(),
     }
     
     # User Stats
@@ -361,35 +357,7 @@ def admin_dashboard(request):
         })
 
     # Pending store topup orders
-    urgent_topups = TopupRequest.objects.filter(
-        status='pending'
-    ).select_related('user', 'product').order_by('created_at')[:3]
-
-    for order in urgent_topups:
-        urgent_items.append({
-            'type': 'Store Topup',
-            'title': f"{order.product.label if order.product else 'eFootball Item'} - {order.user.full_name}",
-            'time': order.created_at,
-            'url': f"{reverse('admin:store_topuprequest_changelist')}?status__exact=pending",
-            'priority': 'store',
-            'icon': '🛒'
-        })
     
-    # Pending game account purchases
-    urgent_game_accounts = GameAccount.objects.filter(
-        status='pending', buyer__isnull=False
-    ).select_related('buyer').order_by('requested_at')[:3]
-
-    for ga in urgent_game_accounts:
-        urgent_items.append({
-            'type': 'Account Purchase',
-            'title': f"{ga.get_account_type_display()} Account - {ga.buyer.full_name}",
-            'time': ga.requested_at or ga.created_at,
-            'url': f"{reverse('admin:buysell_gameaccount_changelist')}?status__exact=pending",
-            'priority': 'buysell',
-            'icon': '🎮'
-        })
-
     # Sort by time and limit to 5
     urgent_items.sort(key=lambda x: x['time'], reverse=True)
     urgent_items = urgent_items[:5]
@@ -427,14 +395,6 @@ def admin_dashboard(request):
             'icon': 'credit_card',
             'icon_class': 'accent-teal',
             'count': transaction_stats['pending_verification']
-        },
-        {
-            'title': 'Pending Topups',
-            'description': 'Complete/reject store orders',
-            'url': f"{reverse('admin:store_topuprequest_changelist')}?status__exact=pending",
-            'icon': 'diamond_shine',
-            'icon_class': 'accent-sky',
-            'count': TopupRequest.objects.filter(status='pending').count()
         },
         {
             'title': 'Game Issue Reports',
@@ -1461,10 +1421,6 @@ def user_stats_page(request):
                     user=user
                 ).select_related('processed_by').order_by('-created_at')
 
-                raw_topups = TopupRequest.objects.filter(
-                    user=user
-                ).select_related('product', 'processed_by').order_by('-created_at')
-
                 unified_transactions = []
                 for t in raw_transactions:
                     unified_transactions.append({
@@ -1473,18 +1429,6 @@ def user_stats_page(request):
                         'type': t.type,
                         'label': None,
                         'amount': t.amount,
-                        'status': t.status,
-                        'processed_by': t.processed_by,
-                        'admin_notes': t.admin_notes,
-                        'created_at': t.created_at,
-                    })
-                for t in raw_topups:
-                    unified_transactions.append({
-                        'source': 'store',
-                        'id': t.id,
-                        'type': 'store',
-                        'label': t.product.label if t.product else 'eFootball Item',
-                        'amount': t.points_deducted,
                         'status': t.status,
                         'processed_by': t.processed_by,
                         'admin_notes': t.admin_notes,

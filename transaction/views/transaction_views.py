@@ -345,9 +345,6 @@ def user_transaction_on_loads(request):
         offset = int(request.GET.get("offset", 0))
         limit = int(request.GET.get("limit", 10))
 
-        from store.models import TopupRequest
-        from buysell.models import GameAccount
-
         # --- Transactions (pointsin / pointsout) ---
         transactions = Transaction.objects.filter(
             user=request.user
@@ -370,64 +367,8 @@ def user_transaction_on_loads(request):
             for t in transactions
         ]
 
-        # --- Store top-up orders ---
-        topups = TopupRequest.objects.filter(
-            user=request.user
-        ).select_related('product', 'processed_by').order_by("-created_at")
-
-        store_list = [
-            {
-                "id": f"SR{o.id}",
-                "type": "store",
-                "label": o.product.label if o.product else "eFootball Item",
-                "amount": o.points_deducted,
-                "status": o.status,
-                "transaction_code": None,
-                "admin_notes": o.admin_notes,
-                "processed_by": o.processed_by.full_name if o.processed_by else None,
-                "processed_at": o.processed_at,
-                "created_at": o.created_at,
-                "updated_at": o.updated_at,
-            }
-            for o in topups
-        ]
-
-        # --- Game Account purchases (as buyer) and sales (as seller) ---
-        # Get accounts where user is the buyer
-        bought_accounts = GameAccount.objects.filter(
-            buyer=request.user
-        ).select_related('processed_by').order_by("-created_at")
-        
-        # Get accounts where user is the seller
-        sold_accounts = GameAccount.objects.filter(
-            seller=request.user
-        ).select_related('processed_by').order_by("-created_at")
-        
-        # Combine both queries
-        game_accounts = bought_accounts | sold_accounts
-
-        ga_list = [
-            {
-                "id": f"GA{ga.id}",
-                "type": "store",
-                "label": f"{ga.get_account_type_display()} Account",
-                "amount": float(ga.price),
-                "status": ga.status,
-                "transaction_code": None,
-                "admin_notes": ga.admin_notes,
-                "processed_by": ga.processed_by.full_name if ga.processed_by else None,
-                "processed_at": ga.processed_at,
-                "created_at": ga.requested_at or ga.created_at,
-                "updated_at": ga.updated_at,
-            }
-            for ga in game_accounts.distinct().order_by("-created_at")
-        ]
-
-        # Merge and sort by created_at descending
-        combined = sorted(tx_list + store_list + ga_list, key=lambda x: x["created_at"], reverse=True)
-
-        total_count = len(combined)
-        page = combined[offset: offset + limit]
+        total_count = len(tx_list)
+        page = tx_list[offset: offset + limit]
         has_more = offset + limit < total_count
 
         return Response({"pointsinout": page, "has_more": has_more})

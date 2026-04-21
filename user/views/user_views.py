@@ -3,7 +3,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from user.models import CustomUser, Block
-from enhancer.models import get_user_enhancer_data
 from django.db import transaction
 from PIL import Image
 from io import BytesIO
@@ -16,9 +15,6 @@ logger = logging.getLogger(__name__)
 def _get_user_data(user, request):
     profile_picture_url = request.build_absolute_uri(user.profile_picture.url) if getattr(user, "profile_picture", None) else None
     
-    # Get enhancer data using utility function
-    enhancer_data = get_user_enhancer_data(user)
-    
     return {
         "id": user.id,
         "email": user.email,
@@ -29,25 +25,6 @@ def _get_user_data(user, request):
         "user_access_code": user.user_access_code,
         "ads_count": user.ads_count,
         "created_at": user.created_at.isoformat() if getattr(user, "created_at", None) else None,
-        "enhancer": {
-            # Ownership status (user owns these enhancers)
-            "have_pro_tag": enhancer_data['have_pro_tag'],
-            "have_hacker_tag": enhancer_data['have_hacker_tag'],
-            "have_exposer": enhancer_data['have_exposer'],
-            
-            # Active status (currently displayed tags)
-            "active_pro_tag": enhancer_data['active_pro_tag'],
-            "active_hacker_tag": enhancer_data['active_hacker_tag'],
-            "active_exposer": enhancer_data['active_exposer'],
-            
-            # Legacy and summary fields
-            "active_tags": enhancer_data['active_tags'],
-            "has_any_enhancer": enhancer_data['has_any_enhancer'],
-            "has_active_enhancer": enhancer_data['has_active_enhancer'],
-            
-            # Detailed owned enhancers information
-            "owned_enhancers": enhancer_data['owned_enhancers']
-        }
     }
 
 

@@ -75,99 +75,6 @@ def generate_unique_access_code():
             return code
 
 
-# Purpose: Register a new user account.
-# Input (JSON):
-#   - email (string, required)
-#   - password (string, required)
-#   - full_name (string, required)
-# Output (JSON):
-#   - message (string)
-#   - tokens (object: {refresh, access})
-#   - user (object: id, email, full_name, role, wallet_balance, profile_picture, created_at)
-@api_view(["POST"])
-def signup(request):
-    try:
-        email = request.data.get("email")
-        password = request.data.get("password")
-        full_name = request.data.get("full_name")
-
-        missing = [field for field in ["email", "password", "full_name"] if not request.data.get(field)]
-        if missing:
-            return Response({
-                "message": f"Missing required field(s): {', '.join(missing)}"
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-        with transaction.atomic():
-            user = CustomUser.objects.create_user(email=email, full_name=full_name, password=password)
-
-        tokens = get_tokens_for_user(user)
-        profile_picture_url = request.build_absolute_uri(user.profile_picture.url) if user.profile_picture else None
-        return Response({
-            "message": "User created successfully",
-            "tokens": tokens,
-            "user": {
-                "id": user.id,
-                "email": user.email,
-                "full_name": user.full_name,
-                "role": user.role,
-                "wallet_balance": user.wallet_balance,
-                "ads_count": user.ads_count,
-                "user_access_code": user.user_access_code,
-                "profile_picture": profile_picture_url,
-                "created_at": user.created_at.isoformat() if user.created_at else None,
-            },
-        }, status=status.HTTP_201_CREATED)
-    except IntegrityError:
-        logger.exception("Integrity error during signup")
-        return Response({"message": "A user with this email already exists."}, status=status.HTTP_400_BAD_REQUEST)
-    except Exception:
-        logger.exception("Unexpected error during signup")
-        return Response({"message": "Could not create user."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-# Purpose: Authenticate an existing user with email and password.
-# Input (JSON):
-#   - email (string, required)
-#   - password (string, required)
-# Output (JSON):
-#   - message (string)
-#   - tokens (object: {refresh, access})
-#   - user (object: id, email, full_name, role, wallet_balance, profile_picture, created_at)
-@api_view(["POST"])
-def login(request):
-    try:
-        email = request.data.get("email")
-        password = request.data.get("password")
-
-        if not email or not password:
-            return Response({"message": "Email and password are required."}, status=status.HTTP_400_BAD_REQUEST)
-
-        user = authenticate(request=request, username=email, password=password)
-        if not user:
-            return Response({"message": "Invalid email or password"}, status=status.HTTP_400_BAD_REQUEST)
-
-        tokens = get_tokens_for_user(user)
-        profile_picture_url = request.build_absolute_uri(user.profile_picture.url) if user.profile_picture else None
-        return Response({
-            "message": "Login successful",
-            "tokens": tokens,
-            "user": {
-                "id": user.id,
-                "email": user.email,
-                "full_name": user.full_name,
-                "role": user.role,
-                "wallet_balance": user.wallet_balance,
-                "ads_count": user.ads_count,
-                "user_access_code": user.user_access_code,
-                "profile_picture": profile_picture_url,
-                "created_at": user.created_at.isoformat() if user.created_at else None,
-            },
-        }, status=status.HTTP_200_OK)
-    except Exception:
-        logger.exception("Unexpected error during login")
-        return Response({"message": "Could not log in."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
 # Purpose: Authenticate or create a user using a Google ID token.
 # Input (JSON):
 #   - id_token (string, required)
@@ -178,11 +85,10 @@ def login(request):
 @api_view(["POST"])
 def google_auth(request):
     try:
-        print("Google Auth Request:", request.data)
         token = request.data.get("id_token")
         if not token:
             return Response({"message": "Token is required"}, status=status.HTTP_400_BAD_REQUEST)
-        print('Here 1')
+
         user_info = verify_google_token(token)
         if not user_info:
             return Response({"message": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
@@ -194,18 +100,15 @@ def google_auth(request):
                 "full_name": user_info.get("full_name") or user_info.get("name") or "",
             },
         )
-        print('Here 2')
 
         # Block suspended users
         if user.is_negative:
             return Response({"message": "Your account has been banned."}, status=status.HTTP_403_FORBIDDEN)
 
-
-        print('Here 3')
         tokens = get_tokens_for_user(user)
         profile_picture_url = request.build_absolute_uri(user.profile_picture.url) if user.profile_picture else None
         return Response({
-            "message": "User created successfully" if created else "Login successful",
+            "message": "User created with Google ✅" if created else "User logged in with Google ✅",
             "tokens": tokens,
             "user": {
                 "id": user.id,
@@ -273,7 +176,7 @@ def apple_auth(request):
         tokens = get_tokens_for_user(user)
         profile_picture_url = request.build_absolute_uri(user.profile_picture.url) if user.profile_picture else None
         return Response({
-            "message": "User created successfully" if created else "Login successful",
+            "message": "User created with Apple ✅" if created else "User logged in with Apple ✅",
             "tokens": tokens,
             "user": {
                 "id": user.id,

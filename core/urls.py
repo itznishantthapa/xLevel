@@ -34,7 +34,6 @@ from .dashboard_views import (
 import access.admin
 import challenge.admin
 import earning.admin
-import enhancer.admin
 import game.admin
 import guide.admin
 import notification.admin
@@ -89,11 +88,8 @@ urlpatterns = [
     path('api/results/', include('result.urls')),
     path('api/reports/', include('report.urls')),
     path('api/access/', include('access.urls')),
-    path('api/enhancer/', include('enhancer.urls')),
     path('api/guide/', include('guide.urls')),
     path('api/utils/', include('utils.urls')),
-    path('api/store/', include('store.urls')),
-    path('api/buysell/', include('buysell.urls')),
     path('', include('info.urls')),  # Legal pages: policy, terms
 ]
 

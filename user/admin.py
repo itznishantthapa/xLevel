@@ -81,7 +81,7 @@ class CustomUserAdmin(LoggingModelAdmin, UserAdmin):
     
     list_display = [
         'id', 'profile_picture_preview', 'email', 'full_name',
-        'formatted_wallet_balance', 'ads_count', 'enhancer_tags',
+        'formatted_wallet_balance', 'ads_count',
         'is_negative', 'created_challenges_count', 'won_challenges_count', 'created_at'
     ]
     
@@ -482,28 +482,6 @@ class CustomUserAdmin(LoggingModelAdmin, UserAdmin):
         return count
     won_challenges_count.short_description = 'Won Challenges'
     
-    def enhancer_tags(self, obj):
-        """Display active enhancer tags in list view"""
-        try:
-            from enhancer.models import get_user_enhancer_data
-            
-            enhancer_data = get_user_enhancer_data(obj)
-            tags = []
-            
-            if enhancer_data.get('active_pro_tag'):
-                tags.append('<span style="background: #007bff; color: white; padding: 2px 6px; border-radius: 8px; font-size: 10px;">PRO</span>')
-            if enhancer_data.get('active_hacker_tag'):
-                tags.append('<span style="background: #28a745; color: white; padding: 2px 6px; border-radius: 8px; font-size: 10px;">HACKER</span>')
-            if enhancer_data.get('active_exposer'):
-                tags.append('<span style="background: #dc3545; color: white; padding: 2px 6px; border-radius: 8px; font-size: 10px;">EXPOSER</span>')
-            
-            if tags:
-                return format_html(' '.join(tags))
-            return format_html('<span style="color: #6c757d; font-size: 11px;">No Tags</span>')
-            
-        except Exception as e:
-            return format_html('<span style="color: #dc3545;">Error</span>')
-    enhancer_tags.short_description = 'Tags'
     
     def user_statistics(self, obj):
         """Comprehensive user statistics"""
@@ -649,89 +627,6 @@ class CustomUserAdmin(LoggingModelAdmin, UserAdmin):
         except Exception as e:
             return f"Error loading challenge data: {str(e)}"
     challenge_summary.short_description = 'Challenge Activity'
-    
-    def enhancer_summary(self, obj):
-        """Display user's enhancer ownership and status"""
-        try:
-            from enhancer.models import get_user_enhancer_data
-            
-            # Get enhancer data using the utility function
-            enhancer_data = get_user_enhancer_data(obj)
-            
-            html = '<div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin: 10px 0;">'
-            html += '<h4 style="margin-top: 0; color: #155724;">✨ Enhancer Status & Ownership</h4>'
-            
-            # Show current active enhancers
-            active_enhancers = []
-            if enhancer_data.get('active_pro_tag'):
-                active_enhancers.append('<span style="background: #007bff; color: white; padding: 3px 8px; border-radius: 12px; font-size: 12px;">🏆 PRO</span>')
-            if enhancer_data.get('active_hacker_tag'):
-                active_enhancers.append('<span style="background: #28a745; color: white; padding: 3px 8px; border-radius: 12px; font-size: 12px;">💻 HACKER</span>')
-            if enhancer_data.get('active_exposer'):
-                active_enhancers.append('<span style="background: #dc3545; color: white; padding: 3px 8px; border-radius: 12px; font-size: 12px;">🔍 EXPOSER</span>')
-            
-            if active_enhancers:
-                html += f'<div style="margin-bottom: 15px;"><strong>🎯 Currently Active Tags:</strong><br>{" ".join(active_enhancers)}</div>'
-            else:
-                html += '<div style="margin-bottom: 15px;"><strong>🎯 Currently Active Tags:</strong> <span style="color: #6c757d;">None</span></div>'
-            
-            # Show ownership status
-            ownership_status = []
-            if enhancer_data.get('have_pro_tag'):
-                status = '✅ OWNED' if enhancer_data.get('active_pro_tag') else '⏸️ OWNED (Inactive)'
-                ownership_status.append(f'🏆 Pro Tag: <span style="color: {"#28a745" if enhancer_data.get("active_pro_tag") else "#ffc107"};">{status}</span>')
-            else:
-                ownership_status.append('🏆 Pro Tag: <span style="color: #dc3545;">❌ Not Owned</span>')
-                
-            if enhancer_data.get('have_hacker_tag'):
-                status = '✅ OWNED' if enhancer_data.get('active_hacker_tag') else '⏸️ OWNED (Inactive)'
-                ownership_status.append(f'💻 Hacker Tag: <span style="color: {"#28a745" if enhancer_data.get("active_hacker_tag") else "#ffc107"};">{status}</span>')
-            else:
-                ownership_status.append('💻 Hacker Tag: <span style="color: #dc3545;">❌ Not Owned</span>')
-                
-            if enhancer_data.get('have_exposer'):
-                status = '✅ OWNED' if enhancer_data.get('active_exposer') else '⏸️ OWNED (Inactive)'
-                ownership_status.append(f'🔍 Exposer: <span style="color: {"#28a745" if enhancer_data.get("active_exposer") else "#ffc107"};">{status}</span>')
-            else:
-                ownership_status.append('🔍 Exposer: <span style="color: #dc3545;">❌ Not Owned</span>')
-            
-            html += '<div style="margin-bottom: 15px;"><strong>📋 Ownership Status:</strong><br>'
-            for status in ownership_status:
-                html += f'• {status}<br>'
-            html += '</div>'
-            
-            # Show detailed purchase history
-            owned_enhancers = enhancer_data.get('owned_enhancers', [])
-            if owned_enhancers:
-                html += '<div style="border-top: 1px solid #c3e6cb; padding-top: 15px; margin-top: 15px;">'
-                html += '<strong>📊 Purchase History:</strong><br>'
-                html += '<div style="max-height: 200px; overflow-y: auto; margin-top: 10px;">'
-                
-                for enhancer in owned_enhancers:
-                    status_badge = '🟢 Active' if enhancer['is_active'] else '🔴 Inactive'
-                    status_color = '#28a745' if enhancer['is_active'] else '#dc3545'
-                    
-                    html += f'''
-                        <div style="background: white; padding: 8px; margin: 5px 0; border-radius: 4px; border-left: 4px solid {status_color};">
-                            <strong>{enhancer["name"]}</strong> ({enhancer["type"].replace("_", " ").title()})<br>
-                            <small>
-                                Purchased: {enhancer["purchased_at"].strftime('%Y-%m-%d %H:%M')} | 
-                                Price: ${enhancer["purchase_price"]} | 
-                                Status: {status_badge}
-                            </small>
-                        </div>
-                    '''
-                html += '</div></div>'
-            else:
-                html += '<div style="border-top: 1px solid #c3e6cb; padding-top: 15px; margin-top: 15px;">'
-                html += '<strong>📊 Purchase History:</strong> <span style="color: #6c757d;">No enhancers purchased</span></div>'
-            
-            html += '</div>'
-            return mark_safe(html)
-            
-        except Exception as e:
-            return f"Error loading enhancer data: {str(e)}"
-    enhancer_summary.short_description = 'Enhancer Status'
 
 
 @admin.register(Block)
