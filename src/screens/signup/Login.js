@@ -227,11 +227,11 @@ const Login = () => {
             <View style={styles.logoContainer}>
               <View style={styles.logoWrapper}>
                 <Image
-                  source={require('../../assets/level.png')}
+                  source={require('../../assets/leveloutlined.png')}
                   style={styles.logo}
                   resizeMode="contain"
                 />
-                <Text style={[styles.tagline, { color: colors.success }]}>Level eSports</Text>
+                <Text style={[styles.tagline, { color: colors.success }]}>Level eSports - Your gaming companion.</Text>
                 <View style={[styles.taglineUnderline, { backgroundColor: colors.success }]} />
               </View>
             </View>
@@ -386,8 +386,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logo: {
-    width: scaleWidth(180),
-    height: scaleHeight(80),
+    width: scaleWidth(250),
+    height: scaleHeight(150),
     // marginBottom: scaleHeight(8),
   },
   tagline: {

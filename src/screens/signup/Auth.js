@@ -224,12 +224,12 @@ const Auth = () => {
         <View style={styles.logoContainer}>
           <View style={styles.logoWrapper}>
             <Image
-              source={require('../../assets/level.png')}
+              source={require('../../assets/leveloutlined.png')}
               style={styles.logo}
               resizeMode="contain"
             />
             <Text style={[styles.tagline, { color: colors.success }]}>
-              Level eSports
+              Level eSports - Your gaming companion.
             </Text>
             <View style={[styles.taglineUnderline, { backgroundColor: colors.success }]} />
           </View>
@@ -357,8 +357,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logo: {
-    width: scaleWidth(180),
-    height: scaleHeight(80),
+    width: scaleWidth(250),
+    height: scaleHeight(150),
   },
   tagline: {
     fontSize: scaleWidth(11),
