@@ -2,7 +2,18 @@ import { StyleSheet, Text, View, FlatList, ActivityIndicator, StatusBar, Pressab
 import React, { useCallback, useEffect, useEffectEvent, useState } from 'react'
 import { useThemeStore } from '../../../store/themeStore'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { MaterialIcons, FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
+import { AppIcon, PointsIcon } from '../../../components/common/AppIcon'
+import {
+  CheckmarkCircle01Icon,
+  Clock01Icon,
+  Cancel01Icon,
+  ReloadIcon,
+  CircleArrowDown01Icon,
+  CircleArrowUp01Icon,
+  Store01Icon,
+  Search01Icon,
+} from '@hugeicons/core-free-icons'
+import { iconSize } from '../../../theme/typography'
 import { usePointsHistory } from '../../../queries/usePointsHistory'
 import Loader from '../../../component/Loader'
 import AppHeader from '../header/AppHeader'
@@ -85,18 +96,18 @@ const GamePoints = () => {
   const getStatusIcon = (status) => {
     switch (status) {
       case 'success':
-        return <Ionicons name="checkmark-circle" size={18} color={colors.success} />
+        return <AppIcon icon={CheckmarkCircle01Icon} size={iconSize.sm + 2} color={colors.success} />
       case 'pending':
-        return <MaterialIcons name="pending-actions" size={18} color={colors.pending} />
+        return <AppIcon icon={Clock01Icon} size={iconSize.sm + 2} color={colors.pending} />
       case 'rejected':
-        return <MaterialIcons name="cancel" size={18} color={colors.rejected} />
+        return <AppIcon icon={Cancel01Icon} size={iconSize.sm + 2} color={colors.rejected} />
       case 'processing':
-        return <MaterialIcons name="sync" size={18} color={colors.processing} />
+        return <AppIcon icon={ReloadIcon} size={iconSize.sm + 2} color={colors.processing} />
       case 'completed':
       case 'sold':
-        return <Ionicons name="checkmark-circle" size={18} color={colors.completed} />
+        return <AppIcon icon={CheckmarkCircle01Icon} size={iconSize.sm + 2} color={colors.completed} />
       case 'reviewing':
-        return <Ionicons name="search-circle-sharp" size={25} color={colors.reviewing} />
+        return <AppIcon icon={Search01Icon} size={iconSize.lg + 1} color={colors.reviewing} />
       default:
         return null
     }
@@ -108,11 +119,11 @@ const GamePoints = () => {
   const getTypeIcon = (type) => {
     switch (type) {
       case 'pointsin':
-        return <FontAwesome name="arrow-circle-down" size={18} color={colors.pointsIn} />
+        return <AppIcon icon={CircleArrowDown01Icon} size={iconSize.sm + 2} color={colors.pointsIn} />
       case 'pointsout':
-        return <FontAwesome name="arrow-circle-up" size={18} color={colors.pointsOut} />
+        return <AppIcon icon={CircleArrowUp01Icon} size={iconSize.sm + 2} color={colors.pointsOut} />
       case 'store':
-        return <Ionicons name="storefront-outline" size={18} color="#6366F1" />
+        return <AppIcon icon={Store01Icon} size={iconSize.sm + 2} color="#6366F1" />
       default:
         return null
     }
@@ -266,7 +277,7 @@ const GamePoints = () => {
       {/* Always show content during manual refresh, otherwise only when not loading */}
       {!isLoading && !isManualRefreshing && validPointsInOut.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <MaterialCommunityIcons  name="star-four-points-outline" size={64} color={colors.subText} />
+          <PointsIcon size={64} color={colors.subText} />
           <Text style={[styles.emptyText, { color: colors.text }]}>Points details unavailable.</Text>
         </View>
       ) : (

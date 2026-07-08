@@ -1,12 +1,20 @@
-import { View, Text, StyleSheet, Pressable, Image, Dimensions } from "react-native"
-import { Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons"
+import { View, Text, StyleSheet, Pressable, Dimensions } from "react-native"
+import { HugeiconsIcon } from "@hugeicons/react-native"
+import {
+  GamepadIcon,
+  UserGroupIcon,
+  Calendar03Icon,
+  Clock01Icon,
+  Copy01Icon,
+} from "@hugeicons/core-free-icons"
+import AppIcon from "../../components/common/AppIcon"
+import { iconSize } from "../../theme/typography"
 import { useThemeStore } from "../../store/themeStore"
 import { useAuthStore } from "../../store/authStore"
 import Clipboard from "@react-native-clipboard/clipboard"
 import Toast from "react-native-simple-toast"
 import StampID from "../matchcard/StampID"
 import SlotStamp from "../matchcard/SlotStamp"
-import { scaleHeight, scaleWidth } from "../../utils/scaling"
 
 const TournamentCard = ({ game }) => {
   const { user } = useAuthStore()
@@ -60,7 +68,7 @@ const TournamentCard = ({ game }) => {
               <Text style={[styles.roomInfoText, { color: isLight ? '#333333' : '#dadada' }]} numberOfLines={1}>
                 {roomId}
               </Text>
-              <MaterialIcons name="content-copy" size={14} color={isLight ? '#666666' : '#dadada'} />
+              <AppIcon icon={Copy01Icon} size={iconSize.sm} color={isLight ? '#666666' : '#dadada'} />
             </View>
           </Pressable>
 
@@ -75,7 +83,7 @@ const TournamentCard = ({ game }) => {
               <Text style={[styles.roomInfoText, { color: isLight ? '#333333' : '#dadada' }]} numberOfLines={1}>
                 {roomPass}
               </Text>
-              <MaterialIcons name="content-copy" size={14} color={isLight ? '#666666' : '#dadada'} />
+              <AppIcon icon={Copy01Icon} size={iconSize.sm} color={isLight ? '#666666' : '#dadada'} />
             </View>
           </Pressable>
         </View>
@@ -116,7 +124,7 @@ const TournamentCard = ({ game }) => {
                 shadowRadius: 4.5,
               }
             ]}>
-              <Ionicons name="game-controller" size={scaleWidth(14)} color={isLight ? '#ffffff' : '#6d8cff'} />
+              <HugeiconsIcon icon={GamepadIcon} size={iconSize.sm} color={isLight ? '#ffffff' : '#6d8cff'} strokeWidth={2} />
             </View>
             <Text style={[styles.pillText, !isLight && styles.pillTextDark]}>{game.game?.name}</Text>
           </View>
@@ -133,7 +141,7 @@ const TournamentCard = ({ game }) => {
                 shadowRadius: 4.5,
               }
             ]}>
-              <Ionicons name="people" size={scaleWidth(14)} color={isLight ? '#ffffff' : '#20c997'} />
+              <HugeiconsIcon icon={UserGroupIcon} size={iconSize.sm} color={isLight ? '#ffffff' : '#20c997'} strokeWidth={2} />
             </View>
             <Text style={[styles.pillText, !isLight && styles.pillTextDark]}>{game.game?.game_mode}</Text>
           </View>
@@ -236,7 +244,7 @@ const TournamentCard = ({ game }) => {
                   styles.dateDisplay,
                   { backgroundColor: isLight ? '#e9ecef' : 'rgba(255, 255, 255, 0.1)' }
                 ]}>
-                  <Ionicons name="calendar-outline" size={14} color={isLight ? '#666666' : '#cccccc'} />
+                  <HugeiconsIcon icon={Calendar03Icon} size={iconSize.sm} color={isLight ? '#666666' : '#cccccc'} strokeWidth={2} />
                   <Text style={[styles.dateText, !isLight && styles.dateTextDark]}>
                     {new Date(game.game_date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
                   </Text>
@@ -246,7 +254,7 @@ const TournamentCard = ({ game }) => {
                 styles.timeSlotDisplay,
                 { backgroundColor: isLight ? '#e9ecef' : 'rgba(255, 255, 255, 0.1)' }
               ]}>
-                <Ionicons name="time-outline" size={14} color={isLight ? '#666666' : '#cccccc'} />
+                <HugeiconsIcon icon={Clock01Icon} size={iconSize.sm} color={isLight ? '#666666' : '#cccccc'} strokeWidth={2} />
                 <Text style={[styles.timeSlotText, !isLight && styles.timeSlotTextDark]}>
                   {game.registered_time_slot.time}
                 </Text>
@@ -362,7 +370,7 @@ const styles = StyleSheet.create({
   stampContainerSmall: {
     width: '100%',
     alignItems: 'flex-end',
-    marginTop: scaleHeight(6),
+    marginTop: 6,
   },
   prizeSection: {
     backgroundColor: "#f8f9fa",

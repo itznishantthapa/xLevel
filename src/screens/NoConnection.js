@@ -3,7 +3,9 @@
 import React, { useState } from "react"
 import { ActivityIndicator, Image, Pressable, StatusBar, StyleSheet, Text, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
-import { MaterialIcons } from "@expo/vector-icons"
+import { AppIcon } from "../components/common/AppIcon"
+import { RefreshIcon } from "@hugeicons/core-free-icons"
+import { iconSize } from "../theme/typography"
 import { useThemeStore } from "../store/themeStore"
 
 /**
@@ -65,7 +67,7 @@ const NoConnection = ({ onRetry }) => {
           {isRetrying ? (
             <ActivityIndicator size="small" color={themeStyles.buttonText} />
           ) : (
-            <MaterialIcons name="refresh" size={16} color={themeStyles.buttonText} />
+            <AppIcon icon={RefreshIcon} size={iconSize.sm} color={themeStyles.buttonText} />
           )}
           <Text style={[styles.retryButtonText, { color: themeStyles.buttonText }]}>
             {isRetrying ? "Retrying..." : "Try Again"}

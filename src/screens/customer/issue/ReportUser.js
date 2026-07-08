@@ -1,6 +1,8 @@
 import { StyleSheet, Text, View, Pressable, TextInput, Alert, Keyboard, Platform } from 'react-native'
 import React, { useState, useRef, useEffect } from 'react'
-import { FontAwesome5, MaterialIcons } from '@expo/vector-icons'
+import { AppIcon } from '../../../components/common/AppIcon'
+import { CheckIcon, AlertCircleIcon, InformationCircleIcon } from '@hugeicons/core-free-icons'
+import { iconSize } from '../../../theme/typography'
 import { useThemeStore } from '../../../store/themeStore'
 import { CreateGameLayout } from '../../../component/customer/createGame'
 import { useAuthStore } from '../../../store/authStore'
@@ -143,11 +145,7 @@ const ReportUser = ({ route }) => {
                         }
                     ]}>
                         {isSelected && (
-                            <MaterialIcons
-                                name="check"
-                                size={14}
-                                color={isLight ? "#ffffff" : "#000000"}
-                            />
+                            <AppIcon icon={CheckIcon} size={iconSize.xs} color={isLight ? "#ffffff" : "#000000"} />
                         )}
                     </View>
                     <Text style={[styles.reasonText, { color: colors.text }]}>
@@ -172,7 +170,7 @@ const ReportUser = ({ route }) => {
             <View style={styles.container}>
                 {/* Warning Header */}
                 <View style={[styles.warningContainer, { backgroundColor: colors.cardBackground }]}>
-                   <FontAwesome5 name="exclamation-circle" size={22} color={isLight ? "#000000" : "#fff"} />
+                   <AppIcon icon={AlertCircleIcon} size={22} color={isLight ? "#000000" : "#fff"} />
                     <View style={styles.warningTextContainer}>
                         <Text style={[styles.warningTitle, { color: colors.text }]}>
                             Report User Violation
@@ -235,7 +233,7 @@ const ReportUser = ({ route }) => {
 
                 {/* Additional Info */}
                 <View style={[styles.infoContainer, { backgroundColor: colors.cardBackground }]}>
-                    <MaterialIcons name="info" size={18} color={colors.textSecondary} />
+                    <AppIcon icon={InformationCircleIcon} size={iconSize.sm} color={colors.textSecondary} />
                     <Text style={[styles.infoText, { color: colors.textSecondary }]}>
                         All reports are reviewed by our moderation team. False reports may result in action against your account.
                     </Text>

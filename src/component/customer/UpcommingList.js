@@ -1,6 +1,14 @@
-import { View, Text, StyleSheet, Pressable, Image, Dimensions, ActivityIndicator, ScrollView } from "react-native"
+import { View, Text, StyleSheet, Pressable, Dimensions, ActivityIndicator, ScrollView } from "react-native"
 import Clipboard from "@react-native-clipboard/clipboard"
-import { FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons"
+import { HugeiconsIcon } from "@hugeicons/react-native"
+import {
+  GamepadIcon,
+  UserGroupIcon,
+  Calendar03Icon,
+  CheckmarkCircle01Icon,
+  Clock01Icon,
+  Robot01Icon,
+} from "@hugeicons/core-free-icons"
 import { useNetworkStatus } from "../../hooks/useNetworkStatus"
 
 // Store and Context
@@ -8,8 +16,8 @@ import { useAuthStore } from "../../store/authStore"
 import { useThemeStore } from "../../store/themeStore"
 import { useGameProfiles } from "../../queries/useGameProfiles"
 import { useNavigation } from "@react-navigation/native"
-import { useEffect, useState, useRef } from "react"
-import { scaleHeight, scaleWidth } from "../../utils/scaling"
+import { useState, useRef } from "react"
+import { fontSize, spacing, radius, iconSize } from "../../theme/typography"
 import StampID from "../matchcard/StampID"
 import { ShakeText } from "./animation"
 
@@ -120,7 +128,7 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
                   shadowRadius: 4.5,
                 }
               ]}>
-                <Ionicons name="game-controller" size={scaleWidth(14)} color={isLight ? '#ffffff' : '#6d8cff'} />
+                <HugeiconsIcon icon={GamepadIcon} size={iconSize.sm} color={isLight ? '#ffffff' : '#6d8cff'} strokeWidth={2} />
               </View>
               <Text style={[styles.pillText, !isLight && styles.pillTextDark]}>{game.game?.name}</Text>
             </View>
@@ -137,7 +145,7 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
                   shadowRadius: 4.5,
                 }
               ]}>
-                <Ionicons name="people" size={scaleWidth(14)} color={isLight ? '#ffffff' : '#20c997'} />
+                <HugeiconsIcon icon={UserGroupIcon} size={iconSize.sm} color={isLight ? '#ffffff' : '#20c997'} strokeWidth={2} />
               </View>
               <Text style={[styles.pillText, !isLight && styles.pillTextDark]}>{game.game?.game_mode}</Text>
             </View>
@@ -202,7 +210,7 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
                 styles.dateDisplay,
                 { backgroundColor: isLight ? '#e9ecef' : 'rgba(255, 255, 255, 0.1)' }
               ]}>
-                <Ionicons name="calendar-outline" size={14} color={isLight ? '#666666' : '#cccccc'} />
+                <HugeiconsIcon icon={Calendar03Icon} size={iconSize.sm} color={isLight ? '#666666' : '#cccccc'} strokeWidth={2} />
                 <Text style={[styles.dateText, !isLight && styles.dateTextDark]}>
                   {new Date(game.game_date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
                 </Text>
@@ -286,10 +294,11 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
                 }}
                 disabled={timeSlot.is_full && !timeSlot.user_registered}
               >
-                <Ionicons 
-                  name={timeSlot.user_registered ? "checkmark-circle" : "time-outline"}
-                  size={16} 
-                  color={timeSlot.user_registered ? "#ffffff" : timeSlot.is_full ? "#999999" : (selectedGameTime === timeSlot.id ? (isLight ? "#ffffff" : "#000000") : (isLight ? "#666666" : "#cccccc"))} 
+                <HugeiconsIcon
+                  icon={timeSlot.user_registered ? CheckmarkCircle01Icon : Clock01Icon}
+                  size={iconSize.sm}
+                  color={timeSlot.user_registered ? "#ffffff" : timeSlot.is_full ? "#999999" : (selectedGameTime === timeSlot.id ? (isLight ? "#ffffff" : "#000000") : (isLight ? "#666666" : "#cccccc"))}
+                  strokeWidth={2}
                 />
                 <Text style={[
                   styles.gameTimeText,
@@ -318,7 +327,7 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
               <Text style={[{ fontSize: 12, fontWeight: 'bold' }, !isLight && styles.timeTextDark]}>
                 See You Soon!
               </Text>
-              <MaterialCommunityIcons name="robot-happy-outline" size={16} color={isLight ? "#000000" : "#ffffff"} />
+              <HugeiconsIcon icon={Robot01Icon} size={iconSize.sm} color={isLight ? "#000000" : "#ffffff"} strokeWidth={2} />
             </View>
           </View>
         </View>
@@ -442,18 +451,9 @@ const UpcommingList = ({ games, handleConfirmChallenge }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <View style={styles.headerContent}>
-          {
-            displayGames.length === 0 ? (
-              <Text style={[styles.title, isLight ? { color: "#000000" } : { color: "#EAEAEA" }]}> {'Tournaments'}</Text>
-
-            ) : (
-              <Text style={[styles.title, isLight ? { color: "#000000" } : { color: "#EAEAEA" }]}> {'Official Tournaments'}</Text>
-            )
-
-          }
-          <FontAwesome6 name="fire" size={18} color={isLight? "#000000" : "#ffffff"} />
-        </View>
+        <Text style={[styles.title, isLight ? { color: '#000000' } : { color: '#EAEAEA' }]}>
+          {displayGames.length === 0 ? 'Tournaments' : 'Official Tournaments'}
+        </Text>
       </View>
 
       <View style={styles.listContainer}>
@@ -491,20 +491,19 @@ const styles = StyleSheet.create({
   header: {
     marginTop: 0,
     zIndex: 10,
-    width: "100%",
+    width: '100%',
+    paddingHorizontal: spacing.xl,
+    marginBottom: 10,
   },
   headerContent: {
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    gap: 4,
-    paddingVertical: 8,
-    paddingHorizontal: 15,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    gap: spacing.sm,
   },
   title: {
-    fontSize: 16,
+    fontSize: fontSize.md,
     fontWeight: 'bold',
-
   },
   filterContainer: {
     flexDirection: "row",
@@ -513,9 +512,9 @@ const styles = StyleSheet.create({
 
   // Enhanced Card Styles
   card: {
-    marginHorizontal: 15,
-    marginVertical: 8,
-    borderRadius: scaleWidth(25),
+    marginHorizontal: spacing.xl,
+    marginBottom: spacing.sm,
+    borderRadius: 25,
     backgroundColor: "transparent",
     borderWidth: 1.5,
     borderColor: "#1A1A1A",
@@ -602,7 +601,7 @@ const styles = StyleSheet.create({
   stampContainerSmall: {
     width: '100%',
     alignItems: 'flex-end',
-    marginTop: scaleHeight(6),
+    marginTop: 6,
   },
 
   // Prize Section
@@ -832,7 +831,7 @@ const styles = StyleSheet.create({
 
   listContainer: {
     flex: 1,
-    height: "100%",
+    height: '100%',
   },
 
   // Game Times Section

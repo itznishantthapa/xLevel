@@ -1,7 +1,9 @@
 import { StyleSheet, Text, View, Pressable } from 'react-native'
 import { useThemeStore } from '../../../store/themeStore'
-import { Ionicons } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
+import { AppIcon } from '../../../components/common/AppIcon'
+import { ChevronLeftIcon } from '@hugeicons/core-free-icons'
+import { fontSize, iconSize, spacing } from '../../../theme/typography'
 
 const AppHeader = ({ backButton = false, title }) => {
     const { isLight } = useThemeStore()
@@ -14,7 +16,11 @@ const AppHeader = ({ backButton = false, title }) => {
                 {
                     backButton && (
                         <Pressable onPress={() => navigation.goBack()} style={styles.backButton}>
-                            <Ionicons name="chevron-back-outline" size={24} color={isLight ? "#000" : "#fff"} />
+                            <AppIcon
+                                icon={ChevronLeftIcon}
+                                size={iconSize.lg}
+                                color={isLight ? "#000" : "#fff"}
+                            />
                         </Pressable>
                     )
                 }
@@ -33,19 +39,19 @@ export default AppHeader
 
 const styles = StyleSheet.create({
     header: {
-        paddingTop: 10,
-        paddingHorizontal: 16,
-        marginBottom: 10,
+        paddingTop: spacing.sm,
+        paddingHorizontal: spacing.lg,
+        marginBottom: spacing.sm,
     },
     headingContainer: {
 
     },
     backButton: {
-        marginRight: 16,
-        paddingVertical: 4,
+        marginRight: spacing.lg,
+        paddingVertical: spacing.xs,
     },
     headerTitle: {
-        fontSize: 18,
+        fontSize: fontSize.lg,
         fontWeight: '600',
     },
     headingUnderline: {

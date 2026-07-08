@@ -3,11 +3,12 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useGuides } from '../../../queries/useGuide';
 import { useThemeStore } from '../../../store/themeStore';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialCommunityIcons, MaterialIcons, Ionicons } from '@expo/vector-icons';
+import { AppIcon } from '../../../components/common/AppIcon';
+import { ImageNotFound01Icon, SmartPhone01Icon, ZoomInAreaIcon, Alert01Icon } from '@hugeicons/core-free-icons';
 import { useNavigation } from '@react-navigation/native';
-import { scaleWidth, scaleHeight } from '../../../utils/scaling';
 import AppHeader from '../header/AppHeader';
 import Loader from '../../../component/Loader';
+import { spacing, iconSize } from '../../../theme/typography';
 
 const Example = ({ route }) => {
   const navigation = useNavigation();
@@ -50,7 +51,7 @@ const Example = ({ route }) => {
         <AppHeader backButton={true} title="Example" />
 
         <View style={styles.emptyContainer}>
-          <MaterialIcons name="image-not-supported" size={64} color={secondaryTextColor} />
+          <AppIcon icon={ImageNotFound01Icon} size={64} color={secondaryTextColor} />
           <Text style={[styles.emptyText, { color: textColor }]}>
             No example available for this game mode yet.
           </Text>
@@ -75,7 +76,7 @@ const Example = ({ route }) => {
           {/* Game Info Section */}
           <View style={styles.section}>
             <View style={styles.gameInfoContainer}>
-              <MaterialCommunityIcons name="cellphone-screenshot" size={scaleWidth(20)} color={textColor} />
+              <AppIcon icon={SmartPhone01Icon} size={spacing.xl} color={textColor} />
               <View style={styles.gameInfoItem}>
                 <Text
                   style={[
@@ -133,7 +134,7 @@ const Example = ({ route }) => {
                 resizeMode="contain"
               />
               <View style={styles.tapToEnlargeOverlay}>
-                <MaterialIcons name="zoom-in" size={20} color="#ffffff" />
+                <AppIcon icon={ZoomInAreaIcon} size={iconSize.md} color="#ffffff" />
                 <Text style={styles.tapToEnlargeText}>Tap to enlarge</Text>
               </View>
             </Pressable>
@@ -157,7 +158,7 @@ const Example = ({ route }) => {
                 resizeMode="contain"
               />
               <View style={styles.tapToEnlargeOverlay}>
-                <MaterialIcons name="zoom-in" size={20} color="#ffffff" />
+                <AppIcon icon={ZoomInAreaIcon} size={iconSize.md} color="#ffffff" />
                 <Text style={styles.tapToEnlargeText}>Tap to enlarge</Text>
               </View>
             </Pressable>
@@ -171,12 +172,7 @@ const Example = ({ route }) => {
               borderColor: isLight ? '#cccccc' : '#333333'
             }
           ]}>
-            <Ionicons 
-              name="warning-outline" 
-              size={20} 
-              color={isLight ? '#333333' : '#ffffff'} 
-              style={styles.warningIcon}
-            />
+            <AppIcon icon={Alert01Icon} size={iconSize.md} color={isLight ? '#333333' : '#ffffff'} style={styles.warningIcon} />
             <Text style={[styles.warningText, { color: isLight ? '#333333' : '#ffffff' }]}>
               Your screenshots should match this format. Submitting incorrect or fake screenshots may result in account suspension and a 50 point penalty.
             </Text>

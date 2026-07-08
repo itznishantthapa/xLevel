@@ -1,7 +1,9 @@
 import React from 'react'
 import { StatusBar, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { MaterialIcons, Ionicons } from '@expo/vector-icons'
+import { AppIcon } from '../../components/common/AppIcon'
+import { CheckmarkCircle01Icon, Notification01Icon, Settings01Icon } from '@hugeicons/core-free-icons'
+import { iconSize } from '../../theme/typography'
 
 const Dashboard = () => {
   return (
@@ -22,7 +24,7 @@ const Dashboard = () => {
           {/* Success Card */}
           <View style={styles.successCard}>
             <View style={styles.iconContainer}>
-              <Ionicons name="checkmark-circle" size={48} color="#00bf63" />
+              <AppIcon icon={CheckmarkCircle01Icon} size={iconSize.xl + 20} color="#00bf63" />
             </View>
             
             <Text style={styles.successTitle}>Logged In</Text>
@@ -32,12 +34,12 @@ const Dashboard = () => {
 
             <View style={styles.featuresContainer}>
               <View style={styles.featureItem}>
-                <MaterialIcons name="notifications-active" size={20} color="#00bf63" />
+                <AppIcon icon={Notification01Icon} size={iconSize.sm} color="#00bf63" />
                 <Text style={styles.featureText}>Push Notifications Enabled</Text>
               </View>
               
               <View style={styles.featureItem}>
-                <MaterialIcons name="admin-panel-settings" size={20} color="#00bf63" />
+                <AppIcon icon={Settings01Icon} size={iconSize.sm} color="#00bf63" />
                 <Text style={styles.featureText}>Admin Access Granted</Text>
               </View>
             </View>

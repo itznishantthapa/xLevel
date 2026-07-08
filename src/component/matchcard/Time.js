@@ -1,6 +1,7 @@
-import { scaleHeight, scaleWidth } from "../../utils/scaling";
 import { View, Text, StyleSheet } from "react-native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { AppIcon } from "../../components/common/AppIcon";
+import { Clock01Icon } from "@hugeicons/core-free-icons";
+import { fontSize, spacing, iconSize } from "../../theme/typography";
 import { timeAgo } from "./index/timeFormatter";
 
 // InfoRow Component - shared between both cards
@@ -14,7 +15,7 @@ export const Time = ({ time = '2 min ago', isDark = false, forMatch = false }) =
   return (
     <View style={[styles.container, { backgroundColor: colors.bgColor }]}>
       <View style={[styles.iconContainer, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.06)' }]}>
-        <MaterialCommunityIcons name="clock-outline" size={18} color={colors.iconColor} />
+        <AppIcon icon={Clock01Icon} size={iconSize.sm} color={colors.iconColor} />
       </View>
       {
         forMatch ? (
@@ -37,27 +38,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    paddingHorizontal: scaleWidth(12),
-    paddingVertical: scaleHeight(8),
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
     alignSelf: 'flex-start',
-    gap: scaleWidth(8),
-    borderRadius: scaleWidth(24),
-    minHeight: scaleHeight(36),
+    gap: spacing.sm,
+    borderRadius: spacing["2xl"],
+    minHeight: 36,
     flexShrink: 0,
   },
   iconContainer: {
-    width: scaleWidth(28),
-    height: scaleHeight(28),
-    borderRadius: scaleWidth(14),
+    width: 28,
+    height: 28,
+    borderRadius: fontSize.base,
     alignItems: 'center',
     justifyContent: 'center',
   },
   label: {
-    fontSize: scaleWidth(14),
+    fontSize: fontSize.base,
     fontWeight: 'bold',
   },
   time: {
-    fontSize: scaleWidth(13),
+    fontSize: 13,
     fontWeight: '600',
     textAlign: 'left',
     includeFontPadding: false,

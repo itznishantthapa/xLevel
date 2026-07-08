@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, StatusBar, Pressable, Image, Modal, TouchableOpacity, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useThemeStore } from '../../store/themeStore';
-import { MaterialIcons, Ionicons } from "@expo/vector-icons";
+import { AppIcon } from '../../components/common/AppIcon';
+import { Flag01Icon, ImageAdd01Icon } from '@hugeicons/core-free-icons';
 import * as ImagePicker from 'expo-image-picker';
 import Toast from 'react-native-simple-toast';
-import { scaleWidth } from '../../utils/scaling';
 import { CreateGameLayout, SectionTitle } from '../../component/customer/createGame';
 import { useCreateReport } from '../../queries/useMutation/useCreateReport';
+import { spacing, iconSize } from '../../theme/typography';
 
 const Report = ({ route }) => {
     const navigation = useNavigation();
@@ -122,7 +123,7 @@ const Report = ({ route }) => {
     const GameInfoHeader = () => (
         <View style={[styles.section]}>
             <View style={[styles.gameInfoContainer]}>
-                <MaterialIcons name="flag" size={scaleWidth(20)} color={isLight ? "#333333" : "#ffffff"} />
+                <AppIcon icon={Flag01Icon} size={iconSize.md} color={isLight ? "#333333" : "#ffffff"} />
                 <View style={styles.gameInfoItem}>
                     <Text
                         style={[
@@ -207,11 +208,7 @@ const Report = ({ route }) => {
                     </View>
                 ) : (
                     <View style={styles.placeholderContainer}>
-                        <MaterialIcons
-                            name="add-photo-alternate"
-                            size={32}
-                            color={isLight ? "#000000" : "#ffffff"}
-                        />
+                        <AppIcon icon={ImageAdd01Icon} size={iconSize.xl} color={isLight ? "#000000" : "#ffffff"} />
                         <Text style={[
                             styles.imagePickerText,
                             { color: isLight ? "#000000" : "#ffffff", marginTop: 8 }

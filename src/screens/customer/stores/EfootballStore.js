@@ -1,7 +1,30 @@
 import { View, Text, StyleSheet, Image, Pressable, TextInput } from 'react-native'
 import Toast from 'react-native-simple-toast'
 import { useThemeStore } from '../../../store/themeStore'
-import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons'
+import { AppIcon, PointsIcon } from '../../../components/common/AppIcon'
+import {
+  CheckmarkCircle01Icon,
+  SecurityCheckIcon,
+  FlashIcon,
+  Shield01Icon,
+  Touch01Icon,
+  UserIcon,
+  UserArrowLeftRightIcon,
+  IdentityCardIcon,
+  GamepadIcon,
+  LabelIcon,
+  Location01Icon,
+  CheckIcon,
+  RefreshIcon,
+  ImageAdd01Icon,
+  Dollar01Icon,
+  ArrowRight01Icon,
+  Mail01Icon,
+  LockIcon,
+  EyeIcon,
+  EyeOffIcon,
+} from '@hugeicons/core-free-icons'
+import { iconSize } from '../../../theme/typography'
 import { useState, useRef, useMemo } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { useGameProfiles } from '../../../queries/useGameProfiles'
@@ -166,22 +189,22 @@ const EfootballStore = ({ route }) => {
             {game?.game_name || 'eFootball'}
           </Text>
           <View style={styles.securityBadge}>
-            <MaterialIcons name="verified-user" size={12} color={'#00bf63'} />
+            <AppIcon icon={SecurityCheckIcon} size={iconSize.xs} color="#00bf63" />
             <Text style={[styles.securityText, { color: isLight ? '#666666' : '#999999' }]}>
               100% Secure
             </Text>
             <Text style={[styles.separator, { color: isLight ? '#cccccc' : '#555555' }]}>|</Text>
-            <MaterialIcons name="bolt" size={12} color={'#F97316'} />
+            <AppIcon icon={FlashIcon} size={iconSize.xs} color="#F97316" />
             <Text style={[styles.securityText, { color: isLight ? '#666666' : '#999999' }]}>
               Fast
             </Text>
             <Text style={[styles.separator, { color: isLight ? '#cccccc' : '#555555' }]}>|</Text>
-            <MaterialIcons name="shield" size={12} color={'#6366F1'} />
+            <AppIcon icon={Shield01Icon} size={iconSize.xs} color="#6366F1" />
             <Text style={[styles.securityText, { color: isLight ? '#666666' : '#999999' }]}>
               Reliable
             </Text>
             <Text style={[styles.separator, { color: isLight ? '#cccccc' : '#555555' }]}>|</Text>
-            <MaterialIcons name="touch-app" size={12} color={'#14B8A6'} />
+            <AppIcon icon={Touch01Icon} size={iconSize.xs} color="#14B8A6" />
             <Text style={[styles.securityText, { color: isLight ? '#666666' : '#999999' }]}>
               Easy
             </Text>
@@ -215,11 +238,7 @@ const EfootballStore = ({ route }) => {
               }]}
               onPress={pickImage}
             >
-              <MaterialIcons 
-                name="refresh" 
-                size={18} 
-                color={isLight ? "#666666" : "#cccccc"} 
-              />
+              <AppIcon icon={RefreshIcon} size={iconSize.sm} color={isLight ? "#666666" : "#cccccc"} />
               <Text style={[
                 styles.changeButtonText,
                 { color: isLight ? "#666666" : "#cccccc" }
@@ -240,11 +259,7 @@ const EfootballStore = ({ route }) => {
             onPress={pickImage}
           >
             <View style={styles.placeholderContainer}>
-              <MaterialIcons
-                name="add-photo-alternate"
-                size={40}
-                color={isLight ? "#666666" : "#999999"}
-              />
+              <AppIcon icon={ImageAdd01Icon} size={40} color={isLight ? "#666666" : "#999999"} />
               <Text style={[
                 styles.uploadText,
                 { color: isLight ? "#666666" : "#cccccc" }
@@ -275,11 +290,7 @@ const EfootballStore = ({ route }) => {
               borderColor: isLight ? '#cccccc' : '#333333',
             backgroundColor:"transparent",
             }]}>
-              <MaterialCommunityIcons 
-                name="currency-usd" 
-                size={20} 
-                color={isLight ? '#666666' : '#999999'} 
-              />
+              <AppIcon icon={Dollar01Icon} size={iconSize.md} color={isLight ? '#666666' : '#999999'} />
               <TextInput
                 style={[styles.textInput, { color: isLight ? '#000000' : '#ffffff' }]}
                 placeholder="0.00"
@@ -299,11 +310,7 @@ const EfootballStore = ({ route }) => {
 
           {/* Arrow */}
           <View style={styles.arrowWrapper}>
-            <MaterialIcons 
-              name="arrow-forward" 
-              size={24} 
-              color={isLight ? '#cccccc' : '#444444'} 
-            />
+            <AppIcon icon={ArrowRight01Icon} size={iconSize.lg} color={isLight ? '#cccccc' : '#444444'} />
           </View>
 
           {/* Game Points Display */}
@@ -312,11 +319,7 @@ const EfootballStore = ({ route }) => {
               borderColor: isLight ? '#00bf63' : '#00bf63',
               backgroundColor: isLight ? '#f0fdf4' : 'rgba(0, 191, 99, 0.1)',
             }]}>
-              <MaterialCommunityIcons 
-                name="star-four-points" 
-                size={20} 
-                color="#00bf63" 
-              />
+              <PointsIcon size={iconSize.md} color="#00bf63" />
               <Text style={[styles.pointsValue, { color: '#00bf63' }]}>
                 {calculatedGamePoints}
               </Text>
@@ -373,11 +376,7 @@ const EfootballStore = ({ route }) => {
             borderColor: isLight ? '#cccccc' : '#333333',
             backgroundColor:"transparent",
           }]}>
-            <MaterialCommunityIcons 
-              name="email-outline" 
-              size={20} 
-              color={isLight ? '#666666' : '#999999'} 
-            />
+            <AppIcon icon={Mail01Icon} size={iconSize.md} color={isLight ? '#666666' : '#999999'} />
             <TextInput
               style={[styles.textInput, { color: isLight ? '#000000' : '#ffffff' }]}
               placeholder="Konami Email"
@@ -393,11 +392,7 @@ const EfootballStore = ({ route }) => {
             borderColor: isLight ? '#cccccc' : '#333333',
             backgroundColor:"transparent",
           }]}>
-            <MaterialCommunityIcons 
-              name="lock-outline" 
-              size={20} 
-              color={isLight ? '#666666' : '#999999'} 
-            />
+            <AppIcon icon={LockIcon} size={iconSize.md} color={isLight ? '#666666' : '#999999'} />
             <TextInput
               style={[styles.textInput, { color: isLight ? '#000000' : '#ffffff' }]}
               placeholder="Konami Password"
@@ -407,11 +402,7 @@ const EfootballStore = ({ route }) => {
               secureTextEntry={!showPassword}
             />
             <Pressable onPress={() => setShowPassword(!showPassword)}>
-              <MaterialIcons 
-                name={showPassword ? "visibility" : "visibility-off"} 
-                size={20} 
-                color={isLight ? '#666666' : '#999999'} 
-              />
+              <AppIcon icon={showPassword ? EyeIcon : EyeOffIcon} size={iconSize.md} color={isLight ? '#666666' : '#999999'} />
             </Pressable>
           </View>
         </View>

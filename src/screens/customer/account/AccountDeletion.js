@@ -1,6 +1,8 @@
 import { StyleSheet, Text, View, Pressable, TextInput, Alert, Platform, KeyboardAvoidingView, Keyboard } from 'react-native'
 import React, { useState, useRef } from 'react'
-import { MaterialIcons } from '@expo/vector-icons'
+import { AppIcon } from '../../../components/common/AppIcon'
+import { CheckIcon, Alert01Icon, InformationCircleIcon } from '@hugeicons/core-free-icons'
+import { iconSize } from '../../../theme/typography'
 import { useThemeStore } from '../../../store/themeStore'
 import { CreateGameLayout } from '../../../component/customer/createGame'
 import { useAuthStore } from '../../../store/authStore'
@@ -148,11 +150,7 @@ const AccountDeletion = () => {
             }
           ]}>
             {isSelected && (
-              <MaterialIcons
-                name="check"
-                size={14}
-                color={isLight ? "#ffffff" : "#000000"}
-              />
+              <AppIcon icon={CheckIcon} size={iconSize.xs} color={isLight ? "#ffffff" : "#000000"} />
             )}
           </View>
           <Text style={[styles.reasonText, { color: colors.text }]}>
@@ -176,7 +174,7 @@ const AccountDeletion = () => {
       <View style={styles.container}>
         {/* Warning Header */}
         <View style={[styles.warningContainer, { backgroundColor: colors.cardBackground }]}>
-          <MaterialIcons name="warning" size={22} color={colors.text} />
+          <AppIcon icon={Alert01Icon} size={22} color={colors.text} />
           <View style={styles.warningTextContainer}>
             <Text style={[styles.warningTitle, { color: colors.text }]}>
               Account Deletion Warning
@@ -236,7 +234,7 @@ const AccountDeletion = () => {
 
         {/* Additional Info */}
         <View style={[styles.infoContainer, { backgroundColor: colors.cardBackground }]}>
-          <MaterialIcons name="info" size={18} color={colors.textSecondary} />
+          <AppIcon icon={InformationCircleIcon} size={iconSize.sm} color={colors.textSecondary} />
           <Text style={[styles.infoText, { color: colors.textSecondary }]}>
             Once you confirm the deletion, your account will be instantly and permanently removed from our database.
           </Text>

@@ -1,9 +1,10 @@
 import { View, Text, StyleSheet, StatusBar, Pressable } from "react-native"
 import { __DEV__ } from "react-native"
+import { AlertCircleIcon, RefreshIcon } from "@hugeicons/core-free-icons"
+import AppIcon from "../../../components/common/AppIcon"
 import { useThemeStore } from "../../../store/themeStore"
 import { useMemo } from "react"
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
 
 // Socials removed per minimal requirement
 
@@ -37,7 +38,7 @@ const AppErrorFallback = ({ error, resetErrorBoundary }) => {
       <View style={styles.centerWrap}>
         {/* Icon Container */}
         <View style={[styles.iconContainer, { backgroundColor: themeStyles.iconBg }]}>
-          <MaterialIcons name="error-outline" size={64} color={themeStyles.iconColor} />
+          <AppIcon icon={AlertCircleIcon} size={64} color={themeStyles.iconColor} strokeWidth={1.5} />
         </View>
 
         {/* Title */}
@@ -57,7 +58,7 @@ const AppErrorFallback = ({ error, resetErrorBoundary }) => {
           accessibilityRole="button"
           accessibilityLabel="Retry"
         >
-          <MaterialIcons name="refresh" size={18} color={themeStyles.buttonText} />
+          <AppIcon icon={RefreshIcon} size={18} color={themeStyles.buttonText} />
           <Text style={[styles.retryButtonText, { color: themeStyles.buttonText }]}>
             Try Again
           </Text>

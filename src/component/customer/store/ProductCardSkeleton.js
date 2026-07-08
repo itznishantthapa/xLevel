@@ -1,5 +1,4 @@
 import { View, StyleSheet, Dimensions } from "react-native"
-import { scaleWidth } from "../../../utils/scaling"
 
 const { width } = Dimensions.get("window")
 const CARD_WIDTH = width - 20
@@ -55,10 +54,10 @@ const styles = StyleSheet.create({
   card: {
     width: CARD_WIDTH,
     marginBottom: 16,
-    borderTopRightRadius: scaleWidth(25),
-    borderTopLeftRadius: scaleWidth(25),
-    borderBottomRightRadius: scaleWidth(25),
-    borderBottomLeftRadius: scaleWidth(25),
+    borderTopRightRadius: 25,
+    borderTopLeftRadius: 25,
+    borderBottomRightRadius: 25,
+    borderBottomLeftRadius: 25,
     borderWidth: 1.5,
     overflow: "hidden",
   },

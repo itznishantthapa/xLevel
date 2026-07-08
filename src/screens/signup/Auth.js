@@ -12,7 +12,8 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import { AntDesign, FontAwesome6 } from '@expo/vector-icons';
+import { AppIcon } from '../../components/common/AppIcon';
+import { GoogleIcon, AppleIcon, Mail01Icon } from '@hugeicons/core-free-icons';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import Toast from 'react-native-simple-toast';
@@ -31,7 +32,7 @@ import { checkFCMTokenInStorage } from '../../utils/tokenUtils';
 // API Queries
 import { useBanners } from '../../queries/useBanners';
 import { useUtils } from '../../queries/useUtils';
-import { scaleWidth, scaleHeight } from '../../utils/scaling';
+import { fontSize, spacing, iconSize } from '../../theme/typography';
 
 // Constants
 const GOOGLE_WEB_CLIENT_ID = "901665380294-lhur8lkcqkdt1d0e9b5q3p25mknfejbs.apps.googleusercontent.com";
@@ -178,7 +179,7 @@ const Auth = () => {
         id: 'google',
         icon: isGoogleLoading ?
           <ActivityIndicator size="small" color={colors.text} /> :
-          <AntDesign name="google" size={scaleWidth(20)} color={colors.text} />,
+          <AppIcon icon={GoogleIcon} size={iconSize.md} color={colors.text} />,
         text: 'Continue with Google',
         onPress: handleGoogleSignIn,
         disabled: isGoogleLoading
@@ -191,7 +192,7 @@ const Auth = () => {
         icon: isAppleLoading ? (
           <ActivityIndicator size="small" color={colors.text} />
         ) : (
-          <AntDesign name="apple1" size={scaleWidth(20)} color={colors.text} />
+          <AppIcon icon={AppleIcon} size={iconSize.md} color={colors.text} />
         ),
         text: 'Continue with Apple',
         onPress: handleAppleSignIn,
@@ -205,7 +206,7 @@ const Auth = () => {
     if (Platform.OS === 'ios' && shouldShowEmailLogin) {
       buttons.push({
         id: 'email',
-        icon: <FontAwesome6 name="envelope" size={scaleWidth(20)} color={colors.text} />,
+        icon: <AppIcon icon={Mail01Icon} size={iconSize.md} color={colors.text} />,
         text: 'Continue with Email',
         onPress: handleEmailLogin,
         disabled: false
@@ -345,68 +346,68 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
-    paddingBottom: scaleHeight(20),
+    paddingBottom: spacing.xl,
   },
   logoContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: scaleWidth(20),
+    paddingHorizontal: spacing.xl,
   },
   logoWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
   },
   logo: {
-    width: scaleWidth(250),
-    height: scaleHeight(150),
+    width: 250,
+    height: 150,
   },
   tagline: {
-    fontSize: scaleWidth(11),
+    fontSize: 11,
     fontWeight: '600',
     letterSpacing: 0.5,
-    marginBottom: scaleHeight(6),
+    marginBottom: 6,
   },
   taglineUnderline: {
-    width: scaleWidth(60),
-    height: scaleHeight(2),
+    width: 60,
+    height: spacing.xxs,
   },
 
   // Auth Section Styles
   authSection: {
     flex: 1,
-    paddingHorizontal: scaleWidth(20),
+    paddingHorizontal: spacing.xl,
     justifyContent: 'center',
-    gap: scaleHeight(20),
+    gap: spacing.xl,
   },
   welcomeTextContainer: {
     alignItems: 'center',
-    minHeight: scaleHeight(60), // Fixed height to prevent collapse
+    minHeight: 60, // Fixed height to prevent collapse
   },
   welcomeTitle: {
-    fontSize: scaleWidth(24),
+    fontSize: spacing["2xl"],
     fontWeight: '700',
-    marginBottom: scaleHeight(6),
+    marginBottom: 6,
     includeFontPadding: false,
     textAlign: 'center',
-    minHeight: scaleHeight(30), // Fixed height for stable animation
+    minHeight: 30, // Fixed height for stable animation
     textAlignVertical: 'center',
   },
   welcomeSubtitle: {
-    fontSize: scaleWidth(14),
+    fontSize: fontSize.base,
     textAlign: 'center',
-    lineHeight: scaleHeight(20),
+    lineHeight: spacing.xl,
     includeFontPadding: false,
   },
   buttonsContainer: {
-    gap: scaleHeight(16),
+    gap: spacing.lg,
     justifyContent: 'center',
     flexShrink: 0,
-    marginBottom: scaleHeight(30),
+    marginBottom: 30,
   },
   authButton: {
-    borderRadius: scaleWidth(16),
+    borderRadius: spacing.lg,
     borderWidth: 1.5,
-    paddingVertical: scaleHeight(12),
+    paddingVertical: spacing.md,
     justifyContent: 'center',
     width: '100%',
   },
@@ -414,19 +415,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: scaleWidth(12),
+    gap: spacing.md,
   },
   buttonText: {
-    fontSize: scaleWidth(16),
+    fontSize: spacing.lg,
     fontWeight: '600',
   },
   termsContainer: {
-    paddingHorizontal: scaleWidth(10),
+    paddingHorizontal: fontSize.xs,
   },
   termsText: {
-    fontSize: scaleWidth(12),
+    fontSize: spacing.md,
     textAlign: 'center',
-    lineHeight: scaleHeight(18),
+    lineHeight: fontSize.lg,
   },
   termsLink: {
     fontWeight: '600',

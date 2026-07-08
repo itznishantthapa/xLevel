@@ -13,7 +13,9 @@ import {
   FlatList
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { MaterialIcons, MaterialCommunityIcons, Octicons, FontAwesome5 } from '@expo/vector-icons'
+import { AppIcon } from '../../components/common/AppIcon'
+import { User02Icon, UserBlock01Icon } from '@hugeicons/core-free-icons'
+import { iconSize } from '../../theme/typography'
 import Toast from "react-native-simple-toast"
 import { useThemeStore } from '../../store/themeStore'
 import { useNetworkStatus } from '../../hooks/useNetworkStatus'
@@ -75,7 +77,7 @@ const BlockedUserCard = React.memo(({ blockedUser, isLight, onUnblock }) => {
             />
           ) : (
             <View style={[styles.profileImageFallback, { backgroundColor: isLight ? '#f0f0f0' : 'rgba(255, 255, 255, 0.1)' }]}>
-              <Octicons name="feed-person" size={24} color={isLight ? '#666666' : '#ffffff'} />
+              <AppIcon icon={User02Icon} size={iconSize.lg} color={isLight ? '#666666' : '#ffffff'} />
             </View>
           )}
         </View>
@@ -198,7 +200,7 @@ const BlockedUserList = () => {
   const listEmptyComponent = useMemo(() => (
     !isFetching ? (
       <View style={styles.emptyContainer}>
-        <FontAwesome5 name="users-slash" size={64} color={isLight ? "#333333" : "#ffffff"} />
+        <AppIcon icon={UserBlock01Icon} size={64} color={isLight ? "#333333" : "#ffffff"} />
         <Text style={[styles.emptyText, { color: isLight ? "#333333" : "#ffffff" }]}>No blocked users</Text>
         <Text style={[styles.pullText, { color: isLight ? '#666666' : 'rgba(255,255,255,0.6)' }]}>Pull down to refresh</Text>
       </View>

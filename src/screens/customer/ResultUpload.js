@@ -1,15 +1,16 @@
 import { StyleSheet, Text, View, Pressable, Image, Platform, ActivityIndicator, Modal, TouchableOpacity, StatusBar } from 'react-native';
 import React, { useState, useRef, useEffect } from 'react';
 import { useThemeStore } from '../../store/themeStore';
-import { MaterialIcons, Ionicons } from "@expo/vector-icons";
+import { AppIcon } from '../../components/common/AppIcon';
+import { MessageEdit01Icon, ImageAdd01Icon, Image01Icon, Alert01Icon } from '@hugeicons/core-free-icons';
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import Toast from 'react-native-simple-toast';
 import { ResultAPI } from '../../api/resultApi';
 import { CreateGameLayout } from '../../component/customer/createGame';
 import { SectionTitle } from '../../component/customer/createGame';
-import { scaleWidth } from '../../utils/scaling';
 import { useResult } from '../../queries/useResult';
+import { spacing, iconSize } from '../../theme/typography';
 
 const ResultUpload = ({ route }) => {
   const navigation = useNavigation();
@@ -210,7 +211,7 @@ const ResultUpload = ({ route }) => {
   const GameInfoHeader = ({ status }) => (
     <View style={[styles.section]}>
       <View style={[styles.gameInfoContainer]}>
-        <MaterialIcons name="reviews" size={scaleWidth(20)} color={isLight ? "#333333" : "#ffffff"} />
+        <AppIcon icon={MessageEdit01Icon} size={iconSize.md} color={isLight ? "#333333" : "#ffffff"} />
         <View style={styles.gameInfoItem}>
           <Text
             style={[
@@ -303,11 +304,7 @@ const ResultUpload = ({ route }) => {
           </View>
         ) : (
           <View style={styles.placeholderContainer}>
-            <MaterialIcons
-              name="add-photo-alternate"
-              size={32}
-              color={isLight ? "#666666" : "#999999"}
-            />
+            <AppIcon icon={ImageAdd01Icon} size={iconSize.xl} color={isLight ? "#666666" : "#999999"} />
             <Text style={[
               styles.imagePickerText,
               { color: isLight ? "#666666" : "#cccccc", marginTop: 8 }
@@ -436,11 +433,7 @@ const ResultUpload = ({ route }) => {
               }
             ]}
           >
-            <MaterialIcons 
-              name="photo-library" 
-              size={16} 
-              color={isLight ? '#333333' : '#ffffff'} 
-            />
+            <AppIcon icon={Image01Icon} size={iconSize.sm} color={isLight ? '#333333' : '#ffffff'} />
             <Text style={[styles.seeExampleButtonText, { color: isLight ? '#333333' : '#ffffff' }]}>
               View Example
             </Text>
@@ -477,12 +470,7 @@ const ResultUpload = ({ route }) => {
               borderColor: isLight ? '#cccccc' : '#333333'
             }
           ]}>
-            <Ionicons 
-              name="warning-outline" 
-              size={20} 
-              color={isLight ? '#333333' : '#ffffff'} 
-              style={styles.warningIcon}
-            />
+            <AppIcon icon={Alert01Icon} size={iconSize.md} color={isLight ? '#333333' : '#ffffff'} style={styles.warningIcon} />
             <Text style={[
               styles.warningText,
               { color: isLight ? '#333333' : '#ffffff' }

@@ -1,6 +1,7 @@
 import { View, Text, Pressable, TouchableOpacity, StyleSheet } from "react-native"
-import { Entypo, FontAwesome5, Ionicons } from "@expo/vector-icons"
-import { scaleHeight, scaleWidth } from "../../utils/scaling"
+import { AppIcon } from "../../components/common/AppIcon"
+import { GamepadIcon, UserGroupIcon, Cancel01Icon, AlertCircleIcon } from "@hugeicons/core-free-icons"
+import { fontSize, spacing, iconSize } from "../../theme/typography"
 import { sharedStyles } from "./sharedStyleAndInfo"
 import { useBottomSheet } from "../../context/BottomSheetContext"
 
@@ -55,7 +56,7 @@ const GameHeader = ({ game, isLight, isCreator, user, handleDeleteChallenge, han
             shadowRadius: 4.5,
           }
         ]}>
-          <Ionicons name="game-controller" size={scaleWidth(14)} color={gameIconConfig.iconColor} />
+          <AppIcon icon={GamepadIcon} size={iconSize.xs} color={gameIconConfig.iconColor} />
         </View>
         <Text style={[sharedStyles.gameInfoText, !isLight && sharedStyles.gameInfoTextDark]}>
           {game.game?.name || "Game"}
@@ -75,7 +76,7 @@ const GameHeader = ({ game, isLight, isCreator, user, handleDeleteChallenge, han
             shadowRadius: 4.5,
           }
         ]}>
-          <Ionicons name="people-outline" size={scaleWidth(14)} color={modeIconConfig.iconColor} />
+          <AppIcon icon={UserGroupIcon} size={iconSize.xs} color={modeIconConfig.iconColor} />
         </View>
         <Text style={[sharedStyles.gameInfoText, !isLight && sharedStyles.gameInfoTextDark]}>
           {game.game?.game_mode || "Mode"}
@@ -83,7 +84,7 @@ const GameHeader = ({ game, isLight, isCreator, user, handleDeleteChallenge, han
       </View>
       {/* 
       {!game.isAccepted && game.status !== "cancelled" && game.status !== "expired" && game.status !== "completed" && game.status !== "in_progress"&& ( */}
-      <View style={{ flexDirection: "row", alignItems: "center", gap: scaleWidth(20), marginLeft: "auto", paddingRight: forOpenGames ? scaleWidth(10) : 0 }}>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: spacing.xl, marginLeft: "auto", paddingRight: forOpenGames ? fontSize.xs : 0 }}>
         {
           !game.isAccepted && game.status !== "cancelled" && game.status !== "expired" && game.status !== "completed" && game.status !== "in_progress" && game.status !== "resolved" && !forOpenGames && !game.is_free && (
             <Pressable 
@@ -95,7 +96,7 @@ const GameHeader = ({ game, isLight, isCreator, user, handleDeleteChallenge, han
               activeOpacity={0.85}
             >
               <View style={localStyles.cancelButtonContent}>
-                <Entypo name="cross" size={scaleWidth(16)} color={isLight ? "#ffffff" : "#000000"} />
+                <AppIcon icon={Cancel01Icon} size={iconSize.sm} color={isLight ? "#ffffff" : "#000000"} />
                 <Text style={[localStyles.cancelButtonText, { color: isLight ? '#ffffff' : '#000000' }]}>{isCreator ? "Cancel" : "Leave"}</Text>
               </View>
             </Pressable>
@@ -104,7 +105,7 @@ const GameHeader = ({ game, isLight, isCreator, user, handleDeleteChallenge, han
         {
           forOpenGames && (
             <TouchableOpacity onPress={() => handleReportUser(game)}>
-              <FontAwesome5 name="exclamation-circle" size={scaleWidth(18)} color={isLight ? "#000000" : "#fff"} />
+              <AppIcon icon={AlertCircleIcon} size={iconSize.sm} color={isLight ? "#000000" : "#fff"} />
             </TouchableOpacity>
           )
         }
@@ -119,10 +120,10 @@ const GameHeader = ({ game, isLight, isCreator, user, handleDeleteChallenge, han
 
 const localStyles = StyleSheet.create({
   cancelButton: {
-    paddingHorizontal: scaleWidth(16),
-    paddingVertical: scaleHeight(9),
-    borderRadius: scaleWidth(24),
-    minHeight: scaleHeight(36),
+    paddingHorizontal: spacing.lg,
+    paddingVertical: 9,
+    borderRadius: spacing["2xl"],
+    minHeight: 36,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000000',
@@ -138,10 +139,10 @@ const localStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: scaleWidth(6),
+    gap: 6,
   },
   cancelButtonText: {
-    fontSize: scaleWidth(13),
+    fontSize: 13,
     fontWeight: '700',
     letterSpacing: 0.5,
   },

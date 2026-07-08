@@ -1,7 +1,9 @@
 import { StyleSheet, Text, View, FlatList, Pressable, SafeAreaView, StatusBar, Platform } from 'react-native'
 import React from 'react'
 import { useNavigation } from '@react-navigation/native'
-import { MaterialIcons, SimpleLineIcons } from '@expo/vector-icons'
+import { AppIcon } from '../../../components/common/AppIcon'
+import { GamepadIcon, ArrowRight01Icon } from '@hugeicons/core-free-icons'
+import { iconSize } from '../../../theme/typography'
 import { useThemeStore } from '../../../store/themeStore'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useGameRules } from '../../../queries/useGameRules'
@@ -42,7 +44,7 @@ const GameRules = () => {
     >
       <View style={styles.cardContent}>
         <View style={[styles.iconContainer, { backgroundColor: colors.iconBg }]}>
-          <SimpleLineIcons name="game-controller" size={32} color={isLight ? "#000000" : "#ffffff"} />
+          <AppIcon icon={GamepadIcon} size={iconSize.xl} color={isLight ? "#000000" : "#ffffff"} />
         </View>
 
         <View style={styles.gameInfo}>
@@ -52,7 +54,7 @@ const GameRules = () => {
           </Text>
         </View>
 
-        <MaterialIcons name="chevron-right" size={24} color={colors.subText} />
+        <AppIcon icon={ArrowRight01Icon} size={iconSize.lg} color={colors.subText} />
       </View>
     </Pressable>
   )

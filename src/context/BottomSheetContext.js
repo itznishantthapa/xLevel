@@ -24,13 +24,14 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler"
 import { useThemeStore } from "../store/themeStore"
 // Removed unused icon imports
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { MaterialCommunityIcons, Ionicons, MaterialIcons } from "@expo/vector-icons"
+import { AppIcon, PointsIcon } from "../components/common/AppIcon"
+import { UserIcon, InformationCircleIcon } from "@hugeicons/core-free-icons"
 import { NavigationService } from "../service/navigationService"
 import { useQueryClient } from "@tanstack/react-query"
 import OpponentSheetContent from "./component/OpponentSheetContent"
 import { ShakeText } from "../component/customer/animation"
-import { scaleWidth, scaleHeight } from "../utils/scaling"
 import { useUtils } from "../queries/useUtils"
+import { fontSize, spacing, iconSize } from '../theme/typography';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window")
 
@@ -467,7 +468,7 @@ const JoinSheetContent = React.memo(
                   <View style={[styles.entryCorner, styles.entryCornerTR, { borderColor: isDark ? "#ffffff" : "#000000" }]} />
                   <View style={[styles.entryCorner, styles.entryCornerBL, { borderColor: isDark ? "#ffffff" : "#000000" }]} />
                   <View style={[styles.entryCorner, styles.entryCornerBR, { borderColor: isDark ? "#ffffff" : "#000000" }]} />
-                  <MaterialCommunityIcons name="star-four-points-outline" size={18} color={isDark ? "#00bf63" : "#00bf63"} />
+                  <PointsIcon size={iconSize.sm} color={isDark ? "#00bf63" : "#00bf63"} />
                   <Text style={[styles.entryAmount, { color: isDark ? "#ffffff" : "#000000" }]}>{game.entry_fee}</Text>
                 </View>
               </View>
@@ -540,7 +541,7 @@ const JoinSheetContent = React.memo(
             {/* Make checkbox + terms text both toggleable */}
             <Pressable
               onPress={() => setPayload((prev) => ({ ...prev, rulesConfirmed: !prev.rulesConfirmed }))}
-              hitSlop={{ top: scaleHeight(12), bottom: scaleHeight(12), left: scaleWidth(12), right: scaleWidth(12) }}
+              hitSlop={{ top: spacing.md, bottom: spacing.md, left: spacing.md, right: spacing.md }}
               style={styles.pressableArea}
               accessibilityRole="checkbox"
               accessibilityState={{ checked: !!payload.rulesConfirmed }}
@@ -564,7 +565,7 @@ const JoinSheetContent = React.memo(
                 <Text
                   style={{
                     color: isDark ? '#ffffff' : '#000000',
-                    fontSize: scaleWidth(14),
+                    fontSize: fontSize.base,
                   }}
                 >
                   I’ve accepted the game rules & terms.
@@ -666,7 +667,7 @@ const PurchaseSheetContent = React.memo(({ payload, isDark, insets, handleCancel
             {product.seller?.profile_picture && product.seller.profile_picture !== 'null' ? (
               <Image source={{ uri: product.seller.profile_picture }} style={purchaseStyles.sellerImage} />
             ) : (
-              <Ionicons name="person" size={18} color={isDark ? '#999999' : '#666666'} />
+              <AppIcon icon={UserIcon} size={iconSize.sm} color={isDark ? '#999999' : '#666666'} />
             )}
           </View>
           <View style={purchaseStyles.sellerInfo}>
@@ -699,7 +700,7 @@ const PurchaseSheetContent = React.memo(({ payload, isDark, insets, handleCancel
               <View style={[styles.entryCorner, styles.entryCornerTR, { borderColor: isDark ? '#ffffff' : '#000000' }]} />
               <View style={[styles.entryCorner, styles.entryCornerBL, { borderColor: isDark ? '#ffffff' : '#000000' }]} />
               <View style={[styles.entryCorner, styles.entryCornerBR, { borderColor: isDark ? '#ffffff' : '#000000' }]} />
-              <MaterialCommunityIcons name="star-four-points-outline" size={18} color="#00bf63" />
+              <PointsIcon size={iconSize.sm} color="#00bf63" />
               <Text style={[styles.entryAmount, { color: isDark ? '#ffffff' : '#000000' }]}>{product.points?.toLocaleString()}</Text>
             </View>
           </View>
@@ -713,7 +714,7 @@ const PurchaseSheetContent = React.memo(({ payload, isDark, insets, handleCancel
         {/* Verification Info */}
         {isIOSActive && (
           <View style={[purchaseStyles.noticeContainer, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.03)' }]}>
-            <MaterialIcons name="info" size={18} color={isDark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'} />
+            <AppIcon icon={InformationCircleIcon} size={iconSize.sm} color={isDark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'} />
             <Text style={[purchaseStyles.noticeText, { color: isDark ? '#ffffff' : '#000000' }]}>
               After you purchase, point will be deducted from your account,and admin will login & review the account. Once verified, Admin will send you this account credentials & give you 60 minutes to change the credentials & implement 2FA. After the 60 minutes, admin will release the point to the seller account.
             </Text>
@@ -1041,57 +1042,57 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   rulesContainer: {
-    marginVertical: scaleHeight(6),
-    paddingHorizontal: scaleWidth(5),
+    marginVertical: 6,
+    paddingHorizontal: 5,
     flexDirection: "row",
   },
   checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: scaleWidth(10),
+    gap: fontSize.xs,
     flexWrap: 'wrap',
   },
   checkboxRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: scaleWidth(10),
+    gap: fontSize.xs,
   },
   pressableArea: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: scaleWidth(10),
+    gap: fontSize.xs,
     flex: 1,
     minWidth: 0,
   },
   checkbox: {
-    width: scaleWidth(20),
-    height: scaleWidth(20),
-    borderWidth: scaleWidth(1),
-    borderRadius: scaleWidth(4),
+    width: spacing.xl,
+    height: spacing.xl,
+    borderWidth: 1,
+    borderRadius: spacing.xs,
     alignItems: "center",
     justifyContent: "center",
   },
   checkboxBox: {
-    width: scaleWidth(20),
-    height: scaleWidth(20),
-    borderWidth: scaleWidth(2),
-    borderRadius: scaleWidth(4),
+    width: spacing.xl,
+    height: spacing.xl,
+    borderWidth: spacing.xxs,
+    borderRadius: spacing.xs,
     alignItems: 'center',
     justifyContent: 'center',
   },
   checkMark: {
-    fontSize: scaleWidth(12),
+    fontSize: spacing.md,
     fontWeight: '700',
-    lineHeight: scaleWidth(12),
-    marginTop: scaleHeight(-1),
+    lineHeight: spacing.md,
+    marginTop: -1,
   },
   rulesLink: {
     alignSelf: "flex-start",
-    paddingVertical: scaleHeight(5),
-    paddingHorizontal: scaleWidth(5),
+    paddingVertical: 5,
+    paddingHorizontal: 5,
   },
   rulesLinkText: {
-    fontSize: scaleWidth(12),
+    fontSize: spacing.md,
     fontWeight: "700",
     letterSpacing: 1,
   },

@@ -8,7 +8,6 @@ import { useQueryClient } from "@tanstack/react-query"
 import Toast from "react-native-simple-toast"
 
 import { useCreateMatch } from "../../../queries/useMutation/useCreateMatch"
-import { scaleWidth } from "../../../utils/scaling"
 
 // Import shared components
 import {

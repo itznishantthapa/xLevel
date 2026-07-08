@@ -13,13 +13,14 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import { useAuthStore } from '../../store/authStore'
 import { useEffect, useState } from 'react'
-import { Ionicons, Octicons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
 import Toast from 'react-native-simple-toast'
 import { useThemeStore } from '../../store/themeStore'
 import Loader from '../../component/Loader'
 import AppHeader from './header/AppHeader'
-import { scaleWidth } from '../../utils/scaling'
+import { AppIcon } from '../../components/common/AppIcon'
+import { User02Icon } from '@hugeicons/core-free-icons'
+import { fontSize, spacing, radius } from '../../theme/typography'
 // Removed gameStore; not used here
 
 
@@ -309,7 +310,7 @@ const EditProfile = () => {
                 <Image source={{ uri: profileData.profile_picture }} style={styles.profileImage} />
               ) : (
                 <View style={[styles.placeholderImage, { backgroundColor: isLight ? '#f8f9fa' : '#1a1a1a' }]}>
-                  <Octicons name="feed-person" size={40} color={isLight ? "#000000" : "#ffffff"} />
+                  <AppIcon icon={User02Icon} size={40} color={isLight ? "#000000" : "#ffffff"} />
                 </View>
               )}
 
@@ -321,10 +322,10 @@ const EditProfile = () => {
                   left: '50%',
                   transform: [{ translateX: -20 }], // Adjusted for larger profile image
                   backgroundColor: isLight ? '#000000' : '#ffffff',
-                  paddingHorizontal: scaleWidth(6),
-                  paddingVertical: scaleWidth(2),
-                  borderRadius: scaleWidth(8),
-                  borderWidth: scaleWidth(1),
+                  paddingHorizontal: spacing.xs + 2,
+                  paddingVertical: spacing.xxs,
+                  borderRadius: radius.sm,
+                  borderWidth: 1,
                   borderColor: isLight ? '#ffffff' : '#000000',
                   shadowColor: '#000000',
                   shadowOffset: { width: 0, height: 2 },
@@ -334,7 +335,7 @@ const EditProfile = () => {
                 }}>
                   <Text style={{
                     color: isLight ? '#ffffff' : '#000000',
-                    fontSize: scaleWidth(8),
+                    fontSize: fontSize.xxs,
                     fontWeight: 'bold',
                     textAlign: 'center'
                   }}>

@@ -227,8 +227,10 @@ export default function RootLayout() {
   //============ Handle App State Changes ============
   useEffect(() => {
     if (isInitialized && getContent() !== null) {
-
-      SplashScreen.hide();
+      
+ 
+        SplashScreen.hide();
+ 
     }
   }, [isInitialized, isAuthenticated, isAdmin, isCustomer]);
 

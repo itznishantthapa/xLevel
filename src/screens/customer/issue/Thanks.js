@@ -1,7 +1,14 @@
 import React from 'react'
 import { StyleSheet, Text, View, Dimensions, StatusBar, Pressable } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { MaterialIcons, FontAwesome5, AntDesign, Entypo, Octicons, Ionicons } from '@expo/vector-icons'
+import { AppIcon } from '../../../components/common/AppIcon'
+import {
+  ArrowLeft01Icon,
+  SparklesIcon,
+  AlertCircleIcon,
+  CheckIcon,
+} from '@hugeicons/core-free-icons'
+import { iconSize } from '../../../theme/typography'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import { useThemeStore } from '../../../store/themeStore'
 
@@ -59,11 +66,7 @@ const Thanks = () => {
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <MaterialIcons 
-            name="arrow-back" 
-            size={24} 
-            color={colors.text} 
-          />
+          <AppIcon icon={ArrowLeft01Icon} size={iconSize.lg} color={colors.text} />
         </Pressable>
       </View>
       
@@ -77,13 +80,9 @@ const Thanks = () => {
             }
           ]}>
             {isExchange ? (
-               <Ionicons name="sparkles-sharp" size={32}  color="#ffffff" />
+               <AppIcon icon={SparklesIcon} size={iconSize.xl} color="#ffffff" />
             ) : (
-              <FontAwesome5 
-                name="exclamation-circle" 
-                size={32} 
-                color={colors.text} 
-              />
+              <AppIcon icon={AlertCircleIcon} size={iconSize.xl} color={colors.text} />
             )}
           </View>
         </View>
@@ -113,7 +112,7 @@ const Thanks = () => {
                   </Text>
                 </View>
                 <View style={[styles.checkmarkBadge, { backgroundColor: getEnhancementColor() }]}>
-                 <Entypo name="check" size={16} color={isLight ? "#ffffff" : "#000000"} />
+                 <AppIcon icon={CheckIcon} size={iconSize.sm} color={isLight ? "#ffffff" : "#000000"} />
                 </View>
               </View>
               

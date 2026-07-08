@@ -158,14 +158,10 @@ const InCategory = ({ route }) => {
 
           {/* Stats Section */}
           <StatsContainer
-            num_loss={user?.num_loss || 0}
-            num_win={user?.num_win || 0}
-            handlePointsOut={() => navigation.navigate("pointsOut")}
-            handleTournament={() => navigation.navigate("userTournament")}
-            handleGameRules={() => navigation.navigate("gameRules")}
-            handleMatches={() => navigation.navigate("match")}
-            handleLeaderboard={() => navigation.navigate("leaderboard")}
-            handleGamePoints={() => navigation.navigate("gamePoints")}
+            handleRequests={() => navigation.navigate('gamePoints')}
+            handleRedeem={() => navigation.navigate('pointsOut')}
+            handleTournament={() => navigation.navigate('userTournament')}
+            handleMatches={() => navigation.navigate('match')}
           />
 
           {/* Game Mode Selection */}

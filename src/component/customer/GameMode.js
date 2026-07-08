@@ -1,6 +1,17 @@
 "use client"
 import { View, Text, StyleSheet, Pressable, Dimensions, FlatList, Platform } from "react-native"
-import { Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons"
+import {
+  GamepadIcon,
+  ChevronRightIcon,
+  ChevronLeftIcon,
+  StoreIcon,
+  Diamond01Icon,
+  CubeIcon,
+  FootballIcon,
+  Trophy,
+} from "@hugeicons/core-free-icons"
+import AppIcon from "../../components/common/AppIcon"
+import { iconSize } from "../../theme/typography"
 import { useThemeStore } from "../../store/themeStore"
 import { useNavigation } from "@react-navigation/native"
 import { useUtils } from "../../queries/useUtils"
@@ -31,10 +42,6 @@ const GameMode = ({ game_mode, handleGameMode, game }) => {
     const showStore = isIOSActive && isStoreActive
     
 
-  const getGameModeIcon = () => {
-    return "gamepad"
-  }
-
   const getStoreButtonText = () => {
     if (!game?.game_name) return "Game Store";
     
@@ -54,21 +61,21 @@ const GameMode = ({ game_mode, handleGameMode, game }) => {
   }
 
   const getStoreIcon = () => {
-    if (!game?.game_name) return "storefront-outline";
+    if (!game?.game_name) return StoreIcon;
     
     const gameName = game.game_name.toLowerCase();
     if (gameName.includes('free fire') || gameName.includes('freefire')) {
-      return "diamond-outline";
+      return Diamond01Icon;
     } else if (gameName.includes('pubg')) {
-      return "cube-outline"; // Represents UC/items boxes
+      return CubeIcon;
     } else if (gameName.includes('efootball')) {
-      return "football-outline";
+      return FootballIcon;
     } else if (gameName.includes('mlbb')) {
-      return "diamond-outline"; // MLBB also uses diamonds
+      return Diamond01Icon;
     } else if (gameName.includes('chess')) {
-      return "trophy-outline";
+      return Trophy;
     }
-    return "storefront-outline";
+    return StoreIcon;
   }
 
   const handleStoreNavigation = () => {
@@ -87,7 +94,6 @@ const GameMode = ({ game_mode, handleGameMode, game }) => {
   }
 
   const renderGameCard = ({ item, index }) => {
-    const iconName = getGameModeIcon(item)
     const cardColor = isLight ? '#1a1a1a' : '#ffffff'
     const accentAlt = isLight ? '#555555' : '#aaaaaa'
 
@@ -114,11 +120,7 @@ const GameMode = ({ game_mode, handleGameMode, game }) => {
         {/* Center Content */}
         <View style={styles.cardContent}>
           <View style={[styles.iconWrapper, isLight ? styles.iconWrapperLight : styles.iconWrapperDark, { borderColor: cardColor }]}>
-            <MaterialIcons 
-              name={iconName} 
-              size={24} 
-              color={cardColor} 
-            />
+            <AppIcon icon={GamepadIcon} size={iconSize.lg} color={cardColor} />
           </View>
           <View style={styles.textContent}>
             <Text style={[styles.modeLabel, { color: cardColor }]}>MODE</Text>
@@ -129,11 +131,7 @@ const GameMode = ({ game_mode, handleGameMode, game }) => {
         {/* Right Arrow */}
         <View style={styles.arrowContainer}>
           <View style={[styles.arrowLine, { backgroundColor: cardColor }]} />
-          <Ionicons 
-            name="chevron-forward" 
-            size={20} 
-            color={cardColor} 
-          />
+          <AppIcon icon={ChevronRightIcon} size={iconSize.md} color={cardColor} />
         </View>
       </Pressable>
     )
@@ -207,10 +205,10 @@ const GameMode = ({ game_mode, handleGameMode, game }) => {
               
               {/* Left Side - Icon */}
               <View style={styles.indexContainer}>
-                <Ionicons 
-                  name={getStoreIcon()} 
-                  size={20} 
-                  color={isLight ? '#1a1a1a' : '#ffffff'} 
+                <AppIcon
+                  icon={getStoreIcon()}
+                  size={iconSize.md}
+                  color={isLight ? '#1a1a1a' : '#ffffff'}
                 />
                 <View style={[styles.indexLine, { backgroundColor: isLight ? '#1a1a1a' : '#ffffff' }]} />
               </View>
@@ -218,10 +216,10 @@ const GameMode = ({ game_mode, handleGameMode, game }) => {
               {/* Center Content */}
               <View style={styles.cardContent}>
                 <View style={[styles.iconWrapper, isLight ? styles.iconWrapperLight : styles.iconWrapperDark, { borderColor: isLight ? '#1a1a1a' : '#ffffff' }]}>
-                  <Ionicons 
-                    name="storefront-outline" 
-                    size={24} 
-                    color={isLight ? '#1a1a1a' : '#ffffff'} 
+                  <AppIcon
+                    icon={StoreIcon}
+                    size={iconSize.lg}
+                    color={isLight ? '#1a1a1a' : '#ffffff'}
                   />
                 </View>
                 <View style={styles.textContent}>
@@ -233,10 +231,10 @@ const GameMode = ({ game_mode, handleGameMode, game }) => {
               {/* Right Arrow */}
               <View style={styles.arrowContainer}>
                 <View style={[styles.arrowLine, { backgroundColor: isLight ? '#1a1a1a' : '#ffffff' }]} />
-                <Ionicons 
-                  name="chevron-forward" 
-                  size={20} 
-                  color={isLight ? '#1a1a1a' : '#ffffff'} 
+                <AppIcon
+                  icon={ChevronRightIcon}
+                  size={iconSize.md}
+                  color={isLight ? '#1a1a1a' : '#ffffff'}
                 />
               </View>
             </Pressable>
@@ -249,10 +247,10 @@ const GameMode = ({ game_mode, handleGameMode, game }) => {
         onPress={() => navigation.goBack()} 
         style={[styles.backButton, isLight ? styles.backButtonLight : styles.backButtonDark]}
       >
-        <Ionicons 
-          name="chevron-back" 
-          size={24} 
-          color={isLight ? "#1a1a1a" : "#ffffff"} 
+        <AppIcon
+          icon={ChevronLeftIcon}
+          size={iconSize.lg}
+          color={isLight ? "#1a1a1a" : "#ffffff"}
         />
       </Pressable>
     </View>

@@ -11,10 +11,11 @@ import StampID from "../StampID"
 import { useThemeStore } from "../../../store/themeStore"
 import { useAuthStore } from "../../../store/authStore"
 import { Time } from "../Time"
-import { scaleHeight, scaleWidth } from "../../../utils/scaling"
 import SettingInfo from "../SettingInfo"
-import { Fontisto, MaterialIcons } from "@expo/vector-icons"
+import { AppIcon } from "../../../components/common/AppIcon"
+import { Flag01Icon } from "@hugeicons/core-free-icons"
 import { StyleSheet } from "react-native"
+import { spacing, iconSize } from '../../../theme/typography';
 
 
 /**
@@ -93,7 +94,7 @@ const MatchCard = ({
                   activeOpacity={0.85}
                 >
                   <View style={localStyles.reportButtonContent}>
-                    <MaterialIcons name="flag" size={scaleWidth(16)} color={isLight ? "#ffffff" : "#000000"} />
+                    <AppIcon icon={Flag01Icon} size={iconSize.sm} color={isLight ? "#ffffff" : "#000000"} />
                     <Text style={[localStyles.reportButtonText, { color: isLight ? '#ffffff' : '#000000' }]}>Report Match</Text>
                   </View>
                 </Pressable>
@@ -146,15 +147,15 @@ const localStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
-    paddingVertical: scaleHeight(6),
-    paddingHorizontal: scaleWidth(2),
-    gap: scaleWidth(12),
+    paddingVertical: 6,
+    paddingHorizontal: spacing.xxs,
+    gap: spacing.md,
   },
   reportButton: {
-    paddingHorizontal: scaleWidth(16),
-    paddingVertical: scaleHeight(9),
-    borderRadius: scaleWidth(24),
-    minHeight: scaleHeight(36),
+    paddingHorizontal: spacing.lg,
+    paddingVertical: 9,
+    borderRadius: spacing["2xl"],
+    minHeight: 36,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000000',
@@ -170,10 +171,10 @@ const localStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: scaleWidth(6),
+    gap: 6,
   },
   reportButtonText: {
-    fontSize: scaleWidth(13),
+    fontSize: 13,
     fontWeight: '700',
     letterSpacing: 0.5,
   },

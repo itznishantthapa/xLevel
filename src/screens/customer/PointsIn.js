@@ -14,7 +14,6 @@ import {
 } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useNavigation } from "@react-navigation/native"
-import { FontAwesome, FontAwesome6, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons"
 import { useThemeStore } from "../../store/themeStore"
 import { useState } from "react"
 import Toast from "react-native-simple-toast"
@@ -23,7 +22,14 @@ import AppHeader from "./header/AppHeader"
 import { usePointsIn } from "../../queries/useMutation/usePointsIn"
 import CoolButton from "../../component/customer/common/CoolButton"
 import { useUtils } from "../../queries/useUtils"
-import { scaleWidth, scaleHeight } from "../../utils/scaling"
+import { AppIcon, PointsIcon } from "../../components/common/AppIcon"
+import {
+  QrCodeIcon,
+  AlertCircleIcon,
+  CheckmarkCircle01Icon,
+  CloudUploadIcon,
+} from "@hugeicons/core-free-icons"
+import { fontSize, spacing, radius, iconSize } from "../../theme/typography"
 
 const PAYMENT_AVATARS = [
   require("../../assets/esewa.png"),
@@ -31,8 +37,8 @@ const PAYMENT_AVATARS = [
   require("../../assets/bank.png"),
 ]
 
-const PAYMENT_AVATAR_SIZE = scaleWidth(32)
-const PAYMENT_AVATAR_OVERLAP = scaleWidth(-10)
+const PAYMENT_AVATAR_SIZE = spacing['3xl']
+const PAYMENT_AVATAR_OVERLAP = -10
 
 const PointsIn = () => {
   const navigation = useNavigation()
@@ -183,7 +189,7 @@ const PointsIn = () => {
                       />
                     ) : (
                       <View style={styles.qrPlaceholder}>
-                        <Ionicons name="qr-code-outline" size={scaleWidth(100)} color={colors.textSecondary} />
+                        <AppIcon icon={QrCodeIcon} size={100} color={colors.textSecondary} />
                         <Text style={[styles.qrPlaceholderText, { color: colors.textSecondary }]}>
                           Loading QR Code...
                         </Text>
@@ -233,9 +239,8 @@ const PointsIn = () => {
                           shadowRadius: 4.5,
                         }
                       ]}>
-                        <MaterialCommunityIcons
-                          name="star-four-points-outline"
-                          size={scaleWidth(16)}
+                        <PointsIcon
+                          size={iconSize.sm}
                           color={isLight ? "#ffffff" : "#20c997"}
                         />
                       </View>
@@ -255,7 +260,7 @@ const PointsIn = () => {
                     </View>
                     {errors.amount ? (
                       <View style={styles.errorContainer}>
-                        <Ionicons name="alert-circle" size={scaleWidth(14)} color="#FF4444" />
+                        <AppIcon icon={AlertCircleIcon} size={iconSize.xs} color="#FF4444" />
                         <Text style={styles.errorText}>{errors.amount}</Text>
                       </View>
                     ) : null}
@@ -282,14 +287,14 @@ const PointsIn = () => {
                               <Text style={[styles.imageFileName, { color: colors.text }]}>
                                 Screenshot selected
                               </Text>
-                              <FontAwesome name="check-circle" size={scaleWidth(20)} color="#00bf63" />
+                              <AppIcon icon={CheckmarkCircle01Icon} size={iconSize.md} color="#00bf63" />
                             </View>
                             <Text style={[styles.changeImageText, { color: colors.textSecondary }]}>Tap to change</Text>
                           </View>
                         </View>
                       ) : (
                         <View style={styles.uploadButtonContent}>
-                          <Ionicons name="cloud-upload-outline" size={scaleWidth(32)} color={colors.textSecondary} />
+                          <AppIcon icon={CloudUploadIcon} size={iconSize.xl + 4} color={colors.textSecondary} />
                           <Text style={[styles.uploadButtonText, { color: colors.textSecondary }]}>
                             Payment Screenshot
                           </Text>
@@ -298,7 +303,7 @@ const PointsIn = () => {
                     </Pressable>
                     {errors.screenshot ? (
                       <View style={styles.errorContainer}>
-                        <Ionicons name="alert-circle" size={scaleWidth(14)} color="#FF4444" />
+                        <AppIcon icon={AlertCircleIcon} size={iconSize.xs} color="#FF4444" />
                         <Text style={styles.errorText}>{errors.screenshot}</Text>
                       </View>
                     ) : null}
@@ -307,7 +312,7 @@ const PointsIn = () => {
               </View>
             </ScrollView>
 
-            <View style={[styles.footer, Platform.OS === "android" && { marginBottom: scaleHeight(10) }]}>
+            <View style={[styles.footer, Platform.OS === "android" && { marginBottom: spacing.sm }]}>
               <CoolButton handlePress={handleSubmit} disableBtn={disableBtn} title={'Add Points'} />
             </View>
           </View>
@@ -325,12 +330,12 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   footer: {
-    paddingHorizontal: scaleWidth(20),
+    paddingHorizontal: spacing.xl,
   },
   scrollContent: {
     flexGrow: 1,
     alignItems: "center",
-    paddingBottom: scaleHeight(24),
+    paddingBottom: spacing['2xl'],
   },
   contentColumn: {
     width: "90%",
@@ -338,37 +343,37 @@ const styles = StyleSheet.create({
   },
   heroSection: {
     alignItems: "center",
-    marginTop: scaleHeight(8),
-    marginBottom: scaleHeight(24),
+    marginTop: spacing.sm,
+    marginBottom: spacing['2xl'],
   },
   heroTitle: {
-    fontSize: scaleWidth(20),
+    fontSize: fontSize.xl,
     fontWeight: "700",
     textAlign: "center",
   },
   heroSubtitle: {
-    marginTop: scaleHeight(6),
-    fontSize: scaleWidth(14),
+    marginTop: spacing.xs + 2,
+    fontSize: fontSize.base,
     fontWeight: "400",
     textAlign: "center",
   },
   qrCard: {
     width: "100%",
     aspectRatio: 1,
-    borderRadius: scaleWidth(10),
-    paddingTop: scaleHeight(24),
-    paddingBottom: scaleHeight(20),
-    paddingHorizontal: scaleWidth(20),
+    borderRadius: spacing.sm + 2,
+    paddingTop: spacing['2xl'],
+    paddingBottom: spacing.xl,
+    paddingHorizontal: spacing.xl,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: scaleHeight(28),
+    marginBottom: spacing['2xl'] + 4,
   },
   qrCardShadowLight: {
-    borderWidth: scaleWidth(2),
+    borderWidth: 2,
     borderColor: "#666666",
   },
   qrCardShadowDark: {
-    borderWidth: scaleWidth(2),
+    borderWidth: 2,
     borderColor: "#ffffff",
   },
   qrImageWrapper: {
@@ -385,29 +390,29 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    gap: scaleHeight(10),
+    gap: spacing.sm + 2,
   },
   qrPlaceholderText: {
-    fontSize: scaleWidth(13),
+    fontSize: fontSize.sm + 1,
     fontWeight: "500",
   },
   brandSection: {
     alignItems: "center",
-    marginTop: scaleHeight(14),
-    gap: scaleHeight(10),
+    marginTop: fontSize.base,
+    gap: spacing.sm + 2,
   },
   brandTitleRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: scaleWidth(6),
+    gap: spacing.xs + 2,
   },
   brandName: {
-    fontSize: scaleWidth(20),
+    fontSize: fontSize.xl,
     fontWeight: "900",
     letterSpacing: 0.2,
   },
   brandWith: {
-    fontSize: scaleWidth(14),
+    fontSize: fontSize.base,
     fontWeight: "500",
   },
   paymentAvatarRow: {
@@ -429,58 +434,52 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   inputContainer: {
-    marginBottom: scaleHeight(20),
+    marginBottom: spacing.xl,
   },
   uploadContainer: {
-    marginBottom: scaleHeight(20),
+    marginBottom: spacing.xl,
   },
   inputLabel: {
-    fontSize: scaleWidth(15),
+    fontSize: fontSize.base + 1,
     fontWeight: "600",
-    marginBottom: scaleHeight(10),
+    marginBottom: spacing.sm + 2,
   },
   inputWrapper: {
     flexDirection: "row",
     alignItems: "center",
-    borderWidth: scaleWidth(2),
-    borderRadius: scaleWidth(25),
-    paddingHorizontal: scaleWidth(8),
-    gap: scaleWidth(12),
+    borderWidth: 2,
+    borderRadius: radius.pill - 7,
+    paddingHorizontal: spacing.sm,
+    gap: spacing.md,
   },
   pointsIconContainer: {
-    width: scaleWidth(32),
-    height: scaleWidth(32),
-    borderRadius: scaleWidth(16),
+    width: spacing['3xl'],
+    height: spacing['3xl'],
+    borderRadius: spacing.lg,
     justifyContent: "center",
     alignItems: "center",
   },
   input: {
     flex: 1,
-    paddingVertical: scaleHeight(14),
-    fontSize: scaleWidth(16),
+    paddingVertical: fontSize.base,
+    fontSize: fontSize.md,
   },
   uploadButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: scaleWidth(2),
-    borderRadius: scaleWidth(15),
-    // borderTopRightRadius: scaleWidth(0),
-    // borderTopLeftRadius: scaleWidth(0),
-    // borderBottomLeftRadius: scaleWidth(10),
-    // borderBottomRightRadius: scaleWidth(10),
-
-
-    paddingVertical: scaleHeight(20),
-    paddingHorizontal: scaleWidth(16),
+    borderWidth: 2,
+    borderRadius: radius.lg + 3,
+    paddingVertical: spacing.xl,
+    paddingHorizontal: spacing.lg,
   },
   uploadButtonContent: {
     alignItems: "center",
     justifyContent: "center",
-    gap: scaleHeight(8),
+    gap: spacing.sm,
   },
   uploadButtonText: {
-    fontSize: scaleWidth(15),
+    fontSize: fontSize.base + 1,
     fontWeight: "500",
   },
   selectedImageContainer: {
@@ -488,12 +487,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     width: "100%",
-    gap: scaleWidth(12),
+    gap: spacing.md,
   },
   selectedImage: {
-    width: scaleWidth(60),
-    height: scaleWidth(60),
-    borderRadius: scaleWidth(8),
+    width: 60,
+    height: 60,
+    borderRadius: radius.sm,
   },
   imageTextContainer: {
     flex: 1,
@@ -501,16 +500,16 @@ const styles = StyleSheet.create({
   screenshotTitleRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: scaleWidth(8),
-    marginBottom: scaleHeight(4),
+    gap: spacing.sm,
+    marginBottom: spacing.xs,
   },
 
   imageFileName: {
-    fontSize: scaleWidth(15),
+    fontSize: fontSize.base + 1,
     fontWeight: "600",
   },
   changeImageText: {
-    fontSize: scaleWidth(13),
+    fontSize: fontSize.sm + 1,
     fontWeight: "400",
   },
   uploadButtonWithImage: {
@@ -519,11 +518,11 @@ const styles = StyleSheet.create({
   errorContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: scaleWidth(4),
-    marginTop: scaleHeight(4),
+    gap: spacing.xs,
+    marginTop: spacing.xs,
   },
   errorText: {
-    fontSize: scaleWidth(12),
+    fontSize: fontSize.sm,
     fontWeight: "500",
     color: "#FF4444",
   },

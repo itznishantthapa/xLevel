@@ -16,7 +16,7 @@ import { FlashList } from "@shopify/flash-list";
 import { useThemeStore } from '../../../store/themeStore';
 import AppHeader from '../../../screens/customer/header/AppHeader';
 import OpenGameCard from '../cards/OpenGameCard';
-import { scaleHeight, scaleWidth } from '../../../utils/scaling';
+import { fontSize, spacing } from '../../../theme/typography';
 
 // Constants
 const { width, height } = Dimensions.get('window');
@@ -298,10 +298,10 @@ const styles = StyleSheet.create({
   },
   filterChip: {
     backgroundColor: 'transparent',
-    paddingHorizontal: scaleWidth(12),
-    paddingVertical: scaleHeight(5),
-    borderRadius: scaleWidth(14),
-    marginRight: scaleWidth(8),
+    paddingHorizontal: spacing.md,
+    paddingVertical: 5,
+    borderRadius: fontSize.base,
+    marginRight: spacing.sm,
     borderWidth: 1,
     borderColor: '#ffffff',
 

@@ -1496,6 +1496,16 @@
   dependencies:
     "@hapi/hoek" "^9.0.0"
 
+"@hugeicons/core-free-icons@^4.2.2":
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/@hugeicons/core-free-icons/-/core-free-icons-4.2.2.tgz#96e627ec54c824bf7ad4bc3a375e798e8c1c26f7"
+  integrity sha512-fjQW3p6cwoJmwK3oCnV8Z3PC5sHihDvr2jkAHax8cxqp62GaV/D7B/Rnao+JwicW8fmLZUQ6QrzWfoyMFOEQlQ==
+
+"@hugeicons/react-native@^1.0.15":
+  version "1.0.15"
+  resolved "https://registry.yarnpkg.com/@hugeicons/react-native/-/react-native-1.0.15.tgz#d16ef57e70fedf37923d53d394a3178e82465324"
+  integrity sha512-YKg+k16uz7FRgq/ReaWrf0qzdRDOkEruQBE4/oVWZ2qZXq9T4mqj3P3HoZ7Uk/pi8KVlpZTi7TAokwizsQMbFA==
+
 "@isaacs/cliui@^8.0.2":
   version "8.0.2"
   resolved "https://registry.yarnpkg.com/@isaacs/cliui/-/cliui-8.0.2.tgz#b37667b7bc181c168782259bab42474fbf52b550"

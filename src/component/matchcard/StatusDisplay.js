@@ -1,7 +1,7 @@
 import { View, Text } from "react-native"
-import { MaterialCommunityIcons } from "@expo/vector-icons"
+import { PointsIcon } from "../../components/common/AppIcon"
 import { sharedStyles } from "./sharedStyleAndInfo"
-import { scaleHeight, scaleWidth } from "../../utils/scaling"
+import { fontSize, spacing, iconSize } from '../../theme/typography';
 
 
 const StatusDisplay = ({ game, isLight, win_pot, user }) => {
@@ -57,11 +57,11 @@ const StatusDisplay = ({ game, isLight, win_pot, user }) => {
   }
 
   const status = getStatusContent()
-  const clipSize = scaleWidth(14)
-  const borderWidth = scaleWidth(2)
+  const clipSize = fontSize.base
+  const borderWidth = spacing.xxs
 
   return (
-    <View style={{ marginTop: scaleHeight(10) }}>
+    <View style={{ marginTop: fontSize.xs }}>
       {/* Outer container with geometric cuts */}
       <View style={{
         position: 'relative',
@@ -143,7 +143,7 @@ const StatusDisplay = ({ game, isLight, win_pot, user }) => {
           position: 'absolute',
           top: '50%',
           left: 0,
-          width: scaleWidth(6),
+          width: 6,
           height: borderWidth,
           backgroundColor: status.accentColor,
           marginTop: -borderWidth / 2,
@@ -152,7 +152,7 @@ const StatusDisplay = ({ game, isLight, win_pot, user }) => {
           position: 'absolute',
           top: '50%',
           right: 0,
-          width: scaleWidth(6),
+          width: 6,
           height: borderWidth,
           backgroundColor: status.accentColor,
           marginTop: -borderWidth / 2,
@@ -161,30 +161,30 @@ const StatusDisplay = ({ game, isLight, win_pot, user }) => {
         {/* Main container */}
         <View style={{
           backgroundColor: status.backgroundColor,
-          borderWidth: scaleWidth(1),
+          borderWidth: 1,
           borderColor: status.accentColor + '50',
-          paddingVertical: scaleHeight(12),
-          paddingHorizontal: scaleWidth(20),
+          paddingVertical: spacing.md,
+          paddingHorizontal: spacing.xl,
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: scaleWidth(10),
+          gap: fontSize.xs,
           overflow: 'hidden',
         }}>
           {/* Left geometric element */}
           <View style={{
             flexDirection: 'row',
             alignItems: 'center',
-            gap: scaleWidth(3),
+            gap: 3,
           }}>
             <View style={{
-              width: scaleWidth(4),
-              height: scaleWidth(4),
+              width: spacing.xs,
+              height: spacing.xs,
               backgroundColor: status.accentColor,
               transform: [{ rotate: '45deg' }],
             }} />
             <View style={{
-              width: scaleWidth(16),
+              width: spacing.lg,
               height: borderWidth,
               backgroundColor: status.accentColor,
             }} />
@@ -194,8 +194,8 @@ const StatusDisplay = ({ game, isLight, win_pot, user }) => {
             style={{
               fontWeight: "900",
               color: status.color,
-              fontSize: scaleWidth(15),
-              letterSpacing: scaleWidth(1.5),
+              fontSize: 15,
+              letterSpacing: 1.5,
               textTransform: 'uppercase',
               textShadowColor: status.color,
               textShadowOffset: { width: 0, height: 0 },
@@ -210,13 +210,13 @@ const StatusDisplay = ({ game, isLight, win_pot, user }) => {
           </Text>
           
           {status.amount && (
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: scaleWidth(4), flexShrink: 1 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, flexShrink: 1 }}>
               <Text 
                 style={{
                   color: status.amountColor || status.color,
                   fontWeight: "900",
-                  fontSize: scaleWidth(17),
-                  letterSpacing: scaleWidth(0.5),
+                  fontSize: 17,
+                  letterSpacing: 0.5,
                   textShadowColor: status.amountColor || status.color,
                   textShadowOffset: { width: 0, height: 0 },
                   textShadowRadius: 1,
@@ -227,9 +227,8 @@ const StatusDisplay = ({ game, isLight, win_pot, user }) => {
               >
                 {status.amount}
               </Text>
-              <MaterialCommunityIcons
-                name="star-four-points-outline"
-                size={scaleWidth(16)}
+              <PointsIcon
+                size={iconSize.sm}
                 color={status.amountColor || status.color}
               />
             </View>
@@ -239,16 +238,16 @@ const StatusDisplay = ({ game, isLight, win_pot, user }) => {
           <View style={{
             flexDirection: 'row',
             alignItems: 'center',
-            gap: scaleWidth(3),
+            gap: 3,
           }}>
             <View style={{
-              width: scaleWidth(16),
+              width: spacing.lg,
               height: borderWidth,
               backgroundColor: status.accentColor,
             }} />
             <View style={{
-              width: scaleWidth(4),
-              height: scaleWidth(4),
+              width: spacing.xs,
+              height: spacing.xs,
               backgroundColor: status.accentColor,
               transform: [{ rotate: '45deg' }],
             }} />

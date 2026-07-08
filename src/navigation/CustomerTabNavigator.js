@@ -1,178 +1,145 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { StyleSheet, Text, View, Pressable, Platform } from 'react-native';
+import { useSafeAreaInsets, initialWindowMetrics } from 'react-native-safe-area-context';
+import { AppIcon } from '../components/common/AppIcon';
+import {
+  Home01Icon,
+  GamepadIcon,
+  StoreIcon,
+  Exchange01Icon,
+  Notification01Icon,
+} from '@hugeicons/core-free-icons';
+
 import Home from '../screens/customer/Home';
 import OpenGames from '../screens/customer/OpenGames';
-import { StyleSheet, Text, View, TouchableOpacity, Platform } from 'react-native';
-import { MaterialCommunityIcons, Feather, Entypo, Octicons, Foundation } from "@expo/vector-icons";
-import { useThemeStore } from '../store/themeStore';
+import GameStores from '../screens/customer/store/GameStores';
+import BuySell from '../screens/customer/store/Store';
 import Notify from '../screens/customer/Notify';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Store from '../screens/customer/store/Store';
-import { useUtils } from '../queries/useUtils';
+import { useThemeStore } from '../store/themeStore';
+import { fontSize, spacing, iconSize, lineHeight } from '../theme/typography';
 
 const Tab = createBottomTabNavigator();
 
+const TAB_ICONS = {
+  HomeTab: Home01Icon,
+  OpenGamesTab: GamepadIcon,
+  StoreTab: StoreIcon,
+  BuySellTab: Exchange01Icon,
+  Notification: Notification01Icon,
+};
+
+const TAB_CONFIG = [
+  { name: 'HomeTab', component: Home, label: 'Home' },
+  { name: 'OpenGamesTab', component: OpenGames, label: 'Matches' },
+  { name: 'StoreTab', component: GameStores, label: 'Store' },
+  { name: 'BuySellTab', component: BuySell, label: 'Buy & Sell' },
+  { name: 'Notification', component: Notify, label: 'Notification' },
+];
+
+const TAB_BAR_CONTENT_HEIGHT = 52;
+
+function getBottomInset(insets) {
+  const measuredInset = Math.max(
+    insets.bottom,
+    initialWindowMetrics?.insets?.bottom ?? 0,
+  );
+  const minimumInset = Platform.OS === 'android' ? 22 : spacing.sm;
+  return Math.max(measuredInset, minimumInset);
+}
+
+function renderTabIcon(routeName, focused, color) {
+  const icon = TAB_ICONS[routeName];
+  if (!icon) return null;
+
+  return (
+    <View style={[styles.iconWrap, focused && styles.iconWrapFocused]}>
+      <AppIcon
+        icon={icon}
+        size={iconSize.xl}
+        color={color}
+        strokeWidth={focused ? 2.2 : 1.8}
+      />
+    </View>
+  );
+}
+
+function renderTabLabel(label, focused, color) {
+  return (
+    <Text
+      style={[styles.tabLabel, { color }, focused && styles.tabLabelFocused]}
+      numberOfLines={1}
+    >
+      {label}
+    </Text>
+  );
+}
+
 export default function CustomerTabNavigator() {
-    const insets = useSafeAreaInsets();
-    const { isLight } = useThemeStore();
-    const { data: utils = [] } = useUtils();
-    const isIOSActive = !!utils?.is_ios_active;
+  const insets = useSafeAreaInsets();
+  const { isLight } = useThemeStore();
+  const bottomInset = getBottomInset(insets);
 
-    return (
-
-        <Tab.Navigator
-            screenOptions={{
-                headerShown: false,
-                tabBarActiveTintColor: '#00bf63',
-                tabBarInactiveTintColor: isLight ? '#000000' : 'rgba(255, 255, 255, 0.6)',
-                tabBarStyle: {
-                    height: 60 + insets.bottom,
-                    paddingBottom: insets.bottom,
-                    borderTopWidth: 0,
-                    backgroundColor: isLight ? '#ffffff' : '#000000',
-                },
-                tabBarButton: (props) => (
-                    <TouchableOpacity
-                        {...props}
-                        activeOpacity={0.7}
-                        style={props.style}
-                    />
-                ),
-                tabBarItemStyle: {
-                    paddingVertical: 4,
-                },
-            }}
-        >
-            <Tab.Screen
-                name="HomeTab"
-                component={Home}
-                options={{
-                    tabBarLabel: ({ focused, color }) => (
-                        <Text style={{
-                            color,
-                            fontSize: 11,
-                            fontWeight: focused ? '600' : '500',
-                            marginTop: 4
-                        }}>
-                            Home
-                        </Text>
-                    ),
-                    tabBarIcon: ({ focused, color }) => (
-                        <View style={[
-                            styles.tabIconContainer,
-                            focused && styles.focusedIconContainer
-                        ]}>
-                            {
-                                focused ? (
-                                    <Foundation name="home" size={22} color={color} />
-                                ) : (
-                                    <Feather name="home" size={22} color={color} />
-                                )
-                            }
-
-
-
-                        </View>
-                    ),
-                }}
-            />
-            <Tab.Screen
-                name="OpenGamesTab"
-                component={OpenGames}
-                options={{
-                    tabBarLabel: ({ focused, color }) => (
-                        <Text style={{
-                            color,
-                            fontSize: 11,
-                            fontWeight: focused ? '600' : '500',
-                            marginTop: 4,
-                        }}>
-                            Open Games
-                        </Text>
-                    ),
-                    tabBarIcon: ({ focused, color }) => (
-                        <View style={[
-                            styles.tabIconContainer,
-                            focused && styles.focusedIconContainer
-                        ]}>
-                            <MaterialCommunityIcons
-                                name={focused ? "gamepad-variant" : "gamepad-variant-outline"}
-                                size={28}
-                                color={color}
-                            />
-                        </View>
-                    ),
-                }}
-            />
-         
-                <Tab.Screen
-                    name="StoreTab"
-                    component={Store}
-                    options={{
-                        tabBarLabel: ({ focused, color }) => (
-                            <Text style={{
-                                color,
-                                fontSize: 11,
-                                fontWeight: focused ? '600' : '500',
-                                marginTop: 4,
-                            }}>
-                               {isIOSActive ? 'Buy & Sell' : 'Product'}
-                            </Text>
-                        ),
-                        tabBarIcon: ({ focused, color }) => (
-                            <View style={[
-                                styles.tabIconContainer,
-                                focused && styles.focusedIconContainer
-                            ]}>
-                                <MaterialCommunityIcons
-                                    name={focused ? "store-plus" : "store-plus-outline"}
-                                    size={28}
-                                    color={color}
-                                />
-                            </View>
-                        ),
-                    }}
-                />
-            
-
-            <Tab.Screen
-                name="Notification"
-                component={Notify}
-                options={{
-                    tabBarLabel: ({ focused, color }) => (
-                        <Text style={{
-                            color,
-                            fontSize: 11,
-                            fontWeight: focused ? '600' : '500',
-                            marginTop: 4
-                        }}>
-                            Notifications
-                        </Text>
-                    ),
-                    tabBarIcon: ({ focused, color }) => (
-                        <View style={[
-                            styles.tabIconContainer,
-                            focused && styles.focusedIconContainer
-                        ]}>
-                            <Octicons
-                                name={focused ? "bell-fill" : "bell"}
-                                size={21} color={color} />
-                        </View>
-                    ),
-                }}
-            />
-        </Tab.Navigator>
-    );
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: '#00bf63',
+        tabBarInactiveTintColor: isLight ? '#000000' : 'rgba(255, 255, 255, 0.6)',
+        safeAreaInsets: { top: 0, right: 0, bottom: bottomInset, left: 0 },
+        tabBarStyle: {
+          height: TAB_BAR_CONTENT_HEIGHT + bottomInset,
+          paddingTop: spacing.xs,
+          paddingBottom: bottomInset,
+          borderTopWidth: StyleSheet.hairlineWidth * 2,
+          borderTopColor: isLight ? '#E8E8E8' : '#1F1F1F',
+          backgroundColor: isLight ? '#FFFFFF' : '#000000',
+          elevation: 0,
+          shadowOpacity: 0,
+        },
+        tabBarItemStyle: {
+          height: TAB_BAR_CONTENT_HEIGHT,
+          paddingVertical: 0,
+        },
+        tabBarButton: (props) => (
+          <Pressable {...props} style={props.style} android_ripple={{ color: 'transparent' }} />
+        ),
+      }}
+    >
+      {TAB_CONFIG.map(({ name, component, label }) => (
+        <Tab.Screen
+          key={name}
+          name={name}
+          component={component}
+          options={{
+            tabBarLabel: ({ focused, color }) => renderTabLabel(label, focused, color),
+            tabBarIcon: ({ focused, color }) => renderTabIcon(name, focused, color),
+          }}
+        />
+      ))}
+    </Tab.Navigator>
+  );
 }
 
 const styles = StyleSheet.create({
-    tabIconContainer: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 28,
-        height: 28,
-    },
-    focusedIconContainer: {
-        transform: [{ scale: 1.1 }],
-    },
+  iconWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 32,
+    height: 32,
+  },
+  iconWrapFocused: {
+    transform: [{ scale: 1.04 }],
+  },
+  tabLabel: {
+    fontSize: fontSize.sm,
+    fontWeight: '500',
+    marginTop: 2,
+    lineHeight: lineHeight.sm,
+    textAlign: 'center',
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif',
+  },
+  tabLabelFocused: {
+    fontWeight: '700',
+  },
 });

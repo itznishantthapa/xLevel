@@ -5,16 +5,34 @@ import Loader from "../../component/Loader"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useEffect, useState } from "react"
 import { useNavigation } from "@react-navigation/native"
-import { AntDesign, Entypo, FontAwesome5, Ionicons, MaterialCommunityIcons, MaterialIcons, Octicons } from "@expo/vector-icons"
 import Toast from "react-native-simple-toast"
 import { useBottomSheet } from "../../context/BottomSheetContext"
+import { AppIcon } from "../../components/common/AppIcon"
+import {
+  User02Icon,
+  Edit02Icon,
+  Add01Icon,
+  GamepadIcon,
+  SparklesIcon,
+  ChevronRightIcon,
+  HistoryIcon,
+  Flag01Icon,
+  UserBlock01Icon,
+  ShieldUserIcon,
+  GavelIcon,
+  CopyrightIcon,
+  Delete02Icon,
+  Logout01Icon,
+  Moon02Icon,
+  Sun01Icon,
+} from "@hugeicons/core-free-icons"
+import { fontSize, iconSize, spacing, radius } from "../../theme/typography"
 
 // Store Imports
 import { useAuthStore } from "../../store/authStore"
 import { useThemeStore } from "../../store/themeStore"
 import { useGameProfiles } from "../../queries/useGameProfiles"
 import AppHeader from "./header/AppHeader"
-import { scaleWidth } from "../../utils/scaling"
 
 /**
  * Profile Screen Component
@@ -107,7 +125,7 @@ const Profile = () => {
                 <Image source={{ uri: user?.profile_picture }} style={styles.profileImage} />
               ) : (
                 <View style={[styles.profileImageFallback, { backgroundColor: colors.cardBackground }]}>
-                  <Octicons name="feed-person" size={32} color={colors.text} />
+                  <AppIcon icon={User02Icon} size={iconSize.xl + 4} color={colors.text} />
                 </View>
               )}
               
@@ -119,10 +137,10 @@ const Profile = () => {
                   left: '50%',
                   transform: [{ translateX: -12 }],
                   backgroundColor: isLight ? '#000000' : '#ffffff',
-                  paddingHorizontal: scaleWidth(6),
-                  paddingVertical: scaleWidth(2),
-                  borderRadius: scaleWidth(8),
-                  borderWidth: scaleWidth(1),
+                  paddingHorizontal: spacing.xs + 2,
+                  paddingVertical: spacing.xxs,
+                  borderRadius: radius.sm,
+                  borderWidth: 1,
                   borderColor: isLight ? '#ffffff' : '#000000',
                   shadowColor: '#000000',
                   shadowOffset: { width: 0, height: 2 },
@@ -132,7 +150,7 @@ const Profile = () => {
                 }}>
                   <Text style={{
                     color: isLight ? '#ffffff' : '#000000',
-                    fontSize: scaleWidth(8),
+                    fontSize: fontSize.xxs,
                     fontWeight: 'bold',
                     textAlign: 'center'
                   }}>
@@ -155,7 +173,7 @@ const Profile = () => {
             </View>
 
             <Pressable onPress={handleEditProfile} style={styles.editButton}>
-              <MaterialIcons name="edit" size={22} color={colors.text} />
+              <AppIcon icon={Edit02Icon} size={22} color={colors.text} />
             </Pressable>
           </View>
 
@@ -165,7 +183,7 @@ const Profile = () => {
               <View style={styles.sectionHeader}>
                 <Text style={[styles.sectionTitle, { color: colors.text }]}>Game Profiles</Text>
                 <Pressable style={styles.addButton} onPress={() => navigation.navigate("setupGameInfo")}>
-                  <MaterialIcons name="add" size={18} color="#00bf63" />
+                  <AppIcon icon={Add01Icon} size={iconSize.sm + 2} color="#00bf63" />
                   <Text style={styles.addButtonText}>Add Game Profiles</Text>
                 </Pressable>
               </View>
@@ -188,7 +206,7 @@ const Profile = () => {
                     >
                       <View style={styles.gameCardHeader}>
                         <Text style={[styles.gameCardTitle, { color: colors.text }]}>{profile.game_name}</Text>
-                        <MaterialIcons name="edit" size={16} color={colors.textTertiary} />
+                        <AppIcon icon={Edit02Icon} size={iconSize.sm} color={colors.textTertiary} />
                       </View>
                       <Text style={[styles.gameCardDetails, { color: colors.textSecondary }]}>
                         {profile.game_username}
@@ -198,7 +216,7 @@ const Profile = () => {
                 </View>
               ) : (
                 <View style={[styles.emptyState, { backgroundColor: colors.cardBackground }]}>
-                  <MaterialIcons name="sports-esports" size={28} color={colors.textTertiary} />
+                  <AppIcon icon={GamepadIcon} size={iconSize.xl} color={colors.textTertiary} />
                   <Text style={[styles.emptyStateText, { color: colors.textTertiary }]}>
                     No game profiles added yet
                   </Text>
@@ -215,10 +233,10 @@ const Profile = () => {
                   onPress={() => navigation.navigate("exchange")}
                 >
                   <View style={styles.actionContent}>
-                    <Ionicons name="sparkles-outline" size={20} color={colors.text} />
+                    <AppIcon icon={SparklesIcon} size={iconSize.md} color={colors.text} />
                     <Text style={[styles.actionText, { color: colors.text }]}>Enhancements</Text>
                   </View>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
+                  <AppIcon icon={ChevronRightIcon} size={iconSize.md} color={colors.textTertiary} />
                 </Pressable>
                 </View>
             </View>
@@ -244,20 +262,7 @@ const Profile = () => {
                     </Text>
                   </View>
                   <View style={styles.themeToggle}>
-                    <MaterialIcons name={isLight ? "dark-mode" : "light-mode"} size={24} color={colors.text} />
-                  </View>
-                </Pressable>
-              </View>
-              <View style={[styles.settingsCard, { backgroundColor: colors.cardBackground }]}>
-                <Pressable onPress={() => navigation.navigate('accessBar')} style={styles.settingRow}>
-                  <View style={styles.settingInfo}>
-                    <Text style={[styles.settingTitle, { color: colors.text }]}>AccessBar</Text>
-                    <Text style={[styles.settingDescription, { color: colors.textTertiary }]}>
-                      Personalize your accessbar
-                    </Text>
-                  </View>
-                  <View style={styles.themeToggle}>
-                    <AntDesign name={'swap'} size={24} color={colors.text} />
+                    <AppIcon icon={isLight ? Moon02Icon : Sun01Icon} size={iconSize.lg} color={colors.text} />
                   </View>
                 </Pressable>
               </View>
@@ -272,10 +277,10 @@ const Profile = () => {
                   onPress={() => navigation.navigate("match")}
                 >
                   <View style={styles.actionContent}>
-                    <MaterialIcons name="history" size={20} color={colors.text} />
+                    <AppIcon icon={HistoryIcon} size={iconSize.md} color={colors.text} />
                     <Text style={[styles.actionText, { color: colors.text }]}>Game History</Text>
                   </View>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
+                  <AppIcon icon={ChevronRightIcon} size={iconSize.md} color={colors.textTertiary} />
                 </Pressable>
 
                 <Pressable
@@ -283,10 +288,10 @@ const Profile = () => {
                   onPress={() => navigation.navigate("reportList")}
                 >
                   <View style={styles.actionContent}>
-                    <MaterialIcons name="flag" size={20} color={colors.text} />
+                    <AppIcon icon={Flag01Icon} size={iconSize.md} color={colors.text} />
                     <Text style={[styles.actionText, { color: colors.text }]}>My Reports</Text>
                   </View>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
+                  <AppIcon icon={ChevronRightIcon} size={iconSize.md} color={colors.textTertiary} />
                 </Pressable>
 
                 <Pressable
@@ -294,10 +299,10 @@ const Profile = () => {
                   onPress={() => navigation.navigate("blockedUserList")}
                 >
                   <View style={styles.actionContent}>
-                    <FontAwesome5 name="users-slash" size={18} color={colors.text} />
+                    <AppIcon icon={UserBlock01Icon} size={iconSize.sm + 2} color={colors.text} />
                     <Text style={[styles.actionText, { color: colors.text }]}>Blocked Users</Text>
                   </View>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
+                  <AppIcon icon={ChevronRightIcon} size={iconSize.md} color={colors.textTertiary} />
                 </Pressable>
               </View>
             </View>
@@ -312,10 +317,10 @@ const Profile = () => {
                   onPress={handleOpenPrivacyPolicy}
                 >
                   <View style={styles.actionContent}>
-                    <MaterialIcons name="privacy-tip" size={20} color={colors.text} />
+                    <AppIcon icon={ShieldUserIcon} size={iconSize.md} color={colors.text} />
                     <Text style={[styles.actionText, { color: colors.text }]}>Privacy Policy</Text>
                   </View>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
+                  <AppIcon icon={ChevronRightIcon} size={iconSize.md} color={colors.textTertiary} />
                 </Pressable>
 
                 <Pressable
@@ -323,20 +328,20 @@ const Profile = () => {
                   onPress={handleOpenTermsOfService}
                 >
                   <View style={styles.actionContent}>
-                    <MaterialIcons name="gavel" size={20} color={colors.text} />
+                    <AppIcon icon={GavelIcon} size={iconSize.md} color={colors.text} />
                     <Text style={[styles.actionText, { color: colors.text }]}>Terms of Service</Text>
                   </View>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
+                  <AppIcon icon={ChevronRightIcon} size={iconSize.md} color={colors.textTertiary} />
                 </Pressable>
                 <Pressable
                   style={styles.actionRow}
                   onPress={() => navigation.navigate("credits")}
                 >
                   <View style={styles.actionContent}>
-                    <AntDesign name="copyright" size={20} color={colors.text} />
+                    <AppIcon icon={CopyrightIcon} size={iconSize.md} color={colors.text} />
                     <Text style={[styles.actionText, { color: colors.text }]}>Credits & Attributions</Text>
                   </View>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
+                  <AppIcon icon={ChevronRightIcon} size={iconSize.md} color={colors.textTertiary} />
                 </Pressable>
               </View>
             </View>
@@ -351,10 +356,10 @@ const Profile = () => {
                   }
                 >
                   <View style={styles.actionContent}>
-                    <MaterialCommunityIcons name="delete-variant" size={20} color={colors.text} />
+                    <AppIcon icon={Delete02Icon} size={iconSize.md} color={colors.text} />
                     <Text style={[styles.actionText, { color: colors.text }]}>Deletion</Text>
                   </View>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
+                  <AppIcon icon={ChevronRightIcon} size={iconSize.md} color={colors.textTertiary} />
                 </Pressable>
                 <Pressable
                   style={styles.actionRow}
@@ -370,17 +375,17 @@ const Profile = () => {
                   }
                 >
                   <View style={styles.actionContent}>
-                    <Ionicons name="log-out-outline" size={20} color={colors.destructive} />
+                    <AppIcon icon={Logout01Icon} size={iconSize.md} color={colors.destructive} />
                     <Text style={[styles.actionText, { color: colors.destructive }]}>Logout</Text>
                   </View>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.textTertiary} />
+                  <AppIcon icon={ChevronRightIcon} size={iconSize.md} color={colors.textTertiary} />
                 </Pressable>
               </View>
             </View>
           </View>
 
           <View style={styles.versionFooter}>
-            <Text style={[styles.versionText, { color: colors.textTertiary }]}>Version 5.6 (56)</Text>
+            <Text style={[styles.versionText, { color: colors.textTertiary }]}>Version 5.7 (57)</Text>
           </View>
 
        

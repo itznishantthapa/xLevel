@@ -2,7 +2,19 @@ import { StyleSheet, Text, View, FlatList, StatusBar, RefreshControl, ActivityIn
 import React, { useCallback, useState, useMemo } from 'react';
 import { useThemeStore } from '../../../store/themeStore';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MaterialIcons, Ionicons } from '@expo/vector-icons';
+import { AppIcon } from '../../../components/common/AppIcon';
+import {
+  CheckmarkCircle01Icon,
+  HourglassIcon,
+  Cancel01Icon,
+  RefreshIcon,
+  Alert01Icon,
+  Exchange01Icon,
+  Flag01Icon,
+  Image01Icon,
+  AlertCircleIcon,
+} from '@hugeicons/core-free-icons';
+import { iconSize } from '../../../theme/typography';
 import AppHeader from '../header/AppHeader';
 import { useReports } from '../../../queries/useReports';
 import { useNetworkStatus } from '../../../hooks/useNetworkStatus';
@@ -70,13 +82,13 @@ const ReportList = () => {
   const getStatusIcon = (status) => {
     switch (status) {
       case 'resolved':
-        return <Ionicons name="checkmark-circle" size={18} color={colors.resolved} />;
+        return <AppIcon icon={CheckmarkCircle01Icon} size={iconSize.sm} color={colors.resolved} />;
       case 'pending':
-        return <MaterialIcons name="pending-actions" size={18} color={colors.pending} />;
+        return <AppIcon icon={HourglassIcon} size={iconSize.sm} color={colors.pending} />;
       case 'rejected':
-        return <MaterialIcons name="cancel" size={18} color={colors.rejected} />;
+        return <AppIcon icon={Cancel01Icon} size={iconSize.sm} color={colors.rejected} />;
       case 'under_review':
-        return <MaterialIcons name="sync" size={18} color={colors.under_review} />;
+        return <AppIcon icon={RefreshIcon} size={iconSize.sm} color={colors.under_review} />;
       default:
         return null;
     }
@@ -88,11 +100,11 @@ const ReportList = () => {
   const getReportTypeIcon = (type) => {
     switch (type) {
       case 'game_issue':
-        return <MaterialIcons name="report-problem" size={18} color="#ff4444" />;
+        return <AppIcon icon={Alert01Icon} size={iconSize.sm} color="#ff4444" />;
       case 'refund_agreement':
-        return <MaterialIcons name="currency-exchange" size={18} color="#00bf63" />;
+        return <AppIcon icon={Exchange01Icon} size={iconSize.sm} color="#00bf63" />;
       default:
-        return <MaterialIcons name="flag" size={18} color={colors.text} />;
+        return <AppIcon icon={Flag01Icon} size={iconSize.sm} color={colors.text} />;
     }
   };
 
@@ -219,7 +231,7 @@ const ReportList = () => {
         {/* Evidence count - Only for game_issue type */}
         {item.report_type === 'game_issue' && (
           <View style={styles.evidenceContainer}>
-            <MaterialIcons name="photo-library" size={16} color={colors.subText} />
+            <AppIcon icon={Image01Icon} size={iconSize.sm} color={colors.subText} />
             <Text style={[styles.evidenceText, { color: colors.subText }]}>
               {[item.evidence_1, item.evidence_2, item.evidence_3].filter(Boolean).length} Evidence(s) Uploaded
             </Text>
@@ -257,7 +269,7 @@ const ReportList = () => {
     if (isError) {
       return (
         <View style={styles.emptyContainer}>
-          <MaterialIcons name="error-outline" size={64} color={colors.destructive} />
+          <AppIcon icon={AlertCircleIcon} size={64} color={colors.destructive} />
           <Text style={[styles.emptyText, { color: colors.text }]}>Failed to load reports</Text>
           <Text style={[styles.pullText, { color: colors.subText }]}>Pull down to retry</Text>
         </View>
@@ -266,7 +278,7 @@ const ReportList = () => {
 
     return (
       <View style={styles.emptyContainer}>
-        <MaterialIcons name="flag" size={64} color={colors.subText} />
+        <AppIcon icon={Flag01Icon} size={64} color={colors.subText} />
         <Text style={[styles.emptyText, { color: colors.text }]}>No reports submitted yet</Text>
         <Text style={[styles.pullText, { color: colors.subText }]}>Pull down to refresh</Text>
       </View>

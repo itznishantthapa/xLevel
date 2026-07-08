@@ -1,10 +1,10 @@
 import { View, Text, Pressable, Image } from "react-native"
-import { Octicons, MaterialCommunityIcons, Ionicons } from "@expo/vector-icons"
-import { scaleWidth } from "../../utils/scaling"
-
+import { AppIcon } from "../../components/common/AppIcon"
+import { UserIcon, CheckmarkCircle01Icon, ArrowTurnBackwardIcon } from "@hugeicons/core-free-icons"
 import { sharedStyles } from "./sharedStyleAndInfo"
 import { useBottomSheet } from "../../context/BottomSheetContext"
 import { FadingText } from "../customer/animation/FadingText"
+import { spacing, iconSize } from '../../theme/typography';
 
 
 const OpponentCard = ({ opponent, game, isLight, showOpponentSheet, handleConfirmedOpponent }) => {
@@ -22,7 +22,7 @@ const OpponentCard = ({ opponent, game, isLight, showOpponentSheet, handleConfir
         },
         game.status === "in_progress" && {
           borderColor: isLight ? "#000000" : "#ffffff",
-          borderWidth: scaleWidth(2),
+          borderWidth: spacing.xxs,
           backgroundColor: isLight ? "#f5f5f5" : "#1a1a1a",
         },
       ]}
@@ -43,7 +43,7 @@ const OpponentCard = ({ opponent, game, isLight, showOpponentSheet, handleConfir
           <Image source={{ uri: opponent.profile_picture }} style={sharedStyles.opponentAvatar} />
         ) : (
           <View style={[sharedStyles.opponentAvatarFallback, { backgroundColor: isLight ? "#dadada" : "#444444" }]}>
-            <Octicons name="feed-person" size={16} color={isLight ? "#333333" : "#EAEAEA"} />
+            <AppIcon icon={UserIcon} size={iconSize.sm} color={isLight ? "#333333" : "#EAEAEA"} />
           </View>
         )}
         <View style={sharedStyles.opponentInfo}>
@@ -62,9 +62,9 @@ const OpponentCard = ({ opponent, game, isLight, showOpponentSheet, handleConfir
                 ]}
               >
 
-                <MaterialCommunityIcons
-                  name="check-circle"
-                  size={scaleWidth(12)}
+                <AppIcon
+                  icon={CheckmarkCircle01Icon}
+                  size={spacing.md}
                   color={isLight ? "#000000" : "#ffffff"}
                 />
                 <Text style={[sharedStyles.confirmedText, { color: isLight ? "#000000" : "#ffffff" }]}>Confirmed</Text>
@@ -79,7 +79,7 @@ const OpponentCard = ({ opponent, game, isLight, showOpponentSheet, handleConfir
 
       {!opponent?.is_confirmed && (
         <View style={{ position: "absolute", right: 20, top: "40%" }}>
-          <Ionicons name="return-down-back-outline" size={35} color={"black"} />
+          <AppIcon icon={ArrowTurnBackwardIcon} size={28} color="black" />
         </View>
       )}
     </Pressable>

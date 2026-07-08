@@ -14,7 +14,8 @@ import {
   ScrollView,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Ionicons } from '@expo/vector-icons'
+import { AppIcon } from '../../components/common/AppIcon'
+import { ArrowLeft01Icon, Mail01Icon, LockIcon, EyeIcon, EyeOffIcon } from '@hugeicons/core-free-icons'
 import { useNavigation } from '@react-navigation/native'
 import { useState, useEffect } from 'react'
 import Animated, { 
@@ -30,7 +31,7 @@ import { useThemeStore } from '../../store/themeStore'
 import { postFCMToken } from '../../service/notificationService'
 import { checkFCMTokenInStorage } from '../../utils/tokenUtils';
 import { useNetworkStatus } from '../../hooks/useNetworkStatus';
-import { scaleWidth, scaleHeight } from '../../utils/scaling';
+import { fontSize, spacing, iconSize } from '../../theme/typography';
 
 
 // Define validation schema
@@ -217,8 +218,8 @@ const Login = () => {
           <View style={[styles.headerContent]}>
             {
                   Platform.OS === 'ios' && (
-                <Pressable style={[styles.backButton, { top: insets.top + scaleHeight(6) }]} onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-                  <Ionicons name="chevron-back" size={scaleWidth(25)} color={'white'} />
+                <Pressable style={[styles.backButton, { top: insets.top + 6 }]} onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                  <AppIcon icon={ArrowLeft01Icon} size={iconSize.xl} color="white" />
                 </Pressable>
                   )
             }
@@ -263,9 +264,9 @@ const Login = () => {
                 },
                 errors.email ? styles.inputWrapperError : {}
               ]}>
-                <Ionicons 
-                  name="mail-outline" 
-                  size={scaleWidth(20)} 
+                <AppIcon 
+                  icon={Mail01Icon}
+                  size={iconSize.md} 
                   color={errors.email ? "#ff4757" : "#00C851"} 
                   style={styles.inputIcon} 
                 />
@@ -291,9 +292,9 @@ const Login = () => {
                 },
                 errors.password ? styles.inputWrapperError : {}
               ]}>
-                <Ionicons 
-                  name="lock-closed-outline" 
-                  size={scaleWidth(20)} 
+                <AppIcon 
+                  icon={LockIcon}
+                  size={iconSize.md} 
                   color={errors.password ? "#ff4757" : "#00C851"} 
                   style={styles.inputIcon} 
                 />
@@ -309,9 +310,9 @@ const Login = () => {
                   onPress={() => setShowPassword(!showPassword)}
                   style={styles.eyeIcon}
                 >
-                  <Ionicons
-                    name={showPassword ? "eye-outline" : "eye-off-outline"}
-                    size={scaleWidth(20)}
+                  <AppIcon
+                    icon={showPassword ? EyeIcon : EyeOffIcon}
+                    size={iconSize.md}
                     color={colors.textSecondary}
                   />
                 </Pressable>
@@ -366,96 +367,96 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
-    paddingBottom: scaleHeight(20),
+    paddingBottom: spacing.xl,
   },
   backButton: {
     alignSelf: 'flex-start',
-    marginLeft: scaleWidth(20),
+    marginLeft: spacing.xl,
     position: 'absolute',
-    top: scaleHeight(10),
+    top: fontSize.xs,
     left: 0,
     zIndex: 1,
   },
   logoContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: scaleWidth(20),
+    paddingHorizontal: spacing.xl,
   },
   logoWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
   },
   logo: {
-    width: scaleWidth(250),
-    height: scaleHeight(150),
-    // marginBottom: scaleHeight(8),
+    width: 250,
+    height: 150,
+    // marginBottom: spacing.sm,
   },
   tagline: {
     color: '#00C851',
-    fontSize: scaleWidth(11),
+    fontSize: 11,
     fontWeight: '600',
     letterSpacing: 0.5,
-    marginBottom: scaleHeight(6),
+    marginBottom: 6,
   },
   taglineUnderline: {
-    width: scaleWidth(60),
-    height: scaleHeight(2),
+    width: 60,
+    height: spacing.xxs,
     backgroundColor: '#00C851',
   },
   
   // Form Section Styles
   formSection: {
     flex: 1,
-    paddingHorizontal: scaleWidth(20),
+    paddingHorizontal: spacing.xl,
     justifyContent: 'center',
-    gap: scaleHeight(20),
+    gap: spacing.xl,
   },
   welcomeTextContainer: {
     alignItems: 'center',
   },
   welcomeTitle: {
-    fontSize: scaleWidth(24),
+    fontSize: spacing["2xl"],
     fontWeight: '700',
-    marginBottom: scaleHeight(6),
+    marginBottom: 6,
   },
   welcomeSubtitle: {
-    fontSize: scaleWidth(14),
+    fontSize: fontSize.base,
     textAlign: 'center',
-    lineHeight: scaleHeight(20),
+    lineHeight: spacing.xl,
   },
   inputFieldsContainer: {
-    gap: scaleHeight(16),
+    gap: spacing.lg,
     justifyContent: 'center',
     flexShrink: 0,
-    marginBottom: scaleHeight(30),
+    marginBottom: 30,
   },
   inputContainer: {
-    marginBottom: scaleHeight(0),
+    marginBottom: 0,
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: scaleWidth(16),
+    borderRadius: spacing.lg,
     borderWidth: 1,
-    paddingHorizontal: scaleWidth(15),
-    height: scaleHeight(48),
+    paddingHorizontal: 15,
+    height: 48,
   },
   inputIcon: {
-    marginRight: scaleWidth(12),
+    marginRight: spacing.md,
   },
   input: {
     flex: 1,
-    fontSize: scaleWidth(16),
+    fontSize: spacing.lg,
     height: '100%',
   },
   eyeIcon: {
-    padding: scaleWidth(5),
+    padding: 5,
   },
   loginButton: {
-    marginBottom: scaleHeight(0),
-    borderRadius: scaleWidth(16),
+    marginBottom: 0,
+    borderRadius: spacing.lg,
     borderWidth: 1,
-    paddingVertical: scaleHeight(12),
+    paddingVertical: spacing.md,
     justifyContent: 'center',
     width: '100%',
   },
@@ -463,10 +464,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: scaleWidth(12),
+    gap: spacing.md,
   },
   loginButtonText: {
-    fontSize: scaleWidth(16),
+    fontSize: spacing.lg,
     fontWeight: '600',
   },
   inputWrapperError: {
@@ -475,8 +476,8 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: '#ff4757',
-    fontSize: scaleWidth(12),
-    marginTop: scaleHeight(4),
-    marginLeft: scaleWidth(15),
+    fontSize: spacing.md,
+    marginTop: spacing.xs,
+    marginLeft: 15,
   },
 })

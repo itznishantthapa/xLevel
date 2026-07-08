@@ -1,6 +1,13 @@
 import { StyleSheet, Text, View, Pressable } from 'react-native';
 import React, { useEffect, useMemo, useState } from 'react';
-import { MaterialIcons, MaterialCommunityIcons, Entypo, Ionicons } from '@expo/vector-icons';
+import {
+  GamepadIcon,
+  StoreIcon,
+  Notification01Icon,
+  Copy01Icon,
+} from '@hugeicons/core-free-icons';
+import AppIcon, { PointsIcon } from '../../components/common/AppIcon';
+import { iconSize } from '../../theme/typography';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Toast from 'react-native-simple-toast';
 import { useThemeStore } from '../../store/themeStore';
@@ -92,38 +99,22 @@ const NotificationCard = ({ notification }) => {
         [NOTIFICATION_TYPES.GAME]: {
             title: 'Game Invitation',
             bgColor: isLight ? '#A855F7' : 'rgba(109, 140, 255, 0.2)',
-            icon: <MaterialCommunityIcons 
-                name="gamepad-variant" 
-                size={16} 
-                color={isLight ? "#ffffff" : "#6d8cff"} 
-            />
+            icon: <AppIcon icon={GamepadIcon} size={iconSize.sm} color={isLight ? "#ffffff" : "#6d8cff"} />
         },
         [NOTIFICATION_TYPES.CREDITED]: {
             title: 'Game Point',
             bgColor: isLight ? '#14B8A6' : 'rgba(32, 201, 151, 0.2)',
-            icon: <MaterialCommunityIcons 
-                name="star-four-points-outline" 
-                size={16} 
-                color={isLight ? "#ffffff" : "#20c997"} 
-            />
+            icon: <PointsIcon size={iconSize.sm} color={isLight ? "#ffffff" : "#20c997"} />
         },
         [NOTIFICATION_TYPES.STORE]: {
             title: 'Store',
             bgColor: isLight ? '#6366F1' : 'rgba(99, 102, 241, 0.2)',
-            icon: <Ionicons 
-                name="storefront-outline" 
-                size={16} 
-                color={isLight ? "#ffffff" : "#6366F1"} 
-            />
+            icon: <AppIcon icon={StoreIcon} size={iconSize.sm} color={isLight ? "#ffffff" : "#6366F1"} />
         },
         [NOTIFICATION_TYPES.NORMAL]: {
             title: 'Notification',
             bgColor: isLight ? '#F97316' : 'rgba(255, 152, 0, 0.2)',
-            icon: <Entypo 
-                name="notification" 
-                size={16} 
-                color={isLight ? "#ffffff" : "#ffb74d"} 
-            />
+            icon: <AppIcon icon={Notification01Icon} size={iconSize.sm} color={isLight ? "#ffffff" : "#ffb74d"} />
         }
     }), [isLight]);
 
@@ -158,11 +149,7 @@ const NotificationCard = ({ notification }) => {
                     >
                         {value}
                     </Text>
-                    <MaterialIcons
-                        name="content-copy"
-                        size={14}
-                        color={isLight ? '#666666' : '#dadada'}
-                    />
+                    <AppIcon icon={Copy01Icon} size={iconSize.sm} color={isLight ? '#666666' : '#dadada'} />
                 </View>
             </Pressable>
         );

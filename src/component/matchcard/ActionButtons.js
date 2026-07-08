@@ -1,6 +1,8 @@
 import { View, Text, Pressable, StyleSheet } from "react-native"
 import { sharedStyles } from "./sharedStyleAndInfo"
-import { FontAwesome, FontAwesome6, MaterialCommunityIcons } from "@expo/vector-icons"
+import { AppIcon } from "../../components/common/AppIcon"
+import { ArrowRight01Icon } from "@hugeicons/core-free-icons"
+import { iconSize } from "../../theme/typography"
 import CoolButton from "../customer/common/CoolButton"
 
 
@@ -51,7 +53,7 @@ const ActionButtons = ({ game, isLight, isCreator, user, handleResultUpload, for
         <View style={sharedStyles.sendButtonContent}>
         <Text style={[styles.joinButtonText, isLight ? { color: "#ffffff" } : { color: "#000000" }]}>Result</Text>
         </View>
-        <FontAwesome6 name="angle-right" size={15} color={isLight ? "#ffffff" : "#000000"} />
+        <AppIcon icon={ArrowRight01Icon} size={iconSize.sm} color={isLight ? "#ffffff" : "#000000"} />
       </Pressable>
     )
   }

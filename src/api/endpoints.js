@@ -15,7 +15,6 @@ export const endpoints = {
   refreshUserData: "/api/auth/refresh-user-data/",
   refreshToken: "/api/user/refresh-token/",
   updateGamePoints: "/api/user/update-game-points/",
-  getLeaderboard: "/api/user/leaderboard/",
   blockUser:"/api/user/block-user/",
   unblockUser:"/api/user/unblock-user/",
   getBlockedUsers:"/api/user/blocked-users/",

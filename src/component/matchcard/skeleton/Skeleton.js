@@ -1,5 +1,5 @@
+import { fontSize, spacing } from '../../../theme/typography';
 import { View, StyleSheet } from "react-native"
-import { scaleHeight, scaleWidth } from "../../../utils/scaling"
 
 
 /**
@@ -108,163 +108,163 @@ const MatchCardSkeleton = ({ isLight = true }) => {
 
 const styles = StyleSheet.create({
   card: {
-    marginHorizontal: scaleWidth(8),
-    marginVertical: scaleHeight(8),
-    borderRadius: scaleWidth(25),
-    borderWidth: scaleWidth(1.5),
+    marginHorizontal: spacing.sm,
+    marginVertical: spacing.sm,
+    borderRadius: 25,
+    borderWidth: 1.5,
     overflow: "hidden",
   },
   cardContent: {
-    padding: scaleWidth(12),
+    padding: spacing.md,
   },
 
   // Game Info Header
   gameInfoHeader: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: scaleHeight(8),
-    gap: scaleWidth(8),
+    marginBottom: spacing.sm,
+    gap: spacing.sm,
   },
   gameInfoPill: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: scaleWidth(12),
-    paddingVertical: scaleHeight(8),
-    borderRadius: scaleWidth(20),
-    borderWidth: scaleWidth(1),
-    gap: scaleWidth(6),
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: spacing.xl,
+    borderWidth: 1,
+    gap: 6,
   },
   pillIcon: {
-    width: scaleWidth(24),
-    height: scaleWidth(24),
-    borderRadius: scaleWidth(12),
+    width: spacing["2xl"],
+    height: spacing["2xl"],
+    borderRadius: spacing.md,
   },
   pillText: {
-    width: scaleWidth(48),
-    height: scaleHeight(14),
+    width: 48,
+    height: fontSize.base,
     borderRadius: 4,
   },
   headerActions: {
     marginLeft: "auto",
   },
   cancelButton: {
-    width: scaleWidth(70),
-    height: scaleHeight(32),
-    borderRadius: scaleWidth(24),
+    width: 70,
+    height: spacing["3xl"],
+    borderRadius: spacing["2xl"],
   },
 
   // Main Section
   mainSection: {
     flexDirection: "row",
-    marginBottom: scaleHeight(10),
+    marginBottom: fontSize.xs,
   },
   leftSection: {
     flex: 1,
-    paddingRight: scaleWidth(12),
+    paddingRight: spacing.md,
   },
   rightSection: {
     flex: 1,
-    paddingLeft: scaleWidth(12),
+    paddingLeft: spacing.md,
   },
   verticalDivider: {
-    width: scaleWidth(1),
-    marginHorizontal: scaleWidth(8),
+    width: 1,
+    marginHorizontal: spacing.sm,
   },
 
   // Left Section - Settings bar
   settingsBar: {
-    height: scaleHeight(36),
-    borderTopLeftRadius: scaleWidth(12),
-    borderTopRightRadius: scaleWidth(12),
-    marginBottom: scaleHeight(0),
+    height: 36,
+    borderTopLeftRadius: spacing.md,
+    borderTopRightRadius: spacing.md,
+    marginBottom: 0,
   },
 
   // Left Section - InfoRows (flat, no nested skeleton)
   infoRow: {
-    height: scaleHeight(28),
-    marginBottom: scaleHeight(6),
+    height: 28,
+    marginBottom: 6,
   },
 
   // Right Section - Creator Header
   creatorHeader: {
     flexDirection: "row",
     alignItems: "center",
-    padding: scaleWidth(10),
-    borderTopRightRadius: scaleWidth(12),
-    borderTopLeftRadius: scaleWidth(12),
-    marginBottom: scaleHeight(8),
+    padding: fontSize.xs,
+    borderTopRightRadius: spacing.md,
+    borderTopLeftRadius: spacing.md,
+    marginBottom: spacing.sm,
   },
   avatar: {
-    width: scaleWidth(40),
-    height: scaleWidth(40),
-    borderRadius: scaleWidth(20),
-    marginRight: scaleWidth(12),
+    width: 40,
+    height: 40,
+    borderRadius: spacing.xl,
+    marginRight: spacing.md,
   },
   creatorInfo: {
     flex: 1,
-    gap: scaleHeight(4),
+    gap: spacing.xs,
   },
   creatorName: {
-    height: scaleHeight(14),
+    height: fontSize.base,
     width: "60%",
     borderRadius: 3,
   },
   creatorLabel: {
-    height: scaleHeight(10),
+    height: fontSize.xs,
     width: "35%",
     borderRadius: 3,
   },
   creatorUID: {
-    height: scaleHeight(10),
+    height: fontSize.xs,
     width: "55%",
     borderRadius: 3,
   },
 
   // Right Section - Game Username box
   usernameBox: {
-    borderWidth: scaleWidth(2),
-    paddingVertical: scaleWidth(10),
-    paddingHorizontal: scaleWidth(14),
-    marginBottom: scaleWidth(8),
+    borderWidth: spacing.xxs,
+    paddingVertical: fontSize.xs,
+    paddingHorizontal: fontSize.base,
+    marginBottom: spacing.sm,
     alignItems: "center",
   },
   usernameText: {
-    height: scaleHeight(16),
+    height: spacing.lg,
     width: "70%",
     borderRadius: 3,
   },
 
   // Right Section - Info rows
   rightInfoRow: {
-    height: scaleHeight(28),
-    marginBottom: scaleHeight(4),
+    height: 28,
+    marginBottom: spacing.xs,
   },
 
   // Right Section - Entry Fee row
   entryFeeRow: {
-    height: scaleHeight(28),
+    height: 28,
     borderWidth: 2,
-    marginTop: scaleHeight(4),
-    marginBottom: scaleHeight(8),
+    marginTop: spacing.xs,
+    marginBottom: spacing.sm,
   },
 
   // Right Section - Status Display
   statusBox: {
-    height: scaleHeight(44),
-    borderWidth: scaleWidth(1),
-    marginTop: scaleHeight(10),
+    height: 44,
+    borderWidth: 1,
+    marginTop: fontSize.xs,
   },
 
   // Right Section - Stamp ID
   stampContainer: {
     alignItems: "center",
-    marginTop: scaleHeight(12),
+    marginTop: spacing.md,
   },
   stampBox: {
     width: "75%",
-    height: scaleHeight(32),
-    borderRadius: scaleWidth(12),
-    borderWidth: scaleWidth(2),
+    height: spacing["3xl"],
+    borderRadius: spacing.md,
+    borderWidth: spacing.xxs,
     borderStyle: "dashed",
     transform: [{ rotate: "-8deg" }],
   },
@@ -274,20 +274,20 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     alignSelf: "flex-start",
-    paddingHorizontal: scaleWidth(12),
-    paddingVertical: scaleHeight(8),
-    borderRadius: scaleWidth(24),
-    gap: scaleWidth(8),
-    marginBottom: scaleHeight(10),
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: spacing["2xl"],
+    gap: spacing.sm,
+    marginBottom: fontSize.xs,
   },
   timeIcon: {
-    width: scaleWidth(28),
-    height: scaleWidth(28),
-    borderRadius: scaleWidth(14),
+    width: 28,
+    height: 28,
+    borderRadius: fontSize.base,
   },
   timeText: {
-    width: scaleWidth(90),
-    height: scaleHeight(13),
+    width: 90,
+    height: 13,
     borderRadius: 3,
   },
 
@@ -295,13 +295,13 @@ const styles = StyleSheet.create({
   dividerLine: {
     height: 1,
     width: "100%",
-    marginBottom: scaleHeight(10),
+    marginBottom: fontSize.xs,
   },
 
   // Waiting bar
   waitingBar: {
-    height: scaleHeight(44),
-    borderRadius: scaleWidth(12),
+    height: 44,
+    borderRadius: spacing.md,
     opacity: 0.15,
   },
 })

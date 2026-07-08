@@ -1,8 +1,9 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { sharedStyles } from './sharedStyleAndInfo'
-import { scaleHeight, scaleWidth } from '../../utils/scaling'
-import { FontAwesome, FontAwesome6 } from '@expo/vector-icons'
+import { AppIcon } from '../../components/common/AppIcon'
+import { GearsIcon } from '@hugeicons/core-free-icons'
+import { spacing, iconSize } from '../../theme/typography'
 import { useThemeStore } from '../../store/themeStore'
 
 const SettingInfo = () => {
@@ -13,9 +14,9 @@ const SettingInfo = () => {
     iconColor: isLight ? "#ffffff" : "#000000",
   }
   return (
-    <View style={{ marginTop: scaleHeight(0),marginBottom:scaleHeight(8) }}>
+    <View style={{ marginTop: 0,marginBottom:spacing.sm }}>
       <View style={[styles.settingInfoContainer, { backgroundColor: colors.backgroundColor }]}>
-        <FontAwesome name="gears" size={scaleWidth(16)} color={colors.iconColor} />
+        <AppIcon icon={GearsIcon} size={iconSize.sm} color={colors.iconColor} />
         <Text style={[styles.settingInfoText, { color: colors.textColor }]}>Settings</Text>
 
       </View>
@@ -29,8 +30,8 @@ const styles = StyleSheet.create({
     settingInfoContainer:{
         borderBottomRightRadius:0,
         borderBottomLeftRadius:0,
-        borderTopRightRadius:scaleWidth(12),
-        borderTopLeftRadius:scaleWidth(12),
+        borderTopRightRadius:spacing.md,
+        borderTopLeftRadius:spacing.md,
         flexDirection:"row",
         alignItems:"center",
         justifyContent:"center",
@@ -39,9 +40,9 @@ const styles = StyleSheet.create({
     settingInfoText:{
         color: "#000000",
         fontWeight: "bold",
-        fontSize: scaleWidth(16),
-        paddingHorizontal: scaleWidth(12),
-        paddingVertical: scaleHeight(8),
+        fontSize: spacing.lg,
+        paddingHorizontal: spacing.md,
+        paddingVertical: spacing.sm,
     }
 
 })

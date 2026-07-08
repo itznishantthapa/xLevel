@@ -8,7 +8,18 @@ import {
   Image,
   TextInput,
 } from 'react-native'
-import { MaterialCommunityIcons, Ionicons, AntDesign, Feather, FontAwesome, MaterialIcons } from '@expo/vector-icons'
+import { AppIcon, PointsIcon } from '../../../components/common/AppIcon'
+import {
+  CancelCircleIcon,
+  Add01Icon,
+  Image01Icon,
+  Facebook01Icon,
+  GoogleIcon,
+  EyeIcon,
+  EyeOffIcon,
+  InformationCircleIcon,
+} from '@hugeicons/core-free-icons'
+import { iconSize } from '../../../theme/typography'
 import * as ImagePicker from 'expo-image-picker'
 import * as yup from 'yup'
 import Toast from 'react-native-simple-toast'
@@ -184,7 +195,7 @@ const CreateSell = () => {
         <View key={index} style={[styles.imageSlot, { borderColor: colors.inputBorder }]}>
           <Image source={{ uri: image.uri }} style={styles.imagePreview} />
           <Pressable style={styles.removeImageBtn} onPress={() => removeImage(index)}>
-            <AntDesign name="closecircle" size={18} color={colors.danger} />
+            <AppIcon icon={CancelCircleIcon} size={iconSize.sm} color={colors.danger} />
           </Pressable>
         </View>
       )
@@ -197,7 +208,7 @@ const CreateSell = () => {
           style={[styles.imageSlot, styles.addImageSlot, { borderColor: colors.inputBorder, backgroundColor: colors.inputBg }]}
           onPress={pickImages}
         >
-          <AntDesign name="plus" size={24} color={colors.textSecondary} />
+          <AppIcon icon={Add01Icon} size={iconSize.lg} color={colors.textSecondary} />
           <Text style={[styles.addImageText, { color: colors.textSecondary }]}>Add</Text>
         </Pressable>
       )
@@ -208,7 +219,7 @@ const CreateSell = () => {
         key={index}
         style={[styles.imageSlot, styles.emptyImageSlot, { borderColor: colors.inputBorder, backgroundColor: colors.inputBg }]}
       >
-        <Feather name="image" size={18} color={isLight ? '#d0d0d0' : '#333333'} />
+        <AppIcon icon={Image01Icon} size={iconSize.sm} color={isLight ? '#d0d0d0' : '#333333'} />
       </View>
     )
   }
@@ -340,7 +351,7 @@ const CreateSell = () => {
                 },
               ]}
             >
-              <FontAwesome name="facebook-f" size={20} color={loginMethod === 'facebook' ? '#ffffff' : colors.textSecondary} />
+              <AppIcon icon={Facebook01Icon} size={iconSize.md} color={loginMethod === 'facebook' ? '#ffffff' : colors.textSecondary} />
             </View>
             <Text style={[styles.loginMethodLabel, { color: loginMethod === 'facebook' ? '#1877F2' : colors.textSecondary }]}>
               Facebook
@@ -365,7 +376,7 @@ const CreateSell = () => {
                 },
               ]}
             >
-              <AntDesign name="google" size={20} color={loginMethod === 'google' ? '#ffffff' : colors.textSecondary} />
+              <AppIcon icon={GoogleIcon} size={iconSize.md} color={loginMethod === 'google' ? '#ffffff' : colors.textSecondary} />
             </View>
             <Text style={[styles.loginMethodLabel, { color: loginMethod === 'google' ? '#DB4437' : colors.textSecondary }]}>
               Google
@@ -405,11 +416,7 @@ const CreateSell = () => {
                 autoCapitalize="none"
               />
               <Pressable onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}>
-                <Ionicons
-                  name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-                  size={20}
-                  color={colors.textSecondary}
-                />
+                <AppIcon icon={showPassword ? EyeOffIcon : EyeIcon} size={iconSize.md} color={colors.textSecondary} />
               </Pressable>
             </View>
           </View>
@@ -463,7 +470,7 @@ const CreateSell = () => {
           <View style={styles.priceRow}>
             <Text style={[styles.priceLabel, { color: colors.text, fontWeight: '600' }]}>You receive</Text>
             <View style={styles.priceReceiveRow}>
-              <MaterialCommunityIcons name="star-four-points-outline" size={14} color={colors.accent} />
+              <PointsIcon size={iconSize.xs} color={colors.accent} />
               <Text style={[styles.priceValue, { color: colors.accent, fontWeight: '700' }]}>{sellerReceives.toLocaleString()} points</Text>
             </View>
           </View>
@@ -472,7 +479,7 @@ const CreateSell = () => {
 
       {/* Deposit Info - info container style like deletion screen */}
       <View style={[styles.infoContainer, { backgroundColor: colors.inputBg }]}>
-        <MaterialIcons name="info" size={18} color={colors.textSecondary} />
+        <AppIcon icon={InformationCircleIcon} size={iconSize.sm} color={colors.textSecondary} />
         <Text style={[styles.infoText, { color: colors.textSecondary }]}>
           A refundable deposit of {REQUIRED_DEPOSIT} points is required to list your account. This will be returned to you after a successful sale.
         </Text>

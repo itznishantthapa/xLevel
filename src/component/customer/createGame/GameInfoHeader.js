@@ -1,7 +1,8 @@
 import { View, Text, StyleSheet } from "react-native";
 import React from "react";
-import { FontAwesome } from "@expo/vector-icons";
-import { scaleWidth } from "../../../utils/scaling";
+import { Settings01Icon } from "@hugeicons/core-free-icons";
+import AppIcon from "../../../components/common/AppIcon";
+import { iconSize } from "../../../theme/typography";
 
 /**
  * GameInfoHeader component for displaying game name and mode with icon
@@ -14,7 +15,7 @@ const GameInfoHeader = ({ gameName, gameMode, isLight }) => {
   return (
     <View style={styles.section}>
       <View style={styles.gameInfoContainer}>
-        <FontAwesome name="gears" size={scaleWidth(20)} color={isLight ? "#333333" : "#ffffff"} />
+        <AppIcon icon={Settings01Icon} size={iconSize.md} color={isLight ? "#333333" : "#ffffff"} />
         <View style={styles.gameInfoItem}>
           <Text 
             style={[

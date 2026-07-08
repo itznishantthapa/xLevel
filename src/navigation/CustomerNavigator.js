@@ -20,14 +20,12 @@ import CreatePubg from "../screens/customer/createGame/CreatePubg";
 import CreateMLBB from "../screens/customer/createGame/CreateMLBB";
 import AccountDeletion from "../screens/customer/account/AccountDeletion";
 import Credits from "../screens/customer/legal/Credits";
-import Leaderboard from "../screens/customer/Leaderboard";
 import ReportUser from "../screens/customer/issue/ReportUser";
 import Report from "../screens/customer/Report";
 import ReportList from "../screens/customer/report/ReportList";
 import Thanks from "../screens/customer/issue/Thanks";
 import BlockedUserList from "../screens/customer/BlockedUserList";
 import Exchange from "../screens/customer/Exchange";
-import AccessBar from "../screens/customer/AccessBar";
 import { Platform } from "react-native";
 import PointsOut from "../screens/customer/PointsOut";
 import PointsIn from "../screens/customer/PointsIn";
@@ -72,14 +70,12 @@ export default function CustomerNavigator(){
             <Stack.Screen component={CreateMLBB} name="createMLBB"/>
             <Stack.Screen component={AccountDeletion} name="accountDeletion"/>
             <Stack.Screen component={Credits} name="credits"/>
-            <Stack.Screen component={Leaderboard} name="leaderboard"/>
             <Stack.Screen component={ReportUser} name="reportUser"/>
             <Stack.Screen component={Report} name="report" options={{ animation: "fade"}}/>
             <Stack.Screen component={ReportList} name="reportList" options={{ animation: "fade"}}/>
             <Stack.Screen component={Thanks} name="thanks"/>
             <Stack.Screen component={BlockedUserList} name="blockedUserList"/>
             <Stack.Screen component={Exchange} name="exchange"/>
-            <Stack.Screen component={AccessBar} name="accessBar"/>
             <Stack.Screen component={Example} name="example"/>
             <Stack.Screen component={FreeFireStore} name="freeFireStore"/>
             <Stack.Screen component={PUBGStore} name="pubgStore"/>

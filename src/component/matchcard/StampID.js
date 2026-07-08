@@ -1,6 +1,7 @@
 import { Text, View, Platform } from "react-native"
-import { Fontisto } from "@expo/vector-icons"
-import { scaleHeight, scaleWidth } from "../../utils/scaling"
+import { AppIcon } from "../../components/common/AppIcon"
+import { HashtagIcon } from "@hugeicons/core-free-icons"
+import { spacing, iconSize } from "../../theme/typography"
 
 /**
  * StampID Component
@@ -10,13 +11,13 @@ const StampID = ({ gameId, isLight, compact = false }) => {
   return (
     <View
       style={{
-        marginTop: scaleHeight(compact ? 8 : 12),
+        marginTop: (compact ? 8 : 12),
         alignSelf: 'center',
         maxWidth: '100%',
-        paddingHorizontal: scaleWidth(compact ? 12 : 12),
-        paddingVertical: scaleHeight(compact ? 6 : 8),
-        borderRadius: scaleWidth(12),
-        borderWidth: scaleWidth(2),
+        paddingHorizontal: (compact ? 12 : 12),
+        paddingVertical: (compact ? 6 : 8),
+        borderRadius: spacing.md,
+        borderWidth: spacing.xxs,
         borderColor: isLight ? '#333333' : '#eaf4f4',
         borderStyle: 'dashed',
         backgroundColor: isLight ? '#f5f5f5' : '#1a1a1a',
@@ -28,22 +29,22 @@ const StampID = ({ gameId, isLight, compact = false }) => {
         elevation: 3,
       }}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: scaleWidth(6) }}>
-        <Fontisto
-          name="hashtag"
-          size={scaleWidth(compact ? 16 : 20)}
-          color={'#FF9500'}
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+        <AppIcon
+          icon={HashtagIcon}
+          size={(compact ? iconSize.sm : iconSize.md)}
+          color="#FF9500"
           style={{ flexShrink: 0 }}
         />
         <Text
           style={{
-            fontSize: scaleWidth(compact ? 12 : 14),
+            fontSize: (compact ? 12 : 14),
             fontWeight: '700',
             color: isLight ? '#333333' : '#eaf4f4',
             letterSpacing: 0.25,
             fontVariant: ['tabular-nums'],
             includeFontPadding: false,
-            lineHeight: scaleHeight(compact ? 16 : 18),
+            lineHeight: (compact ? 16 : 18),
             flexShrink: 1,
           }}
           numberOfLines={1}

@@ -1,7 +1,22 @@
 import { View, Text, StyleSheet, Image, Pressable, TextInput, Animated } from 'react-native'
 import Toast from 'react-native-simple-toast'
 import { useThemeStore } from '../../../store/themeStore'
-import { MaterialIcons, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons'
+import { AppIcon, PointsIcon } from '../../../components/common/AppIcon'
+import {
+  CheckmarkCircle01Icon,
+  SecurityCheckIcon,
+  FlashIcon,
+  Shield01Icon,
+  Touch01Icon,
+  UserIcon,
+  UserArrowLeftRightIcon,
+  IdentityCardIcon,
+  GamepadIcon,
+  LabelIcon,
+  Location01Icon,
+  CheckIcon,
+} from '@hugeicons/core-free-icons'
+import { fontSize, spacing, iconSize } from '../../../theme/typography'
 import { useEffect, useState, useRef } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { useGameProfiles } from '../../../queries/useGameProfiles'
@@ -10,7 +25,6 @@ import { CreateGameLayout, SectionTitle, DividerLine, TermsAgreement } from '../
 import { useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '../../../store/authStore'
 import { useStoreTopup } from '../../../queries/useMutation/useStoreTopup'
-import { scaleWidth, scaleHeight } from '../../../utils/scaling'
 
 // Monochrome accent colors
 const ACCENT_PRIMARY = (isLight) => isLight ? '#000000' : '#ffffff'
@@ -231,7 +245,7 @@ const FreeFireStore = ({ route }) => {
         {/* Selection checkmark */}
         {isSelected && (
           <View  style={styles.selectedMark}>
-            <MaterialIcons name="check-circle" size={18} color={isLight ? '#ffffff' : '#000000'} />
+            <AppIcon icon={CheckmarkCircle01Icon} size={iconSize.sm} color={isLight ? '#ffffff' : '#000000'} />
           </View>
         )}
         
@@ -264,11 +278,7 @@ const FreeFireStore = ({ route }) => {
         {/* Points */}
         <View style={styles.diamondPriceContainer}>
           <View style={[styles.priceLine, { backgroundColor: isSelected ? (isLight ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.25)') : (isLight ? '#cccccc' : '#444444') }]} />
-          <MaterialCommunityIcons 
-            name="star-four-points-outline" 
-            size={12} 
-            color={isSelected && !isLight ? '#000000' : '#00bf63'} 
-          />
+          <PointsIcon size={iconSize.xs} color={isSelected && !isLight ? '#000000' : '#00bf63'} />
           <Text style={[styles.diamondPrice, {
             color: isSelected 
               ? (isLight ? '#00bf63' : '#000000')
@@ -309,7 +319,7 @@ const FreeFireStore = ({ route }) => {
           <View  style={[styles.selectedCheck, {
             backgroundColor: isLight ? '#ffffff' : '#000000'
           }]}>
-            <MaterialIcons name="check" size={12} color={themeColor} />
+            <AppIcon icon={CheckIcon} size={iconSize.xs} color={themeColor} />
           </View>
         )}
 
@@ -322,7 +332,7 @@ const FreeFireStore = ({ route }) => {
 
         {/* Text */}
         <Text 
-          style={[styles.modeLabel, { color: cardColor, marginTop: scaleHeight(10) }]}
+          style={[styles.modeLabel, { color: cardColor, marginTop: fontSize.xs }]}
           numberOfLines={1}
           adjustsFontSizeToFit
         >
@@ -342,11 +352,7 @@ const FreeFireStore = ({ route }) => {
         {/* Points */}
         <View style={styles.membershipPriceContainer}>
           <View style={[styles.priceLine, { backgroundColor: isSelected ? (isLight ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.25)') : (isLight ? '#cccccc' : '#444444') }]} />
-          <MaterialCommunityIcons 
-            name="star-four-points-outline" 
-            size={12} 
-            color={isSelected && !isLight ? '#000000' : '#00bf63'} 
-          />
+          <PointsIcon size={iconSize.xs} color={isSelected && !isLight ? '#000000' : '#00bf63'} />
           <Text style={[styles.membershipPrice, {
             color: isSelected 
               ? (isLight ? '#00bf63' : '#000000')
@@ -379,7 +385,7 @@ const FreeFireStore = ({ route }) => {
         />
 
         <Text 
-          style={[styles.modeLabel, { color: cardColor, marginTop: scaleHeight(10) }]}
+          style={[styles.modeLabel, { color: cardColor, marginTop: fontSize.xs }]}
           numberOfLines={1}
           adjustsFontSizeToFit
         >
@@ -425,7 +431,7 @@ const FreeFireStore = ({ route }) => {
         {selectedLevel && (
           <View style={[styles.diamondPriceContainer, { marginTop: 10 }]}>
             <View style={[styles.priceLine, { backgroundColor: isLight ? '#cccccc' : '#444444' }]} />
-            <MaterialCommunityIcons name="star-four-points-outline" size={12} color="#00bf63" />
+            <PointsIcon size={iconSize.xs} color="#00bf63" />
             <Text style={[styles.diamondPrice, { color: '#00bf63' }]}>
               {selectedLevel.points} point
             </Text>
@@ -461,14 +467,14 @@ const FreeFireStore = ({ route }) => {
       >
         {isSelected && (
           <View  style={styles.selectedMark}>
-            <MaterialIcons name="check-circle" size={18} color={isLight ? '#ffffff' : '#000000'} />
+            <AppIcon icon={CheckmarkCircle01Icon} size={iconSize.sm} color={isLight ? '#ffffff' : '#000000'} />
           </View>
         )}
 
         <Image source={item.image} style={styles.evaImg} resizeMode="contain" />
 
         <Text 
-          style={[styles.modeLabel, { color: cardColor, marginTop: scaleHeight(8) }]}
+          style={[styles.modeLabel, { color: cardColor, marginTop: spacing.sm }]}
           numberOfLines={1}
           adjustsFontSizeToFit
         >
@@ -487,11 +493,7 @@ const FreeFireStore = ({ route }) => {
 
         <View style={styles.diamondPriceContainer}>
           <View style={[styles.priceLine, { backgroundColor: isSelected ? (isLight ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.25)') : (isLight ? '#cccccc' : '#444444') }]} />
-          <MaterialCommunityIcons
-            name="star-four-points-outline"
-            size={12}
-            color={isSelected && !isLight ? '#000000' : '#00bf63'}
-          />
+          <PointsIcon size={iconSize.xs} color={isSelected && !isLight ? '#000000' : '#00bf63'} />
           <Text style={[styles.diamondPrice, {
             color: isSelected
               ? (isLight ? '#00bf63' : '#000000')
@@ -569,11 +571,7 @@ const FreeFireStore = ({ route }) => {
                   borderColor: isLight ? '#e0e0e0' : '#333333',
                 }]}>
                   <View style={[styles.priceLine, { backgroundColor: isLight ? '#cccccc' : '#444444' }]} />
-                  <MaterialCommunityIcons 
-                    name="star-four-points-outline" 
-                    size={14} 
-                    color="#00bf63" 
-                  />
+                  <PointsIcon size={iconSize.xs} color="#00bf63" />
                   <Text style={[styles.selectedItemPoints, { color: '#00bf63' }]}>
                     {selectedItem.points} point
                   </Text>
@@ -597,22 +595,22 @@ const FreeFireStore = ({ route }) => {
             {game?.game_name || 'Free Fire'}
           </Text>
           <View style={styles.securityBadge}>
-            <MaterialIcons name="verified-user" size={12} color={'#00bf63'} />
+            <AppIcon icon={SecurityCheckIcon} size={iconSize.xs} color="#00bf63" />
             <Text style={[styles.securityText, { color: isLight ? '#666666' : '#999999' }]}>
               100%  Secure
             </Text>
             <Text style={[styles.separator, { color: isLight ? '#cccccc' : '#555555' }]}>|</Text>
-            <MaterialIcons name="bolt" size={12} color={'#F97316'} />
+            <AppIcon icon={FlashIcon} size={iconSize.xs} color="#F97316" />
             <Text style={[styles.securityText, { color: isLight ? '#666666' : '#999999' }]}>
               Fast
             </Text>
             <Text style={[styles.separator, { color: isLight ? '#cccccc' : '#555555' }]}>|</Text>
-            <MaterialIcons name="shield" size={12} color={'#6366F1'} />
+            <AppIcon icon={Shield01Icon} size={iconSize.xs} color="#6366F1" />
             <Text style={[styles.securityText, { color: isLight ? '#666666' : '#999999' }]}>
               Reliable
             </Text>
             <Text style={[styles.separator, { color: isLight ? '#cccccc' : '#555555' }]}>|</Text>
-            <MaterialIcons name="touch-app" size={12} color={'#14B8A6'} />
+            <AppIcon icon={Touch01Icon} size={iconSize.xs} color="#14B8A6" />
             <Text style={[styles.securityText, { color: isLight ? '#666666' : '#999999' }]}>
               Easy
             </Text>
@@ -678,13 +676,9 @@ const FreeFireStore = ({ route }) => {
             ]}
             onPress={() => setProfileType('own')}
           >
-            <MaterialCommunityIcons 
-              name="account" 
-              size={18} 
-              color={profileType === 'own' 
+            <AppIcon icon={UserIcon} size={iconSize.sm} color={profileType === 'own' 
                 ? (isLight ? '#ffffff' : '#000000')
-                : (isLight ? '#666666' : '#999999')} 
-            />
+                : (isLight ? '#666666' : '#999999')} />
             <Text style={[
               styles.profileToggleText,
               {
@@ -711,13 +705,9 @@ const FreeFireStore = ({ route }) => {
             ]}
             onPress={() => setProfileType('other')}
           >
-            <MaterialCommunityIcons 
-              name="account-switch-outline" 
-              size={18} 
-              color={profileType === 'other' 
+            <AppIcon icon={UserArrowLeftRightIcon} size={iconSize.sm} color={profileType === 'other' 
                 ? (isLight ? '#ffffff' : '#000000')
-                : (isLight ? '#666666' : '#999999')} 
-            />
+                : (isLight ? '#666666' : '#999999')} />
             <Text style={[
               styles.profileToggleText,
               {
@@ -738,7 +728,7 @@ const FreeFireStore = ({ route }) => {
             borderColor: isLight ? "#cccccc" : "#333333",
           }]}>
             <View style={styles.profileItem}>
-              <MaterialCommunityIcons name="account-outline" size={18} color={isLight ? '#888888' : '#777777'} style={{ marginBottom: 4 }} />
+              <AppIcon icon={UserIcon} size={iconSize.sm} color={isLight ? '#888888' : '#777777'} style={{ marginBottom: 4 }} />
    
               <Text style={[styles.profileValue, { color: isLight ? '#000000' : '#ffffff' }]}>
                 {freeFireProfile?.game_username || 'Not Set'}
@@ -746,7 +736,7 @@ const FreeFireStore = ({ route }) => {
             </View>
             <View style={[styles.profileDivider, { backgroundColor: isLight ? '#cccccc' : '#333333' }]} />
             <View style={styles.profileItem}>
-              <MaterialCommunityIcons name="identifier" size={18} color={isLight ? '#888888' : '#777777'} style={{ marginBottom: 4 }} />
+              <AppIcon icon={IdentityCardIcon} size={iconSize.sm} color={isLight ? '#888888' : '#777777'} style={{ marginBottom: 4 }} />
 
               <Text style={[styles.profileValue, { color: isLight ? '#000000' : '#ffffff' }]}>
                 {freeFireProfile?.uid || freeFireProfile?.game_uid || 'Not Set'}
@@ -759,11 +749,7 @@ const FreeFireStore = ({ route }) => {
               borderColor: isLight ? '#cccccc' : '#333333',
               backgroundColor: isLight ? '#f8f8f8' : '#1a1a1a',
             }]}>
-              <MaterialCommunityIcons 
-                name="gamepad" 
-                size={20} 
-                color={isLight ? '#666666' : '#999999'} 
-              />
+              <AppIcon icon={GamepadIcon} size={iconSize.md} color={isLight ? '#666666' : '#999999'} />
               <TextInput
                 style={[styles.textInput, { color: isLight ? '#000000' : '#ffffff' }]}
                 placeholder="Game Name"
@@ -778,11 +764,7 @@ const FreeFireStore = ({ route }) => {
               borderColor: isLight ? '#cccccc' : '#333333',
               backgroundColor: isLight ? '#f8f8f8' : '#1a1a1a',
             }]}>
-              <MaterialIcons 
-                name="tag" 
-                size={20} 
-                color={isLight ? '#666666' : '#999999'} 
-              />
+              <AppIcon icon={LabelIcon} size={iconSize.md} color={isLight ? '#666666' : '#999999'} />
               <TextInput
                 style={[styles.textInput, { color: isLight ? '#000000' : '#ffffff' }]}
                 placeholder="UID"
@@ -866,21 +848,21 @@ const styles = StyleSheet.create({
   cornerTopLeft: {},
   cornerBottomRight: {},
   modeLabel: {
-    fontSize: scaleWidth(9),
+    fontSize: 9,
     fontWeight: '700',
-    letterSpacing: scaleWidth(1.5),
+    letterSpacing: 1.5,
     textTransform: 'uppercase',
-    marginBottom: scaleHeight(2),
+    marginBottom: spacing.xxs,
   },
   diamondIconImg: {
-    width: scaleWidth(70),
-    height: scaleWidth(70),
-    marginBottom: scaleHeight(8),
+    width: 70,
+    height: 70,
+    marginBottom: spacing.sm,
   },
   diamondCount: {
-    fontSize: scaleWidth(20),
+    fontSize: spacing.xl,
     fontWeight: '700',
-    letterSpacing: scaleWidth(0.5),
+    letterSpacing: 0.5,
     textAlign: 'center',
   },
   diamondPriceContainer: {
@@ -890,7 +872,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   diamondPrice: {
-    fontSize: scaleWidth(11),
+    fontSize: 11,
     fontWeight: '600',
   },
   priceLine: {
@@ -933,12 +915,12 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   membershipTitle: {
-    fontSize: scaleWidth(15),
+    fontSize: 15,
     fontWeight: '700',
-    letterSpacing: scaleWidth(0.3),
+    letterSpacing: 0.3,
   },
   membershipPrice: {
-    fontSize: scaleWidth(11),
+    fontSize: 11,
     fontWeight: '600',
   },
   membershipPriceContainer: {
@@ -1029,11 +1011,11 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   selectedItemHeader: {
-    fontSize: scaleWidth(10),
+    fontSize: fontSize.xs,
     fontWeight: '800',
-    letterSpacing: scaleWidth(1.5),
+    letterSpacing: 1.5,
     textTransform: 'uppercase',
-    marginBottom: scaleHeight(10),
+    marginBottom: fontSize.xs,
   },
   selectedItemRow: {
     flexDirection: 'row',

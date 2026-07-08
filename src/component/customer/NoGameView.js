@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet } from "react-native"
-import { Ionicons } from "@expo/vector-icons"
+import { Infinity01Icon } from "@hugeicons/core-free-icons"
+import AppIcon from "../../components/common/AppIcon"
 import { useThemeStore } from "../../store/themeStore"
 
 const NoGamesView = () => {
@@ -7,7 +8,7 @@ const NoGamesView = () => {
   return (
     <View style={styles.container}>
 
-      <Ionicons name="infinite-outline" size={120} color={isLight ? "#000000" : "#ffffff"} />
+      <AppIcon icon={Infinity01Icon} size={120} color={isLight ? "#000000" : "#ffffff"} strokeWidth={1.5} />
       <Text style={[styles.title, { color: isLight ? "#000000" : "#FFFFFF" }]}>Looks like the arena is quiet for you today !</Text>
     </View>
   )

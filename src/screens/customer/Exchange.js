@@ -13,7 +13,9 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useThemeStore } from "../../store/themeStore"
 import { useAuthStore } from "../../store/authStore"
-import { Octicons, MaterialIcons, AntDesign, Entypo } from "@expo/vector-icons"
+import { AppIcon } from "../../components/common/AppIcon"
+import { AlertCircleIcon, CheckIcon, ShoppingCart01Icon, InformationCircleIcon } from "@hugeicons/core-free-icons"
+import { iconSize } from "../../theme/typography"
 import AppHeader from "./header/AppHeader"
 import CreatorInfo from "../../component/matchcard/CreatorInfo"
 import { useEnhancements } from "../../queries/useEnhancer"
@@ -230,7 +232,7 @@ const Exchange = () => {
       entering={FadeIn.duration(800)}
       style={[styles.retryContainer, { backgroundColor: colors.cardBackground }]}
     >
-      <AntDesign name="exclamationcircle" size={24} color={colors.textTertiary} />
+      <AppIcon icon={AlertCircleIcon} size={iconSize.lg} color={colors.textTertiary} />
       <Text style={[styles.retryTitle, { color: colors.text }]}>Failed to load enhancements</Text>
       <Text style={[styles.retryDescription, { color: colors.textTertiary }]}>Check your connection and try again</Text>
       <Pressable
@@ -260,7 +262,7 @@ const Exchange = () => {
             <View style={[styles.statusBadge, {
               backgroundColor: isLight ? "#000000" : "#ffffff"
             }]}>
-              <Entypo name="check" size={16} color={isLight ? "#ffffff" : "#000000"} />
+              <AppIcon icon={CheckIcon} size={iconSize.sm} color={isLight ? "#ffffff" : "#000000"} />
               <Text style={[styles.statusText, {
                 color: isLight ? "#ffffff" : "#000000"
               }]}>Owned</Text>
@@ -420,7 +422,7 @@ const Exchange = () => {
                   entering={FadeIn.duration(800)}
                   style={styles.noDataContainer}
                 >
-                  <AntDesign name="shoppingcart" size={32} color={colors.textTertiary} style={{ marginBottom: 8 }} />
+                  <AppIcon icon={ShoppingCart01Icon} size={iconSize.xl} color={colors.textTertiary} style={{ marginBottom: 8 }} />
                   <Text style={[styles.noDataText, { color: colors.textTertiary }]}>
                     No enhancements available
                   </Text>
@@ -436,7 +438,7 @@ const Exchange = () => {
               entering={FadeIn.delay(enhancers.length * 150 + 200).duration(800)}
               style={[styles.infoSection, { backgroundColor: colors.cardBackground }]}
             >
-              <AntDesign name="infocirlce" size={16} color={colors.textTertiary} />
+              <AppIcon icon={InformationCircleIcon} size={iconSize.sm} color={colors.textTertiary} />
               <Text style={[styles.infoText, { color: colors.textTertiary }]}>
             "Enhancements are permanent. You can turn them on or off in your profile once your exchange is complete, and they will be displayed across all your game profiles."
               </Text>

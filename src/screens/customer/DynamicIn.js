@@ -12,12 +12,12 @@ import {
 } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useNavigation } from "@react-navigation/native"
-import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { useThemeStore } from "../../store/themeStore"
 import { useState, useMemo } from "react"
 import AppHeader from "./header/AppHeader"
 import CoolButton from "../../component/customer/common/CoolButton"
-import { scaleWidth, scaleHeight } from "../../utils/scaling"
+import { fontSize, spacing, radius, iconSize } from "../../theme/typography"
+import { PointsIcon } from "../../components/common/AppIcon"
 import QRCode from "react-native-qrcode-svg"
 import Toast from "react-native-simple-toast"
 import { GamePointAPI } from "../../api/pointsApi"
@@ -52,7 +52,7 @@ const DynamicIn = () => {
         id: i,
         top: Math.random() * 100, // percentage
         left: Math.random() * 100, // percentage
-        size: scaleWidth(14 + Math.random() * 10), // varied sizes (14-24px)
+        size: iconSize.sm + Math.random() * 10, // varied sizes (14-24px)
         opacity: 0.3 + Math.random() * 0.2, // more visible opacity 0.3-0.5
         rotation: Math.random() * 360, // random rotation
       })
@@ -153,8 +153,7 @@ const DynamicIn = () => {
                 },
               ]}
             >
-              <MaterialCommunityIcons
-                name="star-four-points-outline"
+              <PointsIcon
                 size={star.size}
                 color="#00bf63"
               />
@@ -215,7 +214,7 @@ const DynamicIn = () => {
                 }]}>
                   <QRCode
                     value={qrValue}
-                    size={scaleWidth(200)}
+                    size={200}
                     color="#000000"
                     backgroundColor="#ffffff"
                   />
@@ -235,9 +234,8 @@ const DynamicIn = () => {
                       backgroundColor: isLight ? '#14B8A6' : 'rgba(32, 201, 151, 0.2)',
                     }
                   ]}>
-                    <MaterialCommunityIcons
-                      name="star-four-points-outline"
-                      size={scaleWidth(16)}
+                    <PointsIcon
+                      size={iconSize.sm}
                       color={isLight ? "#ffffff" : "#20c997"}
                     />
                   </View>
@@ -263,7 +261,7 @@ const DynamicIn = () => {
           </View>
             </View>
 
-            <View style={[styles.footer,Platform.OS === "android" && { marginBottom: scaleHeight(10) }]}>
+            <View style={[styles.footer, Platform.OS === "android" && { marginBottom: spacing.sm }]}>
               <CoolButton 
                 handlePress={showQR ? handleDone : handleProceed} 
                 disableBtn={loading} 
@@ -301,127 +299,126 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: scaleWidth(20),
+    paddingHorizontal: spacing.xl,
     justifyContent: 'center',
     zIndex: 1,
   },
   pointCard: {
-    borderRadius: scaleWidth(4),
-    borderWidth: scaleWidth(2),
-    padding: scaleWidth(24),
+    borderRadius: spacing.xs,
+    borderWidth: 2,
+    padding: spacing['2xl'],
     position: 'relative',
     overflow: 'hidden',
   },
   cornerDecoration: {
     position: 'absolute',
-    width: scaleWidth(20),
-    height: scaleWidth(20),
-    borderWidth: scaleWidth(2),
+    width: spacing.xl,
+    height: spacing.xl,
+    borderWidth: 2,
   },
   cornerTopLeft: {
-    top: scaleWidth(-2),
-    left: scaleWidth(-2),
+    top: -2,
+    left: -2,
     borderBottomWidth: 0,
     borderRightWidth: 0,
   },
   cornerTopRight: {
-    top: scaleWidth(-2),
-    right: scaleWidth(-2),
+    top: -2,
+    right: -2,
     borderBottomWidth: 0,
     borderLeftWidth: 0,
   },
   cornerBottomLeft: {
-    bottom: scaleWidth(-2),
-    left: scaleWidth(-2),
+    bottom: -2,
+    left: -2,
     borderTopWidth: 0,
     borderRightWidth: 0,
   },
   cornerBottomRight: {
-    bottom: scaleWidth(-2),
-    right: scaleWidth(-2),
+    bottom: -2,
+    right: -2,
     borderTopWidth: 0,
     borderLeftWidth: 0,
   },
   angularCut: {
     position: 'absolute',
-    width: scaleWidth(30),
-    height: scaleWidth(30),
-    borderWidth: scaleWidth(1),
+    width: 30,
+    height: 30,
+    borderWidth: 1,
     transform: [{ rotate: '45deg' }],
   },
   cutTopRight: {
-    top: scaleWidth(20),
-    right: scaleWidth(-15),
+    top: spacing.xl,
+    right: -15,
     borderBottomWidth: 0,
     borderLeftWidth: 0,
   },
   cutBottomLeft: {
-    bottom: scaleWidth(20),
-    left: scaleWidth(-15),
+    bottom: spacing.xl,
+    left: -15,
     borderTopWidth: 0,
     borderRightWidth: 0,
   },
   cardHeader: {
     alignItems: 'center',
-    marginBottom: scaleHeight(20),
+    marginBottom: spacing.xl,
   },
   cardTitle: {
-    fontSize: scaleWidth(20),
+    fontSize: fontSize.xl,
     fontWeight: '700',
     textAlign: 'center',
-    marginBottom: scaleHeight(6),
+    marginBottom: spacing.xs + 2,
     letterSpacing: -0.5,
   },
   cardSubtitle: {
-    fontSize: scaleWidth(13),
+    fontSize: fontSize.sm + 1,
     fontWeight: '400',
     textAlign: 'center',
   },
   inputContainer: {
-    marginBottom: scaleHeight(20),
+    marginBottom: spacing.xl,
   },
   inputLabel: {
-    fontSize: scaleWidth(15),
+    fontSize: fontSize.base + 1,
     fontWeight: "600",
-    marginBottom: scaleHeight(10),
+    marginBottom: spacing.sm + 2,
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: scaleWidth(1.5),
-    borderRadius: scaleWidth(25),
-    paddingHorizontal: scaleWidth(8),
-    gap: scaleWidth(12),
+    borderWidth: 1.5,
+    borderRadius: radius.pill - 7,
+    paddingHorizontal: spacing.sm,
+    gap: spacing.md,
   },
   pointsIconContainer: {
-    width: scaleWidth(32),
-    height: scaleWidth(32),
-    borderRadius: scaleWidth(16),
+    width: spacing['3xl'],
+    height: spacing['3xl'],
+    borderRadius: spacing.lg,
     justifyContent: 'center',
     alignItems: 'center',
   },
   input: {
     flex: 1,
-    paddingVertical: scaleHeight(14),
-    fontSize: scaleWidth(16),
+    paddingVertical: fontSize.base,
+    fontSize: fontSize.md,
   },
   qrContainer: {
     alignItems: 'center',
-    marginBottom: scaleHeight(20),
+    marginBottom: spacing.xl,
   },
   qrWrapper: {
-    padding: scaleWidth(16),
-    borderRadius: scaleWidth(8),
-    borderWidth: scaleWidth(2),
+    padding: spacing.lg,
+    borderRadius: radius.sm,
+    borderWidth: 2,
   },
   qrInstruction: {
-    fontSize: scaleWidth(12),
+    fontSize: fontSize.sm,
     textAlign: 'center',
-    marginBottom: scaleHeight(16),
+    marginBottom: spacing.lg,
   },
   footer: {
-    paddingHorizontal: scaleWidth(20),
-    // paddingBottom: scaleHeight(10),
+    paddingHorizontal: spacing.xl,
     marginTop: 'auto',
     zIndex: 1,
   },

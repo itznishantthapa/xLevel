@@ -12,14 +12,19 @@ import {
 } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { MaterialCommunityIcons, Ionicons, AntDesign, Octicons } from '@expo/vector-icons'
-import { LinearGradient } from 'expo-linear-gradient'
+import Toast from 'react-native-simple-toast'
 import Carousel, { Pagination } from 'react-native-reanimated-carousel'
 import { useSharedValue, useDerivedValue, interpolate, Extrapolation } from 'react-native-reanimated'
-import Toast from 'react-native-simple-toast'
-import { useThemeStore } from '../../../store/themeStore'
-import { useAuthStore } from '../../../store/authStore'
-import { scaleWidth, scaleHeight } from '../../../utils/scaling'
+import { AppIcon } from '../../../components/common/AppIcon'
+import {
+  User02Icon,
+  GameController01Icon,
+  WhatsappIcon,
+  Delete01Icon,
+  PlusSignIcon,
+  StoreRemove01Icon,
+} from '@hugeicons/core-free-icons'
+import { fontSize, spacing, radius, iconSize } from '../../../theme/typography'
 import { useBottomSheet } from '../../../context/BottomSheetContext'
 import { useNavigation } from '@react-navigation/native'
 import { useNetworkStatus } from '../../../hooks/useNetworkStatus'
@@ -29,9 +34,11 @@ import ProductCardSkeleton from '../../../component/customer/store/ProductCardSk
 import { useDeleteGameAccount } from '../../../queries/useMutation/useDeleteGameAccount'
 import { usePurchaseGameAccount } from '../../../queries/useMutation/usePurchaseGameAccount'
 import { useUtils } from '../../../queries/useUtils'
+import { useThemeStore } from '../../../store/themeStore'
+import { useAuthStore } from '../../../store/authStore'
 
 const { width } = Dimensions.get('window')
-const CARD_WIDTH = width - scaleWidth(20) // Full width card with minimal padding
+const CARD_WIDTH = width - spacing.xl // Full width card with minimal padding
 const IMAGE_HEIGHT = (CARD_WIDTH * 736) / 1600 // Maintain 1600x736 aspect ratio
 
 const getTimeAgo = (dateString) => {
@@ -114,17 +121,17 @@ const ProductCard = ({ product, index, isLight, onOrderPress, onDeletePress, use
         <Pagination.Custom
           progress={animatedProgress}
           data={product.images}
-          size={scaleWidth(5)}
+          size={5}
           dotStyle={{
-            borderRadius: scaleWidth(2.5),
+            borderRadius: 2.5,
             backgroundColor: 'rgba(255, 255, 255, 0.5)',
-            width: scaleWidth(5),
-            height: scaleWidth(5),
+            width: 5,
+            height: 5,
           }}
           activeDotStyle={{
-            borderRadius: scaleWidth(2.5),
-            width: scaleWidth(5),
-            height: scaleWidth(5),
+            borderRadius: 2.5,
+            width: 5,
+            height: 5,
             overflow: 'hidden',
             backgroundColor: '#ffffff',
           }}
@@ -169,7 +176,7 @@ const ProductCard = ({ product, index, isLight, onOrderPress, onDeletePress, use
                   <View style={[
                     styles.sellerAvatar,
                     { 
-                      borderWidth: scaleWidth(2),
+                      borderWidth: 2,
                       borderColor: isLight ? '#e0e0e0' : '#444444',
                       backgroundColor: isLight ? '#f5f5f5' : '#2a2a2a',
                     }
@@ -184,9 +191,9 @@ const ProductCard = ({ product, index, isLight, onOrderPress, onDeletePress, use
                         styles.sellerFallback,
                         { backgroundColor: isLight ? '#e0e0e0' : '#333333' }
                       ]}>
-                        <Octicons
-                          name="feed-person"
-                          size={scaleWidth(20)}
+                        <AppIcon
+                          icon={User02Icon}
+                          size={iconSize.md}
                           color={isLight ? '#000000' : '#ffffff'}
                         />
                       </View>
@@ -234,7 +241,7 @@ const ProductCard = ({ product, index, isLight, onOrderPress, onDeletePress, use
                       shadowRadius: 4.5,
                     }
                   ]}>
-                    <Ionicons name="game-controller" size={scaleWidth(12)} color={isLight ? '#ffffff' : '#A855F7'} />
+                    <AppIcon icon={GameController01Icon} size={iconSize.xs - 2} color={isLight ? '#ffffff' : '#A855F7'} />
                   </View>
                   <Text style={[
                     styles.pillText,
@@ -264,7 +271,7 @@ const ProductCard = ({ product, index, isLight, onOrderPress, onDeletePress, use
                       shadowRadius: 4.5,
                     }
                   ]}>
-                    <MaterialCommunityIcons name="whatsapp" size={scaleWidth(12)} color="#ffffff" />
+                    <AppIcon icon={WhatsappIcon} size={iconSize.xs - 2} color="#ffffff" />
                   </View>
                   <Text style={[
                     styles.pillText,
@@ -318,9 +325,9 @@ const ProductCard = ({ product, index, isLight, onOrderPress, onDeletePress, use
               ]}
               onPress={() => onDeletePress(product)}
             >
-              <MaterialCommunityIcons
-                name="trash-can-outline"
-                size={scaleWidth(18)}
+              <AppIcon
+                icon={Delete01Icon}
+                size={iconSize.sm + 2}
                 color={isLight ? '#ffffff' : '#000000'}
               />
             </Pressable>
@@ -365,11 +372,7 @@ const ProductCard = ({ product, index, isLight, onOrderPress, onDeletePress, use
 
 const EmptyListComponent = ({ isLight }) => (
   <View style={styles.emptyContainer}>
-    <MaterialCommunityIcons
-      name="store-off"
-      size={scaleWidth(64)}
-      color={isLight ? '#cccccc' : '#444444'}
-    />
+    <AppIcon icon={StoreRemove01Icon} size={64} color={isLight ? '#cccccc' : '#444444'} />
     <Text style={[styles.emptyTitle, { color: isLight ? '#1a1a1a' : '#ffffff' }]}>
       No Products Available
     </Text>
@@ -398,9 +401,9 @@ const ProductHeader = ({ isLight, walletBalance, onWalletPress, isIOSActive }) =
             },
           ]}
         >
-          <AntDesign
-            name="plus"
-            size={scaleWidth(30)}
+          <AppIcon
+            icon={PlusSignIcon}
+            size={30}
             color={isLight ? '#000000' : '#ffffff'}
           />
         </View>
@@ -606,67 +609,67 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: scaleHeight(10),
-    paddingHorizontal: scaleWidth(16),
-    marginBottom: scaleHeight(10),
+    paddingTop: spacing.sm + 2,
+    paddingHorizontal: spacing.lg,
+    marginBottom: spacing.sm + 2,
   },
   headerTitle: {
-    fontSize: scaleWidth(18),
+    fontSize: fontSize.lg,
     fontWeight: '600',
   },
   headingUnderline: {
-    width: scaleWidth(80),
-    height: scaleHeight(2),
-    borderRadius: scaleWidth(1),
-    marginTop: scaleHeight(4),
+    width: 80,
+    height: 2,
+    borderRadius: 1,
+    marginTop: spacing.xs,
   },
   addIconContainer: {
-    width: scaleWidth(40),
-    height: scaleWidth(40),
-    borderRadius: scaleWidth(20),
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },
   walletBadge: {
-    paddingHorizontal: scaleWidth(14),
-    paddingVertical: scaleHeight(10),
-    borderRadius: scaleWidth(24),
+    paddingHorizontal: fontSize.base,
+    paddingVertical: spacing.sm + 2,
+    borderRadius: spacing['2xl'],
     flexDirection: 'row',
     alignItems: 'center',
   },
   walletContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: scaleWidth(8),
+    marginRight: spacing.sm,
   },
   walletText: {
-    fontSize: scaleWidth(14),
+    fontSize: fontSize.base,
     fontWeight: '700',
     color: '#000000',
-    marginLeft: scaleWidth(6),
+    marginLeft: spacing.xs + 2,
   },
   listWrapper: {
     flex: 1,
   },
   listContainer: {
-    paddingHorizontal: scaleWidth(10),
-    paddingBottom: scaleHeight(20),
+    paddingHorizontal: spacing.sm + 2,
+    paddingBottom: spacing.xl,
   },
   productCard: {
     width: CARD_WIDTH,
-    marginBottom: scaleHeight(16),
-    borderTopRightRadius: scaleWidth(25),
-    borderTopLeftRadius: scaleWidth(25),
-    borderBottomRightRadius: scaleWidth(25),
-    borderBottomLeftRadius: scaleWidth(25),
-    borderWidth: scaleWidth(1.5),
+    marginBottom: spacing.lg,
+    borderTopRightRadius: radius.pill - 7,
+    borderTopLeftRadius: radius.pill - 7,
+    borderBottomRightRadius: radius.pill - 7,
+    borderBottomLeftRadius: radius.pill - 7,
+    borderWidth: 1.5,
     overflow: 'hidden',
   },
   sellerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: scaleHeight(6),
+    marginBottom: spacing.xs + 2,
   },
   sellerLeft: {
     flexDirection: 'row',
@@ -674,11 +677,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   sellerAvatar: {
-    width: scaleWidth(40),
-    height: scaleWidth(40),
-    borderRadius: scaleWidth(20),
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     overflow: 'hidden',
-    marginRight: scaleWidth(10),
+    marginRight: spacing.sm + 2,
   },
   sellerImage: {
     width: '100%',
@@ -696,13 +699,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   sellerName: {
-    fontSize: scaleWidth(13),
+    fontSize: fontSize.sm + 1,
     fontWeight: '600',
-    marginBottom: scaleHeight(2),
+    marginBottom: spacing.xxs,
     letterSpacing: 0.1,
   },
   sellerLabel: {
-    fontSize: scaleWidth(10),
+    fontSize: fontSize.xs,
     fontWeight: '400',
     letterSpacing: 0.3,
   },
@@ -723,8 +726,8 @@ const styles = StyleSheet.create({
   },
   paginationContainer: {
     position: 'absolute',
-    bottom: scaleHeight(8),
-    gap: scaleWidth(4),
+    bottom: spacing.sm,
+    gap: spacing.xs,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -740,103 +743,103 @@ const styles = StyleSheet.create({
   },
   outOfStockText: {
     color: '#ffffff',
-    fontSize: scaleWidth(12),
+    fontSize: fontSize.sm,
     fontWeight: '600',
     textTransform: 'uppercase',
   },
   productInfo: {
-    padding: scaleWidth(12),
+    padding: spacing.md,
   },
   chatBubbleWrapper: {
-    marginBottom: scaleHeight(10),
-    marginLeft: scaleWidth(8),
+    marginBottom: spacing.sm + 2,
+    marginLeft: spacing.sm,
   },
   chatBubblePointer: {
     width: 0,
     height: 0,
-    borderLeftWidth: scaleWidth(6),
-    borderRightWidth: scaleWidth(6),
-    borderBottomWidth: scaleWidth(6),
+    borderLeftWidth: spacing.xs + 2,
+    borderRightWidth: spacing.xs + 2,
+    borderBottomWidth: spacing.xs + 2,
     borderLeftColor: 'transparent',
     borderRightColor: 'transparent',
-    marginLeft: scaleWidth(12),
+    marginLeft: spacing.md,
   },
   chatBubble: {
-    borderRadius: scaleWidth(12),
-    borderTopLeftRadius: scaleWidth(4),
-    paddingHorizontal: scaleWidth(12),
-    paddingVertical: scaleHeight(10),
+    borderRadius: radius.md,
+    borderTopLeftRadius: spacing.xs,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm + 2,
   },
   productName: {
-    fontSize: scaleWidth(12),
+    fontSize: fontSize.sm,
     fontWeight: '400',
-    lineHeight: scaleHeight(16),
+    lineHeight: spacing.lg,
     letterSpacing: 0.2,
   },
   descriptionSeparator: {
-    borderBottomWidth: scaleWidth(1),
-    marginBottom: scaleHeight(12),
+    borderBottomWidth: 1,
+    marginBottom: spacing.md,
   },
   gamePill: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: scaleHeight(6),
-    paddingHorizontal: scaleWidth(10),
-    borderRadius: scaleWidth(20),
-    borderWidth: scaleWidth(1),
-    gap: scaleWidth(6),
+    paddingVertical: spacing.xs + 2,
+    paddingHorizontal: spacing.sm + 2,
+    borderRadius: radius.xl,
+    borderWidth: 1,
+    gap: spacing.xs + 2,
   },
   pillsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: scaleWidth(6),
+    gap: spacing.xs + 2,
   },
   iconWrapper: {
-    width: scaleWidth(22),
-    height: scaleWidth(22),
-    borderRadius: scaleWidth(11),
+    width: 22,
+    height: 22,
+    borderRadius: 11,
     alignItems: 'center',
     justifyContent: 'center',
   },
   pillText: {
-    fontSize: scaleWidth(11),
+    fontSize: fontSize.xs + 1,
     fontWeight: '600',
   },
   priceSection: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: scaleWidth(5),
-    marginBottom: scaleHeight(12),
+    gap: spacing.xxs + 3,
+    marginBottom: spacing.md,
   },
   priceLine: {
-    width: scaleWidth(20),
-    height: scaleHeight(1),
+    width: spacing.xl,
+    height: 1,
     opacity: 0.8,
   },
   priceText: {
-    fontSize: scaleWidth(16),
+    fontSize: fontSize.md,
     fontWeight: '700',
     color: '#00bf63',
   },
   pointsLabel: {
-    fontSize: scaleWidth(11),
+    fontSize: fontSize.xs + 1,
     fontWeight: '600',
     color: '#00bf63',
   },
   buyButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: scaleHeight(12),
-    borderRadius: scaleWidth(8),
+    paddingVertical: spacing.md,
+    borderRadius: radius.sm,
   },
   buyButtonContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: scaleWidth(5),
+    gap: spacing.xxs + 3,
   },
   buyButtonText: {
-    fontSize: scaleWidth(14),
+    fontSize: fontSize.base,
     fontWeight: '700',
   },
   ownerRow: {
@@ -847,41 +850,41 @@ const styles = StyleSheet.create({
   listedInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: scaleWidth(6),
+    gap: spacing.xs + 2,
     flex: 1,
   },
   listedText: {
-    fontSize: scaleWidth(13),
+    fontSize: fontSize.sm + 1,
     fontWeight: '600',
     letterSpacing: 0.2,
   },
   removeIconButton: {
-    width: scaleWidth(36),
-    height: scaleWidth(36),
-    borderRadius: scaleWidth(18),
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: scaleWidth(12),
+    marginLeft: spacing.md,
   },
   buyButtonPointsLabel: {
-    fontSize: scaleWidth(11),
+    fontSize: fontSize.xs + 1,
     fontWeight: '500',
   },
   emptyContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: scaleHeight(60),
+    paddingVertical: 60,
   },
   emptyTitle: {
-    fontSize: scaleWidth(18),
+    fontSize: fontSize.lg,
     fontWeight: '600',
-    marginTop: scaleHeight(16),
+    marginTop: spacing.lg,
   },
   emptySubtitle: {
-    fontSize: scaleWidth(14),
-    marginTop: scaleHeight(8),
+    fontSize: fontSize.base,
+    marginTop: spacing.sm,
     textAlign: 'center',
-    paddingHorizontal: scaleWidth(40),
+    paddingHorizontal: 40,
   },
 })

@@ -126,7 +126,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0,
     shadowRadius: 0,
     backgroundColor: 'transparent',
-    // paddingHorizontal:scaleWidth(10),
   },
   tabBar: {backgroundColor:'transparent', height: 48,elevation:0,shadowColor:'transparent',shadowOffset:{width:0,height:0},shadowOpacity:0,shadowRadius:0 },
   tab: { width: 'auto', minWidth: 90, marginHorizontal: 4 },

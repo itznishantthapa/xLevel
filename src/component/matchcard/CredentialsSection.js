@@ -2,14 +2,15 @@
 
 import { useState, useEffect } from "react"
 import { View, Text, Pressable, TextInput, Linking } from "react-native"
-import { MaterialIcons } from "@expo/vector-icons"
+import { AppIcon } from "../../components/common/AppIcon"
+import { RefreshIcon, Copy01Icon, LinkSquare02Icon } from "@hugeicons/core-free-icons"
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import { scaleHeight, scaleWidth } from "../../utils/scaling"
 import Clipboard from "@react-native-clipboard/clipboard"
 import Toast from "react-native-simple-toast"
 import { sharedStyles } from "./sharedStyleAndInfo"
 import { useCredentials } from "./hook/useCredentials"
 import { FadingText } from "../customer/animation/FadingText"
+import { fontSize, spacing, iconSize } from '../../theme/typography';
 
 const CredentialsSection = ({
   game,
@@ -257,7 +258,7 @@ const CredentialsSection = ({
               sharedStyles.sendButton,
               {
                 backgroundColor: isLight ? "#000000" : "#eaf4f4",
-                marginTop: scaleHeight(12)
+                marginTop: spacing.md
               }
             ]}
             onPress={handleSendCredential}
@@ -285,17 +286,17 @@ const CredentialsSection = ({
               sharedStyles.sendButton,
               {
                 backgroundColor: isLight ? "#666666" : "#555555",
-                marginTop: scaleHeight(12)
+                marginTop: spacing.md
               }
             ]}
             onPress={credentials.handleResend}
           >
             <View style={sharedStyles.sendButtonContent}>
-              <MaterialIcons
-                name="refresh"
-                size={scaleWidth(16)}
+              <AppIcon
+                icon={RefreshIcon}
+                size={iconSize.sm}
                 color={isLight ? "#ffffff" : "#ffffff"}
-                style={{ marginRight: scaleWidth(8) }}
+                style={{ marginRight: spacing.sm }}
               />
               <Text style={[sharedStyles.sendButtonText, { color: isLight ? "#ffffff" : "#ffffff" }]}>
                 Resend Credentials ({credentials.MAX_RESEND_ATTEMPTS - credentials.resendCount} left)
@@ -347,17 +348,17 @@ const CredentialsSection = ({
           >
             <View style={[
               { 
-                paddingHorizontal: scaleWidth(8),
-                paddingVertical: scaleHeight(4),
-                borderRadius: scaleWidth(6),
+                paddingHorizontal: spacing.sm,
+                paddingVertical: spacing.xs,
+                borderRadius: 6,
                 backgroundColor: isLight ? "#e9ecef" : "#2a2a2a",
-                marginRight: scaleWidth(10)
+                marginRight: fontSize.xs
               }
             ]}>
-              <Text style={[{ color: isLight ? "#495057" : "#adb5bd", fontSize: scaleWidth(10), fontWeight: '700', letterSpacing: 0.5 }]}>ID</Text>
+              <Text style={[{ color: isLight ? "#495057" : "#adb5bd", fontSize: fontSize.xs, fontWeight: '700', letterSpacing: 0.5 }]}>ID</Text>
             </View>
             <Text 
-              style={[{ flex: 1, color: isLight ? "#212529" : "#ffffff", fontWeight: '600', fontSize: scaleWidth(13) }]}
+              style={[{ flex: 1, color: isLight ? "#212529" : "#ffffff", fontWeight: '600', fontSize: 13 }]}
               numberOfLines={1}
               ellipsizeMode="middle"
             >
@@ -365,12 +366,12 @@ const CredentialsSection = ({
             </Text>
             <View style={[
               {
-                padding: scaleWidth(6),
-                borderRadius: scaleWidth(8),
+                padding: 6,
+                borderRadius: spacing.sm,
                 backgroundColor: isLight ? "#e9ecef" : "#2a2a2a"
               }
             ]}>
-              <MaterialIcons name="content-copy" size={scaleWidth(16)} color={isLight ? "#495057" : "#adb5bd"} />
+              <AppIcon icon={Copy01Icon} size={iconSize.sm} color={isLight ? "#495057" : "#adb5bd"} />
             </View>
           </Pressable>
 
@@ -386,17 +387,17 @@ const CredentialsSection = ({
           >
             <View style={[
               { 
-                paddingHorizontal: scaleWidth(8),
-                paddingVertical: scaleHeight(4),
-                borderRadius: scaleWidth(6),
+                paddingHorizontal: spacing.sm,
+                paddingVertical: spacing.xs,
+                borderRadius: 6,
                 backgroundColor: isLight ? "#e9ecef" : "#2a2a2a",
-                marginRight: scaleWidth(10)
+                marginRight: fontSize.xs
               }
             ]}>
-              <Text style={[{ color: isLight ? "#495057" : "#adb5bd", fontSize: scaleWidth(10), fontWeight: '700', letterSpacing: 0.5 }]}>PASS</Text>
+              <Text style={[{ color: isLight ? "#495057" : "#adb5bd", fontSize: fontSize.xs, fontWeight: '700', letterSpacing: 0.5 }]}>PASS</Text>
             </View>
             <Text 
-              style={[{ flex: 1, color: isLight ? "#212529" : "#ffffff", fontWeight: '600', fontSize: scaleWidth(13) }]}
+              style={[{ flex: 1, color: isLight ? "#212529" : "#ffffff", fontWeight: '600', fontSize: 13 }]}
               numberOfLines={1}
               ellipsizeMode="middle"
             >
@@ -404,12 +405,12 @@ const CredentialsSection = ({
             </Text>
             <View style={[
               {
-                padding: scaleWidth(6),
-                borderRadius: scaleWidth(8),
+                padding: 6,
+                borderRadius: spacing.sm,
                 backgroundColor: isLight ? "#e9ecef" : "#2a2a2a"
               }
             ]}>
-              <MaterialIcons name="content-copy" size={scaleWidth(16)} color={isLight ? "#495057" : "#adb5bd"} />
+              <AppIcon icon={Copy01Icon} size={iconSize.sm} color={isLight ? "#495057" : "#adb5bd"} />
             </View>
           </Pressable>
         </View>
@@ -437,17 +438,17 @@ const CredentialsSection = ({
           >
             <View style={[
               { 
-                paddingHorizontal: scaleWidth(8),
-                paddingVertical: scaleHeight(4),
-                borderRadius: scaleWidth(6),
+                paddingHorizontal: spacing.sm,
+                paddingVertical: spacing.xs,
+                borderRadius: 6,
                 backgroundColor: isLight ? "#e9ecef" : "#2a2a2a",
-                marginRight: scaleWidth(10)
+                marginRight: fontSize.xs
               }
             ]}>
-              <Text style={[{ color: isLight ? "#495057" : "#adb5bd", fontSize: scaleWidth(10), fontWeight: '700', letterSpacing: 0.5 }]}>CODE</Text>
+              <Text style={[{ color: isLight ? "#495057" : "#adb5bd", fontSize: fontSize.xs, fontWeight: '700', letterSpacing: 0.5 }]}>CODE</Text>
             </View>
             <Text 
-              style={[{ flex: 1, color: isLight ? "#212529" : "#ffffff", fontWeight: '600', fontSize: scaleWidth(13) }]}
+              style={[{ flex: 1, color: isLight ? "#212529" : "#ffffff", fontWeight: '600', fontSize: 13 }]}
               numberOfLines={1}
               ellipsizeMode="middle"
             >
@@ -455,12 +456,12 @@ const CredentialsSection = ({
             </Text>
             <View style={[
               {
-                padding: scaleWidth(6),
-                borderRadius: scaleWidth(8),
+                padding: 6,
+                borderRadius: spacing.sm,
                 backgroundColor: isLight ? "#e9ecef" : "#2a2a2a"
               }
             ]}>
-              <MaterialIcons name="content-copy" size={scaleWidth(16)} color={isLight ? "#495057" : "#adb5bd"} />
+              <AppIcon icon={Copy01Icon} size={iconSize.sm} color={isLight ? "#495057" : "#adb5bd"} />
             </View>
           </Pressable>
         </View>
@@ -488,17 +489,17 @@ const CredentialsSection = ({
           >
             <View style={[
               { 
-                paddingHorizontal: scaleWidth(8),
-                paddingVertical: scaleHeight(4),
-                borderRadius: scaleWidth(6),
+                paddingHorizontal: spacing.sm,
+                paddingVertical: spacing.xs,
+                borderRadius: 6,
                 backgroundColor: isLight ? "#e9ecef" : "#2a2a2a",
-                marginRight: scaleWidth(10)
+                marginRight: fontSize.xs
               }
             ]}>
-              <Text style={[{ color: isLight ? "#495057" : "#adb5bd", fontSize: scaleWidth(10), fontWeight: '700', letterSpacing: 0.5 }]}>LOBBY</Text>
+              <Text style={[{ color: isLight ? "#495057" : "#adb5bd", fontSize: fontSize.xs, fontWeight: '700', letterSpacing: 0.5 }]}>LOBBY</Text>
             </View>
             <Text 
-              style={[{ flex: 1, color: isLight ? "#212529" : "#ffffff", fontWeight: '600', fontSize: scaleWidth(13) }]}
+              style={[{ flex: 1, color: isLight ? "#212529" : "#ffffff", fontWeight: '600', fontSize: 13 }]}
               numberOfLines={1}
               ellipsizeMode="middle"
             >
@@ -506,12 +507,12 @@ const CredentialsSection = ({
             </Text>
             <View style={[
               {
-                padding: scaleWidth(6),
-                borderRadius: scaleWidth(8),
+                padding: 6,
+                borderRadius: spacing.sm,
                 backgroundColor: isLight ? "#e9ecef" : "#2a2a2a"
               }
             ]}>
-              <MaterialIcons name="content-copy" size={scaleWidth(16)} color={isLight ? "#495057" : "#adb5bd"} />
+              <AppIcon icon={Copy01Icon} size={iconSize.sm} color={isLight ? "#495057" : "#adb5bd"} />
             </View>
           </Pressable>
         </View>
@@ -577,14 +578,14 @@ const CredentialsSection = ({
           >
             <View style={[
               { 
-                paddingHorizontal: scaleWidth(8),
-                paddingVertical: scaleHeight(4),
-                borderRadius: scaleWidth(6),
+                paddingHorizontal: spacing.sm,
+                paddingVertical: spacing.xs,
+                borderRadius: 6,
                 backgroundColor: "#d1f4e0",
-                marginRight: scaleWidth(10)
+                marginRight: fontSize.xs
               }
             ]}>
-              <Text style={[{ color: "#00bf63", fontSize: scaleWidth(10), fontWeight: '700', letterSpacing: 0.5 }]}>LINK</Text>
+              <Text style={[{ color: "#00bf63", fontSize: fontSize.xs, fontWeight: '700', letterSpacing: 0.5 }]}>LINK</Text>
             </View>
             <Text
               style={[
@@ -592,7 +593,7 @@ const CredentialsSection = ({
                   flex: 1,
                   color: "#00bf63",
                   fontWeight: '600',
-                  fontSize: scaleWidth(12),
+                  fontSize: spacing.md,
                   textDecorationLine: 'underline'
                 }
               ]}
@@ -603,12 +604,12 @@ const CredentialsSection = ({
             </Text>
             <View style={[
               {
-                padding: scaleWidth(6),
-                borderRadius: scaleWidth(8),
+                padding: 6,
+                borderRadius: spacing.sm,
                 backgroundColor: "#d1f4e0"
               }
             ]}>
-              <MaterialIcons name="open-in-new" size={scaleWidth(16)} color="#00bf63" />
+              <AppIcon icon={LinkSquare02Icon} size={iconSize.sm} color="#00bf63" />
             </View>
           </Pressable>
         </View>

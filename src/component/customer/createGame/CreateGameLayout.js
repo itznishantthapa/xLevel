@@ -6,7 +6,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Loader from '../../Loader';
 import CoolButton from '../common/CoolButton';
 import AppHeader from '../../../screens/customer/header/AppHeader';
-import { scaleHeight } from '../../../utils/scaling';
 
 /**
  * CreateGameLayout - Shared layout wrapper for all game creation screens
@@ -67,7 +66,7 @@ const CreateGameLayout = ({
           {/* Submit Button */}
           <View style={[
             { marginHorizontal: 20 },
-            Platform.OS === "android" && { marginBottom:scaleHeight(10) }
+            Platform.OS === "android" && { marginBottom: 10 }
           ]}>
             {aboveButtonContent}
             <CoolButton title={buttonTitle} handlePress={onSubmit} backgroundColor={buttonBackgroundColor} textColor={buttonTextColor} />

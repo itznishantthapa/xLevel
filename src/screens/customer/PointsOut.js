@@ -3,14 +3,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import { useState } from 'react';
 import { useThemeStore } from '../../store/themeStore';
-import { FontAwesome6, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Toast from 'react-native-simple-toast';
 import * as ImagePicker from 'expo-image-picker';
 import { useQueryClient } from '@tanstack/react-query';
 import AppHeader from './header/AppHeader';
 import { usePointsOut } from '../../queries/useMutation/usePointsOut';
 import CoolButton from '../../component/customer/common/CoolButton';
-import { scaleWidth, scaleHeight } from '../../utils/scaling';
+import { AppIcon, PointsIcon } from '../../components/common/AppIcon';
+import { QrCodeIcon, AlertCircleIcon } from '@hugeicons/core-free-icons';
+import { fontSize, spacing, radius, iconSize } from '../../theme/typography';
 
 const PointsOut = () => {
   const navigation = useNavigation();
@@ -159,14 +160,14 @@ const PointsOut = () => {
                     </View>
                   ) : (
                     <View style={styles.uploadButtonContent}>
-                      <FontAwesome6 name="qrcode" size={scaleWidth(32)} color={colors.textSecondary} />
+                      <AppIcon icon={QrCodeIcon} size={iconSize.xl + 4} color={colors.textSecondary} />
                       <Text style={[styles.uploadButtonText, { color: colors.textSecondary }]}>Tap to upload your QR</Text>
                     </View>
                   )}
                 </Pressable>
                 {errors.qr ? (
                   <View style={styles.errorContainer}>
-                    <Ionicons name="alert-circle" size={scaleWidth(14)} color="#FF4444" />
+                    <AppIcon icon={AlertCircleIcon} size={iconSize.xs} color="#FF4444" />
                     <Text style={styles.errorText}>{errors.qr}</Text>
                   </View>
                 ) : null}
@@ -190,9 +191,8 @@ const PointsOut = () => {
                       shadowRadius: 4.5,
                     }
                   ]}>
-                    <MaterialCommunityIcons
-                      name="star-four-points-outline"
-                      size={scaleWidth(16)}
+                    <PointsIcon
+                      size={iconSize.sm}
                       color={isLight ? "#ffffff" : "#20c997"}
                     />
                   </View>
@@ -212,7 +212,7 @@ const PointsOut = () => {
                 </View>
                 {errors.amount ? (
                   <View style={styles.errorContainer}>
-                    <Ionicons name="alert-circle" size={scaleWidth(14)} color="#FF4444" />
+                    <AppIcon icon={AlertCircleIcon} size={iconSize.xs} color="#FF4444" />
                     <Text style={styles.errorText}>{errors.amount}</Text>
                   </View>
                 ) : null}
@@ -220,7 +220,7 @@ const PointsOut = () => {
 
             </ScrollView>
 
-            <View style={[styles.footer,Platform.OS === "android" && { marginBottom: scaleHeight(10) }]}>
+            <View style={[styles.footer, Platform.OS === "android" && { marginBottom: spacing.sm }]}>
               <CoolButton handlePress={handleSubmit} disableBtn={disableBtn} title={'Redeem'} />
             </View>
           </View>
@@ -238,61 +238,61 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   footer: {
-    paddingHorizontal: scaleWidth(20),
+    paddingHorizontal: spacing.xl,
   },
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: scaleHeight(40),
-    paddingHorizontal: scaleWidth(20),
-    paddingTop: scaleHeight(20),
+    paddingBottom: 40,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.xl,
   },
   inputContainer: {
-    marginBottom: scaleHeight(20),
+    marginBottom: spacing.xl,
   },
   uploadContainer: {
-    marginBottom: scaleHeight(30),
+    marginBottom: spacing['2xl'] + 6,
   },
   inputLabel: {
-    fontSize: scaleWidth(15),
+    fontSize: fontSize.base + 1,
     fontWeight: "600",
-    marginBottom: scaleHeight(10),
+    marginBottom: spacing.sm + 2,
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: scaleWidth(1.5),
-    borderRadius: scaleWidth(25),
-    paddingHorizontal: scaleWidth(8),
-    gap: scaleWidth(12),
+    borderWidth: 1.5,
+    borderRadius: radius.pill - 7,
+    paddingHorizontal: spacing.sm,
+    gap: spacing.md,
   },
   pointsIconContainer: {
-    width: scaleWidth(32),
-    height: scaleWidth(32),
-    borderRadius: scaleWidth(16),
+    width: spacing['3xl'],
+    height: spacing['3xl'],
+    borderRadius: spacing.lg,
     justifyContent: 'center',
     alignItems: 'center',
   },
   input: {
     flex: 1,
-    paddingVertical: scaleHeight(14),
-    fontSize: scaleWidth(16),
+    paddingVertical: fontSize.base,
+    fontSize: fontSize.md,
   },
   uploadButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: scaleWidth(1.5),
-    borderRadius: scaleWidth(12),
-    paddingVertical: scaleHeight(20),
-    paddingHorizontal: scaleWidth(16),
+    borderWidth: 1.5,
+    borderRadius: radius.md,
+    paddingVertical: spacing.xl,
+    paddingHorizontal: spacing.lg,
   },
   uploadButtonContent: {
     alignItems: 'center',
     justifyContent: 'center',
-    gap: scaleHeight(8),
+    gap: spacing.sm,
   },
   uploadButtonText: {
-    fontSize: scaleWidth(15),
+    fontSize: fontSize.base + 1,
     fontWeight: "500",
   },
   selectedImageContainer: {
@@ -300,23 +300,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     width: "100%",
-    gap: scaleWidth(12),
+    gap: spacing.md,
   },
   selectedImage: {
-    width: scaleWidth(60),
-    height: scaleWidth(60),
-    borderRadius: scaleWidth(8),
+    width: 60,
+    height: 60,
+    borderRadius: radius.sm,
   },
   imageTextContainer: {
     flex: 1,
   },
   imageFileName: {
-    fontSize: scaleWidth(15),
+    fontSize: fontSize.base + 1,
     fontWeight: "600",
-    marginBottom: scaleHeight(4),
+    marginBottom: spacing.xs,
   },
   changeImageText: {
-    fontSize: scaleWidth(13),
+    fontSize: fontSize.sm + 1,
     fontWeight: "400",
   },
   uploadButtonWithImage: {
@@ -325,11 +325,11 @@ const styles = StyleSheet.create({
   errorContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: scaleWidth(4),
-    marginTop: scaleHeight(6),
+    gap: spacing.xs,
+    marginTop: spacing.xs + 2,
   },
   errorText: {
-    fontSize: scaleWidth(12),
+    fontSize: fontSize.sm,
     fontWeight: '500',
     color: '#FF4444',
   }

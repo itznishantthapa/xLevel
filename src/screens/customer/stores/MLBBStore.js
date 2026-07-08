@@ -1,7 +1,22 @@
 import { View, Text, StyleSheet, Image, Pressable, TextInput, Animated } from 'react-native'
 import Toast from 'react-native-simple-toast'
 import { useThemeStore } from '../../../store/themeStore'
-import { MaterialIcons, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons'
+import { AppIcon, PointsIcon } from '../../../components/common/AppIcon'
+import {
+  CheckmarkCircle01Icon,
+  SecurityCheckIcon,
+  FlashIcon,
+  Shield01Icon,
+  Touch01Icon,
+  UserIcon,
+  UserArrowLeftRightIcon,
+  IdentityCardIcon,
+  GamepadIcon,
+  LabelIcon,
+  Location01Icon,
+  CheckIcon,
+} from '@hugeicons/core-free-icons'
+import { fontSize, spacing, iconSize } from '../../../theme/typography'
 import { useEffect, useState, useRef } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { useGameProfiles } from '../../../queries/useGameProfiles'
@@ -10,7 +25,6 @@ import { CreateGameLayout, SectionTitle, DividerLine, TermsAgreement } from '../
 import { useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '../../../store/authStore'
 import { useStoreTopup } from '../../../queries/useMutation/useStoreTopup'
-import { scaleWidth, scaleHeight } from '../../../utils/scaling'
 
 // Monochrome accent colors
 const ACCENT_PRIMARY = (isLight) => isLight ? '#000000' : '#ffffff'
@@ -210,7 +224,7 @@ const MLBBStore = ({ route }) => {
         {/* Selection checkmark */}
         {isSelected && (
           <View style={styles.selectedMark}>
-            <MaterialIcons name="check-circle" size={18} color={isLight ? '#ffffff' : '#000000'} />
+            <AppIcon icon={CheckmarkCircle01Icon} size={iconSize.sm} color={isLight ? '#ffffff' : '#000000'} />
           </View>
         )}
         
@@ -242,11 +256,7 @@ const MLBBStore = ({ route }) => {
         {/* Points */}
         <View style={styles.diamondPriceContainer}>
           <View style={[styles.priceLine, { backgroundColor: isSelected ? (isLight ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.25)') : (isLight ? '#cccccc' : '#444444') }]} />
-          <MaterialCommunityIcons 
-            name="star-four-points-outline" 
-            size={12} 
-            color={isSelected && !isLight ? '#000000' : '#00bf63'} 
-          />
+          <PointsIcon size={iconSize.xs} color={isSelected && !isLight ? '#000000' : '#00bf63'} />
           <Text style={[styles.diamondPrice, {
             color: isSelected 
               ? (isLight ? '#00bf63' : '#000000')
@@ -288,7 +298,7 @@ const MLBBStore = ({ route }) => {
           <View style={[styles.selectedCheck, {
             backgroundColor: isLight ? '#ffffff' : '#000000'
           }]}>
-            <MaterialIcons name="check" size={12} color={themeColor} />
+            <AppIcon icon={CheckIcon} size={iconSize.xs} color={themeColor} />
           </View>
         )}
 
@@ -301,7 +311,7 @@ const MLBBStore = ({ route }) => {
 
         {/* Text */}
         <Text 
-          style={[styles.modeLabel, { color: cardColor, marginTop: scaleHeight(10) }]}
+          style={[styles.modeLabel, { color: cardColor, marginTop: fontSize.xs }]}
           numberOfLines={1}
           adjustsFontSizeToFit
         >
@@ -318,11 +328,7 @@ const MLBBStore = ({ route }) => {
         {/* Points */}
         <View style={styles.passPriceContainer}>
           <View style={[styles.priceLine, { backgroundColor: isSelected ? (isLight ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.25)') : (isLight ? '#cccccc' : '#444444') }]} />
-          <MaterialCommunityIcons 
-            name="star-four-points-outline" 
-            size={12} 
-            color={isSelected && !isLight ? '#000000' : '#00bf63'} 
-          />
+          <PointsIcon size={iconSize.xs} color={isSelected && !isLight ? '#000000' : '#00bf63'} />
           <Text style={[styles.passPrice, {
             color: isSelected 
               ? (isLight ? '#00bf63' : '#000000')
@@ -401,11 +407,7 @@ const MLBBStore = ({ route }) => {
                   borderColor: isLight ? '#e0e0e0' : '#333333',
                 }]}>
                   <View style={[styles.priceLine, { backgroundColor: isLight ? '#cccccc' : '#444444' }]} />
-                  <MaterialCommunityIcons 
-                    name="star-four-points-outline" 
-                    size={14} 
-                    color="#00bf63" 
-                  />
+                  <PointsIcon size={iconSize.xs} color="#00bf63" />
                   <Text style={[styles.selectedItemPoints, { color: '#00bf63' }]}>
                     {selectedItem.points} point
                   </Text>
@@ -430,22 +432,22 @@ const MLBBStore = ({ route }) => {
             {game?.game_name || 'Mobile Legends: Bang Bang'}
           </Text>
           <View style={styles.securityBadge}>
-            <MaterialIcons name="verified-user" size={12} color={'#00bf63'} />
+            <AppIcon icon={SecurityCheckIcon} size={iconSize.xs} color="#00bf63" />
             <Text style={[styles.securityText, { color: isLight ? '#666666' : '#999999' }]}>
               100% Secure
             </Text>
             <Text style={[styles.separator, { color: isLight ? '#cccccc' : '#555555' }]}>|</Text>
-            <MaterialIcons name="bolt" size={12} color={'#F97316'} />
+            <AppIcon icon={FlashIcon} size={iconSize.xs} color="#F97316" />
             <Text style={[styles.securityText, { color: isLight ? '#666666' : '#999999' }]}>
               Fast
             </Text>
             <Text style={[styles.separator, { color: isLight ? '#cccccc' : '#555555' }]}>|</Text>
-            <MaterialIcons name="shield" size={12} color={'#6366F1'} />
+            <AppIcon icon={Shield01Icon} size={iconSize.xs} color="#6366F1" />
             <Text style={[styles.securityText, { color: isLight ? '#666666' : '#999999' }]}>
               Reliable
             </Text>
             <Text style={[styles.separator, { color: isLight ? '#cccccc' : '#555555' }]}>|</Text>
-            <MaterialIcons name="touch-app" size={12} color={'#14B8A6'} />
+            <AppIcon icon={Touch01Icon} size={iconSize.xs} color="#14B8A6" />
             <Text style={[styles.securityText, { color: isLight ? '#666666' : '#999999' }]}>
               Easy
             </Text>
@@ -501,13 +503,9 @@ const MLBBStore = ({ route }) => {
             ]}
             onPress={() => setProfileType('own')}
           >
-            <MaterialCommunityIcons 
-              name="account" 
-              size={18} 
-              color={profileType === 'own' 
+            <AppIcon icon={UserIcon} size={iconSize.sm} color={profileType === 'own' 
                 ? (isLight ? '#ffffff' : '#000000')
-                : (isLight ? '#666666' : '#999999')} 
-            />
+                : (isLight ? '#666666' : '#999999')} />
             <Text style={[
               styles.profileToggleText,
               {
@@ -534,13 +532,9 @@ const MLBBStore = ({ route }) => {
             ]}
             onPress={() => setProfileType('other')}
           >
-            <MaterialCommunityIcons 
-              name="account-switch-outline" 
-              size={18} 
-              color={profileType === 'other' 
+            <AppIcon icon={UserArrowLeftRightIcon} size={iconSize.sm} color={profileType === 'other' 
                 ? (isLight ? '#ffffff' : '#000000')
-                : (isLight ? '#666666' : '#999999')} 
-            />
+                : (isLight ? '#666666' : '#999999')} />
             <Text style={[
               styles.profileToggleText,
               {
@@ -561,7 +555,7 @@ const MLBBStore = ({ route }) => {
             borderColor: isLight ? "#cccccc" : "#333333",
           }]}>
             <View style={styles.profileItem}>
-              <MaterialCommunityIcons name="identifier" size={18} color={isLight ? '#888888' : '#777777'} style={{ marginBottom: 4 }} />
+              <AppIcon icon={IdentityCardIcon} size={iconSize.sm} color={isLight ? '#888888' : '#777777'} style={{ marginBottom: 4 }} />
    
               <Text style={[styles.profileValue, { color: isLight ? '#000000' : '#ffffff' }]}>
                 {mlbbProfile?.uid || mlbbProfile?.game_uid || 'Not Set'}
@@ -569,7 +563,7 @@ const MLBBStore = ({ route }) => {
             </View>
             <View style={[styles.profileDivider, { backgroundColor: isLight ? '#cccccc' : '#333333' }]} />
             <View style={styles.profileItem}>
-              <MaterialCommunityIcons name="map-marker" size={18} color={isLight ? '#888888' : '#777777'} style={{ marginBottom: 4 }} />
+              <AppIcon icon={Location01Icon} size={iconSize.sm} color={isLight ? '#888888' : '#777777'} style={{ marginBottom: 4 }} />
 
               <Text style={[styles.profileValue, { color: isLight ? '#000000' : '#ffffff' }]}>
                 {mlbbProfile?.server_id || 'Not Set'}
@@ -582,11 +576,7 @@ const MLBBStore = ({ route }) => {
               borderColor: isLight ? '#cccccc' : '#333333',
               backgroundColor: isLight ? '#f8f8f8' : '#1a1a1a',
             }]}>
-              <MaterialCommunityIcons 
-                name="identifier" 
-                size={20} 
-                color={isLight ? '#666666' : '#999999'} 
-              />
+              <AppIcon icon={IdentityCardIcon} size={iconSize.md} color={isLight ? '#666666' : '#999999'} />
               <TextInput
                 style={[styles.textInput, { color: isLight ? '#000000' : '#ffffff' }]}
                 placeholder="Player UID"
@@ -601,11 +591,7 @@ const MLBBStore = ({ route }) => {
               borderColor: isLight ? '#cccccc' : '#333333',
               backgroundColor: isLight ? '#f8f8f8' : '#1a1a1a',
             }]}>
-              <MaterialCommunityIcons 
-                name="map-marker" 
-                size={20} 
-                color={isLight ? '#666666' : '#999999'} 
-              />
+              <AppIcon icon={Location01Icon} size={iconSize.md} color={isLight ? '#666666' : '#999999'} />
               <TextInput
                 style={[styles.textInput, { color: isLight ? '#000000' : '#ffffff' }]}
                 placeholder="Zone ID"
@@ -635,50 +621,50 @@ const MLBBStore = ({ route }) => {
 
 const styles = StyleSheet.create({
   section: {
-    marginBottom: scaleHeight(8),
+    marginBottom: spacing.sm,
   },
   gameHeader: {
     flexDirection: 'row',
-    padding: scaleWidth(14),
+    padding: fontSize.base,
     alignItems: 'center',
-    gap: scaleWidth(14),
-    marginBottom: scaleHeight(4),
+    gap: fontSize.base,
+    marginBottom: spacing.xs,
   },
   gameLogo: {
-    width: scaleWidth(48),
-    height: scaleWidth(48),
-    borderRadius: scaleWidth(12),
+    width: 48,
+    height: 48,
+    borderRadius: spacing.md,
   },
   gameInfo: {
     flex: 1,
   },
   gameName: {
-    fontSize: scaleWidth(15),
+    fontSize: 15,
     fontWeight: '600',
-    marginBottom: scaleHeight(4),
+    marginBottom: spacing.xs,
   },
   securityBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: scaleWidth(4),
+    gap: spacing.xs,
   },
   securityText: {
-    fontSize: scaleWidth(11),
+    fontSize: 11,
     fontWeight: '500',
   },
   separator: {
-    fontSize: scaleWidth(10),
+    fontSize: fontSize.xs,
   },
   optionsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: scaleWidth(10),
+    gap: fontSize.xs,
   },
   // Vertical Diamond Card Styles (2 columns layout)
   diamondCard: {
     flexBasis: '47%',
     flexGrow: 1,
-    padding: scaleWidth(14),
+    padding: fontSize.base,
     alignItems: 'center',
     position: 'relative',
     overflow: 'hidden',
@@ -686,50 +672,50 @@ const styles = StyleSheet.create({
   },
   selectedMark: {
     position: 'absolute',
-    top: scaleHeight(8),
-    right: scaleWidth(8),
+    top: spacing.sm,
+    right: spacing.sm,
     zIndex: 1,
   },
   modeLabel: {
-    fontSize: scaleWidth(9),
+    fontSize: 9,
     fontWeight: '700',
-    letterSpacing: scaleWidth(2),
+    letterSpacing: spacing.xxs,
     textTransform: 'uppercase',
-    marginBottom: scaleHeight(2),
+    marginBottom: spacing.xxs,
   },
   diamondIconImg: {
-    width: scaleWidth(70),
-    height: scaleWidth(70),
-    marginBottom: scaleHeight(8),
+    width: 70,
+    height: 70,
+    marginBottom: spacing.sm,
   },
   diamondCount: {
-    fontSize: scaleWidth(20),
+    fontSize: spacing.xl,
     fontWeight: '700',
-    letterSpacing: scaleWidth(0.5),
+    letterSpacing: 0.5,
     textAlign: 'center',
   },
   diamondPriceContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: scaleWidth(4),
-    marginTop: scaleHeight(8),
+    gap: spacing.xs,
+    marginTop: spacing.sm,
   },
   diamondPrice: {
-    fontSize: scaleWidth(11),
+    fontSize: 11,
     fontWeight: '600',
   },
   priceLine: {
-    width: scaleWidth(14),
+    width: fontSize.base,
     height: 1,
     opacity: 0.8,
   },
   passGrid: {
     flexDirection: 'row',
-    gap: scaleWidth(10),
+    gap: fontSize.xs,
   },
   passCard: {
     flex: 1,
-    padding: scaleWidth(14),
+    padding: fontSize.base,
     alignItems: 'center',
     position: 'relative',
     overflow: 'hidden',
@@ -737,33 +723,33 @@ const styles = StyleSheet.create({
   },
   passImage: {
     width: '100%',
-    height: scaleWidth(100),
+    height: 100,
   },
   selectedCheck: {
     position: 'absolute',
-    top: scaleHeight(8),
-    right: scaleWidth(8),
-    width: scaleWidth(22),
-    height: scaleWidth(22),
-    borderRadius: scaleWidth(11),
+    top: spacing.sm,
+    right: spacing.sm,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1,
   },
   passTitle: {
-    fontSize: scaleWidth(15),
+    fontSize: 15,
     fontWeight: '700',
-    letterSpacing: scaleWidth(0.3),
+    letterSpacing: 0.3,
   },
   passPrice: {
-    fontSize: scaleWidth(11),
+    fontSize: 11,
     fontWeight: '600',
   },
   passPriceContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: scaleWidth(4),
-    marginTop: scaleHeight(6),
+    gap: spacing.xs,
+    marginTop: 6,
   },
   profileBox: {
     borderWidth: 1.5,
@@ -844,11 +830,11 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   selectedItemHeader: {
-    fontSize: scaleWidth(10),
+    fontSize: fontSize.xs,
     fontWeight: '800',
-    letterSpacing: scaleWidth(1.5),
+    letterSpacing: 1.5,
     textTransform: 'uppercase',
-    marginBottom: scaleHeight(10),
+    marginBottom: fontSize.xs,
   },
   selectedItemRow: {
     flexDirection: 'row',

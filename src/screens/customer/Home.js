@@ -3,7 +3,7 @@
 import { useNavigation } from "@react-navigation/native"
 import { FlashList } from "@shopify/flash-list"
 import { useCallback, useEffect, useState } from "react"
-import { Platform, RefreshControl, StatusBar, StyleSheet, View, Linking } from "react-native"
+import { RefreshControl, StatusBar, StyleSheet, View } from "react-native"
 import { SafeAreaView, useSafeAreaInsets, initialWindowMetrics } from "react-native-safe-area-context"
 import Toast from "react-native-simple-toast"
 
@@ -22,25 +22,21 @@ import { useBottomSheet } from "../../context/BottomSheetContext"
 import { useBanners } from "../../queries/useBanners"
 import { useGameProfiles } from "../../queries/useGameProfiles"
 import { useGames } from "../../queries/useGames"
-import { useSocials } from "../../queries/useSocials"
 import { useUpcomingChallenges } from "../../queries/useUpcomingChallenges"
 import { useInfiniteMatches } from "../../queries/useMatches"
 
 // Services & Utilities
-import { handleInstagram, handleMessenger, handleWhatsapp } from "../../service/homeHandler"
 import { ChallengeAPI } from "../../api/challengeApi"
 import { queryClient } from "../../lib/queryClient"
 
 // State Management
 import { useAuthStore } from "../../store/authStore"
 import { useThemeStore } from "../../store/themeStore"
-import { useStatsPreferenceStore } from "../../store/statsPreference"
 
 // New import for handleJoinGame
 import { handleJoinGame } from "../../service/homeHandler"
 import { useInfiniteTournaments } from "../../queries/useTournament"
 import { useRegisterTournament } from "../../queries/useMutation/useRegisterTournament"
-import { scaleHeight } from "../../utils/scaling"
 import Loader from "../../component/Loader"
 import { useUtils } from "../../queries/useUtils"
 
@@ -50,9 +46,9 @@ import { useUtils } from "../../queries/useUtils"
  * ========================================================================
  *
  * Main dashboard screen that displays:
- * - User profile header with wallet balance and social media links
+ * - User profile header with wallet balance
  * - User statistics (wins/losses) with quick action buttons
- * - Promotional banners carousel
+ * - Promotional banner
  * - Available games carousel for navigation
  * - Upcoming challenges list with join functionality
  *
@@ -61,7 +57,6 @@ import { useUtils } from "../../queries/useUtils"
  * - Network connectivity awareness
  * - Dynamic theme support (light/dark mode)
  * - Bottom sheet integration for challenge joining
- * - Social media integration
  */
 const Home = () => {
   /*
@@ -79,7 +74,6 @@ const Home = () => {
   const { user, get_user } = useAuthStore()
   const { isLight } = useThemeStore()
   const { isConnected } = useNetworkStatus()
-  const { setStatsBasedOnQR } = useStatsPreferenceStore()
 
   // Local component state
   const [refreshing, setRefreshing] = useState(false)
@@ -90,7 +84,6 @@ const Home = () => {
   const { data: games = [] } = useGames()
   const { data: gameProfiles = [] } = useGameProfiles()
   const { data: banners = [] } = useBanners()
-  const { data: socials = [] } = useSocials()
   const { mutateAsync: registerTournament } = useRegisterTournament();
   const { data: upcomingChallenges, isLoading: isUpcomingLoading } = useUpcomingChallenges()
   const {data: utils = []} = useUtils()
@@ -106,23 +99,6 @@ const Home = () => {
 
   // Show all banners - no filtering needed
   const displayBanners = banners
-
-  // Check if iOS is active
-  const isIOSActive = !!utils?.is_ios_active
-
-  /*
-   * ====================================================================
-   * Update Stats Configuration Based on QR Availability
-   * ====================================================================
-   */
-  useEffect(() => {
-    // Always set stats based on iOS active status, even if utils is empty
-    setStatsBasedOnQR(isIOSActive)
-  }, [utils, isIOSActive, setStatsBasedOnQR])
-
-
-
-
 
   /*
    * ====================================================================
@@ -253,35 +229,6 @@ const Home = () => {
     }
   }
 
-  /*
-   * ====================================================================
-   * SOCIAL MEDIA HANDLERS
-   * ====================================================================
-   */
-
-  /**
-   * Social media link handlers
-   * Each handler finds the appropriate social data and opens the link
-   * Supports both mobile app links and web fallbacks
-   */
-
-  const handleMessengerWrapper = () => {
-    const messengerData = socials.find((social) => social.name?.toLowerCase() === "messenger")
-    handleMessenger(messengerData?.url, messengerData?.web_url)
-  }
-
-  const handleInstagramWrapper = () => {
-    const instagramData = socials.find((social) => social.name?.toLowerCase() === "instagram")
-    handleInstagram(instagramData?.url, instagramData?.web_url)
-  }
-
-  const handleWhatsappWrapper = () => {
-    // Use case-insensitive match; API may return "WhatsApp", "Whatsapp", etc.
-    const whatsappData = socials.find((social) => social.name?.toLowerCase() === "whatsapp")
-    handleWhatsapp(whatsappData?.url, whatsappData?.web_url)
-  }
-
-
   const handleHeaderGamePoint = () => {
     // Get active load way settings
     const isDynamicActive = utils?.active_load_way?.is_dynamic_active
@@ -407,14 +354,10 @@ const Home = () => {
       case "stats":
         return (
           <StatsContainer
-            num_loss={user?.num_loss || 0}
-            num_win={user?.num_win || 0}
-            handlePointsOut={() => navigation.navigate("pointsOut")}
+            handleRequests={() => navigation.navigate("gamePoints")}
+            handleRedeem={() => navigation.navigate("pointsOut")}
             handleTournament={() => navigation.navigate("userTournament")}
-            handleGameRules={() => navigation.navigate("gameRules")}
             handleMatches={() => navigation.navigate("match")}
-            handleLeaderboard={() => navigation.navigate("leaderboard")}
-            handleGamePoints={() => navigation.navigate("gamePoints")}
           />
         )
 
@@ -457,17 +400,15 @@ const Home = () => {
         wallet_balance={user?.wallet_balance}
         profile_picture={user?.profile_picture}
         handleProfile={handleProfile}
-        handleMessenger={handleMessengerWrapper}
-        handleInstagram={handleInstagramWrapper}
-        handleWhatsapp={handleWhatsappWrapper}
         handleHeaderGamePoint={handleHeaderGamePoint}
+        showSocials={false}
       />
 
       {/* Main content list with optimized scrolling */}
       <FlashList
         data={[{ type: "banner" }, { type: "stats" }, { type: "games" }, { type: "upcoming" }]}
         renderItem={renderSection}
-        estimatedItemSize={200}
+        estimatedItemSize={260}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
         refreshControl={

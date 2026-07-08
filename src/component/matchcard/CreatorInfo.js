@@ -1,9 +1,10 @@
 import { View, Text, Pressable, Image, ImageBackground } from "react-native"
-import { Octicons } from "@expo/vector-icons"
+import { AppIcon } from "../../components/common/AppIcon"
+import { UserIcon } from "@hugeicons/core-free-icons"
 import Clipboard from "@react-native-clipboard/clipboard"
 import Toast from "react-native-simple-toast"
 import { InfoRow, sharedStyles } from "./sharedStyleAndInfo"
-import { scaleWidth } from "../../utils/scaling"
+import { fontSize, spacing } from '../../theme/typography';
 
 const CreatorInfo = ({ game, isLight, isCreator, user }) => {
   const profileBackground = isLight ? "#dadada" : "#444444"
@@ -111,10 +112,10 @@ const CreatorInfo = ({ game, isLight, isCreator, user }) => {
                     left: '50%',
                     transform: [{ translateX: -12 }],
                     backgroundColor: isLight ? '#000000' : '#ffffff',
-                    paddingHorizontal: scaleWidth(6),
-                    paddingVertical: scaleWidth(2),
-                    borderRadius: scaleWidth(8),
-                    borderWidth: scaleWidth(1),
+                    paddingHorizontal: 6,
+                    paddingVertical: spacing.xxs,
+                    borderRadius: spacing.sm,
+                    borderWidth: 1,
                     borderColor: isLight ? '#ffffff' : '#000000',
                     shadowColor: '#000000',
                     shadowOffset: { width: 0, height: 2 },
@@ -124,7 +125,7 @@ const CreatorInfo = ({ game, isLight, isCreator, user }) => {
                   }}>
                     <Text style={{
                       color: isLight ? '#ffffff' : '#000000',
-                      fontSize: scaleWidth(8),
+                      fontSize: spacing.sm,
                       fontWeight: 'bold',
                       textAlign: 'center'
                     }}>{createdBy?.active_hacker_tag ? 'Hckr' : 'Pro'}</Text>
@@ -140,7 +141,7 @@ const CreatorInfo = ({ game, isLight, isCreator, user }) => {
               <Text style={[sharedStyles.creatorLabel, !isLight && sharedStyles.creatorLabelDark]}>{displayLabel}</Text>
               {gameData.showUID && gameData.uid && (
                 <Pressable onPress={() => copyToClipboard(gameData.uid)}>
-                  <Text style={[sharedStyles.gameUID, !isLight && sharedStyles.gameUIDDark, { fontSize: scaleWidth(10) }]}>
+                  <Text style={[sharedStyles.gameUID, !isLight && sharedStyles.gameUIDDark, { fontSize: fontSize.xs }]}>
                     {gameData.uid}
                   </Text>
                 </Pressable>
@@ -160,10 +161,10 @@ const CreatorInfo = ({ game, isLight, isCreator, user }) => {
                   left: '50%',
                   transform: [{ translateX: -12 }],
                   backgroundColor: isLight ? '#000000' : '#ffffff',
-                  paddingHorizontal: scaleWidth(6),
-                  paddingVertical: scaleWidth(2),
-                  borderRadius: scaleWidth(8),
-                  borderWidth: scaleWidth(1),
+                  paddingHorizontal: 6,
+                  paddingVertical: spacing.xxs,
+                  borderRadius: spacing.sm,
+                  borderWidth: 1,
                   borderColor: isLight ? '#ffffff' : '#000000',
                   shadowColor: '#000000',
                   shadowOffset: { width: 0, height: 2 },
@@ -173,7 +174,7 @@ const CreatorInfo = ({ game, isLight, isCreator, user }) => {
                 }}>
                   <Text style={{
                     color: isLight ? '#ffffff' : '#000000',
-                    fontSize: scaleWidth(8),
+                    fontSize: spacing.sm,
                     fontWeight: 'bold',
                     textAlign: 'center'
                   }}>{createdBy?.active_hacker_tag ? 'Hckr' : 'Pro'}</Text>
@@ -189,7 +190,7 @@ const CreatorInfo = ({ game, isLight, isCreator, user }) => {
             <Text style={[sharedStyles.creatorLabel, !isLight && sharedStyles.creatorLabelDark]}>{displayLabel}</Text>
             {gameData.showUID && gameData.uid && (
               <Pressable onPress={() => copyToClipboard(gameData.uid)}>
-                <Text style={[sharedStyles.gameUID, !isLight && sharedStyles.gameUIDDark, { fontSize: scaleWidth(10) }]}>
+                <Text style={[sharedStyles.gameUID, !isLight && sharedStyles.gameUIDDark, { fontSize: fontSize.xs }]}>
                   {gameData.uid}
                 </Text>
               </Pressable>
@@ -200,7 +201,7 @@ const CreatorInfo = ({ game, isLight, isCreator, user }) => {
         <View style={[sharedStyles.creatorHeader, !isLight && sharedStyles.creatorHeaderDark]}>
           <View style={sharedStyles.avatarContainer}>
             <View style={[sharedStyles.profileFallback, { backgroundColor: profileBackground }]}>
-              <Octicons name="feed-person" size={scaleWidth(20)} color={iconColor} />
+              <AppIcon icon={UserIcon} size={spacing.xl} color={iconColor} />
             </View>
             {
               (createdBy?.active_hacker_tag || createdBy?.active_pro_tag) && (
@@ -210,10 +211,10 @@ const CreatorInfo = ({ game, isLight, isCreator, user }) => {
                   left: '50%',
                   transform: [{ translateX: -12 }],
                   backgroundColor: isLight ? '#000000' : '#ffffff',
-                  paddingHorizontal: scaleWidth(6),
-                  paddingVertical: scaleWidth(2),
-                  borderRadius: scaleWidth(8),
-                  borderWidth: scaleWidth(1),
+                  paddingHorizontal: 6,
+                  paddingVertical: spacing.xxs,
+                  borderRadius: spacing.sm,
+                  borderWidth: 1,
                   borderColor: isLight ? '#ffffff' : '#000000',
                   shadowColor: '#000000',
                   shadowOffset: { width: 0, height: 2 },
@@ -223,7 +224,7 @@ const CreatorInfo = ({ game, isLight, isCreator, user }) => {
                 }}>
                   <Text style={{
                     color: isLight ? '#ffffff' : '#000000',
-                    fontSize: scaleWidth(8),
+                    fontSize: spacing.sm,
                     fontWeight: 'bold',
                     textAlign: 'center'
                   }}>{createdBy?.active_hacker_tag ? 'Hckr' : 'Pro'}</Text>
@@ -239,7 +240,7 @@ const CreatorInfo = ({ game, isLight, isCreator, user }) => {
             <Text style={[sharedStyles.creatorLabel, !isLight && sharedStyles.creatorLabelDark]}>{displayLabel}</Text>
             {gameData.showUID && gameData.uid && (
               <Pressable onPress={() => copyToClipboard(gameData.uid)}>
-                <Text style={[sharedStyles.gameUID, !isLight && sharedStyles.gameUIDDark, { fontSize: scaleWidth(10) }]}>
+                <Text style={[sharedStyles.gameUID, !isLight && sharedStyles.gameUIDDark, { fontSize: fontSize.xs }]}>
                   {gameData.uid}
                 </Text>
               </Pressable>
@@ -252,32 +253,32 @@ const CreatorInfo = ({ game, isLight, isCreator, user }) => {
         {gameData.gameUsername && (
           <View style={{
             position: 'relative',
-            paddingVertical: scaleWidth(10),
-            paddingHorizontal: scaleWidth(14),
-            marginBottom: scaleWidth(8),
+            paddingVertical: fontSize.xs,
+            paddingHorizontal: fontSize.base,
+            marginBottom: spacing.sm,
             alignItems: 'center',
             justifyContent: 'center',
           }}>
             {/* Top-left corner bracket */}
-            <View style={{ position: 'absolute', top: 0, left: 0, width: scaleWidth(14), height: scaleWidth(2), backgroundColor: isLight ? '#333333' : '#ffffff' }} />
-            <View style={{ position: 'absolute', top: 0, left: 0, width: scaleWidth(2), height: scaleWidth(14), backgroundColor: isLight ? '#333333' : '#ffffff' }} />
+            <View style={{ position: 'absolute', top: 0, left: 0, width: fontSize.base, height: spacing.xxs, backgroundColor: isLight ? '#333333' : '#ffffff' }} />
+            <View style={{ position: 'absolute', top: 0, left: 0, width: spacing.xxs, height: fontSize.base, backgroundColor: isLight ? '#333333' : '#ffffff' }} />
             
             {/* Top-right corner bracket */}
-            <View style={{ position: 'absolute', top: 0, right: 0, width: scaleWidth(14), height: scaleWidth(2), backgroundColor: isLight ? '#333333' : '#ffffff' }} />
-            <View style={{ position: 'absolute', top: 0, right: 0, width: scaleWidth(2), height: scaleWidth(14), backgroundColor: isLight ? '#333333' : '#ffffff' }} />
+            <View style={{ position: 'absolute', top: 0, right: 0, width: fontSize.base, height: spacing.xxs, backgroundColor: isLight ? '#333333' : '#ffffff' }} />
+            <View style={{ position: 'absolute', top: 0, right: 0, width: spacing.xxs, height: fontSize.base, backgroundColor: isLight ? '#333333' : '#ffffff' }} />
             
             {/* Bottom-left corner bracket */}
-            <View style={{ position: 'absolute', bottom: 0, left: 0, width: scaleWidth(14), height: scaleWidth(2), backgroundColor: isLight ? '#333333' : '#ffffff' }} />
-            <View style={{ position: 'absolute', bottom: 0, left: 0, width: scaleWidth(2), height: scaleWidth(14), backgroundColor: isLight ? '#333333' : '#ffffff' }} />
+            <View style={{ position: 'absolute', bottom: 0, left: 0, width: fontSize.base, height: spacing.xxs, backgroundColor: isLight ? '#333333' : '#ffffff' }} />
+            <View style={{ position: 'absolute', bottom: 0, left: 0, width: spacing.xxs, height: fontSize.base, backgroundColor: isLight ? '#333333' : '#ffffff' }} />
             
             {/* Bottom-right corner bracket */}
-            <View style={{ position: 'absolute', bottom: 0, right: 0, width: scaleWidth(14), height: scaleWidth(2), backgroundColor: isLight ? '#333333' : '#ffffff' }} />
-            <View style={{ position: 'absolute', bottom: 0, right: 0, width: scaleWidth(2), height: scaleWidth(14), backgroundColor: isLight ? '#333333' : '#ffffff' }} />
+            <View style={{ position: 'absolute', bottom: 0, right: 0, width: fontSize.base, height: spacing.xxs, backgroundColor: isLight ? '#333333' : '#ffffff' }} />
+            <View style={{ position: 'absolute', bottom: 0, right: 0, width: spacing.xxs, height: fontSize.base, backgroundColor: isLight ? '#333333' : '#ffffff' }} />
 
             <Text 
               style={{
                 color: isLight ? '#1a1a1a' : '#ffffff',
-                fontSize: scaleWidth(15),
+                fontSize: 15,
                 fontWeight: '700',
                 textAlign: 'center',
                 letterSpacing: 0.3,

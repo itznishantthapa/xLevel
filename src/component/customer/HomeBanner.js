@@ -1,15 +1,30 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { StyleSheet, View, Image, Pressable, Dimensions, Linking } from 'react-native';
-import Carousel, { Pagination } from 'react-native-reanimated-carousel';
-import { scaleWidth, scaleHeight } from '../../utils/scaling';
-import { useThemeStore } from '../../store/themeStore';
-import { useSharedValue, useDerivedValue } from 'react-native-reanimated';
-import { useFocusEffect } from '@react-navigation/native';
+import Carousel from 'react-native-reanimated-carousel';
+import { interpolate, Extrapolation } from 'react-native-reanimated';
+import { spacing, radius } from '../../theme/typography';
 
-const BannerPage = ({ data }) => {
+const BANNER_BORDER_RADIUS = radius.lg;
+const HORIZONTAL_PADDING = spacing.lg;
+
+const bannerScaleAnimation = (value) => {
+  'worklet';
+
+  const absValue = Math.abs(value);
+  const scale = interpolate(absValue, [0, 0.5], [1, 0.88], Extrapolation.CLAMP);
+  const isActive = absValue < 0.5;
+
+  return {
+    transform: [{ scale }],
+    opacity: isActive ? 1 : 0,
+    zIndex: isActive ? 10 : 0,
+  };
+};
+
+const BannerPage = ({ data, height }) => {
   const handlePress = useCallback(() => {
     if (data?.url) {
-      Linking.openURL(data.url).catch(err => {
+      Linking.openURL(data.url).catch((err) => {
         if (__DEV__) console.error('Error opening URL:', err);
       });
     }
@@ -19,116 +34,76 @@ const BannerPage = ({ data }) => {
 
   return (
     <Pressable
-      style={styles.pageContainer}
+      style={[styles.pageContainer, { height }]}
       onPress={isPressable ? handlePress : undefined}
       disabled={!isPressable}
     >
-      <Image
-        source={{ uri: data?.image }}
-        style={styles.bannerImage}
-        resizeMode="cover"
-      />
+      <View style={[styles.imageClip, { height }]}>
+        <Image source={{ uri: data?.image }} style={styles.bannerImage} resizeMode="cover" />
+      </View>
     </Pressable>
   );
 };
 
-// Optional `height` prop allows overriding banner height in dp; defaults to a compact height
 const HomeBanner = ({ data = [], height }) => {
-  const carouselRef = useRef(null);
-  const progress = useSharedValue(0);
-  const animatedProgress = useDerivedValue(() => progress.value);
-  const { isLight } = useThemeStore();
-
-  const wrapperBg = isLight ? '#ffffff' : '#000000';
   const { width } = Dimensions.get('window');
-  // Match StatsContainer width (marginHorizontal: 10 on each side)
-  const PAGE_WIDTH = width - 20;
-  // Use provided height if passed, else a smaller default height
-  const PAGE_HEIGHT = typeof height === 'number' ? height : scaleHeight(160);
+  const PAGE_WIDTH = width - HORIZONTAL_PADDING * 2;
+  const PAGE_HEIGHT = typeof height === 'number' ? height : Math.round(PAGE_WIDTH * (9 / 16));
 
-  // Reset to beginning on screen focus
-  useFocusEffect(
-    useCallback(() => {
-      progress.value = 0;
-    }, [])
-  );
+  if (!data.length) {
+    return null;
+  }
 
   return (
     <View style={styles.container}>
-      <View style={[styles.wrapper, { backgroundColor: wrapperBg, height: PAGE_HEIGHT }]}>
+      <View style={[styles.wrapper, { width: PAGE_WIDTH, height: PAGE_HEIGHT }]}>
         <Carousel
-          ref={carouselRef}
           width={PAGE_WIDTH}
           height={PAGE_HEIGHT}
-          autoPlay
+          autoPlay={data.length > 1}
           autoPlayInterval={5000}
-          loop
+          loop={data.length > 1}
           pagingEnabled
+          windowSize={5}
           data={data}
-          style={{ width: '100%' }}
-          onProgressChange={(_, absoluteProgress) => {
-            // Update shared progress without reading during render
-          progress.value = absoluteProgress;
-          }}
-          renderItem={({ item }) => <BannerPage data={item} />}
+          style={styles.carousel}
+          scrollAnimationDuration={500}
+          customAnimation={bannerScaleAnimation}
+          renderItem={({ item }) => <BannerPage data={item} height={PAGE_HEIGHT} />}
         />
       </View>
-
-      <Pagination.Basic
-        progress={animatedProgress}
-        data={data}
-        dotStyle={{
-          width: scaleWidth(10),
-          height: scaleWidth(10),
-          borderRadius: scaleWidth(5),
-          // Outlined ring for inactive dots
-          backgroundColor: 'transparent',
-          borderWidth: scaleWidth(1),
-          borderColor: isLight ? "#000000" : '#ffffff'
-        }}
-        activeDotStyle={{
-          width: scaleWidth(10),
-          height: scaleWidth(10),
-          borderRadius: scaleWidth(5),
-          backgroundColor: isLight ? '#000000' : '#ffffff',
-          borderWidth: 0,
-          borderColor: isLight ? '#000000' : '#ffffff',
-
-        }}
-        containerStyle={{
-          alignSelf: 'center',
-          gap: scaleWidth(8),
-          marginTop: scaleHeight(8),
- 
-        }}
-      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    // Match StatsContainer margin for equal overall width
-    marginHorizontal: 10,
-    marginBottom: scaleHeight(15),
-    marginTop: scaleHeight(10),
-    
+    alignItems: 'center',
+    marginTop: spacing.xs,
+    marginBottom: spacing.sm,
   },
   wrapper: {
-    // Height is controlled dynamically via inline style using PAGE_HEIGHT
-    position: 'relative',
-    // borderRadius: scaleWidth(20),
+    borderRadius: BANNER_BORDER_RADIUS,
     overflow: 'hidden',
-  
+  },
+  carousel: {
+    borderRadius: BANNER_BORDER_RADIUS,
+    overflow: 'hidden',
   },
   pageContainer: {
-    flex: 1,
-    paddingHorizontal: 4,
+    width: '100%',
+    overflow: 'hidden',
+    borderRadius: BANNER_BORDER_RADIUS,
+  },
+  imageClip: {
+    width: '100%',
+    overflow: 'hidden',
+    borderRadius: BANNER_BORDER_RADIUS,
   },
   bannerImage: {
     width: '100%',
     height: '100%',
-    borderRadius: scaleWidth(15),
+    borderRadius: BANNER_BORDER_RADIUS,
   },
 });
 

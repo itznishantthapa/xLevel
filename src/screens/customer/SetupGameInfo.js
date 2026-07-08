@@ -1,7 +1,9 @@
 import { StatusBar, StyleSheet, Text, View, Pressable, Image, ScrollView, Platform } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
-import { Ionicons } from '@expo/vector-icons'
+import { AppIcon } from '../../components/common/AppIcon'
+import { CheckIcon } from '@hugeicons/core-free-icons'
+import { iconSize } from '../../theme/typography'
 import { useThemeStore } from '../../store/themeStore'
 import { useGameProfiles } from '../../queries/useGameProfiles'
 import { useGames } from '../../queries/useGames'
@@ -76,12 +78,7 @@ const SetupGameInfo = () => {
                     {isAdded && (
                       <View style={[styles.addedBadge, { backgroundColor: isLight ? '#000000' : '#ffffff' }]}>
                         <Text style={[styles.addedBadgeText, { color: isLight ? '#ffffff' : '#000000' }]}>Added</Text>
-                        <Ionicons 
-                          name="checkmark" 
-                          size={12} 
-                          color={isLight ? '#ffffff' : '#000000'} 
-                          style={{ marginLeft: 2 }}
-                        />
+                        <AppIcon icon={CheckIcon} size={iconSize.xs} color={isLight ? '#ffffff' : '#000000'} style={{ marginLeft: 2 }} />
                       </View>
                     )}
                   </View>
