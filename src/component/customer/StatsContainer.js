@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, Pressable, View } from 'react-native';
+import { LoaderKitView } from 'react-native-loader-kit';
 import { AppIcon } from '../../components/common/AppIcon';
 import {
   ReceiptDollarIcon,
@@ -11,19 +12,39 @@ import { useThemeStore } from '../../store/themeStore';
 import { fontSize, spacing, radius, iconSize, lineHeight } from '../../theme/typography';
 
 const STAT_ITEMS = [
-  { id: 'requests', name: 'Request', icon: ReceiptDollarIcon, color: '#16A34A' },
+  { id: 'requests', name: 'Request', icon: ReceiptDollarIcon, color: '#16A34A', activeKey: 'requests' },
   { id: 'redeem', name: 'Redeem', icon: GiftCard02Icon, color: '#F97316' },
-  { id: 'tournament', name: 'Tournaments', icon: Trophy, color: '#6366F1' },
-  { id: 'matches', name: 'My Match', icon: GamepadIcon, color: '#ff2c2c' },
+  { id: 'tournament', name: 'Tournaments', icon: Trophy, color: '#6366F1', activeKey: 'tournament' },
+  { id: 'matches', name: 'My Match', icon: GamepadIcon, color: '#ff2c2c', activeKey: 'matches' },
 ];
+
+const ActiveLoader = ({ color }) => (
+  <View style={styles.activeLoader}>
+    <LoaderKitView
+      style={styles.activeLoaderKit}
+      name="BallScaleMultiple"
+      color={color}
+      animationSpeedMultiplier={1.0}
+    />
+  </View>
+);
 
 const StatsContainer = ({
   handleRequests,
   handleRedeem,
   handleTournament,
   handleMatches,
+  isTournamentActive = false,
+  isMatchActive = false,
+  isRequestActive = false,
 }) => {
   const { isLight } = useThemeStore();
+
+  const activeFlags = {
+    requests: isRequestActive,
+    tournament: isTournamentActive,
+    matches: isMatchActive,
+  };
 
   const handlers = {
     requests: handleRequests,
@@ -38,23 +59,29 @@ const StatsContainer = ({
 
   return (
     <View style={styles.gridContainer}>
-      {STAT_ITEMS.map((item) => (
-        <Pressable
-          key={item.id}
-          style={[styles.statCard, cardThemeStyle]}
-          onPress={() => handlers[item.id]?.()}
-        >
-          <View style={[styles.iconCircle, { backgroundColor: item.color }]}>
-            <AppIcon icon={item.icon} size={iconSize.lg} color="#FFFFFF" strokeWidth={2} />
-          </View>
-          <Text
-            style={[styles.statLabel, isLight ? styles.labelLight : styles.labelDark]}
-            numberOfLines={1}
+      {STAT_ITEMS.map((item) => {
+        const isActive = item.activeKey ? activeFlags[item.activeKey] : false;
+
+        return (
+          <Pressable
+            key={item.id}
+            style={[styles.statCard, cardThemeStyle]}
+            onPress={() => handlers[item.id]?.()}
           >
-            {item.name}
-          </Text>
-        </Pressable>
-      ))}
+            {isActive ? <ActiveLoader color={item.color} /> : null}
+
+            <View style={[styles.iconCircle, { backgroundColor: item.color }]}>
+              <AppIcon icon={item.icon} size={iconSize.lg} color="#FFFFFF" strokeWidth={2} />
+            </View>
+            <Text
+              style={[styles.statLabel, isLight ? styles.labelLight : styles.labelDark]}
+              numberOfLines={1}
+            >
+              {item.name}
+            </Text>
+          </Pressable>
+        );
+      })}
     </View>
   );
 };
@@ -78,6 +105,17 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.sm,
+    position: 'relative',
+  },
+  activeLoader: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    zIndex: 1,
+  },
+  activeLoaderKit: {
+    width: 22,
+    height: 22,
   },
   iconCircle: {
     width: 40,

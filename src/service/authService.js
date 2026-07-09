@@ -25,7 +25,7 @@ export const signupUser = async (payload) => {
   } catch (error) {
     // Handle API error response with proper message
     if (error.response && error.response.data && error.response.data.message) {
-      Toast.show(error.response.data.meYssage);
+      Toast.show(error.response.data.message);
     } else {
       Toast.show('Signup failed. Please try again.');
     }

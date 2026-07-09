@@ -1,5 +1,5 @@
-// api/socialsApi.js
-// API functions specific to socials
+// api/utilsApi.js
+// API functions for app utilities
 
 import { API } from "./client";
 import { endpoints } from "./endpoints";

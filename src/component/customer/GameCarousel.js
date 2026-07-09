@@ -5,27 +5,22 @@ import {
   StyleSheet,
   ScrollView,
   Pressable,
-  Dimensions,
   Image,
-  Platform,
 } from 'react-native';
 import { useThemeStore } from '../../store/themeStore';
-import { useUtils } from '../../queries/useUtils';
 import { fontSize, spacing, radius } from '../../theme/typography';
 
 const CARD_WIDTH = 88;
 const CARD_HEIGHT = 112;
 
 const GameCarousel = ({ games, handleGameCardPress }) => {
-  const { data: utils = [] } = useUtils();
-  const shouldShowLabel = Platform.OS === 'android' || !!utils?.is_ios_active;
   const { isLight } = useThemeStore();
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={[styles.title, isLight ? styles.titleLight : styles.titleDark]}>
-          {shouldShowLabel ? 'Games & Store' : 'Create Match'}
+          Create Game
         </Text>
       </View>
 
@@ -48,13 +43,9 @@ const GameCarousel = ({ games, handleGameCardPress }) => {
             onPress={() => handleGameCardPress(game)}
           >
             <Image source={{ uri: game.game_logo_url }} style={styles.gameLogo} />
-            {shouldShowLabel ? (
-              <Text style={[styles.gameName, isLight ? styles.nameLight : styles.nameDark]}>
-                {game.game_name}
-              </Text>
-            ) : (
-              <View style={[styles.placeholderLine, isLight ? styles.lineLight : styles.lineDark]} />
-            )}
+            <Text style={[styles.gameName, isLight ? styles.nameLight : styles.nameDark]}>
+              {game.game_name}
+            </Text>
           </Pressable>
         ))}
       </ScrollView>
@@ -105,12 +96,4 @@ const styles = StyleSheet.create({
   },
   nameLight: { color: '#333333' },
   nameDark: { color: '#EAEAEA' },
-  placeholderLine: {
-    width: 50,
-    height: 2,
-    borderRadius: radius.sm,
-    marginTop: spacing.xs,
-  },
-  lineLight: { backgroundColor: '#000000' },
-  lineDark: { backgroundColor: '#EAEAEA' },
 });

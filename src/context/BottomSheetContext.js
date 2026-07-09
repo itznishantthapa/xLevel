@@ -25,12 +25,11 @@ import { useThemeStore } from "../store/themeStore"
 // Removed unused icon imports
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { AppIcon, PointsIcon } from "../components/common/AppIcon"
-import { UserIcon, InformationCircleIcon } from "@hugeicons/core-free-icons"
+import { UserIcon, InformationCircleIcon, Notification01Icon } from "@hugeicons/core-free-icons"
 import { NavigationService } from "../service/navigationService"
 import { useQueryClient } from "@tanstack/react-query"
 import OpponentSheetContent from "./component/OpponentSheetContent"
 import { ShakeText } from "../component/customer/animation"
-import { useUtils } from "../queries/useUtils"
 import { fontSize, spacing, iconSize } from '../theme/typography';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window")
@@ -178,6 +177,16 @@ export const BottomSheetProvider = ({ children }) => {
     setVisible(true)
   }, [])
 
+  const showGameCreationNotificationSheet = useCallback(
+    ({ alertTitle, message, confirmText = "Turn On", cancelText = "Cancel", isDestructive = false, onConfirm }) => {
+      setSheetType("gameCreationNotification")
+      setPayload({ alertTitle, message, confirmText, cancelText, isDestructive })
+      onConfirmRef.current = onConfirm || null
+      setVisible(true)
+    },
+    []
+  )
+
   useEffect(() => {
     if (visible) {
       // Reset values before opening
@@ -280,10 +289,11 @@ export const BottomSheetProvider = ({ children }) => {
       showConfirmSheet,
       showOpponentSheet,
       showPurchaseSheet,
+      showGameCreationNotificationSheet,
       closeSheet,
       checkAndReopenSheet,
     }),
-    [showJoinSheet, showConfirmSheet, showOpponentSheet, showPurchaseSheet, closeSheet, checkAndReopenSheet]
+    [showJoinSheet, showConfirmSheet, showOpponentSheet, showPurchaseSheet, showGameCreationNotificationSheet, closeSheet, checkAndReopenSheet]
   )
 
   // Animated styles
@@ -313,6 +323,7 @@ export const BottomSheetProvider = ({ children }) => {
               <Animated.View
                 style={[
                   styles.sheetContainer,
+                  sheetType === "purchase" && styles.purchaseSheetContainer,
                   sheetAnimatedStyle,
                   {
                     backgroundColor: isDark ? "#1a1a1a" : "#ffffff",
@@ -365,6 +376,16 @@ export const BottomSheetProvider = ({ children }) => {
 
                 {sheetType === "purchase" && payload?.product ? (
                   <PurchaseSheetContent
+                    payload={payload}
+                    isDark={isDark}
+                    insets={insets}
+                    handleCancel={handleCancel}
+                    handleConfirm={handleConfirm}
+                  />
+                ) : null}
+
+                {sheetType === "gameCreationNotification" ? (
+                  <GameCreationNotificationSheetContent
                     payload={payload}
                     isDark={isDark}
                     insets={insets}
@@ -650,14 +671,89 @@ const ConfirmSheetContent = React.memo(({ payload, isDark, insets, handleCancel,
   </View>
 ))
 
+const GameCreationNotificationSheetContent = React.memo(({ payload, isDark, insets, handleCancel, handleConfirm }) => (
+  <View style={[styles.content, gameCreationStyles.content]}>
+    <View style={styles.entryPointsCard}>
+      <View style={[styles.entryGlowBorder, gameCreationStyles.alertBox, { borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)' }]}>
+        <View style={[styles.entryInner, gameCreationStyles.alertInner]}>
+          <View style={[styles.entryCorner, styles.entryCornerTL, { borderColor: isDark ? '#ffffff' : '#000000' }]} />
+          <View style={[styles.entryCorner, styles.entryCornerTR, { borderColor: isDark ? '#ffffff' : '#000000' }]} />
+          <View style={[styles.entryCorner, styles.entryCornerBL, { borderColor: isDark ? '#ffffff' : '#000000' }]} />
+          <View style={[styles.entryCorner, styles.entryCornerBR, { borderColor: isDark ? '#ffffff' : '#000000' }]} />
+          <AppIcon icon={Notification01Icon} size={iconSize.lg} color="#00bf63" />
+          <Text
+            style={[styles.entryAmount, gameCreationStyles.alertTitle, { color: isDark ? '#ffffff' : '#000000' }]}
+            numberOfLines={2}
+          >
+            {payload?.alertTitle || 'Game Alert'}
+          </Text>
+        </View>
+      </View>
+      <View style={styles.entryTagLine}>
+        <View style={[styles.entryDash, { backgroundColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)' }]} />
+        <Text style={[styles.entryTagText, { color: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)' }]}>ALERT</Text>
+        <View style={[styles.entryDash, { backgroundColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)' }]} />
+      </View>
+    </View>
+
+    <View style={[purchaseStyles.noticeContainer, gameCreationStyles.noticeContainer, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.03)' }]}>
+      <AppIcon icon={InformationCircleIcon} size={iconSize.md} color={isDark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'} />
+      <Text style={[purchaseStyles.noticeText, gameCreationStyles.noticeText, { color: isDark ? '#ffffff' : '#000000' }]}>
+        {payload?.message}
+      </Text>
+    </View>
+
+    <View style={[styles.actionsRow, gameCreationStyles.actionsRow, { paddingBottom: Math.max(12, insets.bottom || 0) }]}>
+      <Pressable
+        style={[styles.btn, styles.cancelBtn, gameCreationStyles.btn, { borderColor: isDark ? '#eaf4f4' : '#333333' }]}
+        onPress={handleCancel}
+      >
+        <Text style={[styles.btnText, gameCreationStyles.btnText, { color: isDark ? '#ffffff' : '#333333' }]}>
+          {payload?.cancelText || 'Cancel'}
+        </Text>
+      </Pressable>
+      <Pressable
+        style={[
+          styles.btn,
+          styles.joinBtn,
+          gameCreationStyles.btn,
+          {
+            backgroundColor: payload?.isDestructive
+              ? (isDark ? '#ffffff' : '#000000')
+              : (isDark ? '#eaf4f4' : '#000000'),
+          },
+        ]}
+        onPress={handleConfirm}
+      >
+        <Text style={[styles.btnText, gameCreationStyles.btnText, { color: isDark ? '#000000' : '#ffffff' }]}>
+          {payload?.confirmText || 'Turn On'}
+        </Text>
+      </Pressable>
+    </View>
+  </View>
+))
+
+const PURCHASE_STEPS = [
+  'Chat with seller on WhatsApp and agree on the price.',
+  "Purchase the account on app.",
+  'After purchase, contact admin to validate the account',
+  'After successful account validation, you will receive login details on WhatsApp.',
+  'Admin will release the point to the seller account.',
+]
+
 const PurchaseSheetContent = React.memo(({ payload, isDark, insets, handleCancel, handleConfirm }) => {
-  const { data: utils = [] } = useUtils()
-  const isIOSActive = !!utils?.is_ios_active
   const product = payload?.product
   if (!product) return null
 
   return (
-    <View style={styles.content}>
+    <View style={[styles.content, purchaseStyles.sheetContent, purchaseStyles.contentMaxHeight]}>
+      <ScrollView
+        style={styles.scrollArea}
+        contentContainerStyle={purchaseStyles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        bounces={false}
+        nestedScrollEnabled
+      >
         {/* Seller Info Row */}
         <View style={purchaseStyles.sellerRow}>
           <View style={[
@@ -711,17 +807,31 @@ const PurchaseSheetContent = React.memo(({ payload, isDark, insets, handleCancel
           </View>
         </View>
 
-        {/* Verification Info */}
-        {isIOSActive && (
-          <View style={[purchaseStyles.noticeContainer, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.03)' }]}>
-            <AppIcon icon={InformationCircleIcon} size={iconSize.sm} color={isDark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'} />
-            <Text style={[purchaseStyles.noticeText, { color: isDark ? '#ffffff' : '#000000' }]}>
-              After you purchase, point will be deducted from your account,and admin will login & review the account. Once verified, Admin will send you this account credentials & give you 60 minutes to change the credentials & implement 2FA. After the 60 minutes, admin will release the point to the seller account.
-            </Text>
-          </View>
-        )}
+        {/* Purchase Steps */}
+        <View style={[purchaseStyles.stepsContainer, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.03)' }]}>
+          <Text style={[purchaseStyles.stepsTitle, { color: isDark ? '#ffffff' : '#000000' }]}>
+            Follow these steps for safe purchase:
+          </Text>
+          {PURCHASE_STEPS.map((step, index) => (
+            <View key={index} style={purchaseStyles.stepRow}>
+              <Text style={[purchaseStyles.stepNumber, { color: isDark ? '#ffffff' : '#000000' }]}>
+                Step {index + 1}:
+              </Text>
+              <Text style={[purchaseStyles.stepText, { color: isDark ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.85)' }]}>
+                {step}
+              </Text>
+            </View>
+          ))}
+        </View>
 
-      <View style={[styles.actionsRow, { paddingBottom: Math.max(8, insets.bottom || 0) }]}>
+        <View style={purchaseStyles.warningContainer}>
+          <Text style={purchaseStyles.warningText}>
+            Do not buy directly from a seller on WhatsApp, or you might lose your money.
+          </Text>
+        </View>
+      </ScrollView>
+
+      <View style={[styles.actionsRow, purchaseStyles.actionsRow, { paddingBottom: Math.max(insets.bottom + 12, 20) }]}>
         <Pressable
           style={[styles.btn, styles.cancelBtn, { borderColor: isDark ? '#eaf4f4' : '#333333' }]}
           onPress={handleCancel}
@@ -739,7 +849,60 @@ const PurchaseSheetContent = React.memo(({ payload, isDark, insets, handleCancel
   )
 })
 
+const gameCreationStyles = StyleSheet.create({
+  content: {
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.md,
+  },
+  alertBox: {
+    paddingVertical: 20,
+    paddingHorizontal: 28,
+    minWidth: '88%',
+  },
+  alertInner: {
+    gap: 12,
+  },
+  alertTitle: {
+    fontSize: fontSize['2xl'],
+    letterSpacing: 1,
+    textAlign: 'center',
+    flexShrink: 1,
+  },
+  noticeContainer: {
+    marginTop: spacing.xl,
+    marginBottom: spacing.lg,
+    padding: spacing.lg,
+  },
+  noticeText: {
+    fontSize: fontSize.base,
+    lineHeight: fontSize.lg + 4,
+  },
+  actionsRow: {
+    marginTop: spacing.sm,
+  },
+  btn: {
+    paddingVertical: 14,
+  },
+  btnText: {
+    fontSize: fontSize.md,
+  },
+})
+
 const purchaseStyles = StyleSheet.create({
+  sheetContent: {
+    flex: 1,
+  },
+  contentMaxHeight: {
+    maxHeight: Math.round(SCREEN_HEIGHT * 0.9) - 20,
+  },
+  scrollContent: {
+    paddingBottom: 8,
+    gap: 4,
+  },
+  actionsRow: {
+    marginTop: 12,
+    paddingTop: 4,
+  },
   sellerRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -790,6 +953,50 @@ const purchaseStyles = StyleSheet.create({
     flex: 1,
     fontWeight: '500',
   },
+  warningContainer: {
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1.5,
+    borderColor: '#FF4444',
+    marginTop: 14,
+    marginBottom: 8,
+  },
+  warningText: {
+    fontSize: 12,
+    lineHeight: 18,
+    fontWeight: '600',
+    textAlign: 'center',
+    color: '#FF4444',
+  },
+  stepsContainer: {
+    padding: 14,
+    borderRadius: 12,
+    gap: 10,
+    marginTop: 12,
+    marginBottom: 0,
+  },
+  stepsTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  stepRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 6,
+  },
+  stepNumber: {
+    fontSize: 12,
+    lineHeight: 18,
+    fontWeight: '700',
+    flexShrink: 0,
+  },
+  stepText: {
+    flex: 1,
+    fontSize: 12,
+    lineHeight: 18,
+    fontWeight: '500',
+  },
 })
 
 
@@ -824,6 +1031,9 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 8,
+  },
+  purchaseSheetContainer: {
+    maxHeight: Math.round(SCREEN_HEIGHT * 0.9),
   },
   dragHandle: {
     alignItems: "center",

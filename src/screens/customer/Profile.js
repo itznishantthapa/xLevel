@@ -13,7 +13,6 @@ import {
   Edit02Icon,
   Add01Icon,
   GamepadIcon,
-  SparklesIcon,
   ChevronRightIcon,
   HistoryIcon,
   Flag01Icon,
@@ -128,36 +127,6 @@ const Profile = () => {
                   <AppIcon icon={User02Icon} size={iconSize.xl + 4} color={colors.text} />
                 </View>
               )}
-              
-              {/* Pro/Hckr Tag - Only show if user owns AND has it active */}
-              {(user?.enhancer?.active_pro_tag || user?.enhancer?.active_hacker_tag) && (
-                <View style={{
-                  position: 'absolute',
-                  bottom: -6,
-                  left: '50%',
-                  transform: [{ translateX: -12 }],
-                  backgroundColor: isLight ? '#000000' : '#ffffff',
-                  paddingHorizontal: spacing.xs + 2,
-                  paddingVertical: spacing.xxs,
-                  borderRadius: radius.sm,
-                  borderWidth: 1,
-                  borderColor: isLight ? '#ffffff' : '#000000',
-                  shadowColor: '#000000',
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 3.84,
-                  elevation: 5,
-                }}>
-                  <Text style={{
-                    color: isLight ? '#ffffff' : '#000000',
-                    fontSize: fontSize.xxs,
-                    fontWeight: 'bold',
-                    textAlign: 'center'
-                  }}>
-                    {user?.enhancer?.active_hacker_tag ? 'Hckr' : 'Pro'}
-                  </Text>
-                </View>
-              )}
             </View>
 
             <View style={styles.profileInfo}>
@@ -222,23 +191,6 @@ const Profile = () => {
                   </Text>
                 </View>
               )}
-            </View>
-
-                        {/* Actions Section */}
-            <View style={styles.section}>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>Exchange</Text>
-              <View style={[styles.actionCard, { backgroundColor: colors.cardBackground }]}>
-                <Pressable
-                  style={[styles.actionRow]}
-                  onPress={() => navigation.navigate("exchange")}
-                >
-                  <View style={styles.actionContent}>
-                    <AppIcon icon={SparklesIcon} size={iconSize.md} color={colors.text} />
-                    <Text style={[styles.actionText, { color: colors.text }]}>Enhancements</Text>
-                  </View>
-                  <AppIcon icon={ChevronRightIcon} size={iconSize.md} color={colors.textTertiary} />
-                </Pressable>
-                </View>
             </View>
 
             {/* Account Info Section */}

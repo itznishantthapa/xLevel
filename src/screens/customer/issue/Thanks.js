@@ -1,54 +1,28 @@
 import React from 'react'
-import { StyleSheet, Text, View, Dimensions, StatusBar, Pressable } from 'react-native'
+import { StyleSheet, Text, View, StatusBar, Pressable } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { AppIcon } from '../../../components/common/AppIcon'
-import {
-  ArrowLeft01Icon,
-  SparklesIcon,
-  AlertCircleIcon,
-  CheckIcon,
-} from '@hugeicons/core-free-icons'
+import { ArrowLeft01Icon, AlertCircleIcon } from '@hugeicons/core-free-icons'
 import { iconSize } from '../../../theme/typography'
-import { useNavigation, useRoute } from '@react-navigation/native'
+import { useNavigation } from '@react-navigation/native'
 import { useThemeStore } from '../../../store/themeStore'
-
-const { width, height } = Dimensions.get('window')
 
 const Thanks = () => {
   const { isLight } = useThemeStore()
   const navigation = useNavigation()
-  const route = useRoute()
   const insets = useSafeAreaInsets()
-
-  // Get route params to determine if this is an exchange or issue report
-  const { type, enhancementTitle, enhancementPrice, enhancementType } = route.params || {}
-  const isExchange = type === 'exchange'
 
   const colors = {
     background: isLight ? "#ffffff" : "#000000",
     text: isLight ? "#000000" : "#ffffff",
     textSecondary: isLight ? "rgba(51, 51, 51, 0.7)" : "rgba(255, 255, 255, 0.7)",
     cardBackground: isLight ? "rgba(0, 0, 0, 0.05)" : "rgba(255, 255, 255, 0.1)",
-    success: "#00bf63",
-    warning: "#ff9500",
-    premium: "#6366f1",
-  }
-
-  // Enhancement metadata for colors
-  const enhancementColors = {
-    pro_tag: colors.premium,
-    hacker_tag: colors.warning,
-    exposer: colors.success,
-  }
-
-  const getEnhancementColor = () => {
-    return enhancementColors[enhancementType] || colors.success
   }
 
   return (
     <View style={[
-      styles.container, 
-      { 
+      styles.container,
+      {
         backgroundColor: colors.background,
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
@@ -59,85 +33,42 @@ const Thanks = () => {
         backgroundColor="transparent"
         barStyle={isLight ? "dark-content" : "light-content"}
       />
-      
-      {/* Header with back button */}
+
       <View style={styles.header}>
-        <Pressable 
+        <Pressable
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
           <AppIcon icon={ArrowLeft01Icon} size={iconSize.lg} color={colors.text} />
         </Pressable>
       </View>
-      
+
       <View style={styles.content}>
-        {/* Success Icon */}
         <View style={styles.iconContainer}>
-          <View style={[
-            styles.iconWrapper, 
-            { 
-              backgroundColor: isExchange ? getEnhancementColor() : colors.cardBackground 
-            }
-          ]}>
-            {isExchange ? (
-               <AppIcon icon={SparklesIcon} size={iconSize.xl} color="#ffffff" />
-            ) : (
-              <AppIcon icon={AlertCircleIcon} size={iconSize.xl} color={colors.text} />
-            )}
+          <View style={[styles.iconWrapper, { backgroundColor: colors.cardBackground }]}>
+            <AppIcon icon={AlertCircleIcon} size={iconSize.xl} color={colors.text} />
           </View>
         </View>
 
-        {/* Thank You Message */}
         <View style={styles.messageContainer}>
           <Text style={[styles.title, { color: colors.text }]}>
-            {isExchange ? 'Congratulations!' : 'Thank You!'}
+            Thank You!
           </Text>
-          
+
           <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-            {isExchange 
-              ? `Successfully exchanged ${enhancementTitle}!`
-              : 'Your report has been submitted successfully'
-            }
+            Your report has been submitted successfully
           </Text>
-          
-          {isExchange ? (
-            <View style={styles.exchangeDetailsContainer}>
-              <View style={[styles.exchangeCard, { backgroundColor: colors.cardBackground }]}>
-                <View style={styles.exchangeInfo}>
-                  <Text style={[styles.exchangeTitle, { color: colors.text }]}>
-                    {enhancementTitle}
-                  </Text>
-                  <Text style={[styles.exchangePrice, { color: getEnhancementColor() }]}>
-                    {enhancementPrice} Points
-                  </Text>
-                </View>
-                <View style={[styles.checkmarkBadge, { backgroundColor: getEnhancementColor() }]}>
-                 <AppIcon icon={CheckIcon} size={iconSize.sm} color={isLight ? "#ffffff" : "#000000"} />
-                </View>
-              </View>
-              
-              <View style={[styles.congratsMessage, { backgroundColor: colors.cardBackground }]}>
-                <Text style={[styles.congratsText, { color: colors.textSecondary }]}>
-                  Your enhancement is now active and will be displayed across all your game profiles!
-                </Text>
-              </View>
-            </View>
-          ) : (
-            <View style={[styles.descriptionContainer, { backgroundColor: colors.cardBackground }]}>
-              <Text style={[styles.description, { color: colors.textSecondary }]}>
-                Our moderation team will review this report and take appropriate action within 24-48 hours.
-              </Text>
-            </View>
-          )}
+
+          <View style={[styles.descriptionContainer, { backgroundColor: colors.cardBackground }]}>
+            <Text style={[styles.description, { color: colors.textSecondary }]}>
+              Our moderation team will review this report and take appropriate action within 24-48 hours.
+            </Text>
+          </View>
         </View>
 
-        {/* Back instruction */}
         <View style={styles.backInstructionContainer}>
           <Text style={[styles.backInstructionText, { color: colors.textSecondary }]}>
-            {isExchange 
-              ? 'Your enhancement is now active!'
-              : 'You have blocked the user. Refresh to update.'
-            }
+            You have blocked the user. Refresh to update.
           </Text>
         </View>
       </View>
@@ -171,8 +102,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 40,
   },
-  
-  // Icon Section
   iconContainer: {
     marginBottom: 24,
   },
@@ -183,8 +112,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
-  // Message Section
   messageContainer: {
     alignItems: 'center',
     marginBottom: 40,
@@ -213,56 +140,6 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     textAlign: 'center',
   },
-
-  // Exchange Details Section
-  exchangeDetailsContainer: {
-    width: '100%',
-    gap: 16,
-    marginTop: 4,
-  },
-  exchangeCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-    borderRadius: 12,
-    maxWidth: 320,
-    alignSelf: 'center',
-    width: '100%',
-  },
-  exchangeInfo: {
-    flex: 1,
-  },
-  exchangeTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  exchangePrice: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  checkmarkBadge: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  congratsMessage: {
-    padding: 16,
-    borderRadius: 12,
-    maxWidth: 320,
-    alignSelf: 'center',
-    width: '100%',
-  },
-  congratsText: {
-    fontSize: 12,
-    lineHeight: 18,
-    textAlign: 'center',
-  },
-
-  // Back Instruction Section
   backInstructionContainer: {
     position: 'absolute',
     bottom: 40,

@@ -31,9 +31,9 @@ import { useNetworkStatus } from '../../../hooks/useNetworkStatus'
 import { useGameAccounts } from '../../../queries/useGameAccounts'
 import { queryClient } from '../../../lib/queryClient'
 import ProductCardSkeleton from '../../../component/customer/store/ProductCardSkeleton'
+import AppHeader from '../header/AppHeader'
 import { useDeleteGameAccount } from '../../../queries/useMutation/useDeleteGameAccount'
 import { usePurchaseGameAccount } from '../../../queries/useMutation/usePurchaseGameAccount'
-import { useUtils } from '../../../queries/useUtils'
 import { useThemeStore } from '../../../store/themeStore'
 import { useAuthStore } from '../../../store/authStore'
 
@@ -77,7 +77,7 @@ const handleOpenWhatsApp = async (sellerPhone) => {
   }
 }
 
-const ProductCard = ({ product, index, isLight, onOrderPress, onDeletePress, userEmail, isIOSActive }) => {
+const ProductCard = ({ product, index, isLight, onOrderPress, onDeletePress, userEmail }) => {
   const carouselRef = useRef(null)
   const progress = useSharedValue(0)
   const animatedProgress = useDerivedValue(() => progress.value)
@@ -167,10 +167,8 @@ const ProductCard = ({ product, index, isLight, onOrderPress, onDeletePress, use
 
       {/* Product Info */}
       <View style={styles.productInfo}>
-        {isIOSActive && (
-          <>
-            {/* Seller Info + Game Pill Row */}
-            <View style={styles.sellerContainer}>
+        {/* Seller Info + Game Pill Row */}
+        <View style={styles.sellerContainer}>
               {product.seller && (
                 <View style={styles.sellerLeft}>
                   <View style={[
@@ -304,10 +302,8 @@ const ProductCard = ({ product, index, isLight, onOrderPress, onDeletePress, use
               </View>
             </View>
 
-            {/* Separator */}
-            <View style={[styles.descriptionSeparator, { borderBottomColor: isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)' }]} />
-          </>
-        )}
+        {/* Separator */}
+        <View style={[styles.descriptionSeparator, { borderBottomColor: isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)' }]} />
 
         {/* Buy / Delete Button */}
         {isOwner ? (
@@ -382,36 +378,6 @@ const EmptyListComponent = ({ isLight }) => (
   </View>
 )
 
-const ProductHeader = ({ isLight, walletBalance, onWalletPress, isIOSActive }) => (
-  <View style={styles.header}>
-    <View>
-      <Text style={[styles.headerTitle, { color: isLight ? '#000000' : '#ffffff' }]}>
-        {isIOSActive ? 'Buy & Sell' : 'Product'}
-      </Text>
-      <View style={[styles.headingUnderline, { backgroundColor: isLight ? '#000000' : '#ffffff' }]} />
-    </View>
-
-    {isIOSActive && (
-      <Pressable onPress={onWalletPress}>
-        <View
-          style={[
-            styles.addIconContainer,
-            {
-              backgroundColor: 'transparent',
-            },
-          ]}
-        >
-          <AppIcon
-            icon={PlusSignIcon}
-            size={30}
-            color={isLight ? '#000000' : '#ffffff'}
-          />
-        </View>
-      </Pressable>
-    )}
-  </View>
-)
-
 const SKELETON_DATA = Array(3).fill(null).map((_, i) => ({ id: `skeleton-${i}` }))
 
 const Store = () => {
@@ -425,14 +391,6 @@ const Store = () => {
 
   const { mutate: deleteAccount } = useDeleteGameAccount()
   const { mutate: purchaseAccount, isPending: isPurchasing } = usePurchaseGameAccount()
-  const { data: utils = [] } = useUtils()
-  const isIOSActive = !!utils?.is_ios_active
-
-  const walletBalance = user?.wallet_balance ?? 0
-
-
-
-  
 
   const {
     data: { flat: products = [], hasMore = false } = {},
@@ -450,6 +408,21 @@ const Store = () => {
   const handleWalletPress = useCallback(() => {
     navigation.navigate('createSell')
   }, [navigation])
+
+  const headerRightAction = (
+    <Pressable
+      onPress={handleWalletPress}
+      style={styles.addIconButton}
+      accessibilityRole="button"
+      accessibilityLabel="Create listing"
+    >
+      <AppIcon
+        icon={PlusSignIcon}
+        size={iconSize.xl}
+        color={isLight ? '#000000' : '#ffffff'}
+      />
+    </Pressable>
+  )
 
   const handleOrderPress = useCallback((product) => {
     showPurchaseSheet({
@@ -528,10 +501,9 @@ const Store = () => {
         onOrderPress={handleOrderPress}
         onDeletePress={handleDeletePress}
         userEmail={user?.email}
-        isIOSActive={isIOSActive}
       />
     ),
-    [isLight, handleOrderPress, handleDeletePress, user?.email, isIOSActive]
+    [isLight, handleOrderPress, handleDeletePress, user?.email]
   )
 
   const renderSkeleton = useCallback(() => (
@@ -544,7 +516,7 @@ const Store = () => {
     return (
       <View style={[styles.container, { backgroundColor: isLight ? '#ffffff' : '#000000', paddingTop: insets.top }]}>
         <StatusBar translucent backgroundColor="transparent" barStyle={isLight ? 'dark-content' : 'light-content'} />
-        <ProductHeader isLight={isLight} walletBalance={walletBalance} onWalletPress={handleWalletPress} isIOSActive={isIOSActive} />
+        <AppHeader title="Buy & Sell" rightAction={headerRightAction} />
         <View style={styles.emptyContainer}>
           <Text style={[styles.emptyTitle, { color: isLight ? '#1a1a1a' : '#ffffff' }]}>No internet connection</Text>
           <Text style={[styles.emptySubtitle, { color: isLight ? '#666666' : '#999999' }]}>Please check your connection and try again</Text>
@@ -566,7 +538,7 @@ const Store = () => {
         barStyle={isLight ? 'dark-content' : 'light-content'}
       />
 
-      <ProductHeader isLight={isLight} walletBalance={walletBalance} onWalletPress={handleWalletPress} isIOSActive={isIOSActive} />
+      <AppHeader title="Buy & Sell" rightAction={headerRightAction} />
 
       {/* Products Grid */}
       <View style={styles.listWrapper}>
@@ -605,28 +577,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingTop: spacing.sm + 2,
-    paddingHorizontal: spacing.lg,
-    marginBottom: spacing.sm + 2,
-  },
-  headerTitle: {
-    fontSize: fontSize.lg,
-    fontWeight: '600',
-  },
-  headingUnderline: {
-    width: 80,
-    height: 2,
-    borderRadius: 1,
-    marginTop: spacing.xs,
-  },
-  addIconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+  addIconButton: {
+    width: 32,
+    height: 32,
     alignItems: 'center',
     justifyContent: 'center',
   },

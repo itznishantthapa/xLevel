@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useRef } from 'react'
 import {
   StyleSheet,
   Text,
@@ -13,10 +13,6 @@ import {
   CancelCircleIcon,
   Add01Icon,
   Image01Icon,
-  Facebook01Icon,
-  GoogleIcon,
-  EyeIcon,
-  EyeOffIcon,
   InformationCircleIcon,
 } from '@hugeicons/core-free-icons'
 import { iconSize } from '../../../theme/typography'
@@ -25,16 +21,16 @@ import * as yup from 'yup'
 import Toast from 'react-native-simple-toast'
 import { useThemeStore } from '../../../store/themeStore'
 import { useAuthStore } from '../../../store/authStore'
-import { useBottomSheet } from '../../../context/BottomSheetContext'
 import { useNavigation } from '@react-navigation/native'
 import CreateGameLayout from '../../../component/customer/createGame/CreateGameLayout'
+import TermsAgreement from '../../../component/customer/createGame/TermsAgreement'
 import { useCreateGameAccount } from '../../../queries/useMutation/useCreateGameAccount'
 
 const { width } = Dimensions.get('window')
 
 const MAX_IMAGES = 6
 const SERVICE_CHARGE_PERCENT = 10
-const REQUIRED_DEPOSIT = 20
+const REQUIRED_DEPOSIT = 50
 
 const GAME_OPTIONS = [
   { label: 'FreeFire', value: 'FreeFire' },
@@ -54,18 +50,6 @@ const validationSchema = yup.object().shape({
     .string()
     .required('Please select a game')
     .nullable(),
-  loginMethod: yup
-    .string()
-    .required('Please select a login method')
-    .nullable(),
-  loginEmail: yup
-    .string()
-    .required('Please enter your login email')
-    .min(1, 'Please enter your login email'),
-  loginPassword: yup
-    .string()
-    .required('Please enter the account password')
-    .min(1, 'Please enter the account password'),
   sellerPhone: yup
     .string()
     .required('Please enter your WhatsApp number')
@@ -79,19 +63,16 @@ const validationSchema = yup.object().shape({
 const CreateSell = () => {
   const { isLight } = useThemeStore()
   const { user } = useAuthStore()
-  const { showConfirmSheet } = useBottomSheet()
   const navigation = useNavigation()
   const { mutate: createAccount, isPending: isSubmitting } = useCreateGameAccount()
+  const termsRef = useRef(null)
 
   const [images, setImages] = useState([])
   const [description, setDescription] = useState('')
   const [selectedGame, setSelectedGame] = useState(null)
-  const [loginMethod, setLoginMethod] = useState(null)
-  const [loginEmail, setLoginEmail] = useState('')
-  const [loginPassword, setLoginPassword] = useState('')
   const [sellerPhone, setSellerPhone] = useState('')
   const [price, setPrice] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
+  const [loginDetailsAcknowledged, setLoginDetailsAcknowledged] = useState(false)
 
   const userBalance = user?.wallet_balance ?? 0
 
@@ -143,9 +124,6 @@ const CreateSell = () => {
           images,
           description,
           selectedGame,
-          loginMethod,
-          loginEmail,
-          loginPassword,
           sellerPhone,
           price: numericPrice,
         },
@@ -159,14 +137,17 @@ const CreateSell = () => {
   }
 
   const handleSubmit = useCallback(async () => {
+    if (!loginDetailsAcknowledged) {
+      termsRef.current?.shake()
+      return
+    }
+
     if (!(await validateForm())) return
 
     const formData = new FormData()
     formData.append('game', selectedGame)
     formData.append('description', description.trim())
-    formData.append('login_method', loginMethod)
-    formData.append('login_email', loginEmail.trim())
-    formData.append('login_password', loginPassword)
+    formData.append('login_method', 'whatsapp')
     formData.append('contact_number', sellerPhone.trim())
     formData.append('price', numericPrice.toString())
 
@@ -186,7 +167,7 @@ const CreateSell = () => {
         Toast.show(error?.message || 'Failed to list account.', Toast.SHORT)
       },
     })
-  }, [selectedGame, description, loginMethod, loginEmail, loginPassword, sellerPhone, numericPrice, images, createAccount, navigation])
+  }, [loginDetailsAcknowledged, selectedGame, description, sellerPhone, numericPrice, images, createAccount, navigation])
 
   const renderImageSlot = (index) => {
     const image = images[index]
@@ -329,100 +310,6 @@ const CreateSell = () => {
         </View>
       </View>
 
-      {/* Login Method - Circular Icons */}
-      <View style={styles.inputGroup}>
-        <Text style={[styles.fieldLabel, { color: colors.text }]}>Login Method *</Text>
-        <View style={styles.loginMethodRow}>
-          {/* Facebook */}
-          <Pressable
-            style={styles.loginMethodItem}
-            onPress={() => {
-              setLoginMethod('facebook')
-              setLoginEmail('')
-              setLoginPassword('')
-            }}
-          >
-            <View
-              style={[
-                styles.loginMethodCircle,
-                {
-                  backgroundColor: loginMethod === 'facebook' ? '#1877F2' : (isLight ? '#f0f0f0' : '#1a1a1a'),
-                  borderColor: loginMethod === 'facebook' ? '#1877F2' : colors.inputBorder,
-                },
-              ]}
-            >
-              <AppIcon icon={Facebook01Icon} size={iconSize.md} color={loginMethod === 'facebook' ? '#ffffff' : colors.textSecondary} />
-            </View>
-            <Text style={[styles.loginMethodLabel, { color: loginMethod === 'facebook' ? '#1877F2' : colors.textSecondary }]}>
-              Facebook
-            </Text>
-          </Pressable>
-
-          {/* Google */}
-          <Pressable
-            style={styles.loginMethodItem}
-            onPress={() => {
-              setLoginMethod('google')
-              setLoginEmail('')
-              setLoginPassword('')
-            }}
-          >
-            <View
-              style={[
-                styles.loginMethodCircle,
-                {
-                  backgroundColor: loginMethod === 'google' ? '#DB4437' : (isLight ? '#f0f0f0' : '#1a1a1a'),
-                  borderColor: loginMethod === 'google' ? '#DB4437' : colors.inputBorder,
-                },
-              ]}
-            >
-              <AppIcon icon={GoogleIcon} size={iconSize.md} color={loginMethod === 'google' ? '#ffffff' : colors.textSecondary} />
-            </View>
-            <Text style={[styles.loginMethodLabel, { color: loginMethod === 'google' ? '#DB4437' : colors.textSecondary }]}>
-              Google
-            </Text>
-          </Pressable>
-        </View>
-      </View>
-
-      {/* Login Credentials */}
-      {loginMethod && (
-        <>
-          <View style={styles.inputGroup}>
-            <Text style={[styles.fieldLabel, { color: colors.text }]}>
-              {loginMethod === 'facebook' ? 'Phone / Email *' : 'Gmail *'}
-            </Text>
-            <TextInput
-              style={[styles.input, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.text }]}
-              placeholder={loginMethod === 'facebook' ? 'Enter phone or email' : 'Enter Gmail address'}
-              placeholderTextColor={colors.textSecondary}
-              value={loginEmail}
-              onChangeText={setLoginEmail}
-              keyboardType={loginMethod === 'google' ? 'email-address' : 'default'}
-              autoCapitalize="none"
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={[styles.fieldLabel, { color: colors.text }]}>Password *</Text>
-            <View style={[styles.passwordContainer, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}>
-              <TextInput
-                style={[styles.passwordInput, { color: colors.text }]}
-                placeholder="Enter account password"
-                placeholderTextColor={colors.textSecondary}
-                value={loginPassword}
-                onChangeText={setLoginPassword}
-                secureTextEntry={!showPassword}
-                autoCapitalize="none"
-              />
-              <Pressable onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}>
-                <AppIcon icon={showPassword ? EyeOffIcon : EyeIcon} size={iconSize.md} color={colors.textSecondary} />
-              </Pressable>
-            </View>
-          </View>
-        </>
-      )}
-
       {/* Seller Phone */}
       <View style={styles.inputGroup}>
         <Text style={[styles.fieldLabel, { color: colors.text }]}>WhatsApp Number *</Text>
@@ -484,6 +371,14 @@ const CreateSell = () => {
           A refundable deposit of {REQUIRED_DEPOSIT} points is required to list your account. This will be returned to you after a successful sale.
         </Text>
       </View>
+
+      <TermsAgreement
+        ref={termsRef}
+        isAccepted={loginDetailsAcknowledged}
+        onToggle={() => setLoginDetailsAcknowledged((prev) => !prev)}
+        isLight={isLight}
+        text="Admin will message you for your login details to validate the account."
+      />
 
     </CreateGameLayout>
   )
@@ -619,25 +514,6 @@ const styles = StyleSheet.create({
     right: 12,
   },
 
-  // Password
-  passwordContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderRadius: 0,
-    overflow: 'hidden',
-  },
-  passwordInput: {
-    flex: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    fontSize: 14,
-  },
-  eyeBtn: {
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-  },
-
   // Game Option Boxes
   optionGrid: {
     flexDirection: 'row',
@@ -652,29 +528,6 @@ const styles = StyleSheet.create({
   },
   optionBoxText: {
     fontSize: 14,
-  },
-
-  // Login Method Circles
-  loginMethodRow: {
-    flexDirection: 'row',
-    gap: 24,
-    marginTop: 4,
-  },
-  loginMethodItem: {
-    alignItems: 'center',
-    gap: 6,
-  },
-  loginMethodCircle: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1.5,
-  },
-  loginMethodLabel: {
-    fontSize: 12,
-    fontWeight: '500',
   },
 
   // Price Breakdown

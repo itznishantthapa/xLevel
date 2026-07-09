@@ -19,11 +19,6 @@ export const endpoints = {
   unblockUser:"/api/user/unblock-user/",
   getBlockedUsers:"/api/user/blocked-users/",
 
-  //enhancements
-  getEnhancements: "/api/enhancer/get-enhancers/",
-  exchangeEnhancements: "/api/enhancer/exchange/",
-  updateTagStatus:"/api/enhancer/update-tag-status/",
-
   //points
   getPointsIn: "/api/points/in/",
   getPointsOut: "/api/points/out/",
@@ -42,9 +37,6 @@ export const endpoints = {
   getGameProfiles: "/api/games/profiles/",
   saveGameProfile: "/api/games/profiles/save/",
   getGameRules: "/api/games/rules/",
-
-  // Socials
-  getSocials: "/api/social/",
 
   // Challenges
   getUpcomingGames: "/api/challenges/official/",

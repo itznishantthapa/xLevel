@@ -1,41 +1,22 @@
 "use client"
 
-import { Image, Platform, Pressable, StyleSheet, Text, View } from "react-native"
+import { Image, Pressable, StyleSheet, Text, View } from "react-native"
 import { useMemo, useEffect, useState } from "react"
 import { LinearGradient } from "expo-linear-gradient"
 import { AppIcon, PointsIcon } from "../../components/common/AppIcon"
-import {
-  UserIcon,
-  Add01Icon,
-  MessengerIcon,
-  TiktokIcon,
-  WhatsappIcon,
-} from "@hugeicons/core-free-icons"
+import { UserIcon, Add01Icon } from "@hugeicons/core-free-icons"
 import { useThemeStore } from "../../store/themeStore"
-import { useSocials } from "../../queries/useSocials"
-import { useAuthStore } from "../../store/authStore"
 import { useUtils } from "../../queries/useUtils"
 import { fontSize, spacing, radius, iconSize, lineHeight } from "../../theme/typography"
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing, runOnJS } from "react-native-reanimated"
-
-const SOCIAL_ICON_MAP = {
-  messenger: MessengerIcon,
-  instagram: TiktokIcon,
-  whatsapp: WhatsappIcon,
-}
 
 const Header = ({
   player_name,
   wallet_balance,
   profile_picture,
   handleProfile,
-  handleMessenger,
-  handleInstagram,
-  handleWhatsapp,
   handleHeaderGamePoint,
-  showSocials = true,
 }) => {
-  const { data: socials = [] } = useSocials()
   const { data: utils = {} } = useUtils()
 
   const phrases = useMemo(() => {
@@ -78,58 +59,22 @@ const Header = ({
   }, [phrases.length])
 
   const { isLight } = useThemeStore()
-  const { user } = useAuthStore()
 
-  const { displayName, availableSocials, themeStyles } = useMemo(() => {
+  const { displayName, themeStyles } = useMemo(() => {
     const firstName = player_name ? player_name.split(" ")[0] : ""
     const computedDisplayName = firstName.length > 10 ? `${firstName.slice(0, 10)}...` : firstName
 
-    const filteredSocials = socials
-      .map((social) => {
-        const key = social?.name?.toLowerCase?.() || ""
-        const icon = SOCIAL_ICON_MAP[key]
-        if (!icon) return null
-
-        const handlers = {
-          messenger: handleMessenger,
-          instagram: handleInstagram,
-          whatsapp: handleWhatsapp,
-        }
-
-        return { ...social, icon, handler: handlers[key] }
-      })
-      .filter(Boolean)
-
     return {
       displayName: computedDisplayName,
-      availableSocials: filteredSocials,
       themeStyles: {
         textColor: isLight ? "#333333" : "#EAEAEA",
         iconColor: isLight ? "#000000" : "#EAEAEA",
-        buttonBackground: isLight ? "#f5f5f5" : "rgba(255, 255, 255, 0.1)",
         profileBackground: isLight ? "#dadada" : "#444444",
       },
     }
-  }, [player_name, socials, isLight, handleMessenger, handleInstagram, handleWhatsapp])
+  }, [player_name, isLight])
 
   const ProfileImage = () => {
-    const getTagText = () => {
-      if (user?.enhancer?.active_hacker_tag) return 'Hckr'
-      if (user?.enhancer?.active_pro_tag) return 'Pro'
-      return null
-    }
-
-    const tagText = getTagText()
-
-    const TagComponent = () =>
-      tagText ? (
-        <View style={[styles.tagBadge, isLight ? styles.tagLight : styles.tagDark]}>
-          <Text style={[styles.tagText, isLight ? styles.tagTextLight : styles.tagTextDark]}>
-            {tagText}
-          </Text>
-        </View>
-      ) : null
-
     if (profile_picture) {
       return (
         <View style={styles.profileImageContainer}>
@@ -139,7 +84,6 @@ const Header = ({
             resizeMode="cover"
             accessibilityLabel={`${player_name}'s profile picture`}
           />
-          <TagComponent />
         </View>
       )
     }
@@ -149,13 +93,12 @@ const Header = ({
         <View style={[styles.profileFallback, { backgroundColor: themeStyles.profileBackground }]}>
           <AppIcon icon={UserIcon} size={iconSize.md} color={themeStyles.iconColor} />
         </View>
-        <TagComponent />
       </View>
     )
   }
 
   return (
-    <View style={[styles.header, !showSocials && styles.headerCompact, isLight ? styles.headerLight : styles.headerDark]}>
+    <View style={[styles.header, isLight ? styles.headerLight : styles.headerDark]}>
       <View style={styles.leftSection}>
         <Pressable
           style={styles.profileContainer}
@@ -202,22 +145,6 @@ const Header = ({
             <AppIcon icon={Add01Icon} size={iconSize.sm} color="#00bf63" />
           </LinearGradient>
         </Pressable>
-
-        {showSocials && availableSocials.length > 0 && (
-          <View style={styles.socialContainer}>
-            {availableSocials.map((social) => (
-              <Pressable
-                key={social.name}
-                style={[styles.socialButton, { backgroundColor: themeStyles.buttonBackground }]}
-                onPress={social.handler}
-                accessibilityRole="button"
-                accessibilityLabel={`Open ${social.name}`}
-              >
-                <AppIcon icon={social.icon} size={iconSize.sm} color={themeStyles.iconColor} />
-              </Pressable>
-            ))}
-          </View>
-        )}
       </View>
     </View>
   )
@@ -229,7 +156,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-start",
+    alignItems: "center",
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.sm,
     paddingBottom: spacing.sm,
@@ -243,10 +170,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000',
     borderColor: '#ffffff',
     shadowColor: '#fff',
-  },
-  headerCompact: {
-    alignItems: "center",
-    paddingBottom: spacing.sm,
   },
   leftSection: {
     flexDirection: "row",
@@ -279,36 +202,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "rgba(255, 255, 255, 0.1)",
   },
-  tagBadge: {
-    position: 'absolute',
-    bottom: -6,
-    left: '50%',
-    transform: [{ translateX: -12 }],
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: radius.sm,
-    borderWidth: 1,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  tagLight: {
-    backgroundColor: '#000000',
-    borderColor: '#ffffff',
-  },
-  tagDark: {
-    backgroundColor: '#ffffff',
-    borderColor: '#000000',
-  },
-  tagText: {
-    fontSize: fontSize.xxs,
-    fontWeight: '700',
-    textAlign: 'center',
-  },
-  tagTextLight: { color: '#ffffff' },
-  tagTextDark: { color: '#000000' },
   userInfo: {
     flex: 1,
     justifyContent: "center",
@@ -328,7 +221,6 @@ const styles = StyleSheet.create({
   },
   rightSection: {
     alignItems: "flex-end",
-    gap: spacing.sm,
   },
   balanceContainer: {
     paddingHorizontal: spacing.md,
@@ -349,16 +241,5 @@ const styles = StyleSheet.create({
     color: "#000000",
     marginLeft: spacing.sm,
     lineHeight: lineHeight.md,
-  },
-  socialContainer: {
-    flexDirection: "row",
-    gap: spacing.sm,
-  },
-  socialButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: "center",
-    alignItems: "center",
   },
 })

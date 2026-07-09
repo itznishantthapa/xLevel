@@ -33,8 +33,6 @@ import { queryClient } from "../../lib/queryClient"
 import { useAuthStore } from "../../store/authStore"
 import { useThemeStore } from "../../store/themeStore"
 
-// New import for handleJoinGame
-import { handleJoinGame } from "../../service/homeHandler"
 import { useInfiniteTournaments } from "../../queries/useTournament"
 import { useRegisterTournament } from "../../queries/useMutation/useRegisterTournament"
 import Loader from "../../component/Loader"
@@ -358,6 +356,9 @@ const Home = () => {
             handleRedeem={() => navigation.navigate("pointsOut")}
             handleTournament={() => navigation.navigate("userTournament")}
             handleMatches={() => navigation.navigate("match")}
+            isTournamentActive={!!user?.is_tournament_active}
+            isMatchActive={!!user?.is_match_active}
+            isRequestActive={!!user?.is_request_active}
           />
         )
 
@@ -401,7 +402,6 @@ const Home = () => {
         profile_picture={user?.profile_picture}
         handleProfile={handleProfile}
         handleHeaderGamePoint={handleHeaderGamePoint}
-        showSocials={false}
       />
 
       {/* Main content list with optimized scrolling */}

@@ -22,14 +22,11 @@ import QRCode from "react-native-qrcode-svg"
 import Toast from "react-native-simple-toast"
 import { GamePointAPI } from "../../api/pointsApi"
 import { useAuthStore } from "../../store/authStore"
-import { useUtils } from "../../queries/useUtils"
-
 const DynamicIn = () => {
   const navigation = useNavigation()
   const insets = useSafeAreaInsets()
   const { isLight } = useThemeStore()
   const { get_user } = useAuthStore()
-  const { data: utils = {} } = useUtils()
   const [crownAmount, setCrownAmount] = useState("")
   const [showQR, setShowQR] = useState(false)
   const [qrValue, setQrValue] = useState("")
@@ -198,9 +195,7 @@ const DynamicIn = () => {
                 </Text>
               ) : (
                 <Text style={[styles.cardSubtitle, { color: colors.textSecondary }]}>
-                  {utils?.is_ios_active
-                    ? "Enter the points. After entering, we'll generate a dynamic QR for your transaction. Points will be added to your account instantly and can be used for gaming and purchasing in the app."
-                    : "Enter the points. After entering, we'll generate a dynamic QR for your transaction. Points will be added to your account instantly and can be used for purchasing gaming gadgets from the product section."}
+                  Enter the points. After entering, we'll generate a dynamic QR for your transaction. Points will be added to your account instantly and can be used for gaming and purchasing in the app.
                 </Text>
               )}
             </View>

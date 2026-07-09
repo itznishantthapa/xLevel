@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Image, ImageBackground } from "react-native"
+import { View, Text, Pressable, Image } from "react-native"
 import { AppIcon } from "../../components/common/AppIcon"
 import { UserIcon } from "@hugeicons/core-free-icons"
 import Clipboard from "@react-native-clipboard/clipboard"
@@ -6,7 +6,7 @@ import Toast from "react-native-simple-toast"
 import { InfoRow, sharedStyles } from "./sharedStyleAndInfo"
 import { fontSize, spacing } from '../../theme/typography';
 
-const CreatorInfo = ({ game, isLight, isCreator, user }) => {
+const CreatorInfo = ({ game, isLight, isCreator }) => {
   const profileBackground = isLight ? "#dadada" : "#444444"
   const iconColor = isLight ? "#333333" : "#EAEAEA"
   const displayLabel = isCreator ? "You" : "Creator"
@@ -84,170 +84,31 @@ const CreatorInfo = ({ game, isLight, isCreator, user }) => {
 
   return (
     <>
-      {createdBy?.profile_picture && createdBy?.active_exposer ? (
-        <ImageBackground 
-          source={{ uri: createdBy.profile_picture }} 
-          style={[sharedStyles.creatorHeader, !isLight && sharedStyles.creatorHeaderDark]}
-          imageStyle={{ 
-            borderTopRightRadius: 12, 
-            borderTopLeftRadius: 12,
-            opacity: 0.2 
-          }}
-        >
-          <View style={{
-            backgroundColor: isLight ? 'rgba(255, 255, 255, 0.85)' : 'rgba(0, 0, 0, 0.85)',
-            borderTopRightRadius: 12,
-            borderTopLeftRadius: 12,
-            padding: 12,
-            flexDirection: 'row',
-            alignItems: 'center'
-          }}>
-            <View style={sharedStyles.avatarContainer}>
-              <Image source={{ uri: createdBy.profile_picture }} style={sharedStyles.creatorAvatar} />
-              {
-                (createdBy?.active_hacker_tag || createdBy?.active_pro_tag) && (
-                  <View style={{
-                    position: 'absolute',
-                    bottom: -6,
-                    left: '50%',
-                    transform: [{ translateX: -12 }],
-                    backgroundColor: isLight ? '#000000' : '#ffffff',
-                    paddingHorizontal: 6,
-                    paddingVertical: spacing.xxs,
-                    borderRadius: spacing.sm,
-                    borderWidth: 1,
-                    borderColor: isLight ? '#ffffff' : '#000000',
-                    shadowColor: '#000000',
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.25,
-                    shadowRadius: 3.84,
-                    elevation: 5,
-                  }}>
-                    <Text style={{
-                      color: isLight ? '#ffffff' : '#000000',
-                      fontSize: spacing.sm,
-                      fontWeight: 'bold',
-                      textAlign: 'center'
-                    }}>{createdBy?.active_hacker_tag ? 'Hckr' : 'Pro'}</Text>
-                  </View>
-                )
-              }
-            </View>
-
-            <View style={sharedStyles.creatorInfo}>
-              <Text style={[sharedStyles.creatorName, !isLight && sharedStyles.creatorNameDark]}>
-                {createdBy?.full_name?.split(" ")[0]}
-              </Text>
-              <Text style={[sharedStyles.creatorLabel, !isLight && sharedStyles.creatorLabelDark]}>{displayLabel}</Text>
-              {gameData.showUID && gameData.uid && (
-                <Pressable onPress={() => copyToClipboard(gameData.uid)}>
-                  <Text style={[sharedStyles.gameUID, !isLight && sharedStyles.gameUIDDark, { fontSize: fontSize.xs }]}>
-                    {gameData.uid}
-                  </Text>
-                </Pressable>
-              )}
-            </View>
-          </View>
-        </ImageBackground>
-      ) : createdBy?.profile_picture ? (
-        <View style={[sharedStyles.creatorHeader, !isLight && sharedStyles.creatorHeaderDark]}>
-          <View style={sharedStyles.avatarContainer}>
+      <View style={[sharedStyles.creatorHeader, !isLight && sharedStyles.creatorHeaderDark]}>
+        <View style={sharedStyles.avatarContainer}>
+          {createdBy?.profile_picture ? (
             <Image source={{ uri: createdBy.profile_picture }} style={sharedStyles.creatorAvatar} />
-            {
-              (createdBy?.active_hacker_tag || createdBy?.active_pro_tag) && (
-                <View style={{
-                  position: 'absolute',
-                  bottom: -6,
-                  left: '50%',
-                  transform: [{ translateX: -12 }],
-                  backgroundColor: isLight ? '#000000' : '#ffffff',
-                  paddingHorizontal: 6,
-                  paddingVertical: spacing.xxs,
-                  borderRadius: spacing.sm,
-                  borderWidth: 1,
-                  borderColor: isLight ? '#ffffff' : '#000000',
-                  shadowColor: '#000000',
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 3.84,
-                  elevation: 5,
-                }}>
-                  <Text style={{
-                    color: isLight ? '#ffffff' : '#000000',
-                    fontSize: spacing.sm,
-                    fontWeight: 'bold',
-                    textAlign: 'center'
-                  }}>{createdBy?.active_hacker_tag ? 'Hckr' : 'Pro'}</Text>
-                </View>
-              )
-            }
-          </View>
-
-          <View style={sharedStyles.creatorInfo}>
-            <Text style={[sharedStyles.creatorName, !isLight && sharedStyles.creatorNameDark]}>
-              {createdBy?.full_name?.split(" ")[0]}
-            </Text>
-            <Text style={[sharedStyles.creatorLabel, !isLight && sharedStyles.creatorLabelDark]}>{displayLabel}</Text>
-            {gameData.showUID && gameData.uid && (
-              <Pressable onPress={() => copyToClipboard(gameData.uid)}>
-                <Text style={[sharedStyles.gameUID, !isLight && sharedStyles.gameUIDDark, { fontSize: fontSize.xs }]}>
-                  {gameData.uid}
-                </Text>
-              </Pressable>
-            )}
-          </View>
-        </View>
-      ) : (
-        <View style={[sharedStyles.creatorHeader, !isLight && sharedStyles.creatorHeaderDark]}>
-          <View style={sharedStyles.avatarContainer}>
+          ) : (
             <View style={[sharedStyles.profileFallback, { backgroundColor: profileBackground }]}>
               <AppIcon icon={UserIcon} size={spacing.xl} color={iconColor} />
             </View>
-            {
-              (createdBy?.active_hacker_tag || createdBy?.active_pro_tag) && (
-                <View style={{
-                  position: 'absolute',
-                  bottom: -6,
-                  left: '50%',
-                  transform: [{ translateX: -12 }],
-                  backgroundColor: isLight ? '#000000' : '#ffffff',
-                  paddingHorizontal: 6,
-                  paddingVertical: spacing.xxs,
-                  borderRadius: spacing.sm,
-                  borderWidth: 1,
-                  borderColor: isLight ? '#ffffff' : '#000000',
-                  shadowColor: '#000000',
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 3.84,
-                  elevation: 5,
-                }}>
-                  <Text style={{
-                    color: isLight ? '#ffffff' : '#000000',
-                    fontSize: spacing.sm,
-                    fontWeight: 'bold',
-                    textAlign: 'center'
-                  }}>{createdBy?.active_hacker_tag ? 'Hckr' : 'Pro'}</Text>
-                </View>
-              )
-            }
-          </View>
-
-          <View style={sharedStyles.creatorInfo}>
-            <Text style={[sharedStyles.creatorName, !isLight && sharedStyles.creatorNameDark]}>
-              {createdBy?.full_name?.split(" ")[0]}
-            </Text>
-            <Text style={[sharedStyles.creatorLabel, !isLight && sharedStyles.creatorLabelDark]}>{displayLabel}</Text>
-            {gameData.showUID && gameData.uid && (
-              <Pressable onPress={() => copyToClipboard(gameData.uid)}>
-                <Text style={[sharedStyles.gameUID, !isLight && sharedStyles.gameUIDDark, { fontSize: fontSize.xs }]}>
-                  {gameData.uid}
-                </Text>
-              </Pressable>
-            )}
-          </View>
+          )}
         </View>
-      )}
+
+        <View style={sharedStyles.creatorInfo}>
+          <Text style={[sharedStyles.creatorName, !isLight && sharedStyles.creatorNameDark]}>
+            {createdBy?.full_name?.split(" ")[0]}
+          </Text>
+          <Text style={[sharedStyles.creatorLabel, !isLight && sharedStyles.creatorLabelDark]}>{displayLabel}</Text>
+          {gameData.showUID && gameData.uid && (
+            <Pressable onPress={() => copyToClipboard(gameData.uid)}>
+              <Text style={[sharedStyles.gameUID, !isLight && sharedStyles.gameUIDDark, { fontSize: fontSize.xs }]}>
+                {gameData.uid}
+              </Text>
+            </Pressable>
+          )}
+        </View>
+      </View>
 
       <View style={sharedStyles.rightInfoContainer}>
         {gameData.gameUsername && (
@@ -259,23 +120,16 @@ const CreatorInfo = ({ game, isLight, isCreator, user }) => {
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-            {/* Top-left corner bracket */}
             <View style={{ position: 'absolute', top: 0, left: 0, width: fontSize.base, height: spacing.xxs, backgroundColor: isLight ? '#333333' : '#ffffff' }} />
             <View style={{ position: 'absolute', top: 0, left: 0, width: spacing.xxs, height: fontSize.base, backgroundColor: isLight ? '#333333' : '#ffffff' }} />
-            
-            {/* Top-right corner bracket */}
             <View style={{ position: 'absolute', top: 0, right: 0, width: fontSize.base, height: spacing.xxs, backgroundColor: isLight ? '#333333' : '#ffffff' }} />
             <View style={{ position: 'absolute', top: 0, right: 0, width: spacing.xxs, height: fontSize.base, backgroundColor: isLight ? '#333333' : '#ffffff' }} />
-            
-            {/* Bottom-left corner bracket */}
             <View style={{ position: 'absolute', bottom: 0, left: 0, width: fontSize.base, height: spacing.xxs, backgroundColor: isLight ? '#333333' : '#ffffff' }} />
             <View style={{ position: 'absolute', bottom: 0, left: 0, width: spacing.xxs, height: fontSize.base, backgroundColor: isLight ? '#333333' : '#ffffff' }} />
-            
-            {/* Bottom-right corner bracket */}
             <View style={{ position: 'absolute', bottom: 0, right: 0, width: fontSize.base, height: spacing.xxs, backgroundColor: isLight ? '#333333' : '#ffffff' }} />
             <View style={{ position: 'absolute', bottom: 0, right: 0, width: spacing.xxs, height: fontSize.base, backgroundColor: isLight ? '#333333' : '#ffffff' }} />
 
-            <Text 
+            <Text
               style={{
                 color: isLight ? '#1a1a1a' : '#ffffff',
                 fontSize: 15,

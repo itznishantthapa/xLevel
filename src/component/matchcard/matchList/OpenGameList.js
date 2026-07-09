@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -6,17 +6,33 @@ import {
   Dimensions,
   RefreshControl,
   ActivityIndicator,
-  Platform,
   ScrollView,
   TouchableOpacity,
   Pressable,
 } from 'react-native';
+import Toast from 'react-native-simple-toast';
 import MatchCardSkeleton from '../skeleton/Skeleton';
 import { FlashList } from "@shopify/flash-list";
 import { useThemeStore } from '../../../store/themeStore';
-import AppHeader from '../../../screens/customer/header/AppHeader';
+import { useBottomSheet } from '../../../context/BottomSheetContext';
+import { AppIcon } from '../../../components/common/AppIcon';
+import { Notification01Icon, NotificationOff01Icon } from '@hugeicons/core-free-icons';
 import OpenGameCard from '../cards/OpenGameCard';
-import { fontSize, spacing } from '../../../theme/typography';
+import { fontSize, spacing, iconSize } from '../../../theme/typography';
+import { getGameCreationTopic, getGameCreationAlertCopy } from '../../../constants/notifications';
+import {
+  requestNotificationPermission,
+  subscribeToTopic,
+  unsubscribeFromTopic,
+  syncFCMTokenWithBackend,
+  subscribeToBroadcastTopic,
+} from '../../../service/notificationService';
+import {
+  isGameCreationTopicSubscribed,
+  setGameCreationTopicSubscribed,
+} from '../../../utils/gameCreationTopicStorage';
+
+const getCompactGameName = (name = '') => name.replace(/\s+/g, '');
 
 // Constants
 const { width, height } = Dimensions.get('window');
@@ -55,10 +71,30 @@ const OpenGameList = ({
   showFilters = false,
 }) => {
   const { isLight } = useThemeStore();
+  const { showGameCreationNotificationSheet } = useBottomSheet();
   const endReachedTimeoutRef = React.useRef(null);
   const hasUserScrolledRef = React.useRef(false);
   const [isEndDelay, setIsEndDelay] = React.useState(false);
   const [selectedFilter, setSelectedFilter] = React.useState("All");
+  const [isCreationSubscribed, setIsCreationSubscribed] = useState(false);
+  const [isTopicLoading, setIsTopicLoading] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadSubscriptionState = async () => {
+      const subscribed = await isGameCreationTopicSubscribed(gameName);
+      if (isMounted) {
+        setIsCreationSubscribed(subscribed);
+      }
+    };
+
+    loadSubscriptionState();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [gameName]);
 
   // Create skeleton data for loading state
   const skeletonData = useMemo(() => 
@@ -105,86 +141,187 @@ const OpenGameList = ({
     }
   }, [onFilterChange]);
 
+  const handleSubscribeCreationTopic = useCallback(async () => {
+    const topic = getGameCreationTopic(gameName);
+    if (!topic) {
+      Toast.show('Notifications are not available for this game yet.', Toast.SHORT);
+      return;
+    }
+
+    setIsTopicLoading(true);
+    try {
+      const hasPermission = await requestNotificationPermission();
+      if (!hasPermission) {
+        Toast.show('Notification permission is required.', Toast.SHORT);
+        return;
+      }
+
+      await syncFCMTokenWithBackend();
+      await subscribeToBroadcastTopic();
+
+      const success = await subscribeToTopic(topic);
+      if (!success) {
+        Toast.show('Failed to turn on notifications. Please try again.', Toast.SHORT);
+        return;
+      }
+
+      await setGameCreationTopicSubscribed(gameName, true);
+      setIsCreationSubscribed(true);
+
+      const compactName = getCompactGameName(gameName).toLowerCase();
+      console.log(`turning on ${compactName} game Notification`);
+    } finally {
+      setIsTopicLoading(false);
+    }
+  }, [gameName]);
+
+  const handleUnsubscribeCreationTopic = useCallback(async () => {
+    const topic = getGameCreationTopic(gameName);
+    if (!topic) return;
+
+    setIsTopicLoading(true);
+    try {
+      const success = await unsubscribeFromTopic(topic);
+      if (!success) {
+        Toast.show('Failed to turn off notifications. Please try again.', Toast.SHORT);
+        return;
+      }
+
+      await setGameCreationTopicSubscribed(gameName, false);
+      setIsCreationSubscribed(false);
+
+      const compactName = getCompactGameName(gameName).toLowerCase();
+      console.log(`turning off ${compactName} game Notification`);
+    } finally {
+      setIsTopicLoading(false);
+    }
+  }, [gameName]);
+
+  const handleNotificationPress = useCallback(() => {
+    const alertCopy = getGameCreationAlertCopy(gameName, isCreationSubscribed);
+
+    showGameCreationNotificationSheet({
+      ...alertCopy,
+      onConfirm: isCreationSubscribed
+        ? handleUnsubscribeCreationTopic
+        : handleSubscribeCreationTopic,
+    });
+  }, [
+    gameName,
+    handleSubscribeCreationTopic,
+    handleUnsubscribeCreationTopic,
+    isCreationSubscribed,
+    showGameCreationNotificationSheet,
+  ]);
+
   // Memoize the filter chips component
   const FilterChips = useMemo(() => {
-    if (!showFilters || !gameModes || gameModes.length === 0) return null;
-    
+    if (!showFilters) return null;
+
+    const borderColor = isLight ? '#000000' : '#eaf4f4';
+    const notificationButtonStyle = isCreationSubscribed
+      ? styles.notificationButtonSubscribed
+      : styles.notificationButtonUnsubscribed;
+    const notificationIcon = isCreationSubscribed ? Notification01Icon : NotificationOff01Icon;
+
     return (
       <View style={[
-        styles.filterChipsContainer, 
-        { backgroundColor: isLight ? 'transparent' : '#000000', borderBottomColor: isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)' }
+        styles.filterChipsContainer,
+        {
+          backgroundColor: isLight ? 'transparent' : '#000000',
+          borderBottomColor: isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)',
+        },
       ]}>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ alignItems: 'center', paddingRight: 10 }}
+          style={styles.filterScroll}
+          contentContainerStyle={styles.filterScrollContent}
         >
-          {/* All filter chip */}
-          <TouchableOpacity
-            style={[
-              styles.filterChip,
-              { borderColor: isLight ? '#000000' : '#eaf4f4' },
-              selectedFilter === "All" && { 
-                backgroundColor: isLight ? '#000000' : '#eaf4f4',
-                borderColor: isLight ? '#000000' : '#eaf4f4' 
-              },
-              !selectedFilter === "All" && {
-                backgroundColor: 'transparent'
-              }
-            ]}
-            onPress={() => handleFilterSelect("All")}
-          >
-            <Text
-              style={[
-                styles.filterChipText,
-                { color: isLight ? '#000000' : '#eaf4f4' },
-                selectedFilter === "All" && { 
-                  color: isLight ? '#ffffff' : '#000000',
-                  fontWeight: '600' 
-                }
-              ]}
-            >
-              All
-            </Text>
-          </TouchableOpacity>
-
-          {/* Mode specific chips */}
-          {gameModes.map((mode, index) => (
-            <TouchableOpacity
-              key={`${mode}-${index}`}
-              style={[
-                styles.filterChip,
-                { borderColor: isLight ? '#000000' : '#eaf4f4' },
-                selectedFilter === mode && { 
-                  backgroundColor: isLight ? '#000000' : '#eaf4f4',
-                  borderColor: isLight ? '#000000' : '#eaf4f4'
-                },
-                !selectedFilter === mode && {
-                  backgroundColor: 'transparent'
-                }
-              ]}
-              onPress={() => handleFilterSelect(mode)}
-            >
-              <Text
+          {gameModes.length > 0 ? (
+            <>
+              <TouchableOpacity
                 style={[
-                  styles.filterChipText,
-                  { color: isLight ? '#000000' : '#eaf4f4' },
-                  selectedFilter === mode && { 
-                    color: isLight ? '#ffffff' : '#000000',
-                    fontWeight: '600'
-                  }
+                  styles.filterChip,
+                  { borderColor },
+                  selectedFilter === 'All' && {
+                    backgroundColor: isLight ? '#000000' : '#eaf4f4',
+                    borderColor,
+                  },
                 ]}
+                onPress={() => handleFilterSelect('All')}
               >
-                {mode}
-              </Text>
-            </TouchableOpacity>
-          ))}
+                <Text
+                  style={[
+                    styles.filterChipText,
+                    { color: isLight ? '#000000' : '#eaf4f4' },
+                    selectedFilter === 'All' && {
+                      color: isLight ? '#ffffff' : '#000000',
+                      fontWeight: '600',
+                    },
+                  ]}
+                >
+                  All
+                </Text>
+              </TouchableOpacity>
 
-
+              {gameModes.map((mode, index) => (
+                <TouchableOpacity
+                  key={`${mode}-${index}`}
+                  style={[
+                    styles.filterChip,
+                    { borderColor },
+                    selectedFilter === mode && {
+                      backgroundColor: isLight ? '#000000' : '#eaf4f4',
+                      borderColor,
+                    },
+                  ]}
+                  onPress={() => handleFilterSelect(mode)}
+                >
+                  <Text
+                    style={[
+                      styles.filterChipText,
+                      { color: isLight ? '#000000' : '#eaf4f4' },
+                      selectedFilter === mode && {
+                        color: isLight ? '#ffffff' : '#000000',
+                        fontWeight: '600',
+                      },
+                    ]}
+                  >
+                    {mode}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </>
+          ) : null}
         </ScrollView>
+
+        <Pressable
+          style={[styles.notificationButton, notificationButtonStyle]}
+          onPress={handleNotificationPress}
+          disabled={isTopicLoading}
+          accessibilityRole="button"
+          accessibilityLabel={
+            isCreationSubscribed
+              ? `Turn off ${gameName} game creation notifications`
+              : `Turn on ${gameName} game creation notifications`
+          }
+        >
+          <AppIcon icon={notificationIcon} size={iconSize.md} color="#FFFFFF" />
+        </Pressable>
       </View>
     );
-  }, [gameModes, games?.length, handleFilterSelect, isLight, selectedFilter, showFilters]);
+  }, [
+    gameModes,
+    gameName,
+    handleFilterSelect,
+    handleNotificationPress,
+    isCreationSubscribed,
+    isLight,
+    isTopicLoading,
+    selectedFilter,
+    showFilters,
+  ]);
 
 
   // Memoize the render item function for real match cards
@@ -291,10 +428,35 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   filterChipsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: 8,
     paddingLeft: 10,
+    paddingRight: 10,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  filterScroll: {
+    flex: 1,
+  },
+  filterScrollContent: {
+    alignItems: 'center',
+    paddingRight: spacing.sm,
+  },
+  notificationButton: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  notificationButtonSubscribed: {
+    backgroundColor: '#00bf63',
+    borderWidth: 0,
+  },
+  notificationButtonUnsubscribed: {
+    backgroundColor: '#FF4444',
+    borderWidth: 0,
   },
   filterChip: {
     backgroundColor: 'transparent',

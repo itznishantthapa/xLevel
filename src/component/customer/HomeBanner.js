@@ -1,27 +1,47 @@
-import React, { useCallback } from 'react';
-import { StyleSheet, View, Image, Pressable, Dimensions, Linking } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { StyleSheet, View, Image, Pressable, useWindowDimensions, Linking, Platform } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import { interpolate, Extrapolation } from 'react-native-reanimated';
 import { spacing, radius } from '../../theme/typography';
 
 const BANNER_BORDER_RADIUS = radius.lg;
-const HORIZONTAL_PADDING = spacing.lg;
+const BANNER_HORIZONTAL_PADDING = spacing.lg;
+const BANNER_ASPECT_RATIO = 16 / 9; // width : height
 
-const bannerScaleAnimation = (value) => {
+/** Recommended Canva export size — matches on-screen 16:9 ratio at retina density */
+export const BANNER_DESIGN_WIDTH = 1280;
+export const BANNER_DESIGN_HEIGHT = 720;
+
+export const getBannerDimensions = (screenWidth) => {
+  const width = Math.round(screenWidth - BANNER_HORIZONTAL_PADDING * 2);
+  const height = Math.round(width / BANNER_ASPECT_RATIO);
+  return { width, height };
+};
+
+const roundedClipStyle = {
+  borderRadius: BANNER_BORDER_RADIUS,
+  overflow: 'hidden',
+  ...(Platform.OS === 'ios' ? { borderCurve: 'continuous' } : null),
+};
+
+// Pure crossfade — no translateX, so pages never visually slide.
+// Only opacity (and a whisper of scale) changes as `value` moves from -1 → 0 → 1.
+const fadeAnimation = (value) => {
   'worklet';
 
   const absValue = Math.abs(value);
-  const scale = interpolate(absValue, [0, 0.5], [1, 0.88], Extrapolation.CLAMP);
-  const isActive = absValue < 0.5;
+
+  const opacity = interpolate(absValue, [0, 1], [1, 0], Extrapolation.CLAMP);
+  const scale = interpolate(absValue, [0, 1], [1, 0.96], Extrapolation.CLAMP);
 
   return {
-    transform: [{ scale }],
-    opacity: isActive ? 1 : 0,
-    zIndex: isActive ? 10 : 0,
+    transform: [{ translateX: 0 }, { scale }],
+    opacity,
+    zIndex: absValue < 0.5 ? 10 : 0,
   };
 };
 
-const BannerPage = ({ data, height }) => {
+const BannerPage = ({ data, width, height }) => {
   const handlePress = useCallback(() => {
     if (data?.url) {
       Linking.openURL(data.url).catch((err) => {
@@ -34,21 +54,23 @@ const BannerPage = ({ data, height }) => {
 
   return (
     <Pressable
-      style={[styles.pageContainer, { height }]}
+      style={[styles.pageContainer, { width, height }]}
       onPress={isPressable ? handlePress : undefined}
       disabled={!isPressable}
     >
-      <View style={[styles.imageClip, { height }]}>
+      <View style={[styles.imageClip, roundedClipStyle]} collapsable={false}>
         <Image source={{ uri: data?.image }} style={styles.bannerImage} resizeMode="cover" />
       </View>
     </Pressable>
   );
 };
 
-const HomeBanner = ({ data = [], height }) => {
-  const { width } = Dimensions.get('window');
-  const PAGE_WIDTH = width - HORIZONTAL_PADDING * 2;
-  const PAGE_HEIGHT = typeof height === 'number' ? height : Math.round(PAGE_WIDTH * (9 / 16));
+const HomeBanner = ({ data = [] }) => {
+  const { width: screenWidth } = useWindowDimensions();
+  const { width: bannerWidth, height: bannerHeight } = useMemo(
+    () => getBannerDimensions(screenWidth),
+    [screenWidth],
+  );
 
   if (!data.length) {
     return null;
@@ -56,20 +78,26 @@ const HomeBanner = ({ data = [], height }) => {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.wrapper, { width: PAGE_WIDTH, height: PAGE_HEIGHT }]}>
+      <View style={[styles.wrapper, roundedClipStyle, { width: bannerWidth, height: bannerHeight }]}>
         <Carousel
-          width={PAGE_WIDTH}
-          height={PAGE_HEIGHT}
+          width={bannerWidth}
+          height={bannerHeight}
           autoPlay={data.length > 1}
           autoPlayInterval={5000}
           loop={data.length > 1}
           pagingEnabled
           windowSize={5}
           data={data}
-          style={styles.carousel}
-          scrollAnimationDuration={500}
-          customAnimation={bannerScaleAnimation}
-          renderItem={({ item }) => <BannerPage data={item} height={PAGE_HEIGHT} />}
+          containerStyle={[styles.carouselContainer, roundedClipStyle, { width: bannerWidth, height: bannerHeight }]}
+          style={[styles.carousel, roundedClipStyle, { width: bannerWidth, height: bannerHeight }]}
+          scrollAnimationDuration={700}
+          customAnimation={fadeAnimation}
+          panGestureHandlerProps={{
+            activeOffsetX: [-10, 10],
+          }}
+          renderItem={({ item }) => (
+            <BannerPage data={item} width={bannerWidth} height={bannerHeight} />
+          )}
         />
       </View>
     </View>
@@ -83,27 +111,28 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   wrapper: {
-    borderRadius: BANNER_BORDER_RADIUS,
-    overflow: 'hidden',
+    width: '100%',
+  },
+  carouselContainer: {
+    flex: 1,
   },
   carousel: {
-    borderRadius: BANNER_BORDER_RADIUS,
-    overflow: 'hidden',
+    flex: 1,
   },
   pageContainer: {
+    flex: 1,
+    position: 'absolute', // keeps pages stacked in place so the fade doesn't reveal a gap
     width: '100%',
-    overflow: 'hidden',
-    borderRadius: BANNER_BORDER_RADIUS,
+    height: '100%',
   },
   imageClip: {
+    flex: 1,
     width: '100%',
-    overflow: 'hidden',
-    borderRadius: BANNER_BORDER_RADIUS,
+    height: '100%',
   },
   bannerImage: {
     width: '100%',
     height: '100%',
-    borderRadius: BANNER_BORDER_RADIUS,
   },
 });
 

@@ -10,12 +10,15 @@ import {
   onMessage,
   onNotificationOpenedApp,
   getInitialNotification,
-  onTokenRefresh
+  onTokenRefresh,
+  subscribeToTopic as fcmSubscribeToTopic,
+  unsubscribeFromTopic as fcmUnsubscribeFromTopic,
 } from '@react-native-firebase/messaging';
 
 import notifee, { AndroidImportance, AndroidStyle, EventType } from '@notifee/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationService } from './navigationService';
+import { FCM_USER_TOPIC, shouldRefreshPointsDataOnNotification } from '../constants/notifications';
 
 // ===================================================================
 //  PERMISSION
@@ -75,13 +78,44 @@ export const getFCMToken = async () => {
 };
 
 // ===================================================================
+//  FCM TOPICS
+// ===================================================================
+export const subscribeToTopic = async (topic) => {
+  try {
+    await fcmSubscribeToTopic(getMessaging(getApp()), topic);
+    return true;
+  } catch (error) {
+    if (__DEV__) console.error('Topic subscription error:', error);
+    return false;
+  }
+};
+
+export const unsubscribeFromTopic = async (topic) => {
+  try {
+    await fcmUnsubscribeFromTopic(getMessaging(getApp()), topic);
+    return true;
+  } catch (error) {
+    if (__DEV__) console.error('Topic unsubscription error:', error);
+    return false;
+  }
+};
+
+export const subscribeToBroadcastTopic = async (topic = FCM_USER_TOPIC) => {
+  return subscribeToTopic(topic);
+};
+
+export const unsubscribeFromBroadcastTopic = async (topic = FCM_USER_TOPIC) => {
+  return unsubscribeFromTopic(topic);
+};
+
+// ===================================================================
 //  POST FCM TOKEN
 // ===================================================================
 export const postFCMToken = async () => {
   try {
     const fcmToken = await AsyncStorage.getItem('@fcm_token');
     if (!fcmToken) {
-      throw new Error('No authentication token or FCM token found');
+      throw new Error('No FCM token found');
     }
     const { API } = await import('../api/client');
     const { endpoints } = await import('../api/endpoints');
@@ -90,6 +124,21 @@ export const postFCMToken = async () => {
   } catch (error) {
     if (__DEV__) console.log(error);
     throw error;
+  }
+};
+
+export const syncFCMTokenWithBackend = async () => {
+  try {
+    const token = await getFCMToken();
+    if (!token) return false;
+
+    const { storeFCMToken } = await import('../utils/tokenUtils');
+    await storeFCMToken(token);
+    await postFCMToken();
+    return true;
+  } catch (error) {
+    if (__DEV__) console.log('FCM sync error:', error);
+    return false;
   }
 };
 
@@ -209,15 +258,39 @@ const displayNotification = async (data) => {
 };
 
 // ===================================================================
+//  USER REFRESH (foreground notifications)
+// ===================================================================
+const refreshUserOnForegroundNotification = async (title) => {
+  if (!shouldRefreshPointsDataOnNotification(title)) return;
+
+  try {
+    const { useAuthStore } = await import('../store/authStore');
+    const { isAuthenticated, get_user } = useAuthStore.getState();
+    if (!isAuthenticated) return;
+
+    await get_user();
+
+    const { queryClient } = await import('../lib/queryClient');
+    await queryClient.invalidateQueries({ queryKey: ['points'] });
+  } catch (error) {
+    if (__DEV__) console.log('Foreground notification user refresh error:', error);
+  }
+};
+
+const getNotificationTitle = (message) =>
+  message?.data?.title || message?.notification?.title || '';
+
+// ===================================================================
 //  FOREGROUND LISTENER
 // ===================================================================
 export const setupNotificationListeners = async () => {
   const messaging = getMessaging(getApp());
 
   // Foreground FCM messages
-  const fgUnsub = onMessage(messaging, message =>
-    displayNotification(message.data),
-  );
+  const fgUnsub = onMessage(messaging, async (message) => {
+    await displayNotification(message.data);
+    await refreshUserOnForegroundNotification(getNotificationTitle(message));
+  });
 
   // Foreground Notifee events
   const notifeeUnsub = notifee.onForegroundEvent(({ type, detail }) => {

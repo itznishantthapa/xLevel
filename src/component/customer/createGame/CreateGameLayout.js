@@ -6,13 +6,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Loader from '../../Loader';
 import CoolButton from '../common/CoolButton';
 import AppHeader from '../../../screens/customer/header/AppHeader';
+import StoreScreenHeader from '../store/StoreScreenHeader';
 
 /**
  * CreateGameLayout - Shared layout wrapper for all game creation screens
  * 
  * @param {Object} props
  * @param {React.ReactNode} props.children - Content to render inside the layout
- * @param {string} props.title - Header title
+ * @param {string} props.storeKey - Store theme key for gradient hero header
+ * @param {string} props.gameLogoUrl - Game logo URL for store header badge
  * @param {boolean} props.isLight - Light mode state
  * @param {boolean} props.isLoading - Loading state
  * @param {boolean} props.isFormValid - Whether the form is valid for submission
@@ -25,8 +27,11 @@ import AppHeader from '../../../screens/customer/header/AppHeader';
 const CreateGameLayout = ({
   children,
   title,
+  storeKey,
+  gameLogoUrl,
   isLight,
   isLoading,
+  isFormValid = true,
   onSubmit,
   buttonTitle = "Create Match",
   loaderMessage = "Creating match...",
@@ -53,6 +58,9 @@ const CreateGameLayout = ({
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
           >
+            {storeKey ? (
+              <StoreScreenHeader storeKey={storeKey} gameLogoUrl={gameLogoUrl} />
+            ) : null}
             <View style={[styles.gameCard, {
               backgroundColor: isLight ? "#ffffff" : "#000000",
               borderColor: isLight ? "#333333" : "#dadada",
@@ -69,7 +77,14 @@ const CreateGameLayout = ({
             Platform.OS === "android" && { marginBottom: 10 }
           ]}>
             {aboveButtonContent}
-            <CoolButton title={buttonTitle} handlePress={onSubmit} backgroundColor={buttonBackgroundColor} textColor={buttonTextColor} />
+            <CoolButton
+              title={buttonTitle}
+              handlePress={onSubmit}
+              disableBtn={isLoading}
+              disabled={isLoading || !isFormValid}
+              backgroundColor={buttonBackgroundColor}
+              textColor={buttonTextColor}
+            />
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>

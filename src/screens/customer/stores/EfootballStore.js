@@ -4,10 +4,6 @@ import { useThemeStore } from '../../../store/themeStore'
 import { AppIcon, PointsIcon } from '../../../components/common/AppIcon'
 import {
   CheckmarkCircle01Icon,
-  SecurityCheckIcon,
-  FlashIcon,
-  Shield01Icon,
-  Touch01Icon,
   UserIcon,
   UserArrowLeftRightIcon,
   IdentityCardIcon,
@@ -170,6 +166,8 @@ const EfootballStore = ({ route }) => {
 
   return (
     <CreateGameLayout
+      storeKey="efootball"
+      gameLogoUrl={game?.game_logo_url}
       title="Efootball Store"
       isLight={isLight}
       isLoading={isLoadingStore || isSubmitting}
@@ -177,43 +175,6 @@ const EfootballStore = ({ route }) => {
       buttonTitle={isSubmitting ? "Processing..." : "Confirm Purchase"}
       loaderMessage={isSubmitting ? "Processing" : "Opening"}
     >
-      {/* Game Info Header */}
-      <View style={[styles.gameHeader, { 
-        backgroundColor: isLight ? "#f5f5f5" : "#1a1a1a",
-        borderColor: isLight ? "#cccccc" : "#333333",
-        borderRadius: 12,
-      }]}>
-        <Image source={{ uri: game?.game_logo_url }} style={styles.gameLogo} />
-        <View style={styles.gameInfo}>
-          <Text style={[styles.gameName, { color: isLight ? '#000000' : '#ffffff' }]}>
-            {game?.game_name || 'eFootball'}
-          </Text>
-          <View style={styles.securityBadge}>
-            <AppIcon icon={SecurityCheckIcon} size={iconSize.xs} color="#00bf63" />
-            <Text style={[styles.securityText, { color: isLight ? '#666666' : '#999999' }]}>
-              100% Secure
-            </Text>
-            <Text style={[styles.separator, { color: isLight ? '#cccccc' : '#555555' }]}>|</Text>
-            <AppIcon icon={FlashIcon} size={iconSize.xs} color="#F97316" />
-            <Text style={[styles.securityText, { color: isLight ? '#666666' : '#999999' }]}>
-              Fast
-            </Text>
-            <Text style={[styles.separator, { color: isLight ? '#cccccc' : '#555555' }]}>|</Text>
-            <AppIcon icon={Shield01Icon} size={iconSize.xs} color="#6366F1" />
-            <Text style={[styles.securityText, { color: isLight ? '#666666' : '#999999' }]}>
-              Reliable
-            </Text>
-            <Text style={[styles.separator, { color: isLight ? '#cccccc' : '#555555' }]}>|</Text>
-            <AppIcon icon={Touch01Icon} size={iconSize.xs} color="#14B8A6" />
-            <Text style={[styles.securityText, { color: isLight ? '#666666' : '#999999' }]}>
-              Easy
-            </Text>
-          </View>
-        </View>
-      </View>
-
-      <DividerLine isLight={isLight} />
-
       {/* Screenshot Upload Section */}
       <View style={styles.section}>
         <SectionTitle title="Item Screenshot" isLight={isLight} />
@@ -423,38 +384,6 @@ const EfootballStore = ({ route }) => {
 const styles = StyleSheet.create({
   section: {
     marginBottom: 8,
-  },
-  gameHeader: {
-    flexDirection: 'row',
-    padding: 14,
-    alignItems: 'center',
-    gap: 14,
-    marginBottom: 4,
-  },
-  gameLogo: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-  },
-  gameInfo: {
-    flex: 1,
-  },
-  gameName: {
-    fontSize: 15,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  securityBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  securityText: {
-    fontSize: 11,
-    fontWeight: '500',
-  },
-  separator: {
-    fontSize: 10,
   },
   imagePickerButton: {
     borderWidth: 1,

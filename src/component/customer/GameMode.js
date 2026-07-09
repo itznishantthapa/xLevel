@@ -4,17 +4,11 @@ import {
   GamepadIcon,
   ChevronRightIcon,
   ChevronLeftIcon,
-  StoreIcon,
-  Diamond01Icon,
-  CubeIcon,
-  FootballIcon,
-  Trophy,
 } from "@hugeicons/core-free-icons"
 import AppIcon from "../../components/common/AppIcon"
 import { iconSize } from "../../theme/typography"
 import { useThemeStore } from "../../store/themeStore"
 import { useNavigation } from "@react-navigation/native"
-import { useUtils } from "../../queries/useUtils"
 
 const { width } = Dimensions.get("window")
 const CARD_WIDTH = width - 40
@@ -24,74 +18,6 @@ const CARD_WIDTH = width - 40
 const GameMode = ({ game_mode, handleGameMode, game }) => {
   const navigation = useNavigation();
   const { isLight } = useThemeStore();
-    const {data: utils = []} = useUtils()
-    const isIOSActive = !!utils?.is_ios_active
-
-    const isStoreActive = (() => {
-      if (!game?.game_name) return false
-      const store = utils?.active_store
-      if (!store) return false
-      const name = game.game_name.toLowerCase()
-      if (name.includes('free fire') || name.includes('freefire')) return !!store.is_freefire_store_active
-      if (name.includes('pubg')) return !!store.is_pubg_store_active
-      if (name.includes('efootball')) return !!store.is_efootball_store_active
-      if (name.includes('mlbb')) return !!store.is_mlbb_store_active
-      return false
-    })()
-
-    const showStore = isIOSActive && isStoreActive
-    
-
-  const getStoreButtonText = () => {
-    if (!game?.game_name) return "Game Store";
-    
-    const gameName = game.game_name.toLowerCase();
-    if (gameName.includes('free fire') || gameName.includes('freefire')) {
-      return "FreeFire Store";
-    } else if (gameName.includes('pubg')) {
-      return "PUBG Store";
-    } else if (gameName.includes('efootball')) {
-      return "Efootball Store";
-    } else if (gameName.includes('mlbb')) {
-      return "MLBB Store";
-    } else if (gameName.includes('chess')) {
-      return "Chess Store";
-    }
-    return "Game Store";
-  }
-
-  const getStoreIcon = () => {
-    if (!game?.game_name) return StoreIcon;
-    
-    const gameName = game.game_name.toLowerCase();
-    if (gameName.includes('free fire') || gameName.includes('freefire')) {
-      return Diamond01Icon;
-    } else if (gameName.includes('pubg')) {
-      return CubeIcon;
-    } else if (gameName.includes('efootball')) {
-      return FootballIcon;
-    } else if (gameName.includes('mlbb')) {
-      return Diamond01Icon;
-    } else if (gameName.includes('chess')) {
-      return Trophy;
-    }
-    return StoreIcon;
-  }
-
-  const handleStoreNavigation = () => {
-    if (!game?.game_name) return;
-    
-    const gameName = game.game_name.toLowerCase();
-    if (gameName.includes('free fire') || gameName.includes('freefire')) {
-      navigation.navigate('freeFireStore', { game });
-    } else if (gameName.includes('pubg')) {
-      navigation.navigate('pubgStore', { game });
-    } else if (gameName.includes('efootball')) {
-      navigation.navigate('efootballStore', { game });
-    } else if (gameName.includes('mlbb')) {
-      navigation.navigate('mlbbStore', { game });
-    }
-  }
 
   const renderGameCard = ({ item, index }) => {
     const cardColor = isLight ? '#1a1a1a' : '#ffffff'
@@ -169,77 +95,6 @@ const GameMode = ({ game_mode, handleGameMode, game }) => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContainer}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
-        ListFooterComponent={showStore ? () => (
-          <View style={styles.storeSection}>
-            {/* Store Section Header */}
-            <View style={styles.storeSectionHeader}>
-              <View style={styles.titleRow}>
-                <View style={[styles.titleAccent, { backgroundColor: isLight ? '#1a1a1a' : '#ffffff' }]} />
-                <Text style={[styles.sectionTitle, isLight ? styles.titleLight : styles.titleDark]}>
-                  GAME STORE
-                </Text>
-              </View>
-              <Text style={[styles.subtitle, isLight ? styles.subtitleLight : styles.subtitleDark]}>
-                Get Game Items
-              </Text>
-            </View>
-
-            {/* Store Divider */}
-            <View style={styles.dividerContainer}>
-              <View style={[styles.dividerLine, isLight ? styles.dividerLight : styles.dividerDark]} />
-              <View style={[styles.dividerDiamond, { backgroundColor: isLight ? '#555555' : '#aaaaaa' }]} />
-              <View style={[styles.dividerLine, isLight ? styles.dividerLight : styles.dividerDark]} />
-            </View>
-
-            {/* Store Card */}
-            <Pressable
-              style={[
-                styles.gameCard,
-                isLight ? styles.gameCardLight : styles.gameCardDark
-              ]}
-              onPress={handleStoreNavigation}
-            >
-              {/* Geometric Corner Accents */}
-              <View pointerEvents="none" style={[styles.cornerAccent, styles.cornerTopLeft, { borderColor: isLight ? '#1a1a1a' : '#ffffff' }]} />
-              <View pointerEvents="none" style={[styles.cornerAccent, styles.cornerBottomRight, { borderColor: isLight ? '#555555' : '#aaaaaa' }]} />
-              
-              {/* Left Side - Icon */}
-              <View style={styles.indexContainer}>
-                <AppIcon
-                  icon={getStoreIcon()}
-                  size={iconSize.md}
-                  color={isLight ? '#1a1a1a' : '#ffffff'}
-                />
-                <View style={[styles.indexLine, { backgroundColor: isLight ? '#1a1a1a' : '#ffffff' }]} />
-              </View>
-
-              {/* Center Content */}
-              <View style={styles.cardContent}>
-                <View style={[styles.iconWrapper, isLight ? styles.iconWrapperLight : styles.iconWrapperDark, { borderColor: isLight ? '#1a1a1a' : '#ffffff' }]}>
-                  <AppIcon
-                    icon={StoreIcon}
-                    size={iconSize.lg}
-                    color={isLight ? '#1a1a1a' : '#ffffff'}
-                  />
-                </View>
-                <View style={styles.textContent}>
-                  <Text style={[styles.modeLabel, { color: isLight ? '#1a1a1a' : '#ffffff' }]}>STORE</Text>
-                  <Text style={[styles.modeName, isLight ? styles.nameLight : styles.nameDark]}>{getStoreButtonText()}</Text>
-                </View>
-              </View>
-
-              {/* Right Arrow */}
-              <View style={styles.arrowContainer}>
-                <View style={[styles.arrowLine, { backgroundColor: isLight ? '#1a1a1a' : '#ffffff' }]} />
-                <AppIcon
-                  icon={ChevronRightIcon}
-                  size={iconSize.md}
-                  color={isLight ? '#1a1a1a' : '#ffffff'}
-                />
-              </View>
-            </Pressable>
-          </View>
-        ) : null}
       />
 
       {/* Back Button - Bottom Left */}
@@ -370,18 +225,6 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: 12,
-  },
-  storeSection: {
-    marginTop: 24,
-  },
-  storeSectionHeader: {
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "800",
-    letterSpacing: 2,
-    textTransform: "uppercase",
   },
   gameCard: {
     width: CARD_WIDTH,

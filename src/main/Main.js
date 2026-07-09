@@ -21,16 +21,15 @@ import { useThemeStore } from '../store/themeStore';
 // Services
 import {
   requestNotificationPermission,
-  getFCMToken,
   setupNotificationListeners,
   setupNotificationChannel,
-  postFCMToken
+  syncFCMTokenWithBackend,
+  subscribeToBroadcastTopic,
 } from '../service/notificationService';
+import { resyncGameCreationTopicsFromStorage } from '../utils/gameCreationTopicStorage';
 
 // Utils
-import { checkFCMTokenInStorage, storeFCMToken } from '../utils/tokenUtils';
 import { useBanners } from '../queries/useBanners';
-import { useSocials } from '../queries/useSocials';
 import { useGames } from '../queries/useGames';
 // import { useAppQueries } from '../hooks/useAppQueries';
 import NoConnection from '../screens/NoConnection';
@@ -58,7 +57,6 @@ export default function RootLayout() {
   // ================ Initialize App Prequisites ================
   const { initializeTheme } = useThemeStore();
   useBanners()
-  useSocials()
   useGames()
 
   // Network
@@ -93,7 +91,6 @@ export default function RootLayout() {
       // await initialize_uid();
       // await get_banners();
       // await get_upcoming_games();
-      // await get_socials();
       // await get_game_profiles();
       // await get_user_joined_games();
       // await get_open_challenges();
@@ -155,7 +152,7 @@ export default function RootLayout() {
         const isNotifyInitialized = await initializeNotifications();
 
         if (isNotifyInitialized) {
-          await postFCMToken();
+          await syncFCMTokenWithBackend();
         }
       } else {
         // if user logs out -> cleanup listeners
@@ -186,12 +183,6 @@ export default function RootLayout() {
       // On lower Android (no prompt) -> hasPermission will still be true
       if (!hasPermission) return false;
 
-      // Always try to get token
-      const token = await getFCMToken();
-      if (token) {
-        await storeFCMToken(token);
-      }
-
       // cleanup old listeners
       if (notificationUnsubscribeRef.current) {
         notificationUnsubscribeRef.current();
@@ -201,6 +192,9 @@ export default function RootLayout() {
       notificationUnsubscribeRef.current = await setupNotificationListeners();
 
       await setupNotificationChannel();
+
+      await subscribeToBroadcastTopic();
+      await resyncGameCreationTopicsFromStorage();
 
       return true;
     } catch (error) {

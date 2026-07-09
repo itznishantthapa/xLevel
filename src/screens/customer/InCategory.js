@@ -3,13 +3,10 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import { useAuthStore } from '../../store/authStore';
 import { useThemeStore } from '../../store/themeStore';
-import { handleInstagram, handleMessenger, handleWhatsapp } from '../../service/homeHandler';
 import Header from '../../component/customer/Header';
 import StatsContainer from '../../component/customer/StatsContainer';
 import GameMode from '../../component/customer/GameMode';
-import { useSocials } from '../../queries/useSocials';
 import { useUtils } from '../../queries/useUtils';
-import { useEffect } from 'react';
 
 
 
@@ -23,15 +20,7 @@ const InCategory = ({ route }) => {
   const navigation = useNavigation();
   const { user } = useAuthStore();
   const { isLight } = useThemeStore();
-    const { data: socials = [] } = useSocials()
     const {data: utils = []} = useUtils()
-
-  // Check if iOS is active
-  const isIOSActive = !!utils?.is_ios_active
-
-
-  
-
 
 
 
@@ -99,21 +88,6 @@ const InCategory = ({ route }) => {
 
 
 
-  const handleMessengerWrapper = () => {
-    const messengerData = socials.find((social) => social.name === "Messenger")
-    handleMessenger(messengerData?.url, messengerData?.web_url)
-  }
-
-  const handleInstagramWrapper = () => {
-    const instagramData = socials.find((social) => social.name === "Instagram")
-    handleInstagram(instagramData?.url, instagramData?.web_url)
-  }
-
-  const handleWhatsappWrapper = () => {
-    const whatsappData = socials.find((social) => social.name === "Whatsapp")
-    handleWhatsapp(whatsappData?.url, whatsappData?.web_url)
-  }
-
   const handleHeaderGamePoint = () => {
     // Get active load way settings
     const isDynamicActive = utils?.active_load_way?.is_dynamic_active
@@ -149,9 +123,6 @@ const InCategory = ({ route }) => {
             wallet_balance={user?.wallet_balance}
             profile_picture={user?.profile_picture}
             handleProfile={handleProfile}
-            handleMessenger={handleMessengerWrapper}
-            handleInstagram={handleInstagramWrapper}
-            handleWhatsapp={handleWhatsappWrapper}
             handleHeaderGamePoint={handleHeaderGamePoint}
           />
 
