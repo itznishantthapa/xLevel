@@ -32,3 +32,9 @@
 
 # --- AndroidX ---
 -dontwarn androidx.**
+
+# --- react-native-loader-kit / AVLoadingIndicatorView ---
+# Android resolves loader names via Class.forName (e.g. BallScaleMultipleIndicator).
+# R8 strips unreferenced indicator classes in release, causing fallback to BallPulse.
+-keep class com.wang.avi.** { *; }
+-keep class com.loaderkit.** { *; }
