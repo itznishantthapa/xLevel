@@ -31,10 +31,8 @@ import Toast from 'react-native-simple-toast';
 import { AppIcon } from '../../components/common/AppIcon';
 import CoolButton from '../../component/customer/common/CoolButton';
 import { useNetworkStatus } from '../../hooks/useNetworkStatus';
-import { postFCMToken } from '../../service/notificationService';
 import { useAuthStore } from '../../store/authStore';
 import { useThemeStore } from '../../store/themeStore';
-import { checkFCMTokenInStorage } from '../../utils/tokenUtils';
 import { fontSize, iconSize, radius, spacing } from '../../theme/typography';
 
 const GOOGLE_WEB_CLIENT_ID =
@@ -291,13 +289,6 @@ const Auth = () => {
     setIsSignUp((prev) => !prev);
   };
 
-  const postAuthFCMToken = async () => {
-    const hasToken = await checkFCMTokenInStorage();
-    if (hasToken) {
-      await postFCMToken();
-    }
-  };
-
   const handleLogin = async () => {
     if (!isConnected) {
       Toast.show('No internet connection.', Toast.SHORT);
@@ -313,7 +304,6 @@ const Auth = () => {
       await loginSchema.validate(payload, { abortEarly: false });
       setIsSubmitting(true);
       await login(payload);
-      await postAuthFCMToken();
     } catch (err) {
       if (err instanceof yup.ValidationError) {
         setErrors(mapYupErrors(err));
@@ -352,7 +342,6 @@ const Auth = () => {
         password: payload.password,
         full_name: payload.full_name,
       });
-      await postAuthFCMToken();
     } catch (err) {
       if (err instanceof yup.ValidationError) {
         setErrors(mapYupErrors(err));
@@ -386,7 +375,6 @@ const Auth = () => {
       }
 
       await google_signup({ id_token: userInfo.data.idToken });
-      await postAuthFCMToken();
     } catch (error) {
       if (__DEV__) {
         console.error('Google Sign-In Error:', error);
@@ -430,7 +418,6 @@ const Auth = () => {
         email: credential.email,
         full_name: fullName,
       });
-      await postAuthFCMToken();
     } catch (err) {
       if (__DEV__) {
         console.error('Apple Sign-In Error:', err);

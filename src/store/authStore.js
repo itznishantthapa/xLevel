@@ -176,6 +176,25 @@ export const useAuthStore = create((set) => ({
   },
 
   /**
+   * Syncs FCM push token to local storage and backend
+   * @param {string} token - FCM device token
+   * @returns {Promise<void>}
+   */
+  syncPushToken: async (token) => {
+    if (!token) return;
+
+    try {
+      const { storeFCMToken } = await import('../utils/tokenUtils');
+      await storeFCMToken(token);
+
+      const { postFCMToken } = await import('../service/notificationService');
+      await postFCMToken(token);
+    } catch (error) {
+      if (__DEV__) console.log('syncPushToken error:', error);
+    }
+  },
+
+  /**
    * Handles user logout and resets authentication state
    * @returns {Promise<void>}
    */

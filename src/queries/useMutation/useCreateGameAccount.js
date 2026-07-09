@@ -1,14 +1,17 @@
 import { useMutation } from "@tanstack/react-query";
 import { BuySellAPI } from "../../api/buysellApi";
 import { queryClient } from "../../lib/queryClient";
+import { useAuthStore } from "../../store/authStore";
 
 export const useCreateGameAccount = () => {
   return useMutation({
     mutationFn: (formData) => BuySellAPI.createGameAccount(formData),
 
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       const newAccount = data?.account;
       if (!newAccount) return;
+
+      await useAuthStore.getState().get_user();
 
       // Prepend to cached game accounts
       queryClient.setQueryData(["gameAccounts", 5], (oldData) => {

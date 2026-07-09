@@ -72,7 +72,7 @@ const CreateSell = () => {
   const [selectedGame, setSelectedGame] = useState(null)
   const [sellerPhone, setSellerPhone] = useState('')
   const [price, setPrice] = useState('')
-  const [loginDetailsAcknowledged, setLoginDetailsAcknowledged] = useState(false)
+  const [whatsappAcknowledged, setWhatsappAcknowledged] = useState(false)
 
   const userBalance = user?.wallet_balance ?? 0
 
@@ -137,7 +137,7 @@ const CreateSell = () => {
   }
 
   const handleSubmit = useCallback(async () => {
-    if (!loginDetailsAcknowledged) {
+    if (!whatsappAcknowledged) {
       termsRef.current?.shake()
       return
     }
@@ -147,7 +147,6 @@ const CreateSell = () => {
     const formData = new FormData()
     formData.append('game', selectedGame)
     formData.append('description', description.trim())
-    formData.append('login_method', 'whatsapp')
     formData.append('contact_number', sellerPhone.trim())
     formData.append('price', numericPrice.toString())
 
@@ -167,7 +166,7 @@ const CreateSell = () => {
         Toast.show(error?.message || 'Failed to list account.', Toast.SHORT)
       },
     })
-  }, [loginDetailsAcknowledged, selectedGame, description, sellerPhone, numericPrice, images, createAccount, navigation])
+  }, [whatsappAcknowledged, selectedGame, description, sellerPhone, numericPrice, images, createAccount, navigation])
 
   const renderImageSlot = (index) => {
     const image = images[index]
@@ -217,7 +216,7 @@ const CreateSell = () => {
       {/* Security Notice */}
       <View style={[styles.securityNoticeContainer, { borderColor: isLight ? '#000000' : '#ffffff', backgroundColor: colors.inputBg }]}>
         <Text style={[styles.securityNoticeText, { color: isLight ? '#000000' : '#ffffff' }]}>
-          Login credentials are only accessed by admin for verification. After a successful purchase, login details are securely transferred to the buyer.
+          Admin will contact you on WhatsApp to verify account details and coordinate the sale.
         </Text>
       </View>
 
@@ -374,10 +373,10 @@ const CreateSell = () => {
 
       <TermsAgreement
         ref={termsRef}
-        isAccepted={loginDetailsAcknowledged}
-        onToggle={() => setLoginDetailsAcknowledged((prev) => !prev)}
+        isAccepted={whatsappAcknowledged}
+        onToggle={() => setWhatsappAcknowledged((prev) => !prev)}
         isLight={isLight}
-        text="Admin will message you for your login details to validate the account."
+        text="Admin will message you on WhatsApp to validate the account."
       />
 
     </CreateGameLayout>

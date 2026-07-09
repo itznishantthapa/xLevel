@@ -19,7 +19,7 @@ import { AppIcon } from '../../../components/common/AppIcon';
 import { Notification01Icon, NotificationOff01Icon } from '@hugeicons/core-free-icons';
 import OpenGameCard from '../cards/OpenGameCard';
 import { fontSize, spacing, iconSize } from '../../../theme/typography';
-import { getGameCreationTopic, getGameCreationAlertCopy } from '../../../constants/notifications';
+import { getGameCreationTopic, getGameCreationAlertCopy, getFcmBroadcastTopicForRole } from '../../../constants/notifications';
 import {
   requestNotificationPermission,
   subscribeToTopic,
@@ -27,6 +27,7 @@ import {
   syncFCMTokenWithBackend,
   subscribeToBroadcastTopic,
 } from '../../../service/notificationService';
+import { useAuthStore } from '../../../store/authStore';
 import {
   isGameCreationTopicSubscribed,
   setGameCreationTopicSubscribed,
@@ -71,6 +72,7 @@ const OpenGameList = ({
   showFilters = false,
 }) => {
   const { isLight } = useThemeStore();
+  const userRole = useAuthStore((state) => state.user?.role);
   const { showGameCreationNotificationSheet } = useBottomSheet();
   const endReachedTimeoutRef = React.useRef(null);
   const hasUserScrolledRef = React.useRef(false);
@@ -157,7 +159,7 @@ const OpenGameList = ({
       }
 
       await syncFCMTokenWithBackend();
-      await subscribeToBroadcastTopic();
+      await subscribeToBroadcastTopic(getFcmBroadcastTopicForRole(userRole));
 
       const success = await subscribeToTopic(topic);
       if (!success) {

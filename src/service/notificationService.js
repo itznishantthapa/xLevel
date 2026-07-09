@@ -7,60 +7,45 @@ import {
   getToken,
   AuthorizationStatus,
   registerDeviceForRemoteMessages,
-  onMessage,
-  onNotificationOpenedApp,
-  getInitialNotification,
-  onTokenRefresh,
   subscribeToTopic as fcmSubscribeToTopic,
   unsubscribeFromTopic as fcmUnsubscribeFromTopic,
 } from '@react-native-firebase/messaging';
 
-import notifee, { AndroidImportance, AndroidStyle, EventType } from '@notifee/react-native';
+import notifee, { AndroidImportance, AndroidStyle } from '@notifee/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationService } from './navigationService';
-import { FCM_USER_TOPIC, shouldRefreshPointsDataOnNotification } from '../constants/notifications';
+import { FCM_USER_TOPIC, shouldRefreshPointsDataOnNotification, getGameCreationTitleKey, getGameCreationTopicKey, getCreatorUsernameFromGameCreationBody, isGameCreationNotificationTitle } from '../constants/notifications';
 
 // ===================================================================
 //  PERMISSION
 // ===================================================================
 export const requestNotificationPermission = async () => {
   try {
-    const app = getApp();
-    const messaging = getMessaging(app);
+    const messaging = getMessaging(getApp());
+
+    if (Platform.OS === 'android' && Platform.Version >= 33) {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+      );
+      if (granted !== PermissionsAndroid.RESULTS.GRANTED) return false;
+    }
+
+    if (Platform.OS === 'ios') {
+      const authStatus = await requestPermission(messaging);
+      const hasPermission =
+        authStatus === AuthorizationStatus.AUTHORIZED ||
+        authStatus === AuthorizationStatus.PROVISIONAL;
+
+      if (!hasPermission) return false;
+    }
 
     if (Platform.OS === 'android') {
-      // Check Android version
-      if (Platform.Version >= 33) {
-        // Android 13+ requires POST_NOTIFICATIONS
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
-        );
-        if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-          console.log('Notification permission denied');
-          return false;
-        }
-      }
-      // Android < 13 → skip asking, just register
       await registerDeviceForRemoteMessages(messaging);
-      return true;
     }
 
-    // iOS → ask for permission
-    const authStatus = await requestPermission(messaging);
-    const enabled =
-      authStatus === AuthorizationStatus.AUTHORIZED ||
-      authStatus === AuthorizationStatus.PROVISIONAL;
-
-    if (!enabled) {
-      console.log('Notification permission denied (iOS)');
-      return false;
-    }
-
-    // iOS auto-registers for remote notifications by default in RNFB unless disabled in firebase.json.
-    // Avoid manual registration to prevent warning logs on iOS.
     return true;
   } catch (error) {
-    console.log('Permission error:', error);
+    if (__DEV__) console.error('Permission error:', error);
     return false;
   }
 };
@@ -70,9 +55,10 @@ export const requestNotificationPermission = async () => {
 // ===================================================================
 export const getFCMToken = async () => {
   try {
-    const messaging = getMessaging(getApp());
-    return await getToken(messaging);
-  } catch {
+    const token = await getToken(getMessaging(getApp()));
+    return token;
+  } catch (error) {
+    if (__DEV__) console.error('FCM token error:', error);
     return null;
   }
 };
@@ -83,9 +69,16 @@ export const getFCMToken = async () => {
 export const subscribeToTopic = async (topic) => {
   try {
     await fcmSubscribeToTopic(getMessaging(getApp()), topic);
+
+    if (topic === FCM_USER_TOPIC) {
+      console.log('level_users notification is subscribed');
+    } else {
+      console.log(`${topic} notification is subscribed`);
+    }
+
     return true;
   } catch (error) {
-    if (__DEV__) console.error('Topic subscription error:', error);
+    if (__DEV__) console.error(`Topic subscription error (${topic}):`, error);
     return false;
   }
 };
@@ -95,7 +88,7 @@ export const unsubscribeFromTopic = async (topic) => {
     await fcmUnsubscribeFromTopic(getMessaging(getApp()), topic);
     return true;
   } catch (error) {
-    if (__DEV__) console.error('Topic unsubscription error:', error);
+    if (__DEV__) console.error(`Topic unsubscription error (${topic}):`, error);
     return false;
   }
 };
@@ -111,35 +104,30 @@ export const unsubscribeFromBroadcastTopic = async (topic = FCM_USER_TOPIC) => {
 // ===================================================================
 //  POST FCM TOKEN
 // ===================================================================
-export const postFCMToken = async () => {
+export const postFCMToken = async (tokenOverride) => {
   try {
-    const fcmToken = await AsyncStorage.getItem('@fcm_token');
+    const fcmToken = tokenOverride || (await AsyncStorage.getItem('@fcm_token'));
     if (!fcmToken) {
       throw new Error('No FCM token found');
     }
     const { API } = await import('../api/client');
     const { endpoints } = await import('../api/endpoints');
     const response = await API.post(endpoints.postFCMToken, { token: fcmToken });
+    console.log('FCM token synced to backend');
     return response.data;
   } catch (error) {
-    if (__DEV__) console.log(error);
+    if (__DEV__) console.log('postFCMToken error:', error);
     throw error;
   }
 };
 
 export const syncFCMTokenWithBackend = async () => {
-  try {
-    const token = await getFCMToken();
-    if (!token) return false;
+  const token = await getFCMToken();
+  if (!token) return false;
 
-    const { storeFCMToken } = await import('../utils/tokenUtils');
-    await storeFCMToken(token);
-    await postFCMToken();
-    return true;
-  } catch (error) {
-    if (__DEV__) console.log('FCM sync error:', error);
-    return false;
-  }
+  const { useAuthStore } = await import('../store/authStore');
+  await useAuthStore.getState().syncPushToken(token);
+  return true;
 };
 
 // ===================================================================
@@ -164,8 +152,8 @@ export const getUserNotificationsOnLoads = async (offset = 0, limit = 7) => {
   try {
     const { API } = await import('../api/client');
     const { endpoints } = await import('../api/endpoints');
-    const response = await API.get(endpoints.getUserNotificationsOnLoads, { 
-      params: { offset, limit } 
+    const response = await API.get(endpoints.getUserNotificationsOnLoads, {
+      params: { offset, limit },
     });
     return response.data;
   } catch (error) {
@@ -180,8 +168,7 @@ export const getUserNotificationsOnLoads = async (offset = 0, limit = 7) => {
 export const handleNotificationPress = async (data) => {
   if (!data) return;
 
-  // Add a small delay to ensure app is fully initialized
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 500));
 
   if (data.screen) {
     NavigationService.navigate(data.screen, data);
@@ -217,15 +204,11 @@ const displayNotification = async (data) => {
 
   const channelId = `${data.importance || 'high'}_importance`;
 
-  // Build android config dynamically
   const androidConfig = {
     channelId,
     smallIcon: 'ic_notification',
     pressAction: { id: 'default' },
     sound: 'custom_sound',
-    // Enable expandable notifications.
-    // - If `data.bigImage` exists, show a banner image (BigPicture style)
-    // - Otherwise fall back to BigText for long bodies
     style: data.bigImage
       ? {
           type: AndroidStyle.BIGPICTURE,
@@ -237,7 +220,6 @@ const displayNotification = async (data) => {
         },
   };
 
-  // Only add largeIcon if it exists
   if (data.largeIcon) {
     androidConfig.largeIcon = data.largeIcon;
   }
@@ -280,67 +262,49 @@ const refreshUserOnForegroundNotification = async (title) => {
 const getNotificationTitle = (message) =>
   message?.data?.title || message?.notification?.title || '';
 
-// ===================================================================
-//  FOREGROUND LISTENER
-// ===================================================================
-export const setupNotificationListeners = async () => {
-  const messaging = getMessaging(getApp());
+const getNotificationBody = (message) =>
+  message?.data?.body || message?.notification?.body || '';
 
-  // Foreground FCM messages
-  const fgUnsub = onMessage(messaging, async (message) => {
-    await displayNotification(message.data);
-    await refreshUserOnForegroundNotification(getNotificationTitle(message));
-  });
+const shouldSkipOwnGameCreationNotification = async (title, body) => {
+  if (!isGameCreationNotificationTitle(title)) return false;
 
-  // Foreground Notifee events
-  const notifeeUnsub = notifee.onForegroundEvent(({ type, detail }) => {
-    if (type === EventType.PRESS) {
-      handleNotificationPress(detail.notification?.data);
-    }
-  });
+  const gameKey = getGameCreationTitleKey(title);
+  if (!gameKey) return false;
 
-  // Background → App open (app in background, tapped notification)
-  const openUnsub = onNotificationOpenedApp(messaging, message => {
-    handleNotificationPress(message.data);
-  });
+  const notifiedUsername = getCreatorUsernameFromGameCreationBody(body);
+  if (!notifiedUsername) return false;
 
-  // Check both Firebase and Notifee for initial notification (app completely closed)
-  const initial = await getInitialNotification(messaging);
+  try {
+    const { useAuthStore } = await import('../store/authStore');
+    const user = useAuthStore.getState().user;
+    if (!user?.id) return false;
 
-  
-  if (initial?.data) {
-    handleNotificationPress(initial.data);
-  } else {
-    // Also check Notifee's initial notification
-    const notifeeInitial = await notifee.getInitialNotification();
-    
-    if (notifeeInitial?.notification?.data) {
-      handleNotificationPress(notifeeInitial.notification.data);
-    }
+    const { queryClient } = await import('../lib/queryClient');
+    const profiles = queryClient.getQueryData(['gameProfiles', user.id]) ?? [];
+    const ownProfile = profiles.find(
+      (profile) => getGameCreationTopicKey(profile?.game_name) === gameKey,
+    );
+    const ownUsername = ownProfile?.game_username?.trim();
+
+    if (!ownUsername) return false;
+
+    return notifiedUsername.toLowerCase() === ownUsername.toLowerCase();
+  } catch (error) {
+    if (__DEV__) console.log('Own game creation notification check error:', error);
+    return false;
+  }
+};
+
+export const handleForegroundMessage = async (message) => {
+  const title = getNotificationTitle(message);
+  const body = getNotificationBody(message);
+
+  if (await shouldSkipOwnGameCreationNotification(title, body)) {
+    return;
   }
 
-  // Listen for FCM token rotation and sync with backend
-  const tokenUnsub = onTokenRefresh(messaging, async (newToken) => {
-    try {
-      const prev = await AsyncStorage.getItem('@fcm_token');
-      if (prev === newToken) return;
-      await AsyncStorage.setItem('@fcm_token', newToken);
-
-      // Post the updated token to backend
-      const { API } = await import('../api/client');
-      const { endpoints } = await import('../api/endpoints');
-      await API.post(endpoints.postFCMToken, { token: newToken });
-    } catch (err) {
-      if (__DEV__) console.log('FCM onTokenRefresh error:', err);
-    }
-  });
-
-  return () => {
-    fgUnsub();
-    notifeeUnsub();
-    openUnsub();
-    tokenUnsub();
-  };
+  await displayNotification(message?.data);
+  await refreshUserOnForegroundNotification(title);
 };
 
 // ===================================================================

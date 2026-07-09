@@ -27,7 +27,7 @@ import MatchList from '../../component/matchcard/matchList/MatchList'
  */
 const Match = () => {
   const { isLight } = useThemeStore()
-  const { user } = useAuthStore()
+  const { user, get_user } = useAuthStore()
   const navigation = useNavigation()
   const { isConnected } = useNetworkStatus();
   // Derived list comes from the query; no local duplication
@@ -73,11 +73,12 @@ const Match = () => {
     try {
       await ChallengeAPI.deleteChallenge({ challenge_id: challengeId });
       await refetch();
+      await get_user();
       Toast.show('Challenge cancelled.', Toast.SHORT);
     } catch (error) {
       Toast.show(error?.message || 'Unable to cancel challenge', Toast.SHORT);
     }
-  }, [refetch]);
+  }, [refetch, get_user]);
 
 
   //============ Handle Leave Challenge ============  
@@ -85,11 +86,12 @@ const Match = () => {
     try {
       await ChallengeAPI.leaveChallenge({ challenge_id: challengeId });
       await refetch();
+      await get_user();
       Toast.show('Challenge left.', Toast.SHORT);
     } catch (error) {
        Toast.show(error?.message || 'Unable to leave challenge', Toast.SHORT);
     }
-  }, [refetch])
+  }, [refetch, get_user])
 
 
 

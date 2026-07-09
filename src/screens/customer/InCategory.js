@@ -1,6 +1,7 @@
 import { StatusBar, StyleSheet, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useFocusEffect } from '@react-navigation/native'
+import { useCallback } from 'react'
 import { useAuthStore } from '../../store/authStore';
 import { useThemeStore } from '../../store/themeStore';
 import Header from '../../component/customer/Header';
@@ -18,9 +19,15 @@ import { useUtils } from '../../queries/useUtils';
 const InCategory = ({ route }) => {
   const { game } = route.params;   
   const navigation = useNavigation();
-  const { user } = useAuthStore();
+  const { user, get_user } = useAuthStore();
   const { isLight } = useThemeStore();
     const {data: utils = []} = useUtils()
+
+  useFocusEffect(
+    useCallback(() => {
+      get_user();
+    }, [get_user]),
+  );
 
 
 
@@ -133,6 +140,9 @@ const InCategory = ({ route }) => {
             handleRedeem={() => navigation.navigate('pointsOut')}
             handleTournament={() => navigation.navigate('userTournament')}
             handleMatches={() => navigation.navigate('match')}
+            isTournamentActive={!!user?.is_tournament_active}
+            isMatchActive={!!user?.is_match_active}
+            isRequestActive={!!user?.is_request_active}
           />
 
           {/* Game Mode Selection */}

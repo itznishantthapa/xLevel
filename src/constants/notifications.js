@@ -1,4 +1,8 @@
 export const FCM_USER_TOPIC = 'level_users';
+export const FCM_ADMIN_TOPIC = 'level_admins';
+
+export const getFcmBroadcastTopicForRole = (role) =>
+  role === 'admin' ? FCM_ADMIN_TOPIC : FCM_USER_TOPIC;
 
 export const POINTS_REFRESH_NOTIFICATION_TITLES = [
   'Withdrawal Rejected',
@@ -9,6 +13,36 @@ export const POINTS_REFRESH_NOTIFICATION_TITLES = [
 
 export const shouldRefreshPointsDataOnNotification = (title = '') =>
   POINTS_REFRESH_NOTIFICATION_TITLES.includes(String(title).trim());
+
+export const GAME_CREATION_TITLES = {
+  freefire: 'Free Fire Match 🎯',
+  pubg: 'PUBG Match 🎯',
+  efootball: 'Efootball Match 🎯',
+  mlbb: 'MLBB Match 🎯',
+};
+
+export const isGameCreationNotificationTitle = (title = '') => {
+  const normalized = String(title).trim();
+  return Object.values(GAME_CREATION_TITLES).includes(normalized);
+};
+
+export const getGameCreationTitleKey = (title = '') => {
+  const normalized = String(title).trim();
+  const entry = Object.entries(GAME_CREATION_TITLES).find(([, value]) => value === normalized);
+  return entry?.[0] ?? null;
+};
+
+export const getCreatorUsernameFromGameCreationBody = (body = '') => {
+  const trimmed = String(body).trim();
+  const marker = ' just created';
+  const markerIndex = trimmed.toLowerCase().indexOf(marker);
+
+  if (markerIndex !== -1) {
+    return trimmed.slice(0, markerIndex).trim();
+  }
+
+  return trimmed.split(/\s+/)[0] || '';
+};
 
 export const GAME_CREATION_TOPICS = {
   freefire: 'freefirecreation',
@@ -65,7 +99,7 @@ export const getGameCreationAlertCopy = (gameName = '', isSubscribed = false) =>
     alertTitle: copy.alertTitle,
     message: isSubscribed
       ? `You will no longer receive notifications when someone creates a ${copy.matchName} match.`
-      : `You will received notification when someone creates the ${copy.matchName} match.`,
+      : `You will get notification when someone creates the ${copy.matchName} match.`,
     confirmText: isSubscribed ? 'Turn Off' : 'Turn On',
     cancelText: 'Cancel',
     isDestructive: isSubscribed,
