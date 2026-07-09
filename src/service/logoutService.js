@@ -3,6 +3,39 @@ import { persister, queryClient } from '../lib/queryClient';
 import { checkFCMTokenInStorage } from '../utils/tokenUtils';
 import { deleteFCMToken } from './notificationService';
 
+let isHandlingSessionExpiry = false;
+
+/**
+ * Clears app state and sends the user back to login when the session expires.
+ */
+export const handleSessionExpired = async () => {
+  if (isHandlingSessionExpiry) return;
+
+  isHandlingSessionExpiry = true;
+  try {
+    const { useAuthStore } = await import('../store/authStore');
+    const { isAuthenticated } = useAuthStore.getState();
+
+    if (!isAuthenticated) return;
+
+    await performLogout(false);
+
+    useAuthStore.setState({
+      user: null,
+      isAdmin: false,
+      isCustomer: false,
+      isAuthenticated: false,
+      isInitialized: true,
+    });
+  } catch (error) {
+    if (__DEV__) {
+      console.log('handleSessionExpired error:', error);
+    }
+  } finally {
+    isHandlingSessionExpiry = false;
+  }
+};
+
 /**
  * Centralized logout function that handles all cleanup tasks
  * - Clears all React Query cache and resets queries

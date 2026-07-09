@@ -6,7 +6,7 @@ import LoaderKitView from "react-native-loader-kit"
 import { useThemeStore } from "../../../store/themeStore"
 
 
-const CoolButton = ({ handlePress, disableBtn = false, disabled = false, title, backgroundColor, textColor }) => {
+const CoolButton = ({ handlePress, disableBtn = false, disabled = false, title, backgroundColor, textColor, style, textStyle }) => {
   const { isLight } = useThemeStore()
   const isDisabled = disableBtn || disabled
 
@@ -59,14 +59,14 @@ const CoolButton = ({ handlePress, disableBtn = false, disabled = false, title, 
   }, [disableBtn])
 
   return (
-    <View >
+    <View style={styles.buttonWrap}>
       <Pressable
-        style={[styles.submitButton, { backgroundColor: buttonBgColor }]}
+        style={[styles.submitButton, { backgroundColor: buttonBgColor }, style]}
         onPress={handlePress}
         disabled={isDisabled}
       >
         <Animated.View style={[styles.contentContainer, { opacity: textOpacity }]}>
-          <Text style={[styles.submitButtonText, { color: buttonTextColor }]}>{title}</Text>
+          <Text style={[styles.submitButtonText, { color: buttonTextColor }, textStyle]}>{title}</Text>
         </Animated.View>
 
         <Animated.View
@@ -93,7 +93,9 @@ const CoolButton = ({ handlePress, disableBtn = false, disabled = false, title, 
 export default CoolButton
 
 const styles = StyleSheet.create({
-
+  buttonWrap: {
+    width: '100%',
+  },
   submitButton: {
     paddingVertical: 22,
     borderRadius: 10,

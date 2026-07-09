@@ -44,6 +44,10 @@ const EMOJI_REGEX = /\p{Extended_Pictographic}/u;
 const INVALID_CREDENTIALS_MESSAGE = 'Invalid email or password';
 const EMAIL_TAKEN_MESSAGE = 'A user with this email already exists.';
 
+const AUTH_CONTROL_HEIGHT = 48;
+const AUTH_CONTROL_RADIUS = radius.lg;
+const AUTH_CONTROL_GAP = spacing.md;
+
 const emailSchema = yup
   .string()
   .trim()
@@ -118,12 +122,12 @@ const FloatingInput = ({
 
   const labelTop = animation.interpolate({
     inputRange: [0, 1],
-    outputRange: [17, -10],
+    outputRange: [12, -9],
   });
 
   const labelFontSize = animation.interpolate({
     inputRange: [0, 1],
-    outputRange: [15, 11],
+    outputRange: [14, 11],
   });
 
   return (
@@ -138,7 +142,7 @@ const FloatingInput = ({
       >
         <AppIcon
           icon={icon}
-          size={iconSize.lg}
+          size={iconSize.md}
           color={isFocused ? colors.text : colors.textMuted}
           strokeWidth={1.5}
         />
@@ -180,7 +184,7 @@ const FloatingInput = ({
           <Pressable onPress={onToggleSecure} hitSlop={8} style={styles.eyeButton}>
             <AppIcon
               icon={secureVisible ? EyeIcon : EyeOffIcon}
-              size={iconSize.lg}
+              size={iconSize.md}
               color={colors.textMuted}
               strokeWidth={1.5}
             />
@@ -189,6 +193,18 @@ const FloatingInput = ({
       </View>
 
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
+    </View>
+  );
+};
+
+const AuthBackground = ({ isLight }) => {
+  if (!isLight) return null;
+
+  return (
+    <View style={styles.backgroundDecor} pointerEvents="none">
+      <View style={[styles.colorBlob, styles.blobGreen]} />
+      <View style={[styles.colorBlob, styles.blobPurple]} />
+      <View style={[styles.colorBlob, styles.blobRed]} />
     </View>
   );
 };
@@ -448,7 +464,7 @@ const Auth = () => {
       style={[
         styles.oauthButton,
         {
-          borderColor: colors.oauthBorder,
+          borderColor: colors.border,
           backgroundColor: colors.background,
         },
       ]}
@@ -459,7 +475,7 @@ const Auth = () => {
         {loading ? (
           <ActivityIndicator size="small" color={colors.text} />
         ) : (
-          <AppIcon icon={icon} size={iconSize.lg} color={colors.text} />
+          <AppIcon icon={icon} size={iconSize.md} color={colors.text} />
         )}
         <Text style={[styles.oauthButtonText, { color: colors.text }]}>{label}</Text>
       </View>
@@ -474,6 +490,7 @@ const Auth = () => {
         barStyle={isLight ? 'dark-content' : 'light-content'}
       />
       <View style={[styles.screen, { backgroundColor: colors.background }]}>
+        <AuthBackground isLight={isLight} />
         <KeyboardAvoidingView
           style={styles.flex}
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -515,7 +532,7 @@ const Auth = () => {
               </Text>
             </View>
 
-            <View style={styles.form}>
+            <View style={styles.authControls}>
               <FloatingInput
                 label="Email"
                 value={form.email}
@@ -557,23 +574,21 @@ const Auth = () => {
                 />
               ) : null}
 
-              <View style={styles.submitWrap}>
-                <CoolButton
-                  title={isSignUp ? 'Sign Up' : 'Log In'}
-                  handlePress={handleSubmit}
-                  disableBtn={isSubmitting}
-                  disabled={isSubmitting || isOAuthBusy}
-                />
+              <CoolButton
+                title={isSignUp ? 'Sign Up' : 'Log In'}
+                handlePress={handleSubmit}
+                disableBtn={isSubmitting}
+                disabled={isSubmitting || isOAuthBusy}
+                style={styles.primaryButton}
+                textStyle={styles.primaryButtonText}
+              />
+
+              <View style={styles.dividerRow}>
+                <View style={[styles.dividerLine, { backgroundColor: colors.divider }]} />
+                <Text style={[styles.dividerText, { color: colors.textMuted }]}>or</Text>
+                <View style={[styles.dividerLine, { backgroundColor: colors.divider }]} />
               </View>
-            </View>
 
-            <View style={styles.dividerRow}>
-              <View style={[styles.dividerLine, { backgroundColor: colors.divider }]} />
-              <Text style={[styles.dividerText, { color: colors.textMuted }]}>or</Text>
-              <View style={[styles.dividerLine, { backgroundColor: colors.divider }]} />
-            </View>
-
-            <View style={styles.oauthSection}>
               {Platform.OS === 'android'
                 ? renderOAuthButton({
                     id: 'google',
@@ -630,6 +645,35 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
   },
+  backgroundDecor: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: 'hidden',
+  },
+  colorBlob: {
+    position: 'absolute',
+    borderRadius: 999,
+  },
+  blobGreen: {
+    width: 180,
+    height: 180,
+    top: -40,
+    right: -50,
+    backgroundColor: 'rgba(0, 191, 99, 0.14)',
+  },
+  blobPurple: {
+    width: 140,
+    height: 140,
+    top: 120,
+    left: -50,
+    backgroundColor: 'rgba(99, 102, 241, 0.12)',
+  },
+  blobRed: {
+    width: 120,
+    height: 120,
+    bottom: 80,
+    right: -30,
+    backgroundColor: 'rgba(239, 68, 68, 0.16)',
+  },
   flex: {
     flex: 1,
   },
@@ -670,8 +714,8 @@ const styles = StyleSheet.create({
     fontSize: fontSize.base,
     lineHeight: 21,
   },
-  form: {
-    gap: spacing.lg,
+  authControls: {
+    gap: AUTH_CONTROL_GAP,
   },
   inputGroup: {
     gap: spacing.xs,
@@ -679,11 +723,11 @@ const styles = StyleSheet.create({
   inputShell: {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: 58,
+    height: AUTH_CONTROL_HEIGHT,
     borderWidth: 1.5,
-    borderRadius: spacing.lg,
+    borderRadius: AUTH_CONTROL_RADIUS,
     paddingHorizontal: spacing.md,
-    gap: spacing.md,
+    gap: spacing.sm,
   },
   inputShellError: {
     borderColor: '#FF4444',
@@ -691,7 +735,7 @@ const styles = StyleSheet.create({
   inputBody: {
     flex: 1,
     justifyContent: 'center',
-    minHeight: 52,
+    height: '100%',
   },
   floatingLabel: {
     position: 'absolute',
@@ -701,10 +745,10 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    paddingTop: spacing.md,
+    paddingTop: spacing.sm,
     paddingBottom: 0,
     fontSize: fontSize.md,
-    minHeight: 44,
+    lineHeight: fontSize.md + 2,
   },
   eyeButton: {
     alignItems: 'center',
@@ -719,8 +763,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
-    marginTop: spacing['2xl'],
-    marginBottom: spacing.lg,
+    paddingVertical: spacing.xs,
   },
   dividerLine: {
     flex: 1,
@@ -730,23 +773,21 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
     fontWeight: '500',
   },
-  oauthSection: {
-    gap: spacing.md,
-  },
   oauthButton: {
-    borderRadius: spacing.lg,
+    height: AUTH_CONTROL_HEIGHT,
+    borderRadius: AUTH_CONTROL_RADIUS,
     borderWidth: 1.5,
-    paddingVertical: spacing.md,
     width: '100%',
+    justifyContent: 'center',
   },
   oauthButtonContent: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: spacing.md,
+    gap: spacing.sm,
   },
   oauthButtonText: {
-    fontSize: fontSize.lg,
+    fontSize: fontSize.md,
     fontWeight: '600',
   },
   footer: {
@@ -776,8 +817,15 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textDecorationLine: 'underline',
   },
-  submitWrap: {
-    marginTop: spacing.sm,
+  primaryButton: {
+    width: '100%',
+    height: AUTH_CONTROL_HEIGHT,
+    paddingVertical: 0,
+    borderRadius: AUTH_CONTROL_RADIUS,
+  },
+  primaryButtonText: {
+    fontSize: fontSize.md,
+    fontWeight: '600',
   },
 });
 

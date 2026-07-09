@@ -4,6 +4,14 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { endpoints } from "./endpoints";
+import { handleSessionExpired } from "../service/logoutService";
+
+const SESSION_EXPIRED_MESSAGE = "Session expired. Please log in again.";
+
+const rejectSessionExpired = async () => {
+  await handleSessionExpired();
+  return Promise.reject({ message: SESSION_EXPIRED_MESSAGE });
+};
 
 // Central API client
 export const API = axios.create({
@@ -84,64 +92,43 @@ API.interceptors.response.use(
     });
 
     // Handle 401 and try refresh (but not for auth endpoints)
-    if (
-      error.response?.status === 401 &&
-      !originalRequest._retry &&
-      !isAuthEndpoint
-    ) {
-      originalRequest._retry = true;
-      try {
-        // Check if refresh token exists
-        const refresh = await AsyncStorage.getItem("@refresh_token");
-        if (!refresh) {
-          return Promise.reject({ message: "Session expired. Please log in again." });
-        }
-        
-        // Missing endpoint for refreshing token in endpoints.js
-        if (!endpoints.refreshToken) {
-          return Promise.reject({ message: "Authentication configuration error. Please contact support." });
-        }
-        
-        // Use the correct endpoint for token refresh
-        const { data } = await axios.post(`${API.defaults.baseURL}${endpoints.refreshToken}`, { refresh });
-        // Only log in development environments
-        if (__DEV__) {
-          console.log('Token refresh successful');
-        }
-        
-        if (!data.access) {
-          return Promise.reject({ message: "Authentication failed." });
-        }
-        
-        // Store new access token
-        await AsyncStorage.setItem("@access_token", data.access);
-        
-        // Update default headers
-        API.defaults.headers.Authorization = `Bearer ${data.access}`;
-        
-        // Update the original request
-        originalRequest.headers.Authorization = `Bearer ${data.access}`;
-        
-        // Retry the original request
-        return API(originalRequest);
-      } catch (refreshErr) {
-        // Log error but don't expose details to the user
-        if (__DEV__) {
-          console.error('Token refresh failed:', refreshErr);
-        }
-        
-        // Silently clear tokens and perform logout
+    if (error.response?.status === 401 && !isAuthEndpoint) {
+      if (!originalRequest._retry) {
+        originalRequest._retry = true;
         try {
-          await AsyncStorage.multiRemove(["@access_token", "@refresh_token"]);
-        } catch (storageErr) {
-          if (__DEV__) {
-            console.error('Failed to clear auth tokens from storage:', storageErr);
+          const refresh = await AsyncStorage.getItem("@refresh_token");
+          if (!refresh) {
+            return rejectSessionExpired();
           }
+
+          if (!endpoints.refreshToken) {
+            return rejectSessionExpired();
+          }
+
+          const { data } = await axios.post(`${API.defaults.baseURL}${endpoints.refreshToken}`, { refresh });
+          if (__DEV__) {
+            console.log('Token refresh successful');
+          }
+
+          if (!data.access) {
+            return rejectSessionExpired();
+          }
+
+          await AsyncStorage.setItem("@access_token", data.access);
+          API.defaults.headers.Authorization = `Bearer ${data.access}`;
+          originalRequest.headers.Authorization = `Bearer ${data.access}`;
+
+          return API(originalRequest);
+        } catch (refreshErr) {
+          if (__DEV__) {
+            console.error('Token refresh failed:', refreshErr);
+          }
+
+          return rejectSessionExpired();
         }
-        
-        // Return user-friendly message without error details
-        return Promise.reject({ message: "Session expired. Please log in again." });
       }
+
+      return rejectSessionExpired();
     }
 
     // Your error handling messages

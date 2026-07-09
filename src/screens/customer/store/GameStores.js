@@ -131,15 +131,8 @@ const StoreGameCard = ({ game, config, layout, onPress, closed = false, colors }
             },
           ]}
         >
-          <View style={styles.closedImageWrap}>
-            <Image
-              source={storeHeroImages[config.heroKey]}
-              style={styles.closedHeroImage}
-              resizeMode="contain"
-            />
-            <View style={styles.closedOverlay}>
-              <AppIcon icon={UnavailableIcon} size={iconSize.xl} color={colors.textTertiary} />
-            </View>
+          <View style={styles.closedIconWrap}>
+            <AppIcon icon={UnavailableIcon} size={iconSize.xl + 8} color={colors.textTertiary} />
           </View>
 
           <View style={[styles.cardFooter, { borderTopColor: colors.border }]}>
@@ -509,22 +502,11 @@ const styles = StyleSheet.create({
   closedCard: {
     borderWidth: 1.5,
   },
-  closedImageWrap: {
+  closedIconWrap: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     padding: spacing.sm,
-    opacity: 0.45,
-  },
-  closedHeroImage: {
-    width: '88%',
-    height: '88%',
-  },
-  closedOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.08)',
   },
   closedCardTitle: {
     fontSize: fontSize.sm,
