@@ -12,10 +12,10 @@ import { useThemeStore } from '../../store/themeStore';
 import { fontSize, spacing, radius, iconSize, lineHeight } from '../../theme/typography';
 
 const STAT_ITEMS = [
-  { id: 'requests', name: 'Request', icon: ReceiptDollarIcon, color: '#16A34A', activeKey: 'requests' },
+  { id: 'requests', name: 'Request', icon: ReceiptDollarIcon, color: '#16A34A', pulseColor: '#059669', activeKey: 'requests' },
   { id: 'redeem', name: 'Redeem', icon: GiftCard02Icon, color: '#F97316' },
-  { id: 'tournament', name: 'Tournaments', icon: Trophy, color: '#6366F1', activeKey: 'tournament' },
-  { id: 'matches', name: 'My Match', icon: GamepadIcon, color: '#ff2c2c', activeKey: 'matches' },
+  { id: 'tournament', name: 'Tournaments', icon: Trophy, color: '#6366F1', pulseColor: '#4F46E5', activeKey: 'tournament' },
+  { id: 'matches', name: 'My Match', icon: GamepadIcon, color: '#ff2c2c', pulseColor: '#EF4444', activeKey: 'matches' },
 ];
 
 const ActiveLoader = ({ color }) => (
@@ -24,7 +24,7 @@ const ActiveLoader = ({ color }) => (
       style={styles.activeLoaderKit}
       name="BallScaleMultiple"
       color={color}
-      animationSpeedMultiplier={1.0}
+      animationSpeedMultiplier={1.2}
     />
   </View>
 );
@@ -68,7 +68,7 @@ const StatsContainer = ({
             style={[styles.statCard, cardThemeStyle]}
             onPress={() => handlers[item.id]?.()}
           >
-            {isActive ? <ActiveLoader color={item.color} /> : null}
+            {isActive ? <ActiveLoader color={item.pulseColor || item.color} /> : null}
 
             <View style={[styles.iconCircle, { backgroundColor: item.color }]}>
               <AppIcon icon={item.icon} size={iconSize.lg} color="#FFFFFF" strokeWidth={2} />

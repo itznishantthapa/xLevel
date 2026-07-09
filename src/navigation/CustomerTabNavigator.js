@@ -1,7 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, Text, View, Pressable, Platform } from 'react-native';
-import { useSafeAreaInsets, initialWindowMetrics } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppIcon } from '../components/common/AppIcon';
 import {
   Home01Icon,
@@ -39,15 +39,6 @@ const TAB_CONFIG = [
 
 const TAB_BAR_CONTENT_HEIGHT = 52;
 
-function getBottomInset(insets) {
-  const measuredInset = Math.max(
-    insets.bottom,
-    initialWindowMetrics?.insets?.bottom ?? 0,
-  );
-  const minimumInset = Platform.OS === 'android' ? 22 : spacing.sm;
-  return Math.max(measuredInset, minimumInset);
-}
-
 function renderTabIcon(routeName, focused, color) {
   const icon = TAB_ICONS[routeName];
   if (!icon) return null;
@@ -78,7 +69,6 @@ function renderTabLabel(label, focused, color) {
 export default function CustomerTabNavigator() {
   const insets = useSafeAreaInsets();
   const { isLight } = useThemeStore();
-  const bottomInset = getBottomInset(insets);
 
   return (
     <Tab.Navigator
@@ -86,11 +76,10 @@ export default function CustomerTabNavigator() {
         headerShown: false,
         tabBarActiveTintColor: '#00bf63',
         tabBarInactiveTintColor: isLight ? '#000000' : 'rgba(255, 255, 255, 0.6)',
-        safeAreaInsets: { top: 0, right: 0, bottom: bottomInset, left: 0 },
         tabBarStyle: {
-          height: TAB_BAR_CONTENT_HEIGHT + bottomInset,
+          height: TAB_BAR_CONTENT_HEIGHT + insets.bottom,
           paddingTop: spacing.xs,
-          paddingBottom: bottomInset,
+          paddingBottom: insets.bottom,
           borderTopWidth: StyleSheet.hairlineWidth * 2,
           borderTopColor: isLight ? '#E8E8E8' : '#1F1F1F',
           backgroundColor: isLight ? '#FFFFFF' : '#000000',
