@@ -30,9 +30,17 @@ export const resyncGameCreationTopicsFromStorage = async () => {
 
   await Promise.all(
     entries.map(async ([gameKey, topic]) => {
-      const value = await AsyncStorage.getItem(getGameCreationStorageKey(gameKey));
-      if (value === 'true') {
-        await subscribeToTopic(topic);
+      try {
+        const value = await AsyncStorage.getItem(getGameCreationStorageKey(gameKey));
+        if (value === 'true') {
+          await subscribeToTopic(topic);
+        } else if (value === 'false') {
+          // Enforce the stored "off" state in case a previous FCM
+          // unsubscribe failed (e.g. offline) and left the topic active.
+          await unsubscribeFromTopic(topic);
+        }
+      } catch (error) {
+        if (__DEV__) console.log(`Game creation topic resync error (${topic}):`, error);
       }
     }),
   );

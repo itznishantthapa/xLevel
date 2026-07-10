@@ -11,6 +11,7 @@ import {
   Pressable,
 } from 'react-native';
 import Toast from 'react-native-simple-toast';
+import { LoaderKitView } from 'react-native-loader-kit';
 import MatchCardSkeleton from '../skeleton/Skeleton';
 import { FlashList } from "@shopify/flash-list";
 import { useThemeStore } from '../../../store/themeStore';
@@ -172,10 +173,22 @@ const OpenGameList = ({
 
       const compactName = getCompactGameName(gameName).toLowerCase();
       console.log(`turning on ${compactName} game Notification`);
+    } catch (error) {
+      // Keep FCM and AsyncStorage in sync: if anything failed midway,
+      // roll the FCM subscription back so the stored "false" stays truthful.
+      await unsubscribeFromTopic(topic);
+      try {
+        await setGameCreationTopicSubscribed(gameName, false);
+      } catch (storageError) {
+        if (__DEV__) console.log('Topic storage rollback error:', storageError);
+      }
+      setIsCreationSubscribed(false);
+      Toast.show('Failed to turn on notifications. Please try again.', Toast.SHORT);
+      if (__DEV__) console.log(`Subscribe creation topic error (${topic}):`, error);
     } finally {
       setIsTopicLoading(false);
     }
-  }, [gameName]);
+  }, [gameName, userRole]);
 
   const handleUnsubscribeCreationTopic = useCallback(async () => {
     const topic = getGameCreationTopic(gameName);
@@ -194,6 +207,9 @@ const OpenGameList = ({
 
       const compactName = getCompactGameName(gameName).toLowerCase();
       console.log(`turning off ${compactName} game Notification`);
+    } catch (error) {
+      Toast.show('Failed to turn off notifications. Please try again.', Toast.SHORT);
+      if (__DEV__) console.log(`Unsubscribe creation topic error (${topic}):`, error);
     } finally {
       setIsTopicLoading(false);
     }
@@ -221,10 +237,13 @@ const OpenGameList = ({
     if (!showFilters) return null;
 
     const borderColor = isLight ? '#000000' : '#eaf4f4';
-    const notificationButtonStyle = isCreationSubscribed
-      ? styles.notificationButtonSubscribed
-      : styles.notificationButtonUnsubscribed;
+    const notificationButtonStyle = isTopicLoading
+      ? { backgroundColor: isLight ? '#000000' : '#FFFFFF' }
+      : isCreationSubscribed
+        ? styles.notificationButtonSubscribed
+        : styles.notificationButtonUnsubscribed;
     const notificationIcon = isCreationSubscribed ? Notification01Icon : NotificationOff01Icon;
+    const loaderColor = isLight ? '#FFFFFF' : '#000000';
 
     return (
       <View style={[
@@ -309,7 +328,16 @@ const OpenGameList = ({
               : `Turn on ${gameName} game creation notifications`
           }
         >
-          <AppIcon icon={notificationIcon} size={iconSize.md} color="#FFFFFF" />
+          {isTopicLoading ? (
+            <LoaderKitView
+              style={styles.notificationLoader}
+              name="LineSpinFadeLoader"
+              color={loaderColor}
+              animationSpeedMultiplier={1.0}
+            />
+          ) : (
+            <AppIcon icon={notificationIcon} size={iconSize.md} color="#FFFFFF" />
+          )}
         </Pressable>
       </View>
     );
@@ -459,6 +487,10 @@ const styles = StyleSheet.create({
   notificationButtonUnsubscribed: {
     backgroundColor: '#FF4444',
     borderWidth: 0,
+  },
+  notificationLoader: {
+    width: 20,
+    height: 20,
   },
   filterChip: {
     backgroundColor: 'transparent',

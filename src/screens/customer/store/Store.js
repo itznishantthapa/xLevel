@@ -104,6 +104,11 @@ const ProductCard = ({ product, index, isLight, onOrderPress, onDeletePress, use
           loop={true}
           pagingEnabled
           data={product.images}
+          onConfigurePanGesture={(gesture) => {
+            'worklet'
+            gesture.activeOffsetX([-12, 12])
+            gesture.failOffsetY([-8, 8])
+          }}
           onProgressChange={(_, absoluteProgress) => {
             progress.value = absoluteProgress
           }}

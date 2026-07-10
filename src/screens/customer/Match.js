@@ -74,9 +74,9 @@ const Match = () => {
       await ChallengeAPI.deleteChallenge({ challenge_id: challengeId });
       await refetch();
       await get_user();
-      Toast.show('Challenge cancelled.', Toast.SHORT);
+      Toast.show('Match cancelled.', Toast.SHORT);
     } catch (error) {
-      Toast.show(error?.message || 'Unable to cancel challenge', Toast.SHORT);
+      Toast.show(error?.message || 'Unable to cancel match', Toast.SHORT);
     }
   }, [refetch, get_user]);
 
@@ -87,9 +87,9 @@ const Match = () => {
       await ChallengeAPI.leaveChallenge({ challenge_id: challengeId });
       await refetch();
       await get_user();
-      Toast.show('Challenge left.', Toast.SHORT);
+      Toast.show('Match left.', Toast.SHORT);
     } catch (error) {
-       Toast.show(error?.message || 'Unable to leave challenge', Toast.SHORT);
+       Toast.show(error?.message || 'Unable to leave match', Toast.SHORT);
     }
   }, [refetch, get_user])
 
@@ -186,7 +186,7 @@ const Match = () => {
       queryClient.removeQueries({ queryKey: ["myMatch", 5] });
       await refetch();
     } catch (error) {
-      Toast.show('Failed to refresh challenges. Please try again.', Toast.SHORT);
+      Toast.show('Failed to refresh matches. Please try again.', Toast.SHORT);
     } finally {
       setIsRefreshing(false);
     }

@@ -37,7 +37,7 @@ const TAB_CONFIG = [
   { name: 'Notification', component: Notify, label: 'Notification' },
 ];
 
-const TAB_BAR_CONTENT_HEIGHT = 52;
+const TAB_BAR_CONTENT_HEIGHT = 68;
 
 function renderTabIcon(routeName, focused, color) {
   const icon = TAB_ICONS[routeName];

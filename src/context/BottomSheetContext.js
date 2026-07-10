@@ -94,11 +94,11 @@ export const BottomSheetProvider = ({ children }) => {
           duration: 150,
           easing: Easing.in(Easing.cubic),
         },
-        (finished) => {
-          if (finished) {
-            // Correctly use runOnJS with the named function
-            runOnJS(cleanupAfterClose)()
-          }
+        () => {
+          // Always run cleanup, even if the animation was interrupted
+          // (finished === false). Otherwise the sheet's onConfirm callback
+          // is silently dropped and the sheet can get stuck.
+          runOnJS(cleanupAfterClose)()
         }
       )
     },
@@ -178,9 +178,26 @@ export const BottomSheetProvider = ({ children }) => {
   }, [])
 
   const showGameCreationNotificationSheet = useCallback(
-    ({ alertTitle, message, confirmText = "Turn On", cancelText = "Cancel", isDestructive = false, onConfirm }) => {
+    ({
+      alertTitle,
+      message,
+      confirmText = "Turn On",
+      cancelText = "Cancel",
+      isDestructive = false,
+      showAlertIcon = true,
+      alertTag = "ALERT",
+      onConfirm,
+    }) => {
       setSheetType("gameCreationNotification")
-      setPayload({ alertTitle, message, confirmText, cancelText, isDestructive })
+      setPayload({
+        alertTitle,
+        message,
+        confirmText,
+        cancelText,
+        isDestructive,
+        showAlertIcon,
+        alertTag,
+      })
       onConfirmRef.current = onConfirm || null
       setVisible(true)
     },
@@ -222,6 +239,15 @@ export const BottomSheetProvider = ({ children }) => {
     // Validate access code if "I have access code" is selected
     if (sheetType === "join" && payload?.hasAccessCode && !payload?.accessCode?.trim()) {
       // You might want to show an error toast here
+      return
+    }
+
+    // Run the topic subscribe/unsubscribe immediately so its loading state
+    // is visible while the sheet closes and it can't be lost if the close
+    // animation gets interrupted.
+    if (sheetType === "gameCreationNotification") {
+      if (typeof cb === "function") cb()
+      closeSheet()
       return
     }
 
@@ -680,7 +706,9 @@ const GameCreationNotificationSheetContent = React.memo(({ payload, isDark, inse
           <View style={[styles.entryCorner, styles.entryCornerTR, { borderColor: isDark ? '#ffffff' : '#000000' }]} />
           <View style={[styles.entryCorner, styles.entryCornerBL, { borderColor: isDark ? '#ffffff' : '#000000' }]} />
           <View style={[styles.entryCorner, styles.entryCornerBR, { borderColor: isDark ? '#ffffff' : '#000000' }]} />
-          <AppIcon icon={Notification01Icon} size={iconSize.lg} color="#00bf63" />
+          {payload?.showAlertIcon !== false ? (
+            <AppIcon icon={Notification01Icon} size={iconSize.lg} color="#00bf63" />
+          ) : null}
           <Text
             style={[styles.entryAmount, gameCreationStyles.alertTitle, { color: isDark ? '#ffffff' : '#000000' }]}
             numberOfLines={2}
@@ -691,7 +719,9 @@ const GameCreationNotificationSheetContent = React.memo(({ payload, isDark, inse
       </View>
       <View style={styles.entryTagLine}>
         <View style={[styles.entryDash, { backgroundColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)' }]} />
-        <Text style={[styles.entryTagText, { color: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)' }]}>ALERT</Text>
+        <Text style={[styles.entryTagText, { color: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)' }]}>
+          {payload?.alertTag || 'ALERT'}
+        </Text>
         <View style={[styles.entryDash, { backgroundColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)' }]} />
       </View>
     </View>

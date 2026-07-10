@@ -36,6 +36,8 @@ export const sharedStyles = StyleSheet.create({
   },
   gameInfoHeader: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
     justifyContent: 'flex-start',
     gap: spacing.sm,
     marginBottom: spacing.sm,
@@ -43,6 +45,9 @@ export const sharedStyles = StyleSheet.create({
   gameInfoItem: {
     flexDirection: 'row',
     alignItems: 'center',
+    flexShrink: 1,
+    minWidth: 0,
+    maxWidth: '100%',
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderRadius: spacing.xl,
@@ -50,6 +55,7 @@ export const sharedStyles = StyleSheet.create({
     borderColor: '#000000',
   },
   gameInfoText: {
+    flexShrink: 1,
     marginLeft: 6,
     fontSize: fontSize.base,
     color: '#333333',

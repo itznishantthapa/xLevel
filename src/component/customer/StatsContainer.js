@@ -75,7 +75,7 @@ const StatsContainer = ({
             </View>
             <Text
               style={[styles.statLabel, isLight ? styles.labelLight : styles.labelDark]}
-              numberOfLines={1}
+              numberOfLines={2}
             >
               {item.name}
             </Text>
@@ -91,20 +91,18 @@ export default StatsContainer;
 const styles = StyleSheet.create({
   gridContainer: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginHorizontal: spacing.lg,
+    paddingHorizontal: spacing.xl,
     marginTop: spacing.md,
     gap: spacing.sm,
   },
   statCard: {
     flex: 1,
-    minWidth: 74,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: radius.xl,
     borderWidth: 1.5,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.xxs,
     position: 'relative',
   },
   activeLoader: {

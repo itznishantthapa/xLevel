@@ -46,8 +46,14 @@ export function useNotificationEngine() {
 
       const userRole = useAuthStore.getState().user?.role;
       const broadcastTopic = getFcmBroadcastTopicForRole(userRole);
-      await subscribeToBroadcastTopic(broadcastTopic);
-      await resyncGameCreationTopicsFromStorage();
+      try {
+        await subscribeToBroadcastTopic(broadcastTopic);
+        await resyncGameCreationTopicsFromStorage();
+      } catch (error) {
+        // Topic sync failures must not prevent the message listeners below
+        // from being registered.
+        if (__DEV__) console.log('Topic resync error:', error);
+      }
 
       activeUnsubscribers.push(
         onMessage(messaging, async (remoteMessage) => {
@@ -56,8 +62,19 @@ export function useNotificationEngine() {
       );
 
       activeUnsubscribers.push(
-        onTokenRefresh(messaging, (newToken) => {
+        onTokenRefresh(messaging, async (newToken) => {
           useAuthStore.getState().syncPushToken(newToken);
+
+          // Topic subscriptions are tied to the FCM token. When it rotates
+          // mid-session, re-subscribe level_users/level_admins and the game
+          // creation topics or the user silently stops receiving them.
+          try {
+            const role = useAuthStore.getState().user?.role;
+            await subscribeToBroadcastTopic(getFcmBroadcastTopicForRole(role));
+            await resyncGameCreationTopicsFromStorage();
+          } catch (error) {
+            if (__DEV__) console.log('Token refresh topic resync error:', error);
+          }
         }),
       );
 
