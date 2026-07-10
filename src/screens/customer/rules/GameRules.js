@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, FlatList, Pressable, SafeAreaView, StatusBar, P
 import React from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { AppIcon } from '../../../components/common/AppIcon'
-import { GamepadIcon, ArrowRight01Icon } from '@hugeicons/core-free-icons'
+import { GameController03Icon, ArrowRight01Icon } from '@hugeicons/core-free-icons'
 import { iconSize } from '../../../theme/typography'
 import { useThemeStore } from '../../../store/themeStore'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -44,7 +44,7 @@ const GameRules = () => {
     >
       <View style={styles.cardContent}>
         <View style={[styles.iconContainer, { backgroundColor: colors.iconBg }]}>
-          <AppIcon icon={GamepadIcon} size={iconSize.xl} color={isLight ? "#000000" : "#ffffff"} />
+          <AppIcon icon={GameController03Icon} size={iconSize.xl} color={isLight ? "#000000" : "#ffffff"} />
         </View>
 
         <View style={styles.gameInfo}>

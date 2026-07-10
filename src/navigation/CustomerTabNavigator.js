@@ -5,9 +5,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppIcon } from '../components/common/AppIcon';
 import {
   Home01Icon,
-  GamepadIcon,
+  GameController03Icon,
   StoreIcon,
-  Exchange01Icon,
+  Share02Icon,
   Notification01Icon,
 } from '@hugeicons/core-free-icons';
 
@@ -23,9 +23,9 @@ const Tab = createBottomTabNavigator();
 
 const TAB_ICONS = {
   HomeTab: Home01Icon,
-  OpenGamesTab: GamepadIcon,
+  OpenGamesTab: GameController03Icon,
   StoreTab: StoreIcon,
-  BuySellTab: Exchange01Icon,
+  BuySellTab: Share02Icon,
   Notification: Notification01Icon,
 };
 
@@ -34,7 +34,7 @@ const TAB_CONFIG = [
   { name: 'OpenGamesTab', component: OpenGames, label: 'Matches' },
   { name: 'StoreTab', component: GameStores, label: 'Store' },
   { name: 'BuySellTab', component: BuySell, label: 'Buy & Sell' },
-  { name: 'Notification', component: Notify, label: 'Notification' },
+  { name: 'Notification', component: Notify, label: 'Notifications' },
 ];
 
 const TAB_BAR_CONTENT_HEIGHT = 68;

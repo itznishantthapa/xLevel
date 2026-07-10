@@ -1,6 +1,6 @@
 import { View, Text, Pressable, TouchableOpacity, StyleSheet } from "react-native"
 import { AppIcon } from "../../components/common/AppIcon"
-import { GamepadIcon, UserGroupIcon, AlertCircleIcon } from "@hugeicons/core-free-icons"
+import { GameController03Icon, UserGroupIcon, AlertCircleIcon } from "@hugeicons/core-free-icons"
 import { fontSize, spacing, iconSize } from "../../theme/typography"
 import { sharedStyles } from "./sharedStyleAndInfo"
 import { useBottomSheet } from "../../context/BottomSheetContext"
@@ -57,7 +57,7 @@ const GameHeader = ({ game, isLight, isCreator, user, handleDeleteChallenge, han
             shadowRadius: 4.5,
           }
         ]}>
-          <AppIcon icon={GamepadIcon} size={iconSize.xs} color={gameIconConfig.iconColor} />
+          <AppIcon icon={GameController03Icon} size={iconSize.xs} color={gameIconConfig.iconColor} />
         </View>
         <Text
           style={[sharedStyles.gameInfoText, !isLight && sharedStyles.gameInfoTextDark]}

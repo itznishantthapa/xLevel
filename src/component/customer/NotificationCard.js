@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, Pressable } from 'react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  GamepadIcon,
+  GameController03Icon,
   StoreIcon,
   Notification01Icon,
   Copy01Icon,
@@ -99,7 +99,7 @@ const NotificationCard = ({ notification }) => {
         [NOTIFICATION_TYPES.GAME]: {
             title: 'Game Invitation',
             bgColor: isLight ? '#A855F7' : 'rgba(109, 140, 255, 0.2)',
-            icon: <AppIcon icon={GamepadIcon} size={iconSize.sm} color={isLight ? "#ffffff" : "#6d8cff"} />
+            icon: <AppIcon icon={GameController03Icon} size={iconSize.sm} color={isLight ? "#ffffff" : "#6d8cff"} />
         },
         [NOTIFICATION_TYPES.CREDITED]: {
             title: 'Game Point',

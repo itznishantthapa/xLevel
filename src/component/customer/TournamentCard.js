@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Pressable, Dimensions } from "react-native"
 import { HugeiconsIcon } from "@hugeicons/react-native"
 import {
-  GamepadIcon,
+  GameController03Icon,
   UserGroupIcon,
   Calendar03Icon,
   Clock01Icon,
@@ -124,7 +124,7 @@ const TournamentCard = ({ game }) => {
                 shadowRadius: 4.5,
               }
             ]}>
-              <HugeiconsIcon icon={GamepadIcon} size={iconSize.sm} color={isLight ? '#ffffff' : '#6d8cff'} strokeWidth={2} />
+              <HugeiconsIcon icon={GameController03Icon} size={iconSize.sm} color={isLight ? '#ffffff' : '#6d8cff'} strokeWidth={2} />
             </View>
             <Text style={[styles.pillText, !isLight && styles.pillTextDark]}>{game.game?.name}</Text>
           </View>

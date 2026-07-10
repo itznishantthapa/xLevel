@@ -7,7 +7,7 @@ import {
   UserIcon,
   UserArrowLeftRightIcon,
   IdentityCardIcon,
-  GamepadIcon,
+  GameController03Icon,
   LabelIcon,
   Location01Icon,
   CheckIcon,

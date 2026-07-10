@@ -7,7 +7,7 @@ import {
   UserIcon,
   UserArrowLeftRightIcon,
   IdentityCardIcon,
-  GamepadIcon,
+  GameController03Icon,
   LabelIcon,
   Location01Icon,
   CheckIcon,
@@ -424,7 +424,7 @@ const PUBGStore = ({ route }) => {
               borderColor: isLight ? '#cccccc' : '#333333',
               backgroundColor: isLight ? '#f8f8f8' : '#1a1a1a',
             }]}>
-              <AppIcon icon={GamepadIcon} size={iconSize.md} color={isLight ? '#666666' : '#999999'} />
+              <AppIcon icon={GameController03Icon} size={iconSize.md} color={isLight ? '#666666' : '#999999'} />
               <TextInput
                 style={[styles.textInput, { color: isLight ? '#000000' : '#ffffff' }]}
                 placeholder="Game Name"

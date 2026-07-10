@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, Pressable, Dimensions, ActivityIndicator, Scrol
 import Clipboard from "@react-native-clipboard/clipboard"
 import { HugeiconsIcon } from "@hugeicons/react-native"
 import {
-  GamepadIcon,
+  GameController03Icon,
   UserGroupIcon,
   Calendar03Icon,
   CheckmarkCircle01Icon,
@@ -128,7 +128,7 @@ const UpcommingGameCard = ({ game, handleConfirmChallenge, forFiller = false }) 
                   shadowRadius: 4.5,
                 }
               ]}>
-                <HugeiconsIcon icon={GamepadIcon} size={iconSize.sm} color={isLight ? '#ffffff' : '#6d8cff'} strokeWidth={2} />
+                <HugeiconsIcon icon={GameController03Icon} size={iconSize.sm} color={isLight ? '#ffffff' : '#6d8cff'} strokeWidth={2} />
               </View>
               <Text style={[styles.pillText, !isLight && styles.pillTextDark]}>{game.game?.name}</Text>
             </View>

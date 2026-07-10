@@ -1,7 +1,7 @@
 "use client"
 import { View, Text, StyleSheet, Pressable, Dimensions, FlatList, Platform } from "react-native"
 import {
-  GamepadIcon,
+  GameController03Icon,
   ChevronRightIcon,
   ChevronLeftIcon,
 } from "@hugeicons/core-free-icons"
@@ -46,7 +46,7 @@ const GameMode = ({ game_mode, handleGameMode, game }) => {
         {/* Center Content */}
         <View style={styles.cardContent}>
           <View style={[styles.iconWrapper, isLight ? styles.iconWrapperLight : styles.iconWrapperDark, { borderColor: cardColor }]}>
-            <AppIcon icon={GamepadIcon} size={iconSize.lg} color={cardColor} />
+            <AppIcon icon={GameController03Icon} size={iconSize.lg} color={cardColor} />
           </View>
           <View style={styles.textContent}>
             <Text style={[styles.modeLabel, { color: cardColor }]}>MODE</Text>

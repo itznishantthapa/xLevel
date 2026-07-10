@@ -12,7 +12,7 @@ import {
   User02Icon,
   Edit02Icon,
   Add01Icon,
-  GamepadIcon,
+  GameController03Icon,
   ChevronRightIcon,
   HistoryIcon,
   Flag01Icon,
@@ -185,7 +185,7 @@ const Profile = () => {
                 </View>
               ) : (
                 <View style={[styles.emptyState, { backgroundColor: colors.cardBackground }]}>
-                  <AppIcon icon={GamepadIcon} size={iconSize.xl} color={colors.textTertiary} />
+                  <AppIcon icon={GameController03Icon} size={iconSize.xl} color={colors.textTertiary} />
                   <Text style={[styles.emptyStateText, { color: colors.textTertiary }]}>
                     No game profiles added yet
                   </Text>
@@ -337,7 +337,7 @@ const Profile = () => {
           </View>
 
           <View style={styles.versionFooter}>
-            <Text style={[styles.versionText, { color: colors.textTertiary }]}>Version 6.0 (60)</Text>
+            <Text style={[styles.versionText, { color: colors.textTertiary }]}>Version 6.1 (61)</Text>
           </View>
 
        
