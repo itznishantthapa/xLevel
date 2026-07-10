@@ -14,7 +14,8 @@ import {
 import notifee, { AndroidImportance, AndroidStyle } from '@notifee/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationService } from './navigationService';
-import { FCM_USER_TOPIC, shouldRefreshPointsDataOnNotification, getGameCreationTitleKey, getGameCreationTopicKey, getCreatorUsernameFromGameCreationBody, isGameCreationNotificationTitle } from '../constants/notifications';
+import { FCM_USER_TOPIC, shouldRefreshPointsDataOnNotification, getGameCreationTitleKey, getGameCreationTopicKey, getCreatorUsernameFromGameCreationBody, isGameCreationNotificationTitle, isPointCreditedNotificationTitle } from '../constants/notifications';
+import { playPointLoadSound } from '../utils/pointLoadSound';
 
 // ===================================================================
 //  PERMISSION
@@ -300,6 +301,15 @@ export const handleForegroundMessage = async (message) => {
   const body = getNotificationBody(message);
 
   if (await shouldSkipOwnGameCreationNotification(title, body)) {
+    return;
+  }
+
+  if (isPointCreditedNotificationTitle(title)) {
+    const duplicate = await isDuplicate(message?.data?.notif_id);
+    if (duplicate) return;
+
+    await refreshUserOnForegroundNotification(title);
+    await playPointLoadSound();
     return;
   }
 

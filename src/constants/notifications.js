@@ -11,6 +11,11 @@ export const POINTS_REFRESH_NOTIFICATION_TITLES = [
   'Point Load Failed',
 ];
 
+export const POINT_CREDITED_NOTIFICATION_TITLE = 'Point Credited Successfully';
+
+export const isPointCreditedNotificationTitle = (title = '') =>
+  String(title).trim() === POINT_CREDITED_NOTIFICATION_TITLE;
+
 export const shouldRefreshPointsDataOnNotification = (title = '') =>
   POINTS_REFRESH_NOTIFICATION_TITLES.includes(String(title).trim());
 
