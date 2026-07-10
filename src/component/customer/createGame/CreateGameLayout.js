@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, StyleSheet, ScrollView, StatusBar, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useCallback } from 'react';
+import { View, StyleSheet, ScrollView, StatusBar, KeyboardAvoidingView, Platform, Keyboard } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -40,9 +40,26 @@ const CreateGameLayout = ({
   aboveButtonContent
 }) => {
   const insets = useSafeAreaInsets()
+
+  const handleSubmit = useCallback(async () => {
+    if (isLoading || !isFormValid || typeof onSubmit !== 'function') return;
+
+    Keyboard.dismiss();
+    await new Promise((resolve) => {
+      setTimeout(resolve, Platform.OS === 'ios' ? 280 : 180);
+    });
+
+    onSubmit();
+  }, [isLoading, isFormValid, onSubmit]);
+
   return (
     <View style={[styles.mainContainer, { backgroundColor: isLight ? "#ffffff" : "#000000" }]}>
-      <Loader visible={isLoading} message={loaderMessage} size={50} />
+      <Loader
+        visible={isLoading}
+        message={loaderMessage}
+        fullScreen
+        animationName="BallSpinFadeLoader"
+      />
       <StatusBar translucent backgroundColor="transparent" barStyle={isLight ? "dark-content" : "light-content"} />
 
       <SafeAreaView style={styles.safeArea}>
@@ -79,7 +96,7 @@ const CreateGameLayout = ({
             {aboveButtonContent}
             <CoolButton
               title={buttonTitle}
-              handlePress={onSubmit}
+              handlePress={handleSubmit}
               disableBtn={isLoading}
               disabled={isLoading || !isFormValid}
               backgroundColor={buttonBackgroundColor}

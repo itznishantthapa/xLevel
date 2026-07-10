@@ -24,7 +24,7 @@ import { iconSize } from '../../../theme/typography'
 import { useState, useRef, useMemo } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { useGameProfiles } from '../../../queries/useGameProfiles'
-import { useStoreItems } from '../../../queries/useStoreItems'
+import { useStoreScreenData } from '../../../hooks/useStoreScreenData'
 import { CreateGameLayout, SectionTitle, DividerLine, TermsAgreement } from '../../../component/customer/createGame'
 import { useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '../../../store/authStore'
@@ -45,7 +45,7 @@ const EfootballStore = ({ route }) => {
   const termsRef = useRef(null)
 
   // Fetch store items for Efootball
-  const { data: storeItemsData, isLoading: isLoadingStore } = useStoreItems('efootball')
+  const { storeItemsData, isOpening: isLoadingStore } = useStoreScreenData('efootball')
 
   // Form state
   const [screenshot, setScreenshot] = useState(null)
@@ -172,8 +172,8 @@ const EfootballStore = ({ route }) => {
       isLight={isLight}
       isLoading={isLoadingStore || isSubmitting}
       onSubmit={handleConfirm}
-      buttonTitle={isSubmitting ? "Processing..." : "Confirm Purchase"}
-      loaderMessage={isSubmitting ? "Processing" : "Opening"}
+      buttonTitle={isSubmitting ? "Purchasing..." : "Confirm Purchase"}
+      loaderMessage={isSubmitting ? "Processing..." : "Opening Store..."}
     >
       {/* Screenshot Upload Section */}
       <View style={styles.section}>

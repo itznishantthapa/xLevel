@@ -263,9 +263,7 @@ const EditGameInfo = () => {
   const isEditing = !!profile
   const gameName = (profile?.game_name || game?.game_name || "").toLowerCase()
 
-  useEffect(() => {
-   console.log("Loaded profile for editing:", profile)
-  }, [route.params])
+
   
 
   // Initialize game profile form state based on game type

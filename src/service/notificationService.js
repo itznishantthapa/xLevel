@@ -71,9 +71,9 @@ export const subscribeToTopic = async (topic) => {
     await fcmSubscribeToTopic(getMessaging(getApp()), topic);
 
     if (topic === FCM_USER_TOPIC) {
-      console.log('level_users notification is subscribed');
+      console.log('Subscribed to level_users');
     } else {
-      console.log(`${topic} notification is subscribed`);
+      console.log(`Subscribed to ${topic}`);
     }
 
     return true;
@@ -113,7 +113,7 @@ export const postFCMToken = async (tokenOverride) => {
     const { API } = await import('../api/client');
     const { endpoints } = await import('../api/endpoints');
     const response = await API.post(endpoints.postFCMToken, { token: fcmToken });
-    console.log('FCM token synced to backend');
+    console.log('Synced to Backend');
     return response.data;
   } catch (error) {
     if (__DEV__) console.log('postFCMToken error:', error);

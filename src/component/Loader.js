@@ -17,6 +17,7 @@ const Loader = ({
   size = 56,
   animationName = 'BallPulse',
   backdropOpacity,
+  fullScreen = false,
   testID = 'app-loader',
 }) => {
   const { isLight } = useThemeStore();
@@ -25,19 +26,29 @@ const Loader = ({
   const backdropOpacityAnimated = useRef(new Animated.Value(0)).current;
   const scaleAnimated = useRef(new Animated.Value(0.98)).current;
 
+  const spinnerSize = fullScreen ? 32 : size;
+
   const colors = useMemo(() => {
-    const surface = isLight ? '#ffffff' : '#121212';
-    const text = isLight ? '#111111' : '#EEEEEE';
-    const spinner = isLight ? '#111111' : '#FFFFFF';
+    const surface = fullScreen
+      ? (isLight ? '#ffffff' : '#000000')
+      : (isLight ? '#ffffff' : '#121212');
+    const text = fullScreen
+      ? (isLight ? 'rgba(17, 17, 17, 0.62)' : 'rgba(255, 255, 255, 0.68)')
+      : (isLight ? '#111111' : '#FFFFFF');
+    const spinner = fullScreen
+      ? (isLight ? 'rgba(17, 17, 17, 0.88)' : 'rgba(255, 255, 255, 0.88)')
+      : (isLight ? '#111111' : '#FFFFFF');
     const overlayOpacity =
       typeof backdropOpacity === 'number'
         ? Math.max(0, Math.min(1, backdropOpacity))
         : isLight
         ? 0.28
         : 0.35;
-    const overlay = `rgba(0,0,0,${overlayOpacity})`;
+    const overlay = fullScreen
+      ? surface
+      : `rgba(0,0,0,${overlayOpacity})`;
     return { surface, text, spinner, overlay };
-  }, [isLight, backdropOpacity]);
+  }, [isLight, backdropOpacity, fullScreen]);
 
   useEffect(() => {
     if (visible) {
@@ -51,8 +62,8 @@ const Loader = ({
         }),
         Animated.spring(scaleAnimated, {
           toValue: 1,
-          speed: 14,
-          bounciness: 6,
+          speed: fullScreen ? 20 : 14,
+          bounciness: fullScreen ? 0 : 6,
           useNativeDriver: true,
         }),
       ]).start();
@@ -81,34 +92,60 @@ const Loader = ({
           style={[
             StyleSheet.absoluteFillObject,
             styles.backdrop,
+            fullScreen && styles.fullScreenBackdrop,
             { backgroundColor: colors.overlay, opacity: backdropOpacityAnimated },
           ]}
           pointerEvents="auto"
           accessibilityLiveRegion="polite"
           testID={testID}
         >
-          <Animated.View
-            style={[
-              styles.loaderContainer,
-              styles.shadow,
-              { backgroundColor: colors.surface, transform: [{ scale: scaleAnimated }] },
-            ]}
-            accessible
-            accessibilityRole="progressbar"
-            accessibilityLabel={message || 'Loading'}
-          >
-            <LoaderKitView
-              style={{ width: size, height: size }}
-              name={animationName}
-              color={colors.spinner}
-              animationSpeedMultiplier={1.0}
-            />
-            {message ? (
-              <Text style={[styles.loaderText, { color: colors.text }]} numberOfLines={2}>
-                {message}
-              </Text>
-            ) : null}
-          </Animated.View>
+          {fullScreen ? (
+            <Animated.View
+              style={[
+                styles.fullScreenContent,
+                { transform: [{ scale: scaleAnimated }] },
+              ]}
+              accessible
+              accessibilityRole="progressbar"
+              accessibilityLabel={message || 'Loading'}
+            >
+              <View style={styles.fullScreenLoader}>
+                <LoaderKitView
+                  style={{ width: spinnerSize, height: spinnerSize }}
+                  name={animationName}
+                  color={colors.spinner}
+                  animationSpeedMultiplier={0.85}
+                />
+              </View>
+              {message ? (
+                <Text style={[styles.fullScreenLoaderText, { color: colors.text }]} numberOfLines={2}>
+                  {message}
+                </Text>
+              ) : null}
+            </Animated.View>
+          ) : (
+            <Animated.View
+              style={[
+                styles.loaderContainer,
+                { backgroundColor: colors.surface, transform: [{ scale: scaleAnimated }] },
+              ]}
+              accessible
+              accessibilityRole="progressbar"
+              accessibilityLabel={message || 'Loading'}
+            >
+              <LoaderKitView
+                style={{ width: size, height: size }}
+                name={animationName}
+                color={colors.spinner}
+                animationSpeedMultiplier={1.0}
+              />
+              {message ? (
+                <Text style={[styles.loaderText, { color: colors.text }]} numberOfLines={2}>
+                  {message}
+                </Text>
+              ) : null}
+            </Animated.View>
+          )}
         </Animated.View>
       ) : null}
     </View>
@@ -131,6 +168,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
+  fullScreenBackdrop: {
+    paddingTop: 0,
+  },
+  fullScreenContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 40,
+    gap: 14,
+  },
+  fullScreenLoader: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   loaderContainer: {
     minWidth: 160,
     maxWidth: '80%',
@@ -141,9 +193,18 @@ const styles = StyleSheet.create({
   },
 
   loaderText: {
-    marginTop: 12,
+    marginTop: 16,
     fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  fullScreenLoaderText: {
+    marginTop: 0,
+    fontSize: 13,
     fontWeight: '500',
     textAlign: 'center',
+    letterSpacing: 0.8,
+    lineHeight: 18,
+    maxWidth: 220,
   },
 });

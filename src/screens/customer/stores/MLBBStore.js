@@ -16,7 +16,7 @@ import { fontSize, spacing, iconSize } from '../../../theme/typography'
 import { useEffect, useState, useRef } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { useGameProfiles } from '../../../queries/useGameProfiles'
-import { useStoreItems } from '../../../queries/useStoreItems'
+import { useStoreScreenData } from '../../../hooks/useStoreScreenData'
 import { CreateGameLayout, SectionTitle, DividerLine, TermsAgreement } from '../../../component/customer/createGame'
 import { useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '../../../store/authStore'
@@ -38,7 +38,7 @@ const MLBBStore = ({ route }) => {
   const slideAnim = useRef(new Animated.Value(0)).current
 
   // Fetch store items for MLBB
-  const { data: storeItemsData, isLoading: isLoadingStore } = useStoreItems('mlbb')
+  const { storeItemsData, isOpening: isLoadingStore } = useStoreScreenData('mlbb')
 
   // Selection state
   const [selectedItem, setSelectedItem] = useState(null)
@@ -347,8 +347,8 @@ const MLBBStore = ({ route }) => {
       isLight={isLight}
       isLoading={isLoadingStore || isSubmitting}
       onSubmit={handleConfirm}
-      buttonTitle={isSubmitting ? "Processing..." : "Confirm Purchase"}
-      loaderMessage={isSubmitting ? "Processing" : "Opening"}
+      buttonTitle={isSubmitting ? "Purchasing..." : "Confirm Purchase"}
+      loaderMessage={isSubmitting ? "Processing..." : "Opening Store..."}
       aboveButtonContent={
         selectedItem && (
           <Animated.View 
