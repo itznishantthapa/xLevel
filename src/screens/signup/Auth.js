@@ -34,6 +34,7 @@ import { useNetworkStatus } from '../../hooks/useNetworkStatus';
 import { useAuthStore } from '../../store/authStore';
 import { useThemeStore } from '../../store/themeStore';
 import { fontSize, iconSize, radius, spacing } from '../../theme/typography';
+import { getAuthMetadata } from '../../utils/authMetadata';
 
 const GOOGLE_WEB_CLIENT_ID =
   '901665380294-lhur8lkcqkdt1d0e9b5q3p25mknfejbs.apps.googleusercontent.com';
@@ -319,7 +320,8 @@ const Auth = () => {
     try {
       await loginSchema.validate(payload, { abortEarly: false });
       setIsSubmitting(true);
-      await login(payload);
+      const authMetadata = await getAuthMetadata();
+      await login({ ...payload, ...authMetadata });
     } catch (err) {
       if (err instanceof yup.ValidationError) {
         setErrors(mapYupErrors(err));
@@ -353,10 +355,12 @@ const Auth = () => {
     try {
       await signUpSchema.validate(payload, { abortEarly: false });
       setIsSubmitting(true);
+      const authMetadata = await getAuthMetadata();
       await signup({
         email: payload.email,
         password: payload.password,
         full_name: payload.full_name,
+        ...authMetadata,
       });
     } catch (err) {
       if (err instanceof yup.ValidationError) {
@@ -382,6 +386,7 @@ const Auth = () => {
 
     try {
       setIsGoogleLoading(true);
+      const authMetadata = await getAuthMetadata();
       await GoogleSignin.hasPlayServices();
       await GoogleSignin.signOut();
 
@@ -390,7 +395,10 @@ const Auth = () => {
         return;
       }
 
-      await google_signup({ id_token: userInfo.data.idToken });
+      await google_signup({
+        id_token: userInfo.data.idToken,
+        ...authMetadata,
+      });
     } catch (error) {
       if (__DEV__) {
         console.error('Google Sign-In Error:', error);

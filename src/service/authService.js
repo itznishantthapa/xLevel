@@ -23,11 +23,11 @@ export const signupUser = async (payload) => {
 
     return user;
   } catch (error) {
-    // Handle API error response with proper message
+    // Handle API error response with proper message silently
     if (error.response && error.response.data && error.response.data.message) {
-      Toast.show(error.response.data.message);
+      Toast.show(error.response.data.message, Toast.LONG); //long duration
     } else {
-      Toast.show('Signup failed. Please try again.');
+      if (__DEV__) console.log(error)
     }
     throw error;
   }
@@ -50,7 +50,7 @@ export const googleSignupUser = async (payload) => {
     return user;
   } catch (error) {
  
-      Toast.show(error.message);
+      Toast.show(error.message, Toast.LONG); //long duration
  
   }
 };
