@@ -766,25 +766,21 @@ const GameCreationNotificationSheetContent = React.memo(({ payload, isDark, inse
 const PURCHASE_STEPS = [
   'Chat with seller on WhatsApp and agree on the price.',
   "Purchase the account on app.",
-  'After purchase, contact admin to validate the account',
+  'After purchase, contact admin to validate the account.',
   'After successful account validation, you will receive login details on WhatsApp.',
   'Admin will release the point to the seller account.',
 ]
+
+const IS_COMPACT_SCREEN = SCREEN_HEIGHT < 700
 
 const PurchaseSheetContent = React.memo(({ payload, isDark, insets, handleCancel, handleConfirm }) => {
   const product = payload?.product
   if (!product) return null
 
   return (
-    <View style={[styles.content, purchaseStyles.sheetContent, purchaseStyles.contentMaxHeight]}>
-      <ScrollView
-        style={styles.scrollArea}
-        contentContainerStyle={purchaseStyles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        bounces={false}
-        nestedScrollEnabled
-      >
-        {/* Seller Info Row */}
+    <View style={purchaseStyles.sheetContent}>
+      <View style={purchaseStyles.contentBody}>
+        {/* Seller Info */}
         <View style={purchaseStyles.sellerRow}>
           <View style={[
             purchaseStyles.sellerAvatar,
@@ -806,20 +802,88 @@ const PurchaseSheetContent = React.memo(({ payload, isDark, insets, handleCancel
           </View>
         </View>
 
-        {/* Game & Price Info */}
-        <View style={styles.gameRow}>
-          <View style={[styles.gameItem, { backgroundColor: isDark ? '#2a2a2a' : '#e5e5e5', borderColor: isDark ? '#3a3a3a' : '#d0d0d0' }]}>
-            <Text style={[styles.label, { color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)' }]}>GAME</Text>
-            <Text style={[styles.value, { color: isDark ? '#ffffff' : '#000000' }]}>{product.game}</Text>
+        {/* Purchase Guide */}
+        <View
+          style={[
+            purchaseStyles.guideCard,
+            IS_COMPACT_SCREEN && purchaseStyles.guideCardCompact,
+            {
+              borderColor: isDark ? 'rgba(255, 255, 255, 0.18)' : 'rgba(0, 0, 0, 0.14)',
+              backgroundColor: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.02)',
+            },
+          ]}
+        >
+          <View style={[purchaseStyles.guideCorner, purchaseStyles.guideCornerTL, { borderColor: isDark ? '#ffffff' : '#000000' }]} />
+          <View style={[purchaseStyles.guideCorner, purchaseStyles.guideCornerTR, { borderColor: isDark ? '#ffffff' : '#000000' }]} />
+          <View style={[purchaseStyles.guideCorner, purchaseStyles.guideCornerBL, { borderColor: '#FF4444' }]} />
+          <View style={[purchaseStyles.guideCorner, purchaseStyles.guideCornerBR, { borderColor: '#FF4444' }]} />
+
+          <View style={purchaseStyles.guideTagLine}>
+            <View style={[purchaseStyles.guideDash, { backgroundColor: isDark ? 'rgba(255,255,255,0.22)' : 'rgba(0,0,0,0.16)' }]} />
+            <Text style={[purchaseStyles.guideTag, { color: isDark ? '#ffffff' : '#000000' }]}>SAFE PURCHASE</Text>
+            <View style={[purchaseStyles.guideDash, { backgroundColor: isDark ? 'rgba(255,255,255,0.22)' : 'rgba(0,0,0,0.16)' }]} />
           </View>
-          <View style={[styles.gameItem, { backgroundColor: isDark ? '#2a2a2a' : '#e5e5e5', borderColor: isDark ? '#3a3a3a' : '#d0d0d0' }]}>
-            <Text style={[styles.label, { color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)' }]}>STATUS</Text>
-            <Text style={[styles.value, { color: isDark ? '#ffffff' : '#000000' }]}>{product.status === 'sold' ? 'Sold' : 'Available'}</Text>
+
+          <Text
+            style={[
+              purchaseStyles.guideSubtitle,
+              IS_COMPACT_SCREEN && purchaseStyles.compactText,
+              { color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.55)' },
+            ]}
+          >
+            Follow these steps:
+          </Text>
+
+          {PURCHASE_STEPS.map((step, index) => (
+            <View key={index} style={purchaseStyles.stepRow}>
+              <View
+                style={[
+                  purchaseStyles.stepBadge,
+                  { borderColor: isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.2)' },
+                ]}
+              >
+                <Text style={[purchaseStyles.stepBadgeText, { color: isDark ? '#ffffff' : '#000000' }]}>
+                  {String(index + 1).padStart(2, '0')}
+                </Text>
+              </View>
+              <Text
+                style={[
+                  purchaseStyles.stepText,
+                  IS_COMPACT_SCREEN && purchaseStyles.compactText,
+                  { color: isDark ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.85)' },
+                ]}
+              >
+                {step}
+              </Text>
+            </View>
+          ))}
+
+          <View
+            style={[
+              purchaseStyles.warningBlock,
+              IS_COMPACT_SCREEN && purchaseStyles.warningBlockCompact,
+              {
+                borderColor: '#FF4444',
+                backgroundColor: isDark ? 'rgba(255, 68, 68, 0.1)' : 'rgba(255, 68, 68, 0.06)',
+              },
+            ]}
+          >
+            <View style={purchaseStyles.guideDividerRow}>
+              <View style={[purchaseStyles.guideDividerLine, { backgroundColor: isDark ? 'rgba(255,68,68,0.45)' : 'rgba(255,68,68,0.35)' }]} />
+              <View style={[purchaseStyles.guideWarningChip, { borderColor: '#FF4444', backgroundColor: isDark ? 'rgba(255,68,68,0.12)' : 'rgba(255,68,68,0.08)' }]}>
+                <Text style={purchaseStyles.guideWarningChipText}>WARNING</Text>
+              </View>
+              <View style={[purchaseStyles.guideDividerLine, { backgroundColor: isDark ? 'rgba(255,68,68,0.45)' : 'rgba(255,68,68,0.35)' }]} />
+            </View>
+
+            <Text style={[purchaseStyles.warningText, IS_COMPACT_SCREEN && purchaseStyles.compactWarningText]}>
+            Don't buy directly from sellers on WhatsApp. Verify with an admin first to avoid scams. ✓
+            </Text>
           </View>
         </View>
 
         {/* Price Display */}
-        <View style={styles.entryPointsCard}>
+        <View style={[styles.entryPointsCard, purchaseStyles.priceCard]}>
           <View style={[styles.entryGlowBorder, { borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)' }]}>
             <View style={styles.entryInner}>
               <View style={[styles.entryCorner, styles.entryCornerTL, { borderColor: isDark ? '#ffffff' : '#000000' }]} />
@@ -836,32 +900,9 @@ const PurchaseSheetContent = React.memo(({ payload, isDark, insets, handleCancel
             <View style={[styles.entryDash, { backgroundColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)' }]} />
           </View>
         </View>
+      </View>
 
-        {/* Purchase Steps */}
-        <View style={[purchaseStyles.stepsContainer, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.03)' }]}>
-          <Text style={[purchaseStyles.stepsTitle, { color: isDark ? '#ffffff' : '#000000' }]}>
-            Follow these steps for safe purchase:
-          </Text>
-          {PURCHASE_STEPS.map((step, index) => (
-            <View key={index} style={purchaseStyles.stepRow}>
-              <Text style={[purchaseStyles.stepNumber, { color: isDark ? '#ffffff' : '#000000' }]}>
-                Step {index + 1}:
-              </Text>
-              <Text style={[purchaseStyles.stepText, { color: isDark ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.85)' }]}>
-                {step}
-              </Text>
-            </View>
-          ))}
-        </View>
-
-        <View style={purchaseStyles.warningContainer}>
-          <Text style={purchaseStyles.warningText}>
-            Do not buy directly from a seller on WhatsApp, or you might lose your money.
-          </Text>
-        </View>
-      </ScrollView>
-
-      <View style={[styles.actionsRow, purchaseStyles.actionsRow, { paddingBottom: Math.max(insets.bottom + 12, 20) }]}>
+      <View style={[styles.actionsRow, purchaseStyles.actionsRow, { paddingBottom: Math.max(insets.bottom + 8, 16) }]}>
         <Pressable
           style={[styles.btn, styles.cancelBtn, { borderColor: isDark ? '#eaf4f4' : '#333333' }]}
           onPress={handleCancel}
@@ -920,24 +961,28 @@ const gameCreationStyles = StyleSheet.create({
 
 const purchaseStyles = StyleSheet.create({
   sheetContent: {
-    flex: 1,
+    paddingHorizontal: 16,
+    paddingTop: 0,
+    paddingBottom: 4,
   },
-  contentMaxHeight: {
-    maxHeight: Math.round(SCREEN_HEIGHT * 0.9) - 20,
+  contentBody: {
+    gap: IS_COMPACT_SCREEN ? 6 : 10,
   },
-  scrollContent: {
-    paddingBottom: 8,
-    gap: 4,
+  priceCard: {
+    paddingVertical: IS_COMPACT_SCREEN ? 6 : 10,
   },
   actionsRow: {
-    marginTop: 12,
-    paddingTop: 4,
+    flexShrink: 0,
+    marginTop: 10,
+    paddingTop: 12,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(128, 128, 128, 0.25)',
   },
   sellerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
-    paddingBottom: 8,
+    paddingVertical: IS_COMPACT_SCREEN ? 6 : 10,
+    paddingBottom: IS_COMPACT_SCREEN ? 4 : 6,
   },
   sellerAvatar: {
     width: 44,
@@ -983,49 +1028,157 @@ const purchaseStyles = StyleSheet.create({
     flex: 1,
     fontWeight: '500',
   },
-  warningContainer: {
-    padding: 12,
-    borderRadius: 8,
-    borderWidth: 1.5,
-    borderColor: '#FF4444',
-    marginTop: 14,
-    marginBottom: 8,
+  guideCard: {
+    position: 'relative',
+    marginTop: 0,
+    marginBottom: 0,
+    paddingVertical: IS_COMPACT_SCREEN ? 10 : 12,
+    paddingHorizontal: IS_COMPACT_SCREEN ? 10 : 12,
+    borderWidth: 1,
+    borderRadius: 0,
+    width: '100%',
+    gap: IS_COMPACT_SCREEN ? 5 : 8,
+  },
+  guideCardCompact: {
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+    gap: 4,
+  },
+  guideCorner: {
+    position: 'absolute',
+    width: 10,
+    height: 10,
+  },
+  guideCornerTL: {
+    top: -1,
+    left: -1,
+    borderTopWidth: 2,
+    borderLeftWidth: 2,
+  },
+  guideCornerTR: {
+    top: -1,
+    right: -1,
+    borderTopWidth: 2,
+    borderRightWidth: 2,
+  },
+  guideCornerBL: {
+    bottom: -1,
+    left: -1,
+    borderBottomWidth: 2,
+    borderLeftWidth: 2,
+  },
+  guideCornerBR: {
+    bottom: -1,
+    right: -1,
+    borderBottomWidth: 2,
+    borderRightWidth: 2,
+  },
+  guideTagLine: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 2,
+  },
+  guideDash: {
+    flex: 1,
+    height: 1,
+  },
+  guideTag: {
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 2.5,
+  },
+  guideSubtitle: {
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 0.3,
+    marginBottom: 2,
+  },
+  guideDividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginTop: 4,
+    marginBottom: 2,
+  },
+  guideDividerLine: {
+    flex: 1,
+    height: 1,
+  },
+  guideWarningChip: {
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderWidth: 1,
+    borderRadius: 0,
+  },
+  guideWarningChipText: {
+    fontSize: 9,
+    fontWeight: '800',
+    letterSpacing: 2,
+    color: '#FF4444',
+  },
+  warningBlock: {
+    flexShrink: 0,
+    marginTop: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderRadius: 0,
+    gap: 8,
+    width: '100%',
+  },
+  warningBlockCompact: {
+    marginTop: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+    gap: 6,
   },
   warningText: {
     fontSize: 12,
     lineHeight: 18,
     fontWeight: '600',
-    textAlign: 'center',
+    textAlign: 'left',
     color: '#FF4444',
+    flexShrink: 0,
+    width: '100%',
+    letterSpacing: 0.1,
   },
-  stepsContainer: {
-    padding: 14,
-    borderRadius: 12,
-    gap: 10,
-    marginTop: 12,
-    marginBottom: 0,
+  compactWarningText: {
+    fontSize: 11,
+    lineHeight: 17,
   },
-  stepsTitle: {
-    fontSize: 13,
-    fontWeight: '700',
-    marginBottom: 2,
+  compactText: {
+    fontSize: 11,
+    lineHeight: 16,
   },
   stepRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 6,
+    gap: 10,
+    width: '100%',
   },
-  stepNumber: {
-    fontSize: 12,
-    lineHeight: 18,
-    fontWeight: '700',
+  stepBadge: {
+    minWidth: 28,
+    height: 22,
+    borderWidth: 1,
+    borderRadius: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
     flexShrink: 0,
+  },
+  stepBadgeText: {
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 1,
+    fontVariant: ['tabular-nums'],
   },
   stepText: {
     flex: 1,
+    flexShrink: 1,
     fontSize: 12,
     lineHeight: 18,
     fontWeight: '500',
+    paddingTop: 1,
   },
 })
 
@@ -1063,7 +1216,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
   },
   purchaseSheetContainer: {
-    maxHeight: Math.round(SCREEN_HEIGHT * 0.9),
+    maxHeight: Math.round(SCREEN_HEIGHT * 0.88),
   },
   dragHandle: {
     alignItems: "center",

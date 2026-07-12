@@ -7,7 +7,7 @@ import {
   Home01Icon,
   GameController03Icon,
   StoreIcon,
-  Share02Icon,
+  ShoppingBasket01Icon,
   Notification01Icon,
 } from '@hugeicons/core-free-icons';
 
@@ -25,7 +25,7 @@ const TAB_ICONS = {
   HomeTab: Home01Icon,
   OpenGamesTab: GameController03Icon,
   StoreTab: StoreIcon,
-  BuySellTab: Share02Icon,
+  BuySellTab: ShoppingBasket01Icon,
   Notification: Notification01Icon,
 };
 
