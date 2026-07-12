@@ -15,8 +15,8 @@ const rejectSessionExpired = async () => {
 
 // Central API client
 export const API = axios.create({
-  // baseURL: "https://level.com.np",
-  baseURL: "http://192.168.1.149:8000", // Update with your backend URL
+  baseURL: "https://level.com.np",
+  // baseURL: "http://192.168.1.149:8000", // Update with your backend URL
   headers: { "Content-Type": "application/json" },
   timeout: 30000,
 });
