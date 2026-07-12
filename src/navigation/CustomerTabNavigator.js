@@ -33,7 +33,7 @@ const TAB_CONFIG = [
   { name: 'HomeTab', component: Home, label: 'Home' },
   { name: 'OpenGamesTab', component: OpenGames, label: 'Matches' },
   { name: 'StoreTab', component: GameStores, label: 'Store' },
-  { name: 'BuySellTab', component: BuySell, label: 'Buy & Sell' },
+  { name: 'BuySellTab', component: BuySell, label: 'Buy&Sell' },
   { name: 'Notification', component: Notify, label: 'Notifications' },
 ];
 

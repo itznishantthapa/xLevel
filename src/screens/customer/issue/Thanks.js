@@ -1,5 +1,5 @@
-import React from 'react'
-import { StyleSheet, Text, View, StatusBar, Pressable } from 'react-native'
+import React, { useCallback, useEffect } from 'react'
+import { StyleSheet, Text, View, StatusBar, Pressable, BackHandler } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { AppIcon } from '../../../components/common/AppIcon'
 import { ArrowLeft01Icon, AlertCircleIcon } from '@hugeicons/core-free-icons'
@@ -7,10 +7,51 @@ import { iconSize } from '../../../theme/typography'
 import { useNavigation } from '@react-navigation/native'
 import { useThemeStore } from '../../../store/themeStore'
 
-const Thanks = () => {
+const Thanks = ({ route }) => {
+  const {
+    title = 'Thank You!',
+    subtitle = 'Your report has been submitted successfully',
+    description = 'Our moderation team will review this report and take appropriate action within 24-48 hours.',
+    backInstruction = 'You have blocked the user. Refresh to update.',
+    hideBackInstruction = false,
+    hideDescription = false,
+    returnToHome = false,
+  } = route?.params || {}
+
   const { isLight } = useThemeStore()
   const navigation = useNavigation()
   const insets = useSafeAreaInsets()
+
+  const handleBack = useCallback(() => {
+    if (returnToHome) {
+      navigation.reset({
+        index: 0,
+        routes: [
+          {
+            name: 'customerTabs',
+            state: {
+              index: 0,
+              routes: [{ name: 'HomeTab' }],
+            },
+          },
+        ],
+      })
+      return
+    }
+
+    navigation.goBack()
+  }, [navigation, returnToHome])
+
+  useEffect(() => {
+    if (!returnToHome) return undefined
+
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      handleBack()
+      return true
+    })
+
+    return () => subscription.remove()
+  }, [returnToHome, handleBack])
 
   const colors = {
     background: isLight ? "#ffffff" : "#000000",
@@ -37,7 +78,7 @@ const Thanks = () => {
       <View style={styles.header}>
         <Pressable
           style={styles.backButton}
-          onPress={() => navigation.goBack()}
+          onPress={handleBack}
         >
           <AppIcon icon={ArrowLeft01Icon} size={iconSize.lg} color={colors.text} />
         </Pressable>
@@ -52,25 +93,29 @@ const Thanks = () => {
 
         <View style={styles.messageContainer}>
           <Text style={[styles.title, { color: colors.text }]}>
-            Thank You!
+            {title}
           </Text>
 
           <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-            Your report has been submitted successfully
+            {subtitle}
           </Text>
 
-          <View style={[styles.descriptionContainer, { backgroundColor: colors.cardBackground }]}>
-            <Text style={[styles.description, { color: colors.textSecondary }]}>
-              Our moderation team will review this report and take appropriate action within 24-48 hours.
+          {!hideDescription && description ? (
+            <View style={[styles.descriptionContainer, { backgroundColor: colors.cardBackground }]}>
+              <Text style={[styles.description, { color: colors.textSecondary }]}>
+                {description}
+              </Text>
+            </View>
+          ) : null}
+        </View>
+
+        {!hideBackInstruction && backInstruction ? (
+          <View style={styles.backInstructionContainer}>
+            <Text style={[styles.backInstructionText, { color: colors.textSecondary }]}>
+              {backInstruction}
             </Text>
           </View>
-        </View>
-
-        <View style={styles.backInstructionContainer}>
-          <Text style={[styles.backInstructionText, { color: colors.textSecondary }]}>
-            You have blocked the user. Refresh to update.
-          </Text>
-        </View>
+        ) : null}
       </View>
     </View>
   )

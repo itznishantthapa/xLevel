@@ -62,6 +62,7 @@ export const endpoints = {
   //reports
   submitReport:"/api/reports/create/",
   getReports:"/api/reports/my-reports/",
+  checkPlayerDeviceActivity: "/api/flaggedevice/check-player-device-activity/",
 
   //Guides
   getGuides:"/api/guide/",

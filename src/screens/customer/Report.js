@@ -3,12 +3,53 @@ import { View, Text, StyleSheet, StatusBar, Pressable, Image, Modal, TouchableOp
 import { useNavigation } from '@react-navigation/native';
 import { useThemeStore } from '../../store/themeStore';
 import { AppIcon } from '../../components/common/AppIcon';
-import { Flag01Icon, ImageAdd01Icon } from '@hugeicons/core-free-icons';
+import { Flag01Icon, ImageAdd01Icon, CheckIcon, InformationCircleIcon, AlertCircleIcon } from '@hugeicons/core-free-icons';
 import * as ImagePicker from 'expo-image-picker';
 import Toast from 'react-native-simple-toast';
-import { CreateGameLayout, SectionTitle } from '../../component/customer/createGame';
+import { CreateGameLayout } from '../../component/customer/createGame';
 import { useCreateReport } from '../../queries/useMutation/useCreateReport';
-import { spacing, iconSize } from '../../theme/typography';
+import { ReportAPI } from '../../api/reportApi';
+import { useAuthStore } from '../../store/authStore';
+import { spacing, iconSize, fontSize, radius } from '../../theme/typography';
+
+const REPORT_TYPES = [
+    { id: 'fairness', label: 'Check Fairness', description: 'Detect & ban unfair opponent' },
+    { id: 'game_issue', label: 'Game Issue', description: 'Report a problem during the match' },
+    { id: 'refund_agreement', label: 'Refund Agreement', description: 'Request a mutual refund agreement' },
+];
+
+const REPORT_DETAILS = {
+  game_issue:
+    'Tapai ko match ma k-kasto problem aako chha hami lai explain garnus and screenshots pni dinu hos. All 3 screenshots required.\n[ False information may result in -20 points ]',
+  refund_agreement:
+    'Both players le Refund Agreement garnu vyo vni entry fee refund paunu huncha instantly.\n[ Notification & Guide will be delivered to your opponent after you submit the request ]',
+  fairness:
+    'Please check the fairness of your opponent before or after the match. If unusual activity is found, we will ban your opponent and refund your entry fee instantly.',
+};
+
+const FAIRNESS_STEP_DELAY_MS = 3000;
+const FAIRNESS_NAV_DELAY_MS = 3000;
+
+const FAIRNESS_STEPS = {
+  actionTaken: [
+    'Checking fairness...',
+    'Checking device activity...',
+    'Checking player activity...',
+    'Panel detected...',
+    'Banning player...',
+    'Refunding your entry fee...',
+  ],
+  noAction: [
+    'Checking fairness...',
+    'Checking device activity...',
+    'Checking player activity...',
+    'Seems like fair opponent...',
+    'No action taken...',
+    'Thank you for checking fairness!',
+  ],
+};
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const Report = ({ route }) => {
     const navigation = useNavigation();
@@ -17,7 +58,7 @@ const Report = ({ route }) => {
     const { mutateAsync: createReport } = useCreateReport();
 
     // State management
-    const [reportType, setReportType] = useState('game_issue'); // 'refund_agreement' or 'game_issue' - Default to game_issue
+    const [reportType, setReportType] = useState('fairness');
     const [description, setDescription] = useState('');
     const [evidence1, setEvidence1] = useState(null);
     const [evidence2, setEvidence2] = useState(null);
@@ -26,7 +67,31 @@ const Report = ({ route }) => {
     const [imageResult2, setImageResult2] = useState(null);
     const [imageResult3, setImageResult3] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [isFairnessBusy, setIsFairnessBusy] = useState(false);
+    const [isFairnessChecking, setIsFairnessChecking] = useState(false);
+    const [fairnessLoaderMessage, setFairnessLoaderMessage] = useState('Checking fairness...');
     const [previewImage, setPreviewImage] = useState(null);
+
+    const colors = {
+        background: isLight ? '#ffffff' : '#000000',
+        cardBackground: isLight ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.1)',
+        inputBackground: isLight ? '#f5f5f5' : '#1a1a1a',
+        text: isLight ? '#000000' : '#ffffff',
+        textSecondary: isLight ? 'rgba(51, 51, 51, 0.7)' : 'rgba(255, 255, 255, 0.7)',
+        textTertiary: isLight ? '#666666' : '#999999',
+        border: isLight ? '#eaeaea' : 'rgba(255, 255, 255, 0.3)',
+        selected: isLight ? '#000000' : '#ffffff',
+        unselected: isLight ? '#cccccc' : '#666666',
+    };
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            setIsFairnessChecking(false);
+            setIsFairnessBusy(false);
+        });
+
+        return unsubscribe;
+    }, [navigation]);
 
  
 
@@ -48,7 +113,57 @@ const Report = ({ route }) => {
     };
 
     // Submit handler
+    const runFairnessStepSequence = async (actionTaken) => {
+        const steps = actionTaken ? FAIRNESS_STEPS.actionTaken : FAIRNESS_STEPS.noAction;
+
+        for (const step of steps) {
+            setFairnessLoaderMessage(step);
+            await sleep(FAIRNESS_STEP_DELAY_MS);
+        }
+    };
+
+    const handleCheckFairness = async () => {
+        if (!game?.id) {
+            return;
+        }
+
+        setIsFairnessBusy(true);
+
+        try {
+            const data = await ReportAPI.checkPlayerDeviceActivity({ challenge_id: game.id });
+
+            setIsFairnessChecking(true);
+            setFairnessLoaderMessage('Checking fairness...');
+            await runFairnessStepSequence(Boolean(data?.action_taken));
+
+            if (data?.action_taken) {
+                await Promise.all([
+                    useAuthStore.getState().get_user(),
+                    sleep(FAIRNESS_NAV_DELAY_MS),
+                ]);
+                navigation.navigate('thanks', {
+                    subtitle: 'Thank you for supporting fair play!',
+                    hideDescription: true,
+                    hideBackInstruction: true,
+                    returnToHome: true,
+                });
+                return;
+            }
+
+            setIsFairnessChecking(false);
+        } catch (error) {
+            Toast.show(error?.message || 'Failed to check fairness', Toast.SHORT);
+        } finally {
+            setIsFairnessBusy(false);
+        }
+    };
+
     const handleSubmit = async () => {
+        if (reportType === 'fairness') {
+            await handleCheckFairness();
+            return;
+        }
+
         if (!reportType) {
             Toast.show("Please select a report type", Toast.SHORT);
             return;
@@ -121,49 +236,27 @@ const Report = ({ route }) => {
 
     // Game info display component
     const GameInfoHeader = () => (
-        <View style={[styles.section]}>
-            <View style={[styles.gameInfoContainer]}>
-                <AppIcon icon={Flag01Icon} size={iconSize.md} color={isLight ? "#333333" : "#ffffff"} />
-                <View style={styles.gameInfoItem}>
-                    <Text
-                        style={[
-                            styles.value,
-                            {
-                                color: isLight ? "#333333" : "#ffffff",
-                                borderBottomColor: isLight ? "#000000" : "#ffffff",
-                                marginLeft: 5
-                            }
-                        ]}
-                    >
-                        {game?.game?.name || "Game"}
+        <View style={styles.infoRow}>
+            <View style={[styles.infoCard, styles.infoCardGame, { backgroundColor: colors.cardBackground }]}>
+                <AppIcon icon={Flag01Icon} size={iconSize.md} color={colors.text} />
+                <View style={styles.infoTextContainer}>
+                    <Text style={[styles.infoTitle, { color: colors.textTertiary }]}>
+                        Game
                     </Text>
-                </View>
-                <View style={styles.gameInfoItem}>
-                    <Text
-                        style={[
-                            styles.value,
-                            {
-                                color: isLight ? "#333333" : "#ffffff",
-                                marginLeft: 5,
-                                borderBottomColor: isLight ? "#000000" : "#ffffff"
-                            }
-                        ]}
-                    >
-                        {game?.game?.game_mode || "Mode"}
+                    <Text style={[styles.infoValue, { color: colors.text }]} numberOfLines={1}>
+                    {game?.game?.name || 'Game'} · {game?.game?.game_mode || 'Mode'}
                     </Text>
+    
                 </View>
-                <View style={[styles.gameInfoItem, { position: 'absolute', right: 10 }]}>
-                    <Text
-                        style={[
-                            styles.value,
-                            {
-                                color: isLight ? "#333333" : "#ffffff",
-                                marginLeft: 5,
-                                borderBottomColor: isLight ? "#000000" : "#ffffff"
-                            }
-                        ]}
-                    >
-                        Reporting on Match #{game?.id || "N/A"}
+            </View>
+
+            <View style={[styles.infoCard, styles.infoCardMatch, { backgroundColor: colors.cardBackground }]}>
+                <View style={styles.infoTextContainer}>
+                    <Text style={[styles.infoTitle, { color: colors.textTertiary }]}>
+                        Match ID
+                    </Text>
+                    <Text style={[styles.infoValue, { color: colors.text }]} numberOfLines={1}>
+                        #{game?.id || 'N/A'}
                     </Text>
                 </View>
             </View>
@@ -171,15 +264,15 @@ const Report = ({ route }) => {
     );
 
     // Image picker button component
-    const ImagePickerButton = ({ evidence, onPress, title, isLight }) => (
+    const ImagePickerButton = ({ evidence, onPress, title }) => (
         <View style={styles.imagePickerSection}>
             <Pressable
                 style={[
                     styles.imagePickerButton,
                     {
-                        backgroundColor: isLight ? "#ffffff" : "#0a0a0a",
-                        borderColor: isLight ? "#000000" : "#ffffff",
-                        height: evidence ? 100 : 150,
+                        backgroundColor: colors.inputBackground,
+                        borderColor: colors.border,
+                        height: evidence ? 100 : 140,
                     }
                 ]}
                 onPress={() => {
@@ -198,28 +291,19 @@ const Report = ({ route }) => {
                             resizeMode="cover"
                         />
                         <Pressable onPress={onPress}>
-                            <Text style={[
-                                styles.imagePickerText,
-                                { color: isLight ? "#000000" : "#ffffff" }
-                            ]}>
-                                CHANGE
+                            <Text style={[styles.imagePickerActionText, { color: colors.textSecondary }]}>
+                                Change screenshot
                             </Text>
                         </Pressable>
                     </View>
                 ) : (
                     <View style={styles.placeholderContainer}>
-                        <AppIcon icon={ImageAdd01Icon} size={iconSize.xl} color={isLight ? "#000000" : "#ffffff"} />
-                        <Text style={[
-                            styles.imagePickerText,
-                            { color: isLight ? "#000000" : "#ffffff", marginTop: 8 }
-                        ]}>
-                            TAP TO UPLOAD
-                        </Text>
-                        <Text style={[
-                            styles.imagePickerText,
-                            { color: isLight ? "#000000" : "#ffffff", marginTop: 4, fontSize: 12, fontWeight: '600', opacity: 0.7, letterSpacing: 0.5 }
-                        ]}>
+                        <AppIcon icon={ImageAdd01Icon} size={iconSize.xl} color={colors.textTertiary} />
+                        <Text style={[styles.imagePickerText, { color: colors.textSecondary, marginTop: 8 }]}>
                             {title}
+                        </Text>
+                        <Text style={[styles.imagePickerHint, { color: colors.textTertiary }]}>
+                            Tap to upload
                         </Text>
                     </View>
                 )}
@@ -227,192 +311,150 @@ const Report = ({ route }) => {
         </View>
     );
 
+    const renderReportTypeOption = (type, index) => {
+        const isSelected = reportType === type.id;
+        const isLast = index === REPORT_TYPES.length - 1;
+
+        return (
+            <Pressable
+                key={type.id}
+                style={[
+                    styles.reportTypeOption,
+                    {
+                        borderBottomColor: colors.border,
+                        borderBottomWidth: isLast ? 0 : 1,
+                    }
+                ]}
+                onPress={() => setReportType(type.id)}
+            >
+                <View style={styles.reportTypeContent}>
+                    <View style={[
+                        styles.radioButton,
+                        {
+                            borderColor: isSelected ? colors.selected : colors.unselected,
+                            backgroundColor: isSelected ? colors.selected : 'transparent',
+                        }
+                    ]}>
+                        {isSelected && (
+                            <AppIcon icon={CheckIcon} size={iconSize.xs} color={isLight ? '#ffffff' : '#000000'} />
+                        )}
+                    </View>
+
+                    <View style={styles.reportTypeTextWrap}>
+                        <Text style={[styles.reportTypeLabel, { color: colors.text }]}>
+                            {type.label}
+                        </Text>
+                        <Text style={[styles.reportTypeDescription, { color: colors.textSecondary }]}>
+                            {type.description}
+                        </Text>
+                    </View>
+                </View>
+            </Pressable>
+        );
+    };
+
+    const submitButtonTitle = reportType === 'fairness' ? 'Check Fairness' : 'Submit Report';
+    const loaderMessage = isFairnessChecking
+        ? fairnessLoaderMessage
+        : 'Submitting report...';
+    const isSubmitDisabled = isLoading || isFairnessBusy || isFairnessChecking;
+
     return (
         <>
             <CreateGameLayout
                 title="Report Match"
                 isLight={isLight}
-                isLoading={isLoading}
+                isLoading={isLoading || isFairnessChecking}
+                isFormValid={!isSubmitDisabled}
                 onSubmit={handleSubmit}
-                buttonTitle="Submit Report"
-                loaderMessage="Submitting report..."
+                buttonTitle={submitButtonTitle}
+                loaderMessage={loaderMessage}
             >
-                {/* Game Info */}
-                <GameInfoHeader />
+                <View style={styles.container}>
+                    <GameInfoHeader />
 
-                {/* Report Type Selection Section */}
-                <View style={styles.section}>
-                    <SectionTitle
-                        title="Report Type"
-                        isLight={isLight}
-                    />
-
-                    <Text style={[
-                        styles.subtitle,
-                        { color: isLight ? '#333333' : '#ffffff', fontWeight: '600', letterSpacing: 0.5 }
-                    ]}>
-                        SELECT REPORT TYPE
-                    </Text>
-
-                    {/* Report Type Buttons */}
-                    <View style={styles.reportTypeContainer}>
-                        <Pressable
-                            style={[
-                                styles.reportTypeButton,
-                                {
-                                    backgroundColor: reportType === 'game_issue'
-                                        ? (isLight ? '#000000' : '#ffffff')
-                                        : (isLight ? '#ffffff' : '#0a0a0a'),
-                                    borderColor: reportType === 'game_issue' ? (isLight ? '#ffffff' : '#000000') : (isLight ? '#000000' : '#ffffff'),
-                                }
-                            ]}
-                            onPress={() => setReportType('game_issue')}
-                        >
-                            <View style={styles.buttonContent}>
-                                <Text style={[
-                                    styles.reportTypeButtonText,
-                                    {
-                                        color: reportType === 'game_issue'
-                                            ? (isLight ? '#ffffff' : '#000000')
-                                            : (isLight ? '#000000' : '#ffffff'),
-                                        letterSpacing: 1.2,
-                                    }
-                                ]}>
-                                    ISSUE
-                                </Text>
-                            </View>
-                        </Pressable>
-
-                        <Pressable
-                            style={[
-                                styles.reportTypeButton,
-                                {
-                                    backgroundColor: reportType === 'refund_agreement'
-                                        ? (isLight ? '#000000' : '#ffffff')
-                                        : (isLight ? '#ffffff' : '#0a0a0a'),
-                                    borderColor: reportType === 'refund_agreement' ? (isLight ? '#ffffff' : '#000000') : (isLight ? '#000000' : '#ffffff'),
-                                }
-                            ]}
-                            onPress={() => setReportType('refund_agreement')}
-                        >
-                            <View style={styles.buttonContent}>
-                                <Text style={[
-                                    styles.reportTypeButtonText,
-                                    {
-                                        color: reportType === 'refund_agreement'
-                                            ? (isLight ? '#ffffff' : '#000000')
-                                            : (isLight ? '#000000' : '#ffffff'),
-                                        letterSpacing: 1.2,
-                                    }
-                                ]}>
-                                    REFUND
-                                </Text>
-                            </View>
-                        </Pressable>
+                    <View style={styles.section}>
+                        <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                            Report type
+                        </Text>
+                        <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
+                            Choose how you want to report this match
+                        </Text>
                     </View>
-                </View>
 
-                {/* Report Details Section */}
-                <View style={styles.detailsSection}>
-                    <View style={[
-                        styles.detailsContainer,
-                        { borderColor: isLight ? '#000000' : '#ffffff' }
-                    ]}>
-                        {/* Header with accent line */}
+                    <View style={[styles.reportTypeList, { backgroundColor: colors.cardBackground }]}>
+                        {REPORT_TYPES.map((type, index) => renderReportTypeOption(type, index))}
+                    </View>
+
+                    <View style={[styles.detailsCard, { backgroundColor: colors.cardBackground }]}>
                         <View style={styles.detailsHeader}>
-                            <View style={[
-                                styles.accentLine,
-                                { backgroundColor: isLight ? '#000000' : '#ffffff' }
-                            ]} />
-                            <SectionTitle
-                                title="REPORT DETAILS"
-                                isLight={isLight}
-                            />
-                        </View>
-
-                        {/* Details content */}
-                        <View style={styles.detailsContent}>
-                            <Text style={[
-                                styles.detailsText,
-                                { color: isLight ? '#333333' : '#ffffff' }
-                            ]}>
-                                {reportType === 'refund_agreement'
-                                    ? 'Both players le Refund Agreement garnu vyo vni Entry Point refund paunu huncha.\n(Notification & Guide will be delivered to your opponent)'
-                                    : 'Tapai ko match ma k-kasto problem aako chha hami lai explain garnus and screenshots pni dinu hos. All 3 screenshots required.\n(False info may result in -20 points)'}
+                            <AppIcon icon={AlertCircleIcon} size={iconSize.md} color={colors.text} />
+                            <Text style={[styles.detailsTitle, { color: colors.text }]}>
+                                What happens next
                             </Text>
                         </View>
-
-                        {/* Bottom accent line */}
-                        <View style={[
-                            styles.bottomAccentLine,
-                            { backgroundColor: isLight ? '#000000' : '#ffffff' }
-                        ]} />
+                        <Text style={[styles.detailsText, { color: colors.textSecondary }]}>
+                            {REPORT_DETAILS[reportType]}
+                        </Text>
                     </View>
 
-                    {/* Description and Evidence Upload Section - Only for Game Issue */}
                     {reportType === 'game_issue' && (
                         <>
-                            {/* Description Input */}
-                            <View style={styles.descriptionSection}>
-                                <View style={styles.inputLabel}>
-                                    <View style={[styles.labelDot, { backgroundColor: isLight ? '#000000' : '#ffffff' }]} />
-                                    <Text style={[styles.labelText, { color: isLight ? '#000000' : '#ffffff' }]}>
-                                        DESCRIPTION
-                                    </Text>
-                                </View>
-                                <View
-                                    style={[
-                                        styles.descriptionContainer,
-                                        {
-                                            backgroundColor: isLight ? '#ffffff' : '#0a0a0a',
-                                            borderColor: isLight ? '#000000' : '#ffffff',
-                                        }
-                                    ]}
-                                >
-                                    <TextInput
-                                        style={[
-                                            styles.descriptionInput,
-                                            { color: isLight ? "#000000" : "#ffffff" }
-                                        ]}
-                                        placeholder="Describe the issue in detail..."
-                                        placeholderTextColor={isLight ? "#999999" : "#666666"}
-                                        value={description}
-                                        onChangeText={setDescription}
-                                        multiline
-                                        textAlignVertical="top"
-                                    />
-                                </View>
+                            <View style={styles.section}>
+                                <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                                    Description
+                                </Text>
+                                <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
+                                    Explain the issue in detail
+                                </Text>
                             </View>
 
-                            {/* Evidence Upload */}
-                            <View style={styles.evidenceSection}>
-                                <View style={styles.inputLabel}>
-                                    <View style={[styles.labelDot, { backgroundColor: isLight ? '#000000' : '#ffffff' }]} />
-                                    <Text style={[styles.labelText, { color: isLight ? '#000000' : '#ffffff' }]}>
-                                        EVIDENCE
-                                    </Text>
-                                </View>
-                                <ImagePickerButton
-                                    evidence={evidence1}
-                                    onPress={() => pickImage(setEvidence1, setImageResult1)}
-                                    title="Screenshot 1"
-                                    isLight={isLight}
-                                />
-                                <ImagePickerButton
-                                    evidence={evidence2}
-                                    onPress={() => pickImage(setEvidence2, setImageResult2)}
-                                    title="Screenshot 2"
-                                    isLight={isLight}
-                                />
-                                <ImagePickerButton
-                                    evidence={evidence3}
-                                    onPress={() => pickImage(setEvidence3, setImageResult3)}
-                                    title="Screenshot 3"
-                                    isLight={isLight}
+                            <View style={[
+                                styles.descriptionContainer,
+                                {
+                                    backgroundColor: colors.inputBackground,
+                                    borderColor: colors.border,
+                                }
+                            ]}>
+                                <TextInput
+                                    style={[styles.descriptionInput, { color: colors.text }]}
+                                    placeholder="Describe the issue in detail..."
+                                    placeholderTextColor={colors.textTertiary}
+                                    value={description}
+                                    onChangeText={setDescription}
+                                    multiline
+                                    textAlignVertical="top"
                                 />
                             </View>
+
+                            <View style={styles.section}>
+                                <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                                    Evidence
+                                </Text>
+                                <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
+                                    Upload all 3 screenshots
+                                </Text>
+                            </View>
+
+                            <ImagePickerButton
+                                evidence={evidence1}
+                                onPress={() => pickImage(setEvidence1, setImageResult1)}
+                                title="Screenshot 1"
+                            />
+                            <ImagePickerButton
+                                evidence={evidence2}
+                                onPress={() => pickImage(setEvidence2, setImageResult2)}
+                                title="Screenshot 2"
+                            />
+                            <ImagePickerButton
+                                evidence={evidence3}
+                                onPress={() => pickImage(setEvidence3, setImageResult3)}
+                                title="Screenshot 3"
+                            />
                         </>
                     )}
+
+
                 </View>
             </CreateGameLayout>
 
@@ -451,146 +493,138 @@ const Report = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
-    section: {
-        marginBottom: 12,
-    },
-    gameInfoContainer: {
-        flexDirection: "row",
-        justifyContent: "flex-start",
-        alignItems: "center",
-        paddingVertical: 8,
-        gap: 4,
-    },
-    gameInfoItem: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    value: {
-        fontSize: 14,
-        fontWeight: "500",
-        textAlign: "center",
-        borderBottomWidth: 1,
-    },
-    subtitle: {
-        fontSize: 12,
-        marginBottom: 16,
-        textTransform: 'uppercase',
-        fontWeight: '700',
-        letterSpacing: 1,
-    },
-    reportTypeContainer: {
-        flexDirection: 'row',
-        gap: 14,
-        marginBottom: 24,
-    },
-    reportTypeButton: {
+    container: {
         flex: 1,
-        paddingVertical: 18,
-        paddingHorizontal: 16,
-        borderWidth: 2,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 1,
+        gap: spacing.xl,
     },
-    buttonContent: {
+    infoRow: {
+        flexDirection: 'row',
+        gap: spacing.md,
+    },
+    infoCard: {
+        flexDirection: 'row',
+        padding: spacing.lg,
+        borderRadius: radius.md,
         alignItems: 'center',
+        gap: spacing.md,
+        minHeight: 56,
+    },
+    infoCardGame: {
+        flex: 1,
+        minWidth: 0,
+    },
+    infoCardMatch: {
+        width: 96,
+        flexShrink: 0,
+    },
+    infoTextContainer: {
+        flex: 1,
+        minWidth: 0,
         justifyContent: 'center',
     },
-    reportTypeButtonText: {
-        fontSize: 16,
-        fontWeight: '800',
-        letterSpacing: 1.5,
+    infoTitle: {
+        fontSize: fontSize.sm,
+        fontWeight: '500',
+        marginBottom: 2,
         textTransform: 'uppercase',
+        letterSpacing: 0.5,
     },
-    
-    // Details Section Styles
-    detailsSection: {
-        marginBottom: 20,
+    infoValue: {
+        fontSize: fontSize.base,
+        fontWeight: '600',
+        lineHeight: 18,
     },
-    detailsContainer: {
-        borderWidth: 2,
-        borderRadius: 1,
+    infoValueSecondary: {
+        fontSize: fontSize.sm,
+        fontWeight: '500',
+        lineHeight: 16,
+        marginTop: 2,
+    },
+    section: {
+        gap: spacing.xs,
+    },
+    sectionTitle: {
+        fontSize: fontSize.lg,
+        fontWeight: '600',
+        lineHeight: 22,
+    },
+    sectionSubtitle: {
+        fontSize: fontSize.base,
+        lineHeight: 18,
+    },
+    reportTypeList: {
+        borderRadius: radius.lg,
         overflow: 'hidden',
-        marginBottom: 20,
+    },
+    reportTypeOption: {
+        paddingVertical: spacing.lg,
+        paddingHorizontal: spacing.xl,
+    },
+    reportTypeContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: spacing.lg,
+    },
+    radioButton: {
+        width: 20,
+        height: 20,
+        borderRadius: 10,
+        borderWidth: 2,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    reportTypeTextWrap: {
+        flex: 1,
+        gap: 2,
+    },
+    reportTypeLabel: {
+        fontSize: fontSize.md,
+        fontWeight: '600',
+    },
+    reportTypeDescription: {
+        fontSize: fontSize.sm,
+        lineHeight: 16,
+    },
+    detailsCard: {
+        borderRadius: radius.lg,
+        padding: spacing.xl,
+        gap: spacing.md,
     },
     detailsHeader: {
-        paddingHorizontal: 16,
-        paddingVertical: 12,
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 12,
+        gap: spacing.md,
     },
-    accentLine: {
-        width: 4,
-        height: 24,
-    },
-    detailsContent: {
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        minHeight: 60,
-        justifyContent: 'center',
+    detailsTitle: {
+        fontSize: fontSize.md,
+        fontWeight: '600',
     },
     detailsText: {
-        fontSize: 13,
+        fontSize: fontSize.base,
         lineHeight: 20,
-        fontWeight: '500',
-        letterSpacing: 0.3,
-    },
-    bottomAccentLine: {
-        height: 2,
-        width: '100%',
-    },
-    
-    // Input Section Styles
-    inputLabel: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 8,
-        marginBottom: 12,
-        paddingVertical: 8,
-    },
-    labelDot: {
-        width: 6,
-        height: 6,
-        borderRadius: 1,
-    },
-    labelText: {
-        fontSize: 12,
-        fontWeight: '800',
-        letterSpacing: 1.2,
-        textTransform: 'uppercase',
-    },
-    
-    descriptionSection: {
-        marginBottom: 20,
     },
     descriptionContainer: {
         width: '100%',
-        borderWidth: 2,
-        borderRadius: 1,
+        borderWidth: 1,
+        borderRadius: radius.md,
         overflow: 'hidden',
-        padding: 14,
+        padding: spacing.lg,
         minHeight: 120,
     },
     descriptionInput: {
         flex: 1,
-        fontSize: 14,
+        fontSize: fontSize.md,
         lineHeight: 20,
         textAlignVertical: 'top',
         fontWeight: '500',
     },
-    
-    evidenceSection: {
-        marginBottom: 16,
-    },
     imagePickerSection: {
-        marginBottom: 14,
+        marginBottom: spacing.md,
     },
     imagePickerButton: {
         width: '100%',
-        borderWidth: 2,
-        borderRadius: 1,
+        borderWidth: 1,
+        borderRadius: radius.md,
         overflow: 'hidden',
         justifyContent: 'center',
         alignItems: 'center',
@@ -600,7 +634,7 @@ const styles = StyleSheet.create({
         height: '100%',
         justifyContent: 'center',
         alignItems: 'center',
-        gap: 4,
+        gap: spacing.xs,
     },
     selectedImageContainer: {
         width: '100%',
@@ -608,20 +642,27 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingHorizontal: 16,
+        paddingHorizontal: spacing.xl,
     },
     selectedImage: {
         width: 70,
         height: 70,
-        borderRadius: 2,
+        borderRadius: radius.sm,
     },
     imagePickerText: {
-        fontSize: 13,
-        fontWeight: '700',
-        letterSpacing: 0.8,
+        fontSize: fontSize.md,
+        fontWeight: '500',
         textAlign: 'center',
-        textTransform: 'uppercase',
     },
+    imagePickerHint: {
+        fontSize: fontSize.sm,
+        textAlign: 'center',
+    },
+    imagePickerActionText: {
+        fontSize: fontSize.base,
+        fontWeight: '500',
+    },
+
 });
 
 export default Report;
