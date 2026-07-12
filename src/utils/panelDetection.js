@@ -1,5 +1,7 @@
 import { NativeModules, Platform } from 'react-native';
 
+import { getCheatKeywords } from '../service/anticheatService';
+
 const { AnticheatModule } = NativeModules;
 
 const formatFlaggedWord = (matches) => {
@@ -16,7 +18,8 @@ export const scanForPanels = async () => {
   }
 
   try {
-    const flaggedApps = await AnticheatModule.scanDeviceForPanels();
+    const keywords = await getCheatKeywords();
+    const flaggedApps = await AnticheatModule.scanDeviceForPanels(keywords);
     const apps = Array.isArray(flaggedApps) ? flaggedApps : [];
     const flagged = apps.length > 0;
 

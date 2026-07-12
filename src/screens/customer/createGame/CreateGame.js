@@ -1,13 +1,15 @@
 "use client"
 
 import { useState, useMemo, useRef, useCallback } from "react"
-import { Keyboard } from "react-native"
+import { Keyboard, Platform } from "react-native"
 import { useThemeStore } from "../../../store/themeStore"
 import { useNavigation } from "@react-navigation/native"
 import { useQueryClient } from "@tanstack/react-query"
 import Toast from "react-native-simple-toast"
 
 import { useCreateMatch } from "../../../queries/useMutation/useCreateMatch"
+
+const getDeviceType = () => (Platform.OS === "ios" ? "iPhone" : "Android")
 
 // Import shared components
 import {
@@ -41,7 +43,6 @@ const CreateGame = ({ route }) => {
     game_round: 13,
     gun_attribute_status: false,
     game_pot: "",
-    device_type: "Mobile",
     default_coins: "500",
     default_ep: "200",
     termsAccepted: false,
@@ -59,7 +60,6 @@ const CreateGame = ({ route }) => {
 
     return baseValidation &&
       gameSettings.game_round !== null &&
-      gameSettings.device_type !== "" &&
       gameSettings.default_coins !== "" &&
       gameSettings.default_ep !== "" &&
       gameSettings.termsAccepted &&
@@ -141,7 +141,7 @@ const CreateGame = ({ route }) => {
       gun_attribute: gameSettings.gun_attribute_status,
       default_coin: gameSettings.default_coins ? Number.parseInt(gameSettings.default_coins) : undefined,
       ep: gameSettings.default_ep ? Number.parseInt(gameSettings.default_ep) : undefined,
-      device_type: gameSettings.device_type,
+      device_type: getDeviceType(),
       fight_type: gameSettings.fight_type,
       is_free: false,
       entry_fee: gameSettings.game_pot ? Number.parseFloat(gameSettings.game_pot) : undefined,
@@ -221,15 +221,6 @@ const CreateGame = ({ route }) => {
             ]}
             currentValues={gameSettings}
             onSelect={handleOptionSelect}
-            isLight={isLight}
-          />
-
-          {/* Device Type Selection */}
-          <OptionsSection
-            title="Device Type"
-            options={["Mobile", "Emulator"]}
-            selectedValue={gameSettings.device_type}
-            onSelect={(value) => handleOptionSelect("device_type", value)}
             isLight={isLight}
           />
 

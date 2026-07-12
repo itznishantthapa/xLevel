@@ -11,6 +11,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 
@@ -29,8 +30,44 @@ public class AnticheatModule extends ReactContextBaseJavaModule {
         return "AnticheatModule";
     }
 
+    private boolean shouldSkipMatch(String packageId, String appLabel, String keyword) {
+        return "xit".equals(keyword)
+            && (packageId.contains("perplexity") || appLabel.contains("perplexity"));
+    }
+
+    private String[] parseKeywords(ReadableArray keywordsArray) {
+        if (keywordsArray == null || keywordsArray.size() == 0) {
+            return new String[0];
+        }
+
+        String[] cheatKeywords = new String[keywordsArray.size()];
+        int validCount = 0;
+
+        for (int i = 0; i < keywordsArray.size(); i++) {
+            String keyword = keywordsArray.getString(i);
+            if (keyword == null) {
+                continue;
+            }
+
+            String normalized = keyword.trim().toLowerCase();
+            if (normalized.isEmpty()) {
+                continue;
+            }
+
+            cheatKeywords[validCount++] = normalized;
+        }
+
+        if (validCount == cheatKeywords.length) {
+            return cheatKeywords;
+        }
+
+        String[] trimmedKeywords = new String[validCount];
+        System.arraycopy(cheatKeywords, 0, trimmedKeywords, 0, validCount);
+        return trimmedKeywords;
+    }
+
     @ReactMethod
-    public void scanDeviceForPanels(Promise promise) {
+    public void scanDeviceForPanels(ReadableArray keywordsArray, Promise promise) {
         Context context = reactContext.getApplicationContext();
         PackageManager pm = context.getPackageManager();
         WritableArray flaggedApps = Arguments.createArray();
@@ -39,18 +76,7 @@ public class AnticheatModule extends ReactContextBaseJavaModule {
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         List<ResolveInfo> launchableApps = pm.queryIntentActivities(intent, 0);
 
-        String[] cheatKeywords = {
-            "userz", "userzzz", "userzx", "fluorite", "spg4x", "jatodoshackers",
-            "xpro", "painel", "panel", "xit", "ffh4x", "matrix", "flutuante",
-            "senxit", "dark aura", "astute", "drip client", "m1nx", "pro panel",
-            "samsung panel", "brazilian panel", "freestyle panel", "raistar",
-            "white 444", "headshot", "only headshot", "vip panel", "xera panel",
-            "gangster", "konan", "imoba", "mod menu", "modmenu", "regedit",
-            "antenna hack", "steamer panel", "steamer x", "steamer mode", "streamer x",
-            "streamproof", "stemmerx", "stemmer x", "zarchiver", "mt manager", "mtmanager",
-            "ng esports", "nonstop gaming", "rig edit",
-            "lody.virtual", "parallel.space", "dualspace"
-        };
+        String[] cheatKeywords = parseKeywords(keywordsArray);
 
         for (ResolveInfo info : launchableApps) {
             if ((info.activityInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
@@ -59,6 +85,10 @@ public class AnticheatModule extends ReactContextBaseJavaModule {
 
                 for (String keyword : cheatKeywords) {
                     if (packageId.contains(keyword) || appLabel.contains(keyword)) {
+                        if (shouldSkipMatch(packageId, appLabel, keyword)) {
+                            continue;
+                        }
+
                         WritableMap match = Arguments.createMap();
                         match.putString("appName", info.loadLabel(pm).toString());
                         match.putString("packageName", info.activityInfo.packageName);

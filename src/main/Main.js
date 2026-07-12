@@ -25,6 +25,7 @@ import NoConnection from '../screens/NoConnection';
 import UpdateScreen from '../screens/UpdateScreen';
 import { useNetworkStatus } from '../hooks/useNetworkStatus';
 import { checkIfUpdateRequired } from '../service/versionService';
+import { prefetchCheatKeywords } from '../service/anticheatService';
 
 //============ Prevent Auto Hide Splash Screen ============
 SplashScreen.preventAutoHideAsync();
@@ -51,8 +52,11 @@ export default function RootLayout() {
 
   useEffect(() => {
     const init = async () => {
-      await checkVersion();
-      await initializeTheme();
+      await Promise.all([
+        checkVersion(),
+        prefetchCheatKeywords(),
+        initializeTheme(),
+      ]);
       await initAuth();
     };
     init();
@@ -115,7 +119,10 @@ export default function RootLayout() {
     <NoConnection
       onRetry={async () => {
         try {
-          await initializeTheme();
+          await Promise.all([
+            prefetchCheatKeywords(),
+            initializeTheme(),
+          ]);
           await initAuth();
         } catch {}
       }}
