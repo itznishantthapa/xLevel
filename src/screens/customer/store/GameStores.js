@@ -383,7 +383,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: spacing.md,
     alignItems: 'stretch',
-    marginTop: spacing.sm,
+    marginTop: spacing.md,
   },
   sectionAccent: {
     width: 3,
@@ -431,7 +431,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignSelf: 'center',
     rowGap: GRID_GAP,
-    marginTop: spacing.sm,
+    marginTop: spacing.md,
   },
   gridCell: {
     overflow: 'hidden',

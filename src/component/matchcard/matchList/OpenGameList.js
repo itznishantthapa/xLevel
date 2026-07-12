@@ -164,7 +164,7 @@ const OpenGameList = ({
 
       const success = await subscribeToTopic(topic);
       if (!success) {
-        Toast.show('Failed to turn on notifications. Please try again.', Toast.SHORT);
+        Toast.show('Unable to turn on', Toast.SHORT);
         return;
       }
 
@@ -183,7 +183,7 @@ const OpenGameList = ({
         if (__DEV__) console.log('Topic storage rollback error:', storageError);
       }
       setIsCreationSubscribed(false);
-      Toast.show('Failed to turn on notifications. Please try again.', Toast.SHORT);
+      Toast.show('Unable to turn on', Toast.SHORT);
       if (__DEV__) console.log(`Subscribe creation topic error (${topic}):`, error);
     } finally {
       setIsTopicLoading(false);
@@ -198,7 +198,7 @@ const OpenGameList = ({
     try {
       const success = await unsubscribeFromTopic(topic);
       if (!success) {
-        Toast.show('Failed to turn off notifications. Please try again.', Toast.SHORT);
+        Toast.show('Unable to turn off', Toast.SHORT);
         return;
       }
 
@@ -208,7 +208,7 @@ const OpenGameList = ({
       const compactName = getCompactGameName(gameName).toLowerCase();
       console.log(`turning off ${compactName} game Notification`);
     } catch (error) {
-      Toast.show('Failed to turn off notifications. Please try again.', Toast.SHORT);
+      Toast.show('Unable to turn off', Toast.SHORT);
       if (__DEV__) console.log(`Unsubscribe creation topic error (${topic}):`, error);
     } finally {
       setIsTopicLoading(false);

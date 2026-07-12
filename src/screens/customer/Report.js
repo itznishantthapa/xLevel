@@ -13,7 +13,7 @@ import { useAuthStore } from '../../store/authStore';
 import { spacing, iconSize, fontSize, radius } from '../../theme/typography';
 
 const REPORT_TYPES = [
-    { id: 'fairness', label: 'Check Fairness', description: 'Detect & ban unfair opponent' },
+    { id: 'fairness', label: 'Check Fairness', description: 'Detect & ban unfair opponent instantly' },
     { id: 'game_issue', label: 'Game Issue', description: 'Report a problem during the match' },
     { id: 'refund_agreement', label: 'Refund Agreement', description: 'Request a mutual refund agreement' },
 ];
@@ -22,7 +22,7 @@ const REPORT_DETAILS = {
   game_issue:
     'Tapai ko match ma k-kasto problem aako chha hami lai explain garnus and screenshots pni dinu hos. All 3 screenshots required.\n[ False information may result in -20 points ]',
   refund_agreement:
-    'Both players le Refund Agreement garnu vyo vni entry fee refund paunu huncha instantly.\n[ Notification & Guide will be delivered to your opponent after you submit the request ]',
+    'Both players le Refund Agreement garnu vyo vni entry fee refund paunu huncha instantly.\n[ Notification & Guide will be delivered to your opponent after you submit the report ]',
   fairness:
     'Please check the fairness of your opponent before or after the match. If unusual activity is found, we will ban your opponent and refund your entry fee instantly.',
 };
@@ -43,9 +43,9 @@ const FAIRNESS_STEPS = {
     'Checking fairness...',
     'Checking device activity...',
     'Checking player activity...',
-    'Seems like fair opponent...',
+    'Seems like fair a opponent...',
     'No action taken...',
-    'Thank you for checking fairness!',
+    'Fairness check completed!',
   ],
 };
 
