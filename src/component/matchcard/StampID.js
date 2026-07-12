@@ -21,11 +21,12 @@ const StampID = ({ gameId, isLight, compact = false }) => {
         borderColor: isLight ? '#333333' : '#eaf4f4',
         borderStyle: 'dashed',
         backgroundColor: isLight ? '#f5f5f5' : '#1a1a1a',
+        transform: [{ rotate: '-8deg' }],
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.15,
-        shadowRadius: 2,
-        elevation: 2,
+        shadowOffset: { width: 2, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        elevation: 3,
       }}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
