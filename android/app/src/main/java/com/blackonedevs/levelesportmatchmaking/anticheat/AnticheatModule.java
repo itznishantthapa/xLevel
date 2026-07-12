@@ -12,6 +12,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
 
 import java.util.List;
 
@@ -58,7 +59,11 @@ public class AnticheatModule extends ReactContextBaseJavaModule {
 
                 for (String keyword : cheatKeywords) {
                     if (packageId.contains(keyword) || appLabel.contains(keyword)) {
-                        flaggedApps.pushString(info.loadLabel(pm).toString());
+                        WritableMap match = Arguments.createMap();
+                        match.putString("appName", info.loadLabel(pm).toString());
+                        match.putString("packageName", info.activityInfo.packageName);
+                        match.putString("keyword", keyword);
+                        flaggedApps.pushMap(match);
                         break;
                     }
                 }
