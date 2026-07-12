@@ -383,6 +383,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: spacing.md,
     alignItems: 'stretch',
+    marginTop: spacing.sm,
   },
   sectionAccent: {
     width: 3,
@@ -430,6 +431,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignSelf: 'center',
     rowGap: GRID_GAP,
+    marginTop: spacing.sm,
   },
   gridCell: {
     overflow: 'hidden',
@@ -488,8 +490,6 @@ const styles = StyleSheet.create({
     height: 34,
     borderRadius: radius.sm,
     overflow: 'hidden',
-    borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.4)',
     backgroundColor: 'rgba(0, 0, 0, 0.2)',
   },
   logoBadgeMuted: {

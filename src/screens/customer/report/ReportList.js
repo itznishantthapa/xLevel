@@ -9,7 +9,7 @@ import {
   Cancel01Icon,
   RefreshIcon,
   Alert01Icon,
-  Share02Icon,
+  HandshakeIcon,
   Flag01Icon,
   Image01Icon,
   AlertCircleIcon,
@@ -102,7 +102,7 @@ const ReportList = () => {
       case 'game_issue':
         return <AppIcon icon={Alert01Icon} size={iconSize.sm} color="#ff4444" />;
       case 'refund_agreement':
-        return <AppIcon icon={Share02Icon} size={iconSize.sm} color="#00bf63" />;
+        return <AppIcon icon={HandshakeIcon} size={iconSize.sm} color="#00bf63" />;
       default:
         return <AppIcon icon={Flag01Icon} size={iconSize.sm} color={colors.text} />;
     }

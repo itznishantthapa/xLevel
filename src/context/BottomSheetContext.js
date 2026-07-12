@@ -813,11 +813,6 @@ const PurchaseSheetContent = React.memo(({ payload, isDark, insets, handleCancel
             },
           ]}
         >
-          <View style={[purchaseStyles.guideCorner, purchaseStyles.guideCornerTL, { borderColor: isDark ? '#ffffff' : '#000000' }]} />
-          <View style={[purchaseStyles.guideCorner, purchaseStyles.guideCornerTR, { borderColor: isDark ? '#ffffff' : '#000000' }]} />
-          <View style={[purchaseStyles.guideCorner, purchaseStyles.guideCornerBL, { borderColor: '#FF4444' }]} />
-          <View style={[purchaseStyles.guideCorner, purchaseStyles.guideCornerBR, { borderColor: '#FF4444' }]} />
-
           <View style={purchaseStyles.guideTagLine}>
             <View style={[purchaseStyles.guideDash, { backgroundColor: isDark ? 'rgba(255,255,255,0.22)' : 'rgba(0,0,0,0.16)' }]} />
             <Text style={[purchaseStyles.guideTag, { color: isDark ? '#ffffff' : '#000000' }]}>SAFE PURCHASE</Text>
@@ -1029,7 +1024,6 @@ const purchaseStyles = StyleSheet.create({
     fontWeight: '500',
   },
   guideCard: {
-    position: 'relative',
     marginTop: 0,
     marginBottom: 0,
     paddingVertical: IS_COMPACT_SCREEN ? 10 : 12,
@@ -1043,35 +1037,6 @@ const purchaseStyles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 8,
     gap: 4,
-  },
-  guideCorner: {
-    position: 'absolute',
-    width: 10,
-    height: 10,
-  },
-  guideCornerTL: {
-    top: -1,
-    left: -1,
-    borderTopWidth: 2,
-    borderLeftWidth: 2,
-  },
-  guideCornerTR: {
-    top: -1,
-    right: -1,
-    borderTopWidth: 2,
-    borderRightWidth: 2,
-  },
-  guideCornerBL: {
-    bottom: -1,
-    left: -1,
-    borderBottomWidth: 2,
-    borderLeftWidth: 2,
-  },
-  guideCornerBR: {
-    bottom: -1,
-    right: -1,
-    borderBottomWidth: 2,
-    borderRightWidth: 2,
   },
   guideTagLine: {
     flexDirection: 'row',
