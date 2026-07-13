@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, StatusBar, Pressable, Image, Modal, TouchableOpacity, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useThemeStore } from '../../store/themeStore';
@@ -43,7 +43,7 @@ const FAIRNESS_STEPS = {
     'Checking fairness...',
     'Checking device activity...',
     'Checking player activity...',
-    'Seems like fair a opponent...',
+    'Seems like a fair opponent...',
     'No action taken...',
     'Fairness check completed!',
   ],
@@ -71,6 +71,7 @@ const Report = ({ route }) => {
     const [isFairnessChecking, setIsFairnessChecking] = useState(false);
     const [fairnessLoaderMessage, setFairnessLoaderMessage] = useState('Checking fairness...');
     const [previewImage, setPreviewImage] = useState(null);
+    const submitLockRef = useRef(false);
 
     const colors = {
         background: isLight ? '#ffffff' : '#000000',
@@ -88,6 +89,8 @@ const Report = ({ route }) => {
         const unsubscribe = navigation.addListener('focus', () => {
             setIsFairnessChecking(false);
             setIsFairnessBusy(false);
+            setIsLoading(false);
+            submitLockRef.current = false;
         });
 
         return unsubscribe;
@@ -123,7 +126,7 @@ const Report = ({ route }) => {
     };
 
     const handleCheckFairness = async () => {
-        if (!game?.id) {
+        if (!game?.id || isFairnessBusy || isFairnessChecking) {
             return;
         }
 
@@ -159,46 +162,49 @@ const Report = ({ route }) => {
     };
 
     const handleSubmit = async () => {
-        if (reportType === 'fairness') {
-            await handleCheckFairness();
+        if (submitLockRef.current || isLoading || isFairnessBusy || isFairnessChecking) {
             return;
         }
 
-        if (!reportType) {
-            Toast.show("Please select a report type", Toast.SHORT);
-            return;
-        }
-
-        if (reportType === 'game_issue') {
-            if (!description.trim()) {
-                Toast.show("Please provide a description of the issue", Toast.SHORT);
-                return;
-            }
-            if (!evidence1 || !evidence2 || !evidence3) {
-                Toast.show("Please upload all 3 evidence screenshots", Toast.SHORT);
-                return;
-            }
-        }
-
-        if (!game?.id) {
-            Toast.show('Invalid game data', Toast.SHORT);
-            return;
-        }
-
-        setIsLoading(true);
+        submitLockRef.current = true;
 
         try {
-            // Prepare form data for API call
+            if (reportType === 'fairness') {
+                await handleCheckFairness();
+                return;
+            }
+
+            if (!reportType) {
+                Toast.show("Please select a report type", Toast.SHORT);
+                return;
+            }
+
+            if (reportType === 'game_issue') {
+                if (!description.trim()) {
+                    Toast.show("Please provide a description of the issue", Toast.SHORT);
+                    return;
+                }
+                if (!evidence1 || !evidence2 || !evidence3) {
+                    Toast.show("Please upload all 3 evidence screenshots", Toast.SHORT);
+                    return;
+                }
+            }
+
+            if (!game?.id) {
+                Toast.show('Invalid game data', Toast.SHORT);
+                return;
+            }
+
+            setIsLoading(true);
+
             const formData = new FormData();
             formData.append('challenge_id', game.id);
             formData.append('report_type', reportType);
 
-            // Append description for game_issue
             if (reportType === 'game_issue') {
                 formData.append('description', description.trim());
             }
 
-            // Append images for game_issue
             if (reportType === 'game_issue') {
                 if (imageResult1) {
                     formData.append('evidence_1', {
@@ -223,14 +229,17 @@ const Report = ({ route }) => {
                 }
             }
 
+            const response = await createReport(formData);
+            Toast.show(response?.message, Toast.LONG);
 
-            await createReport(formData);
-            Toast.show('Report submitted successfully', Toast.LONG);
-            navigation.goBack();
+            if (reportType === 'game_issue') {
+                navigation.goBack();
+            }
         } catch (error) {
             Toast.show(error?.message || 'Failed to submit report', Toast.SHORT);
         } finally {
             setIsLoading(false);
+            submitLockRef.current = false;
         }
     };
 
@@ -353,19 +362,30 @@ const Report = ({ route }) => {
         );
     };
 
-    const submitButtonTitle = reportType === 'fairness' ? 'Check Fairness' : 'Submit Report';
+    const submitButtonTitle = reportType === 'fairness'
+        ? 'Check Fairness'
+        : reportType === 'refund_agreement'
+            ? 'Send Agreement'
+            : 'Submit Report';
     const loaderMessage = isFairnessChecking
         ? fairnessLoaderMessage
-        : 'Submitting report...';
-    const isSubmitDisabled = isLoading || isFairnessBusy || isFairnessChecking;
+        : reportType === 'fairness'
+            ? 'Checking fairness...'
+            : reportType === 'refund_agreement'
+                ? 'Sending agreement...'
+                : 'Submitting report...';
+    const isSubmitting = isLoading || isFairnessBusy || isFairnessChecking;
+    const isFormValid = reportType === 'game_issue'
+        ? Boolean(description.trim() && evidence1 && evidence2 && evidence3)
+        : true;
 
     return (
         <>
             <CreateGameLayout
                 title="Report Match"
                 isLight={isLight}
-                isLoading={isLoading || isFairnessChecking}
-                isFormValid={!isSubmitDisabled}
+                isLoading={isSubmitting}
+                isFormValid={isFormValid}
                 onSubmit={handleSubmit}
                 buttonTitle={submitButtonTitle}
                 loaderMessage={loaderMessage}

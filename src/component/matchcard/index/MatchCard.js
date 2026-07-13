@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from "react-native"
 import GameHeader from "../GameHeader"
-import { sharedStyles } from "../sharedStyleAndInfo"
+import { sharedStyles, shouldShowResultPortalWaitInfo } from "../sharedStyleAndInfo"
 import GameDetails from "../gameDetails/GameDetails"
 import CreatorInfo from "../CreatorInfo"
 import StatusDisplay from "../StatusDisplay"
@@ -134,6 +134,17 @@ const MatchCard = ({
           handleConfirmChallenge={handleConfirmChallenge}
         />
 
+        {shouldShowResultPortalWaitInfo(game, { forOpenGames }) ? (
+          <Text
+            style={[
+              localStyles.resultPortalInfo,
+              { color: isLight ? 'rgba(51, 51, 51, 0.72)' : 'rgba(255, 255, 255, 0.68)' },
+            ]}
+          >
+           " Result portal opens in 5 minutes. "
+          </Text>
+        ) : null}
+
         {/* Bottom Line */}
 
       </View>
@@ -177,6 +188,13 @@ const localStyles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700',
     letterSpacing: 0.5,
+  },
+  resultPortalInfo: {
+    marginTop: spacing.sm,
+    fontSize: 12,
+    fontWeight: '500',
+    textAlign: 'center',
+    lineHeight: 18,
   },
 });
 

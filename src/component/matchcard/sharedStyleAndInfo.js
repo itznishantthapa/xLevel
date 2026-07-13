@@ -527,3 +527,18 @@ export const InfoRow = ({ label, value, isDark, gameMode="", needMoreWidth = fal
     </View>
   );
 };
+
+export const hasMatchCredentials = (game = {}) =>
+  Boolean(
+    (game.room_id && game.room_pass) ||
+    game.join_url ||
+    game.team_code ||
+    game.lobby_id,
+  );
+
+export const shouldShowResultPortalWaitInfo = (game = {}, { forOpenGames = false } = {}) =>
+  !forOpenGames &&
+  !game.is_free &&
+  hasMatchCredentials(game) &&
+  !game.enableResultPortal &&
+  !game.at_least_one_result_submitted;

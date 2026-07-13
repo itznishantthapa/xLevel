@@ -327,9 +327,13 @@ const CredentialsSection = ({
   }
 
   // Opponent view - show received credentials based on type
+  // Hide credentials once the result portal opens; ActionButtons shows Result instead.
+  if (!isCreator && game.enableResultPortal) {
+    return null
+  }
 
   // Room ID and Password (for PUBG TDM, WOW, Clash Squad, eFootball Friend Match, etc.)
-  if (isRoomCredentials && game.room_id && game.room_pass &&  game.status === "in_progress") {
+  if (isRoomCredentials && game.room_id && game.room_pass && game.status === "in_progress") {
     return (
       <View style={sharedStyles.credentialsDisplayContainer}>
         <Text style={[sharedStyles.credentialsGuide, { color: isLight ? "#495057" : "#adb5bd" }]}>

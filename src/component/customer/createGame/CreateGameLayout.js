@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { View, StyleSheet, ScrollView, StatusBar, KeyboardAvoidingView, Platform, Keyboard } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -40,17 +40,29 @@ const CreateGameLayout = ({
   aboveButtonContent
 }) => {
   const insets = useSafeAreaInsets()
+  const submitLockRef = useRef(false)
+  const [isPendingSubmit, setIsPendingSubmit] = useState(false)
+  const isButtonBusy = isLoading || isPendingSubmit
 
   const handleSubmit = useCallback(async () => {
-    if (isLoading || !isFormValid || typeof onSubmit !== 'function') return;
+    if (submitLockRef.current || isButtonBusy || !isFormValid || typeof onSubmit !== 'function') {
+      return
+    }
 
-    Keyboard.dismiss();
-    await new Promise((resolve) => {
-      setTimeout(resolve, Platform.OS === 'ios' ? 280 : 180);
-    });
+    submitLockRef.current = true
+    setIsPendingSubmit(true)
 
-    onSubmit();
-  }, [isLoading, isFormValid, onSubmit]);
+    try {
+      Keyboard.dismiss()
+      await new Promise((resolve) => {
+        setTimeout(resolve, Platform.OS === 'ios' ? 280 : 180)
+      })
+      await Promise.resolve(onSubmit())
+    } finally {
+      setIsPendingSubmit(false)
+      submitLockRef.current = false
+    }
+  }, [isButtonBusy, isFormValid, onSubmit])
 
   return (
     <View style={[styles.mainContainer, { backgroundColor: isLight ? "#ffffff" : "#000000" }]}>
@@ -97,8 +109,8 @@ const CreateGameLayout = ({
             <CoolButton
               title={buttonTitle}
               handlePress={handleSubmit}
-              disableBtn={isLoading}
-              disabled={isLoading || !isFormValid}
+              disableBtn={isButtonBusy}
+              disabled={isButtonBusy || !isFormValid}
               backgroundColor={buttonBackgroundColor}
               textColor={buttonTextColor}
             />

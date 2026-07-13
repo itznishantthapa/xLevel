@@ -8,8 +8,6 @@ import CoolButton from "../customer/common/CoolButton"
 
 const ActionButtons = ({ game, isLight, isCreator, user, handleResultUpload, forOpenGames = false, handleConfirmChallenge }) => {
 
-  const hasCredentials = (game?.room_id && game?.room_pass) || game?.join_url || game?.team_code || game?.lobby_id
-
   if (game.status === "cancelled") {
     return (
       <View style={[sharedStyles.statusButton, { borderColor: isLight ? "#000000" : "#ffffff" }]}>
@@ -44,7 +42,7 @@ const ActionButtons = ({ game, isLight, isCreator, user, handleResultUpload, for
     )
   }
 
-  if (hasCredentials && game.status === "in_progress" && !game.is_free) {
+  if (game.enableResultPortal && !game.is_free) {
     return (
       <Pressable
         style={[sharedStyles.sendButton, isLight ? { backgroundColor: "#000000" } : { backgroundColor: "#eaf4f4" }, { flexDirection: "row", alignItems: "center", justifyContent: "center",gap:8 }]}
