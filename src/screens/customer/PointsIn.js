@@ -15,19 +15,22 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useNavigation } from "@react-navigation/native"
 import { useThemeStore } from "../../store/themeStore"
-import { useState } from "react"
+import { useState, useMemo, useCallback } from "react"
 import Toast from "react-native-simple-toast"
 import * as ImagePicker from "expo-image-picker"
+import Clipboard from "@react-native-clipboard/clipboard"
 import AppHeader from "./header/AppHeader"
 import { usePointsIn } from "../../queries/useMutation/usePointsIn"
 import CoolButton from "../../component/customer/common/CoolButton"
 import { useUtils } from "../../queries/useUtils"
+import { useAuthStore } from "../../store/authStore"
 import { AppIcon, PointsIcon } from "../../components/common/AppIcon"
 import {
   QrCodeIcon,
   AlertCircleIcon,
   CheckmarkCircle01Icon,
   CloudUploadIcon,
+  Copy01Icon,
 } from "@hugeicons/core-free-icons"
 import { fontSize, spacing, radius, iconSize } from "../../theme/typography"
 
@@ -39,6 +42,11 @@ const PAYMENT_AVATARS = [
 
 const PAYMENT_AVATAR_SIZE = spacing['3xl']
 const PAYMENT_AVATAR_OVERLAP = -10
+
+const getPaymentRemark = (email = '') => {
+  const prefix = email.split('@')[0]?.trim()
+  return prefix || ''
+}
 
 const PointsIn = () => {
   const navigation = useNavigation()
@@ -54,6 +62,9 @@ const PointsIn = () => {
   })
   const { mutateAsync: pointsIn } = usePointsIn()
   const { data: utils = [] } = useUtils()
+  const { user } = useAuthStore()
+
+  const paymentRemark = useMemo(() => getPaymentRemark(user?.email), [user?.email])
 
   const qrImageUrl = utils?.qr?.qr_image
 
@@ -103,6 +114,15 @@ const PointsIn = () => {
     setErrors(newErrors)
     return !newErrors.amount && !newErrors.screenshot
   }
+
+  const handleCopyPaymentRemark = useCallback(() => {
+    if (!paymentRemark) {
+      Toast.show('Payment remark is not available.', Toast.SHORT)
+      return
+    }
+    Clipboard.setString(paymentRemark)
+    Toast.show('Payment remark copied.', Toast.SHORT)
+  }, [paymentRemark])
 
   const handleSubmit = async () => {
     Keyboard.dismiss()
@@ -221,6 +241,36 @@ const PointsIn = () => {
 
                 </View>
 
+                {paymentRemark ? (
+                  <View style={styles.remarkSection}>
+                    <Text style={[styles.remarkLabel, { color: colors.text }]}>Your Payment Remark</Text>
+                    <Text style={[styles.remarkHint, { color: colors.textSecondary }]}>
+                    Copy & paste on your payment to load automatically.
+                    </Text>
+                    <Pressable
+                      onPress={handleCopyPaymentRemark}
+                      style={[
+                        styles.remarkCopyBox,
+                        {
+                          borderColor: colors.inputBorder,
+                          backgroundColor: isLight ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.06)',
+                        },
+                      ]}
+                      accessibilityRole="button"
+                      accessibilityLabel="Copy payment remark"
+                    >
+                      <Text
+                        style={[styles.remarkText, { color: colors.text }]}
+                        numberOfLines={1}
+                        ellipsizeMode="middle"
+                      >
+                        {paymentRemark}
+                      </Text>
+                      <AppIcon icon={Copy01Icon} size={iconSize.md} color={colors.textSecondary} />
+                    </Pressable>
+                  </View>
+                ) : null}
+
                 <View style={styles.formContainer}>
                   <View style={styles.inputContainer}>
                     {/* <Text style={[styles.inputLabel, { color: colors.text }]}>Points Amount</Text> */}
@@ -246,7 +296,7 @@ const PointsIn = () => {
                       </View>
                       <TextInput
                         style={[styles.input, { color: colors.text }]}
-                        placeholder="Point Amount"
+                        placeholder="Point Amount ( Minimum 10 Points )"
                         placeholderTextColor={colors.textSecondary}
                         keyboardType="numeric"
                         value={crownAmount}
@@ -429,6 +479,37 @@ const styles = StyleSheet.create({
   paymentAvatarImage: {
     width: "100%",
     height: "100%",
+  },
+  remarkSection: {
+    width: "100%",
+    marginBottom: spacing['2xl'],
+    gap: spacing.xs + 2,
+  },
+  remarkLabel: {
+    fontSize: fontSize.base + 1,
+    fontWeight: "700",
+  },
+  remarkHint: {
+    fontSize: fontSize.sm,
+    fontWeight: "500",
+    lineHeight: fontSize.base + 4,
+  },
+  remarkCopyBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderWidth: 2,
+    borderRadius: radius.md,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.md,
+    marginTop: spacing.xs,
+    gap: spacing.sm,
+  },
+  remarkText: {
+    flex: 1,
+    fontSize: fontSize.md,
+    fontWeight: "700",
+    letterSpacing: 0.3,
   },
   formContainer: {
     width: "100%",
