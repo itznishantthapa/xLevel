@@ -136,9 +136,10 @@ const FloatingInput = ({
       <View
         style={[
           styles.inputShell,
-          { borderColor: colors.border, backgroundColor: colors.background },
-          isFocused && { borderColor: colors.text },
-          error && styles.inputShellError,
+          {
+            borderColor: error ? colors.error : isFocused ? colors.text : colors.border,
+            backgroundColor: colors.surface,
+          },
         ]}
       >
         <AppIcon
@@ -156,7 +157,7 @@ const FloatingInput = ({
                 top: labelTop,
                 fontSize: labelFontSize,
                 color: isFocused ? colors.text : colors.textMuted,
-                backgroundColor: colors.background,
+                backgroundColor: colors.surface,
               },
             ]}
             pointerEvents="none"
@@ -193,19 +194,7 @@ const FloatingInput = ({
         ) : null}
       </View>
 
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
-    </View>
-  );
-};
-
-const AuthBackground = ({ isLight }) => {
-  if (!isLight) return null;
-
-  return (
-    <View style={styles.backgroundDecor} pointerEvents="none">
-      <View style={[styles.colorBlob, styles.blobGreen]} />
-      <View style={[styles.colorBlob, styles.blobPurple]} />
-      <View style={[styles.colorBlob, styles.blobRed]} />
+      {error ? <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text> : null}
     </View>
   );
 };
@@ -233,13 +222,14 @@ const Auth = () => {
 
   const colors = {
     background: isLight ? '#ffffff' : '#000000',
-    text: isLight ? '#000000' : '#ffffff',
-    textMuted: isLight ? '#555555' : '#999999',
-    border: isLight ? '#e5e5e5' : 'rgba(255, 255, 255, 0.2)',
-    divider: isLight ? '#e5e5e5' : 'rgba(255, 255, 255, 0.15)',
-    oauthBorder: isLight ? '#000000' : '#ffffff',
-    logoWrapBg: '#000000',
+    surface: isLight ? '#ffffff' : '#000000',
+    text: isLight ? '#111111' : '#f5f5f5',
+    textMuted: isLight ? '#888888' : '#888888',
+    border: isLight ? '#e8e8e8' : 'rgba(255, 255, 255, 0.14)',
+    divider: isLight ? '#ececec' : 'rgba(255, 255, 255, 0.12)',
     accent: '#00bf63',
+    stroke: isLight ? '#000000' : '#ffffff',
+    error: '#FF4444',
   };
 
   useEffect(() => {
@@ -472,8 +462,9 @@ const Auth = () => {
       style={[
         styles.oauthButton,
         {
-          borderColor: colors.border,
-          backgroundColor: colors.background,
+          borderColor: colors.stroke,
+          backgroundColor: colors.surface,
+          opacity: disabled ? 0.55 : 1,
         },
       ]}
       onPress={onPress}
@@ -498,7 +489,6 @@ const Auth = () => {
         barStyle={isLight ? 'dark-content' : 'light-content'}
       />
       <View style={[styles.screen, { backgroundColor: colors.background }]}>
-        <AuthBackground isLight={isLight} />
         <KeyboardAvoidingView
           style={styles.flex}
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -510,137 +500,153 @@ const Auth = () => {
               styles.scrollContent,
               {
                 paddingTop: insets.top + spacing['3xl'],
-                paddingBottom: Math.max(insets.bottom, spacing['3xl']),
+                paddingBottom: Math.max(insets.bottom + spacing.xl, spacing['3xl']),
               },
             ]}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
           >
-            <View style={styles.brandBlock}>
-              <View style={[styles.logoWrap, { borderColor: colors.border, backgroundColor: colors.logoWrapBg }]}>
-                <Image
-                  source={require('../../assets/level.png')}
-                  style={styles.logo}
-                  resizeMode="contain"
-                />
+            <View style={styles.content}>
+              <View style={styles.brandBlock}>
+                <View
+                  style={[
+                    styles.logoMark,
+                    {
+                      backgroundColor: isLight ? '#111111' : '#ffffff',
+                    },
+                  ]}
+                >
+                  <Image
+                    source={require('../../assets/level.png')}
+                    style={[
+                      styles.logo,
+                      !isLight && { tintColor: '#000000' },
+                    ]}
+                    resizeMode="contain"
+                  />
+                </View>
+
+                <View style={styles.brandTaglineWrap}>
+                  <Text style={[styles.brandTagline, { color: colors.textMuted }]}>
+                    Your good gaming companion
+                  </Text>
+                  <View style={[styles.brandTaglineUnderline, { backgroundColor: colors.stroke }]} />
+                </View>
               </View>
-              <Text style={[styles.brandTagline, { color: colors.textMuted }]}>
-                Level eSports — Your gaming companion.
-              </Text>
-            </View>
 
-            <View style={styles.header}>
-              <Text style={[styles.title, { color: colors.text }]}>
-                {isSignUp ? 'Create your account' : 'Welcome back'}
-              </Text>
-              <Text style={[styles.subtitle, { color: colors.textMuted }]}>
-                {isSignUp
-                  ? 'Sign up to level up your gaming experience.'
-                  : 'Log in to continue where you left off.'}
-              </Text>
-            </View>
+              <View style={styles.header}>
+                <Text style={[styles.title, { color: colors.text }]}>
+                  {isSignUp ? 'Create account' : 'Welcome back'}
+                </Text>
+                <Text style={[styles.subtitle, { color: colors.textMuted }]}>
+                  {isSignUp
+                    ? 'Enter your details to get started.'
+                    : 'Sign in to continue.'}
+                </Text>
+              </View>
 
-            <View style={styles.authControls}>
-              <FloatingInput
-                label="Email"
-                value={form.email}
-                onChangeText={updateForm('email')}
-                icon={Mail01Icon}
-                error={typeof errors.email === 'string' ? errors.email : ''}
-                keyboardType="email-address"
-                returnKeyType="next"
-                colors={colors}
-              />
-
-              <FloatingInput
-                label="Password"
-                value={form.password}
-                onChangeText={updateForm('password')}
-                icon={LockIcon}
-                error={errors.password}
-                secureTextEntry={!visibility.password}
-                secureVisible={visibility.password}
-                onToggleSecure={() => toggleVisibility('password')}
-                returnKeyType={isSignUp ? 'next' : 'done'}
-                onSubmitEditing={isSignUp ? undefined : handleLogin}
-                colors={colors}
-              />
-
-              {isSignUp ? (
+              <View style={styles.authControls}>
                 <FloatingInput
-                  label="Confirm Password"
-                  value={form.confirmPassword}
-                  onChangeText={updateForm('confirmPassword')}
-                  icon={LockIcon}
-                  error={errors.confirmPassword}
-                  secureTextEntry={!visibility.confirmPassword}
-                  secureVisible={visibility.confirmPassword}
-                  onToggleSecure={() => toggleVisibility('confirmPassword')}
-                  returnKeyType="done"
-                  onSubmitEditing={handleCreate}
+                  label="Email"
+                  value={form.email}
+                  onChangeText={updateForm('email')}
+                  icon={Mail01Icon}
+                  error={typeof errors.email === 'string' ? errors.email : ''}
+                  keyboardType="email-address"
+                  returnKeyType="next"
                   colors={colors}
                 />
-              ) : null}
 
-              <CoolButton
-                title={isSignUp ? 'Sign Up' : 'Log In'}
-                handlePress={handleSubmit}
-                disableBtn={isSubmitting}
-                disabled={isSubmitting || isOAuthBusy}
-                style={styles.primaryButton}
-                textStyle={styles.primaryButtonText}
-              />
+                <FloatingInput
+                  label="Password"
+                  value={form.password}
+                  onChangeText={updateForm('password')}
+                  icon={LockIcon}
+                  error={errors.password}
+                  secureTextEntry={!visibility.password}
+                  secureVisible={visibility.password}
+                  onToggleSecure={() => toggleVisibility('password')}
+                  returnKeyType={isSignUp ? 'next' : 'done'}
+                  onSubmitEditing={isSignUp ? undefined : handleLogin}
+                  colors={colors}
+                />
 
-              <View style={styles.dividerRow}>
-                <View style={[styles.dividerLine, { backgroundColor: colors.divider }]} />
-                <Text style={[styles.dividerText, { color: colors.textMuted }]}>or</Text>
-                <View style={[styles.dividerLine, { backgroundColor: colors.divider }]} />
+                {isSignUp ? (
+                  <FloatingInput
+                    label="Confirm Password"
+                    value={form.confirmPassword}
+                    onChangeText={updateForm('confirmPassword')}
+                    icon={LockIcon}
+                    error={errors.confirmPassword}
+                    secureTextEntry={!visibility.confirmPassword}
+                    secureVisible={visibility.confirmPassword}
+                    onToggleSecure={() => toggleVisibility('confirmPassword')}
+                    returnKeyType="done"
+                    onSubmitEditing={handleCreate}
+                    colors={colors}
+                  />
+                ) : null}
+
+                <CoolButton
+                  title={isSignUp ? 'Sign Up' : 'Log In'}
+                  handlePress={handleSubmit}
+                  disableBtn={isSubmitting}
+                  disabled={isSubmitting || isOAuthBusy}
+                  style={styles.primaryButton}
+                  textStyle={styles.primaryButtonText}
+                />
+
+                <View style={styles.dividerRow}>
+                  <View style={[styles.dividerLine, { backgroundColor: colors.divider }]} />
+                  <Text style={[styles.dividerText, { color: colors.textMuted }]}>or</Text>
+                  <View style={[styles.dividerLine, { backgroundColor: colors.divider }]} />
+                </View>
+
+                {Platform.OS === 'android'
+                  ? renderOAuthButton({
+                      id: 'google',
+                      icon: GoogleIcon,
+                      label: 'Continue with Google',
+                      onPress: handleGoogleSignIn,
+                      loading: isGoogleLoading,
+                      disabled: isOAuthBusy || isSubmitting,
+                    })
+                  : renderOAuthButton({
+                      id: 'apple',
+                      icon: AppleIcon,
+                      label: 'Continue with Apple',
+                      onPress: handleAppleSignIn,
+                      loading: isAppleLoading,
+                      disabled: isOAuthBusy || isSubmitting,
+                    })}
               </View>
 
-              {Platform.OS === 'android'
-                ? renderOAuthButton({
-                    id: 'google',
-                    icon: GoogleIcon,
-                    label: 'Continue with Google',
-                    onPress: handleGoogleSignIn,
-                    loading: isGoogleLoading,
-                    disabled: isOAuthBusy || isSubmitting,
-                  })
-                : renderOAuthButton({
-                    id: 'apple',
-                    icon: AppleIcon,
-                    label: 'Continue with Apple',
-                    onPress: handleAppleSignIn,
-                    loading: isAppleLoading,
-                    disabled: isOAuthBusy || isSubmitting,
-                  })}
-            </View>
-
-            <View style={styles.footer}>
-              <View style={styles.switchRow}>
-                <Text style={[styles.switchText, { color: colors.textMuted }]}>
-                  {isSignUp ? 'Already have an account?' : "Don't have an account?"}
-                </Text>
-                <Pressable onPress={toggleMode} hitSlop={8} disabled={isSubmitting || isOAuthBusy}>
-                  <Text style={[styles.switchLink, { color: colors.accent }]}>
-                    {isSignUp ? 'Log In' : 'Sign Up'}
+              <View style={styles.footer}>
+                <View style={styles.switchRow}>
+                  <Text style={[styles.switchText, { color: colors.textMuted }]}>
+                    {isSignUp ? 'Already have an account?' : "Don't have an account?"}
                   </Text>
-                </Pressable>
+                  <Pressable onPress={toggleMode} hitSlop={8} disabled={isSubmitting || isOAuthBusy}>
+                    <Text style={[styles.switchLink, { color: colors.accent }]}>
+                      {isSignUp ? 'Log In' : 'Sign Up'}
+                    </Text>
+                  </Pressable>
+                </View>
+
+                {isSignUp ? (
+                  <Text style={[styles.legalText, { color: colors.textMuted }]}>
+                    By signing up, you agree to our{' '}
+                    <Text style={[styles.legalLink, { color: colors.text }]} onPress={handleOpenTerms}>
+                      Terms
+                    </Text>
+                    {' '}and{' '}
+                    <Text style={[styles.legalLink, { color: colors.text }]} onPress={handleOpenPrivacy}>
+                      Privacy Policy
+                    </Text>
+                    .
+                  </Text>
+                ) : null}
               </View>
-
-              {isSignUp ? (
-                <Text style={[styles.legalText, { color: colors.textMuted }]}>
-                  By signing up, you agree to our{' '}
-                  <Text style={[styles.legalLink, { color: colors.text }]} onPress={handleOpenTerms}>
-                    Terms of Service
-                  </Text>{' '}
-                  and{' '}
-                  <Text style={[styles.legalLink, { color: colors.text }]} onPress={handleOpenPrivacy}>
-                    Privacy Policy
-                  </Text>
-                  .
-                </Text>
-              ) : null}
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
@@ -653,74 +659,62 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
   },
-  backgroundDecor: {
-    ...StyleSheet.absoluteFillObject,
-    overflow: 'hidden',
-  },
-  colorBlob: {
-    position: 'absolute',
-    borderRadius: 999,
-  },
-  blobGreen: {
-    width: 180,
-    height: 180,
-    top: -40,
-    right: -50,
-    backgroundColor: 'rgba(0, 191, 99, 0.14)',
-  },
-  blobPurple: {
-    width: 140,
-    height: 140,
-    top: 120,
-    left: -50,
-    backgroundColor: 'rgba(99, 102, 241, 0.12)',
-  },
-  blobRed: {
-    width: 120,
-    height: 120,
-    bottom: 80,
-    right: -30,
-    backgroundColor: 'rgba(239, 68, 68, 0.16)',
-  },
   flex: {
     flex: 1,
   },
   scrollContent: {
+    flexGrow: 1,
     paddingHorizontal: spacing['3xl'],
+    justifyContent: 'center',
+  },
+  content: {
+    width: '100%',
+    maxWidth: 420,
+    alignSelf: 'center',
   },
   brandBlock: {
     alignItems: 'center',
-    marginBottom: spacing['3xl'],
+    marginBottom: spacing['3xl'] + spacing.sm,
   },
-  logoWrap: {
-    width: 72,
-    height: 72,
-    borderRadius: radius.pill,
-    borderWidth: 1,
+  logoMark: {
+    width: 56,
+    height: 56,
+    borderRadius: radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing.md,
   },
   logo: {
-    width: 48,
-    height: 48,
+    width: 32,
+    height: 32,
+  },
+
+  brandTaglineWrap: {
+    alignItems: 'center',
+    gap: spacing.sm,
   },
   brandTagline: {
     fontSize: fontSize.sm,
     textAlign: 'center',
+    letterSpacing: 0.2,
+  },
+  brandTaglineUnderline: {
+    height: 2,
+    width: 148,
+    borderRadius: radius.full,
   },
   header: {
-    marginBottom: spacing['2xl'],
+    marginBottom: spacing['2xl'] + spacing.sm,
     gap: spacing.sm,
   },
   title: {
-    fontSize: 26,
+    fontSize: fontSize['3xl'],
     fontWeight: '700',
-    letterSpacing: -0.5,
+    letterSpacing: -0.6,
   },
   subtitle: {
     fontSize: fontSize.base,
-    lineHeight: 21,
+    lineHeight: 20,
   },
   authControls: {
     gap: AUTH_CONTROL_GAP,
@@ -732,13 +726,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     height: AUTH_CONTROL_HEIGHT,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderRadius: AUTH_CONTROL_RADIUS,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.lg,
     gap: spacing.sm,
-  },
-  inputShellError: {
-    borderColor: '#FF4444',
   },
   inputBody: {
     flex: 1,
@@ -764,7 +755,6 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: fontSize.sm,
-    color: '#FF4444',
     paddingLeft: spacing.xs,
   },
   dividerRow: {
@@ -775,7 +765,7 @@ const styles = StyleSheet.create({
   },
   dividerLine: {
     flex: 1,
-    height: 1,
+    height: StyleSheet.hairlineWidth,
   },
   dividerText: {
     fontSize: fontSize.sm,
@@ -784,7 +774,7 @@ const styles = StyleSheet.create({
   oauthButton: {
     height: AUTH_CONTROL_HEIGHT,
     borderRadius: AUTH_CONTROL_RADIUS,
-    borderWidth: 1.5,
+    borderWidth: 1,
     width: '100%',
     justifyContent: 'center',
   },
@@ -799,7 +789,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   footer: {
-    marginTop: spacing['2xl'],
+    marginTop: spacing['2xl'] + spacing.sm,
     gap: spacing.xl,
   },
   switchRow: {
@@ -823,7 +813,6 @@ const styles = StyleSheet.create({
   },
   legalLink: {
     fontWeight: '600',
-    textDecorationLine: 'underline',
   },
   primaryButton: {
     width: '100%',
