@@ -30,14 +30,14 @@ const fadeAnimation = (value) => {
   'worklet';
 
   const absValue = Math.abs(value);
-
   const opacity = interpolate(absValue, [0, 1], [1, 0], Extrapolation.CLAMP);
   const scale = interpolate(absValue, [0, 1], [1, 0.96], Extrapolation.CLAMP);
+  const zIndex = interpolate(value, [-1, 0, 1], [0, 10, 0], Extrapolation.CLAMP);
 
   return {
     transform: [{ translateX: 0 }, { scale }],
     opacity,
-    zIndex: absValue < 0.5 ? 10 : 0,
+    zIndex: Math.round(zIndex),
   };
 };
 
@@ -72,6 +72,11 @@ const HomeBanner = ({ data = [] }) => {
     [screenWidth],
   );
 
+  const bannerWindowSize = useMemo(
+    () => Math.min(3, data.length),
+    [data.length],
+  );
+
   if (!data.length) {
     return null;
   }
@@ -86,7 +91,7 @@ const HomeBanner = ({ data = [] }) => {
           autoPlayInterval={5000}
           loop={data.length > 1}
           pagingEnabled
-          windowSize={5}
+          windowSize={bannerWindowSize}
           data={data}
           containerStyle={[styles.carouselContainer, roundedClipStyle, { width: bannerWidth, height: bannerHeight }]}
           style={[styles.carousel, roundedClipStyle, { width: bannerWidth, height: bannerHeight }]}
@@ -121,7 +126,6 @@ const styles = StyleSheet.create({
   },
   pageContainer: {
     flex: 1,
-    position: 'absolute', // keeps pages stacked in place so the fade doesn't reveal a gap
     width: '100%',
     height: '100%',
   },

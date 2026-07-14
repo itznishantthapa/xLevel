@@ -15,7 +15,14 @@
     },
     "plugins": [
       "expo-audio",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow Level to save payment QR codes to your photo library.",
+          "savePhotosPermission": "Allow Level to save payment QR codes to your photo library."
+        }
+      ]
     ]
   }
 }

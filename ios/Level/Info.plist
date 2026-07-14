@@ -56,7 +56,9 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow $(PRODUCT_NAME) to access your microphone</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Allow $(PRODUCT_NAME) to access your photos</string>
+	<string>Allow Level to save payment QR codes to your photo library.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Allow Level to save payment QR codes to your photo library.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>

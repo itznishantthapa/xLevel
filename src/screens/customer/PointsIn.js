@@ -15,22 +15,22 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useNavigation } from "@react-navigation/native"
 import { useThemeStore } from "../../store/themeStore"
-import { useState, useMemo, useCallback } from "react"
+import { useState, useCallback } from "react"
 import Toast from "react-native-simple-toast"
 import * as ImagePicker from "expo-image-picker"
-import Clipboard from "@react-native-clipboard/clipboard"
+import * as FileSystem from "expo-file-system"
+import * as MediaLibrary from "expo-media-library"
 import AppHeader from "./header/AppHeader"
 import { usePointsIn } from "../../queries/useMutation/usePointsIn"
 import CoolButton from "../../component/customer/common/CoolButton"
 import { useUtils } from "../../queries/useUtils"
-import { useAuthStore } from "../../store/authStore"
 import { AppIcon, PointsIcon } from "../../components/common/AppIcon"
 import {
   QrCodeIcon,
   AlertCircleIcon,
   CheckmarkCircle01Icon,
   CloudUploadIcon,
-  Copy01Icon,
+  DownloadCircle01Icon,
 } from "@hugeicons/core-free-icons"
 import { fontSize, spacing, radius, iconSize } from "../../theme/typography"
 
@@ -43,15 +43,11 @@ const PAYMENT_AVATARS = [
 const PAYMENT_AVATAR_SIZE = spacing['3xl']
 const PAYMENT_AVATAR_OVERLAP = -10
 
-const getPaymentRemark = (email = '') => {
-  const prefix = email.split('@')[0]?.trim()
-  return prefix || ''
-}
-
 const PointsIn = () => {
   const navigation = useNavigation()
   const insets = useSafeAreaInsets()
   const [disableBtn, setdisableBtn] = useState(false)
+  const [isDownloadingQr, setIsDownloadingQr] = useState(false)
   const { isLight } = useThemeStore()
   const [crownAmount, setCrownAmount] = useState("")
   const [imageResult, setImageResult] = useState(null)
@@ -62,9 +58,6 @@ const PointsIn = () => {
   })
   const { mutateAsync: pointsIn } = usePointsIn()
   const { data: utils = [] } = useUtils()
-  const { user } = useAuthStore()
-
-  const paymentRemark = useMemo(() => getPaymentRemark(user?.email), [user?.email])
 
   const qrImageUrl = utils?.qr?.qr_image
 
@@ -97,6 +90,38 @@ const PointsIn = () => {
     }
   }
 
+  const handleDownloadQr = useCallback(async () => {
+    if (!qrImageUrl || isDownloadingQr) {
+      return
+    }
+
+    try {
+      setIsDownloadingQr(true)
+
+      if (Platform.OS === 'android') {
+        const existingPermission = await MediaLibrary.getPermissionsAsync(true, ['photo'])
+        if (existingPermission.status !== 'granted') {
+          const { status } = await MediaLibrary.requestPermissionsAsync(true, ['photo'])
+          if (status !== 'granted') {
+            Toast.show('Allow photo access to save the QR code.', Toast.SHORT)
+            return
+          }
+        }
+      }
+
+      const fileExtension = qrImageUrl.split('.').pop()?.split('?')[0] || 'jpg'
+      const fileUri = `${FileSystem.cacheDirectory}payment-qr.${fileExtension}`
+      const downloadResult = await FileSystem.downloadAsync(qrImageUrl, fileUri)
+
+      await MediaLibrary.saveToLibraryAsync(downloadResult.uri)
+      Toast.show('QR code saved to gallery.', Toast.SHORT)
+    } catch (error) {
+      Toast.show('Unable to download QR code.', Toast.SHORT)
+    } finally {
+      setIsDownloadingQr(false)
+    }
+  }, [qrImageUrl, isDownloadingQr])
+
   const validateFields = () => {
     const newErrors = {
       amount: '',
@@ -114,15 +139,6 @@ const PointsIn = () => {
     setErrors(newErrors)
     return !newErrors.amount && !newErrors.screenshot
   }
-
-  const handleCopyPaymentRemark = useCallback(() => {
-    if (!paymentRemark) {
-      Toast.show('Payment remark is not available.', Toast.SHORT)
-      return
-    }
-    Clipboard.setString(paymentRemark)
-    Toast.show('Payment remark copied.', Toast.SHORT)
-  }, [paymentRemark])
 
   const handleSubmit = async () => {
     Keyboard.dismiss()
@@ -239,37 +255,25 @@ const PointsIn = () => {
                     </View>
                   </View>
 
-                </View>
-
-                {paymentRemark ? (
-                  <View style={styles.remarkSection}>
-                    <Text style={[styles.remarkLabel, { color: colors.text }]}>Your Payment Remark</Text>
-                    <Text style={[styles.remarkHint, { color: colors.textSecondary }]}>
-                    Copy & paste on your payment to load automatically.
-                    </Text>
+                  {qrImageUrl ? (
                     <Pressable
-                      onPress={handleCopyPaymentRemark}
                       style={[
-                        styles.remarkCopyBox,
-                        {
-                          borderColor: colors.inputBorder,
-                          backgroundColor: isLight ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.06)',
-                        },
+                        styles.qrDownloadButton,
+                        { opacity: isDownloadingQr ? 0.6 : 1 },
                       ]}
+                      onPress={handleDownloadQr}
+                      disabled={isDownloadingQr}
                       accessibilityRole="button"
-                      accessibilityLabel="Copy payment remark"
+                      accessibilityLabel="Download QR code"
                     >
-                      <Text
-                        style={[styles.remarkText, { color: colors.text }]}
-                        numberOfLines={1}
-                        ellipsizeMode="middle"
-                      >
-                        {paymentRemark}
-                      </Text>
-                      <AppIcon icon={Copy01Icon} size={iconSize.md} color={colors.textSecondary} />
+                      <AppIcon
+                        icon={DownloadCircle01Icon}
+                        size={iconSize.xl + 4}
+                        color={colors.text}
+                      />
                     </Pressable>
-                  </View>
-                ) : null}
+                  ) : null}
+                </View>
 
                 <View style={styles.formContainer}>
                   <View style={styles.inputContainer}>
@@ -296,7 +300,7 @@ const PointsIn = () => {
                       </View>
                       <TextInput
                         style={[styles.input, { color: colors.text }]}
-                        placeholder="Point Amount ( Minimum 10 Points )"
+                        placeholder="Point Amount ( min. 10 points )"
                         placeholderTextColor={colors.textSecondary}
                         keyboardType="numeric"
                         value={crownAmount}
@@ -417,6 +421,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: spacing['2xl'] + 4,
+    position: "relative",
   },
   qrCardShadowLight: {
     borderWidth: 2,
@@ -445,6 +450,12 @@ const styles = StyleSheet.create({
   qrPlaceholderText: {
     fontSize: fontSize.sm + 1,
     fontWeight: "500",
+  },
+  qrDownloadButton: {
+    position: "absolute",
+    right: spacing.sm,
+    bottom: spacing.sm,
+    zIndex: 1,
   },
   brandSection: {
     alignItems: "center",
@@ -479,37 +490,6 @@ const styles = StyleSheet.create({
   paymentAvatarImage: {
     width: "100%",
     height: "100%",
-  },
-  remarkSection: {
-    width: "100%",
-    marginBottom: spacing['2xl'],
-    gap: spacing.xs + 2,
-  },
-  remarkLabel: {
-    fontSize: fontSize.base + 1,
-    fontWeight: "700",
-  },
-  remarkHint: {
-    fontSize: fontSize.sm,
-    fontWeight: "500",
-    lineHeight: fontSize.base + 4,
-  },
-  remarkCopyBox: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    borderWidth: 2,
-    borderRadius: radius.md,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.md,
-    marginTop: spacing.xs,
-    gap: spacing.sm,
-  },
-  remarkText: {
-    flex: 1,
-    fontSize: fontSize.md,
-    fontWeight: "700",
-    letterSpacing: 0.3,
   },
   formContainer: {
     width: "100%",

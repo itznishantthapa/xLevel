@@ -28,6 +28,7 @@ import BlockedUserList from "../screens/customer/BlockedUserList";
 import { Platform } from "react-native";
 import PointsOut from "../screens/customer/PointsOut";
 import PointsIn from "../screens/customer/PointsIn";
+import CopyRemark from "../screens/customer/CopyRemark";
 import DynamicIn from "../screens/customer/DynamicIn";
 import GamePoints from "../screens/customer/gamepoints/GamePoints";
 import Example from "../screens/customer/example/Example";
@@ -52,7 +53,8 @@ export default function CustomerNavigator(){
             <Stack.Screen component={CreateGame} name="createGame"/>
             <Stack.Screen component={UserTournament} name="userTournament"/>
             <Stack.Screen component={PointsOut} name="pointsOut"/>
-            <Stack.Screen component={PointsIn} name="pointsIn"/>
+            <Stack.Screen component={CopyRemark} name="copyRemark"/>
+            <Stack.Screen component={PointsIn} name="pointsIn" options={{ animation: "fade" }}/>
             <Stack.Screen component={DynamicIn} name="dynamicIn"/>
             <Stack.Screen component={GamePoints} name="gamePoints"/>
             <Stack.Screen component={Match} name="match"/>

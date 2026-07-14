@@ -234,10 +234,9 @@ const Home = () => {
     if (isDynamicActive) {
       navigation.navigate("dynamicIn")
     } else if (isStaticActive) {
-      navigation.navigate("pointsIn")
+      navigation.navigate("copyRemark")
     } else {
-      // Default to static (PointsIn) if none are active
-      navigation.navigate("pointsIn")
+      navigation.navigate("copyRemark")
     }
   }
 

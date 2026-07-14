@@ -9,11 +9,14 @@ import {
   GameController03Icon,
 } from '@hugeicons/core-free-icons';
 import { useThemeStore } from '../../store/themeStore';
+import { useAuthStore } from '../../store/authStore';
 import { fontSize, spacing, radius, iconSize, lineHeight } from '../../theme/typography';
+
+const REDEEM_MIN_POINTS = 50;
 
 const STAT_ITEMS = [
   { id: 'requests', name: 'Request', icon: ReceiptDollarIcon, color: '#16A34A', pulseColor: '#059669', activeKey: 'requests' },
-  { id: 'redeem', name: 'Redeem', icon: GiftCard02Icon, color: '#F97316' },
+  { id: 'redeem', name: 'Redeem', icon: GiftCard02Icon, color: '#F97316', pulseColor: '#EA580C', activeKey: 'redeem' },
   { id: 'tournament', name: 'Tournaments', icon: Trophy, color: '#6366F1', pulseColor: '#4F46E5', activeKey: 'tournament' },
   { id: 'matches', name: 'My Match', icon: GameController03Icon, color: '#ff2c2c', pulseColor: '#EF4444', activeKey: 'matches' },
 ];
@@ -39,9 +42,13 @@ const StatsContainer = ({
   isRequestActive = false,
 }) => {
   const { isLight } = useThemeStore();
+  const { user } = useAuthStore();
+
+  const isRedeemActive = (Number(user?.won_balance) || 0) >= REDEEM_MIN_POINTS;
 
   const activeFlags = {
     requests: isRequestActive,
+    redeem: isRedeemActive,
     tournament: isTournamentActive,
     matches: isMatchActive,
   };

@@ -1,24 +1,53 @@
 import { StatusBar, StyleSheet, Text, View, Image, ScrollView, TextInput, Platform, Pressable, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useThemeStore } from '../../store/themeStore';
+import { useAuthStore } from '../../store/authStore';
 import Toast from 'react-native-simple-toast';
+import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
 import { useQueryClient } from '@tanstack/react-query';
 import AppHeader from './header/AppHeader';
 import { usePointsOut } from '../../queries/useMutation/usePointsOut';
 import CoolButton from '../../component/customer/common/CoolButton';
 import { AppIcon, PointsIcon } from '../../components/common/AppIcon';
-import { QrCodeIcon, AlertCircleIcon } from '@hugeicons/core-free-icons';
+import { QrCodeIcon, AlertCircleIcon, InformationCircleIcon } from '@hugeicons/core-free-icons';
 import { fontSize, spacing, radius, iconSize } from '../../theme/typography';
+
+const QR_PAYMENT_ICONS = [
+  require('../../assets/esewa.png'),
+  require('../../assets/khalti.png'),
+];
+
+const QR_PAYMENT_AVATAR_SIZE = spacing['3xl'];
+const QR_PAYMENT_AVATAR_OVERLAP = -10;
 
 const PointsOut = () => {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
   const { isLight } = useThemeStore();
+  const { user } = useAuthStore();
   const { mutateAsync: pointsOut } = usePointsOut();
+
+  const wonBalance = useMemo(() => {
+    const balance = user?.won_balance ?? 0;
+    return typeof balance === 'number' ? balance.toFixed(2) : String(balance);
+  }, [user?.won_balance]);
+
+  const walletBalance = useMemo(() => {
+    const balance = user?.wallet_balance ?? 0;
+    return typeof balance === 'number' ? balance.toFixed(2) : String(balance);
+  }, [user?.wallet_balance]);
+
+  const balanceFontSize = useMemo(() => {
+    const digitCount = wonBalance.replace('.', '').length;
+    if (digitCount <= 4) return 76;
+    if (digitCount <= 6) return 64;
+    if (digitCount <= 8) return 52;
+    return 44;
+  }, [wonBalance]);
 
   const colors = {
     background: isLight ? "#ffffff" : "#000000",
@@ -29,6 +58,7 @@ const PointsOut = () => {
     inputBg: isLight ? "#f8f9fa" : "#1a1a1a",
     qrBg: isLight ? "#ffffff" : "#0a0a0a",
     cardBg: isLight ? "#f8f9fa" : "#0f0f0f",
+    cardBackground: isLight ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.1)',
   };
 
   const [crownAmount, setCrownAmount] = useState('');
@@ -66,8 +96,8 @@ const PointsOut = () => {
 
     if (!crownAmount) {
       newErrors.amount = 'Please enter points amount';
-    } else if (parseInt(crownAmount) < 100) {
-      newErrors.amount = 'Minimum 100 points';
+    } else if (parseInt(crownAmount) < 50) {
+      newErrors.amount = 'Minimum 50 points';
     }
 
     if (!qrImage) {
@@ -136,35 +166,130 @@ const PointsOut = () => {
               showsVerticalScrollIndicator={false}
             >
 
+              <View style={styles.balanceHero}>
+                <View style={styles.balanceAmountInner}>
+                  <Text style={[styles.balanceOutOf, { color: colors.text }]}>
+                    out of{' '}
+                    <Text style={styles.balanceOutOfValue}>{walletBalance}</Text>
+                  </Text>
+                  <Text
+                    style={[
+                      styles.balanceAmount,
+                      {
+                        color: colors.text,
+                        fontSize: balanceFontSize,
+                        letterSpacing: balanceFontSize * -0.03,
+                      },
+                    ]}
+                    adjustsFontSizeToFit
+                    numberOfLines={1}
+                    minimumFontScale={0.55}
+                  >
+                    {wonBalance}
+                  </Text>
+                </View>
+                <View style={styles.balanceLabelWrap}>
+                  <Text
+                    style={[
+                      styles.balanceLabel,
+                      { color: isLight ? '#000000' : '#ffffff' },
+                    ]}
+                  >
+                    Your Won Points
+                  </Text>
+                  <View style={styles.balanceUnderlineWrap}>
+                    <View style={styles.balanceUnderline}>
+                      <View
+                        style={[
+                          styles.balanceUnderlineLine,
+                          { backgroundColor: isLight ? '#000000' : '#ffffff' },
+                        ]}
+                      />
+                      <View style={styles.balanceUnderlineJewel}>
+                        <PointsIcon size={iconSize.sm + 2} color="#00bf63" />
+                      </View>
+                      <View
+                        style={[
+                          styles.balanceUnderlineLine,
+                          { backgroundColor: isLight ? '#000000' : '#ffffff' },
+                        ]}
+                      />
+                    </View>
+                    <LinearGradient
+                      colors={['transparent', 'rgba(0, 191, 99, 0.55)', 'transparent']}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      style={styles.balanceUnderlineGlow}
+                    />
+                  </View>
+                </View>
+              </View>
+
+              <View style={[styles.infoCard, { backgroundColor: colors.cardBackground }]}>
+                <View style={styles.infoHeader}>
+                  <AppIcon icon={InformationCircleIcon} size={iconSize.md} color={colors.text} />
+                  <Text style={[styles.infoTitle, { color: colors.text }]}>
+                    Redeem Info
+                  </Text>
+                </View>
+                <Text style={[styles.infoText, { color: colors.textSecondary }]}>
+                  Only won game point is redeemable.
+                </Text>
+              </View>
+
               {/* Your QR Section */}
               <View style={styles.uploadContainer}>
                 <Text style={[styles.inputLabel, { color: colors.text }]}>Provide Your QR</Text>
-                <Pressable
-                  style={[
-                    styles.uploadButton,
-                    qrImage && styles.uploadButtonWithImage,
-                    {
-                      borderColor: errors.qr ? '#FF4444' : colors.inputBorder,
-                      backgroundColor: colors.inputBg,
-                    }
-                  ]}
-                  onPress={pickImage}
-                >
-                  {qrImage ? (
-                    <View style={styles.selectedImageContainer}>
-                      <Image source={{ uri: qrImage }} style={styles.selectedImage} />
-                      <View style={styles.imageTextContainer}>
-                        <Text style={[styles.imageFileName, { color: colors.text }]}>QR uploaded</Text>
-                        <Text style={[styles.changeImageText, { color: colors.textSecondary }]}>Tap to change</Text>
+                <Text style={[styles.uploadHint, { color: colors.textSecondary }]}>
+                  Upload your eSewa or Khalti QR code
+                </Text>
+                <View style={styles.uploadButtonWrapper}>
+                  <Pressable
+                    style={[
+                      styles.uploadButton,
+                      qrImage && styles.uploadButtonWithImage,
+                      {
+                        borderColor: errors.qr ? '#FF4444' : colors.inputBorder,
+                        backgroundColor: colors.inputBg,
+                      }
+                    ]}
+                    onPress={pickImage}
+                  >
+                    {qrImage ? (
+                      <View style={styles.selectedImageContainer}>
+                        <Image source={{ uri: qrImage }} style={styles.selectedImage} />
+                        <View style={styles.imageTextContainer}>
+                          <Text style={[styles.imageFileName, { color: colors.text }]}>QR uploaded</Text>
+                          <Text style={[styles.changeImageText, { color: colors.textSecondary }]}>Tap to change</Text>
+                        </View>
                       </View>
-                    </View>
-                  ) : (
-                    <View style={styles.uploadButtonContent}>
-                      <AppIcon icon={QrCodeIcon} size={iconSize.xl + 4} color={colors.textSecondary} />
-                      <Text style={[styles.uploadButtonText, { color: colors.textSecondary }]}>Tap to upload your QR</Text>
-                    </View>
-                  )}
-                </Pressable>
+                    ) : (
+                      <View style={styles.uploadButtonContent}>
+                        <AppIcon icon={QrCodeIcon} size={iconSize.xl + 4} color={colors.textSecondary} />
+                        <Text style={[styles.uploadButtonText, { color: colors.textSecondary }]}>
+                          Tap to upload eSewa or Khalti QR
+                        </Text>
+                      </View>
+                    )}
+                  </Pressable>
+                  <View style={styles.qrPaymentAvatarBadge} pointerEvents="none">
+                    {QR_PAYMENT_ICONS.map((source, index) => (
+                      <View
+                        key={index}
+                        style={[
+                          styles.qrPaymentAvatar,
+                          {
+                            marginLeft: index === 0 ? 0 : QR_PAYMENT_AVATAR_OVERLAP,
+                            zIndex: QR_PAYMENT_ICONS.length - index,
+                            borderColor: colors.inputBg,
+                          },
+                        ]}
+                      >
+                        <Image source={source} style={styles.qrPaymentAvatarImage} resizeMode="cover" />
+                      </View>
+                    ))}
+                  </View>
+                </View>
                 {errors.qr ? (
                   <View style={styles.errorContainer}>
                     <AppIcon icon={AlertCircleIcon} size={iconSize.xs} color="#FF4444" />
@@ -198,7 +323,7 @@ const PointsOut = () => {
                   </View>
                   <TextInput
                     style={[styles.input, { color: colors.text }]}
-                    placeholder="Enter amount (e.g., 100)"
+                    placeholder="Enter amount ( min. 50 points )"
                     placeholderTextColor={colors.textSecondary}
                     keyboardType="numeric"
                     value={crownAmount}
@@ -244,13 +369,124 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingBottom: 40,
     paddingHorizontal: spacing.xl,
-    paddingTop: spacing.xl,
+    paddingTop: spacing.md,
+  },
+  balanceHero: {
+    alignItems: 'center',
+    paddingTop: spacing.lg,
+    paddingBottom: spacing['2xl'],
+    marginBottom: spacing.sm,
+  },
+  balanceAmountInner: {
+    alignSelf: 'center',
+    alignItems: 'flex-end',
+    maxWidth: '100%',
+  },
+  balanceAmount: {
+    fontWeight: Platform.OS === 'ios' ? '200' : '300',
+    fontVariant: ['tabular-nums'],
+    includeFontPadding: false,
+  },
+  balanceOutOf: {
+    fontSize: fontSize.sm,
+    fontWeight: '600',
+    letterSpacing: 0.3,
+    marginBottom: spacing.xs,
+  },
+  balanceOutOfValue: {
+    fontWeight: '700',
+    color: '#00bf63',
+    textDecorationLine: 'underline',
+    textDecorationColor: '#00bf63',
+  },
+  balanceLabelWrap: {
+    alignItems: 'center',
+    marginTop: spacing.sm,
+    gap: spacing.sm + 2,
+  },
+  balanceLabel: {
+    fontSize: fontSize.sm + 1,
+    fontWeight: '700',
+    letterSpacing: 2.8,
+    textTransform: 'uppercase',
+  },
+  balanceUnderlineWrap: {
+    alignItems: 'center',
+    width: '100%',
+    gap: spacing.xs,
+  },
+  balanceUnderline: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: 156,
+  },
+  balanceUnderlineLine: {
+    flex: 1,
+    height: StyleSheet.hairlineWidth * 2,
+    borderRadius: radius.full,
+    opacity: 0.28,
+  },
+  balanceUnderlineJewel: {
+    paddingHorizontal: spacing.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  balanceUnderlineGlow: {
+    width: 72,
+    height: 3,
+    borderRadius: radius.full,
+  },
+  infoCard: {
+    borderRadius: radius.lg,
+    padding: spacing.xl,
+    gap: spacing.md,
+    marginBottom: spacing['2xl'],
+  },
+  infoHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  infoTitle: {
+    fontSize: fontSize.md,
+    fontWeight: '600',
+  },
+  infoText: {
+    fontSize: fontSize.base,
+    lineHeight: 20,
   },
   inputContainer: {
     marginBottom: spacing.xl,
   },
   uploadContainer: {
     marginBottom: spacing['2xl'] + 6,
+  },
+  uploadButtonWrapper: {
+    position: 'relative',
+  },
+  uploadHint: {
+    fontSize: fontSize.sm,
+    fontWeight: '500',
+    marginBottom: spacing.sm + 2,
+    marginTop: -spacing.xs,
+  },
+  qrPaymentAvatarBadge: {
+    position: 'absolute',
+    right: spacing.sm,
+    bottom: spacing.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  qrPaymentAvatar: {
+    width: QR_PAYMENT_AVATAR_SIZE,
+    height: QR_PAYMENT_AVATAR_SIZE,
+    borderRadius: QR_PAYMENT_AVATAR_SIZE / 2,
+    overflow: 'hidden',
+    borderWidth: 2,
+  },
+  qrPaymentAvatarImage: {
+    width: '100%',
+    height: '100%',
   },
   inputLabel: {
     fontSize: fontSize.base + 1,
