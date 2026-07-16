@@ -1,6 +1,6 @@
 "use client"
 
-import { StatusBar, StyleSheet, Text, View, Image, ScrollView, Pressable, Platform, Linking } from "react-native"
+import { StatusBar, StyleSheet, Text, View, Image, ScrollView, Pressable, Platform } from "react-native"
 import Loader from "../../component/Loader"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useEffect, useState } from "react"
@@ -38,10 +38,6 @@ import AppHeader from "./header/AppHeader"
  * Clean, organized profile with user info, game profiles, and settings
  */
 const Profile = () => {
-  // Constants for legal URLs
-  const PRIVACY_URL = "https://level.com.np/privacy";
-  const TERMS_URL = "https://level.com.np/terms";
-
   // Global state and hooks
   const navigation = useNavigation()
   const { user, logout } = useAuthStore()
@@ -75,17 +71,11 @@ const Profile = () => {
   }
 
   const handleOpenPrivacyPolicy = () => {
-    Linking.openURL(PRIVACY_URL).catch(err => {
-      if (__DEV__) console.error('Error opening privacy URL:', err);
-      Toast.show('Could not open Privacy Policy', Toast.SHORT);
-    });
+    navigation.navigate('legalDocument', { type: 'privacy' });
   };
 
   const handleOpenTermsOfService = () => {
-    Linking.openURL(TERMS_URL).catch(err => {
-      if (__DEV__) console.error('Error opening terms URL:', err);
-      Toast.show('Could not open Terms of Service', Toast.SHORT);
-    });
+    navigation.navigate('legalDocument', { type: 'terms' });
   };
 
   const colors = {

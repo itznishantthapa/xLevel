@@ -20,6 +20,7 @@ import CreatePubg from "../screens/customer/createGame/CreatePubg";
 import CreateMLBB from "../screens/customer/createGame/CreateMLBB";
 import AccountDeletion from "../screens/customer/account/AccountDeletion";
 import Credits from "../screens/customer/legal/Credits";
+import LegalDocument from "../screens/legal/LegalDocument";
 import ReportUser from "../screens/customer/issue/ReportUser";
 import Report from "../screens/customer/Report";
 import ReportList from "../screens/customer/report/ReportList";
@@ -73,6 +74,7 @@ export default function CustomerNavigator(){
             <Stack.Screen component={CreateMLBB} name="createMLBB"/>
             <Stack.Screen component={AccountDeletion} name="accountDeletion"/>
             <Stack.Screen component={Credits} name="credits"/>
+            <Stack.Screen component={LegalDocument} name="legalDocument"/>
             <Stack.Screen component={ReportUser} name="reportUser"/>
             <Stack.Screen component={Report} name="report" options={{ animation: "fade"}}/>
             <Stack.Screen component={ReportList} name="reportList" options={{ animation: "fade"}}/>

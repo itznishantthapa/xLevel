@@ -4,7 +4,6 @@ import {
   Animated,
   Image,
   KeyboardAvoidingView,
-  Linking,
   Platform,
   Pressable,
   ScrollView,
@@ -18,6 +17,7 @@ import * as yup from 'yup';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import {
   AppleIcon,
   EyeIcon,
@@ -39,8 +39,6 @@ import { getAuthMetadata } from '../../utils/authMetadata';
 
 const GOOGLE_WEB_CLIENT_ID =
   '901665380294-lhur8lkcqkdt1d0e9b5q3p25mknfejbs.apps.googleusercontent.com';
-const PRIVACY_URL = 'https://level.com.np/privacy';
-const TERMS_URL = 'https://level.com.np/terms';
 
 const EMOJI_REGEX = /\p{Extended_Pictographic}/u;
 const INVALID_CREDENTIALS_MESSAGE = 'Invalid email or password';
@@ -201,6 +199,7 @@ const FloatingInput = ({
 };
 
 const Auth = () => {
+  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const { isLight } = useThemeStore();
   const { isConnected } = useNetworkStatus();
@@ -447,15 +446,11 @@ const Auth = () => {
   const isOAuthBusy = isGoogleLoading || isAppleLoading;
 
   const handleOpenTerms = () => {
-    Linking.openURL(TERMS_URL).catch(() => {
-      Toast.show('Could not open Terms of Service', Toast.SHORT);
-    });
+    navigation.navigate('legalDocument', { type: 'terms' });
   };
 
   const handleOpenPrivacy = () => {
-    Linking.openURL(PRIVACY_URL).catch(() => {
-      Toast.show('Could not open Privacy Policy', Toast.SHORT);
-    });
+    navigation.navigate('legalDocument', { type: 'privacy' });
   };
 
   const renderOAuthButton = ({ id, icon, label, onPress, loading, disabled }) => (
