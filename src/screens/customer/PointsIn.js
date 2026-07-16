@@ -98,17 +98,6 @@ const PointsIn = () => {
     try {
       setIsDownloadingQr(true)
 
-      if (Platform.OS === 'android') {
-        const existingPermission = await MediaLibrary.getPermissionsAsync(true, ['photo'])
-        if (existingPermission.status !== 'granted') {
-          const { status } = await MediaLibrary.requestPermissionsAsync(true, ['photo'])
-          if (status !== 'granted') {
-            Toast.show('Allow photo access to save the QR code.', Toast.SHORT)
-            return
-          }
-        }
-      }
-
       const fileExtension = qrImageUrl.split('.').pop()?.split('?')[0] || 'jpg'
       const fileUri = `${FileSystem.cacheDirectory}payment-qr.${fileExtension}`
       const downloadResult = await FileSystem.downloadAsync(qrImageUrl, fileUri)

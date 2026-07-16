@@ -42,7 +42,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>9</string>
+	<string>10</string>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-3488447190245589~1297601654</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
@@ -56,9 +56,9 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow $(PRODUCT_NAME) to access your microphone</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Allow Level to save payment QR codes to your photo library.</string>
+	<string>Photos will be used to upload payment screenshots, QR codes, and your profile picture.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Allow Level to save payment QR codes to your photo library.</string>
+	<string>Photos will be used to save the payment QR code to your photo library for Scan &amp; Pay.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>

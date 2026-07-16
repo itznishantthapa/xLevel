@@ -5,6 +5,13 @@
     "version": "1.3.0",
     "android": {
       "package": "com.blackonedevs.levelesportmatchmaking",
+      "blockedPermissions": [
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_MEDIA_VIDEO",
+        "android.permission.READ_MEDIA_AUDIO",
+        "android.permission.READ_MEDIA_VISUAL_USER_SELECTED",
+        "android.permission.READ_EXTERNAL_STORAGE"
+      ],
       "notification": {
         "icon": "./src/assets/ic_notification.png",
         "color": "#ffffff"
@@ -19,8 +26,8 @@
       [
         "expo-media-library",
         {
-          "photosPermission": "Allow Level to save payment QR codes to your photo library.",
-          "savePhotosPermission": "Allow Level to save payment QR codes to your photo library."
+          "photosPermission": "Photos will be used to upload payment screenshots, QR codes and your profile picture.",
+          "savePhotosPermission": "Photos will be used to save the payment QR code to your photo library for Scan & Pay."
         }
       ]
     ]

@@ -92,6 +92,7 @@ const CopyRemark = () => {
                 {
                   borderColor: isLight ? '#000000' : '#ffffff',
                   backgroundColor: isLight ? '#000000' : '#ffffff',
+                  marginTop: spacing.xs,
                 },
               ]}
               accessibilityRole="button"
@@ -107,6 +108,17 @@ const CopyRemark = () => {
               </Text>
             </Pressable>
           </View>
+
+          <Pressable
+            onPress={() => navigation.navigate('tutorial')}
+            style={styles.tutorialLink}
+            accessibilityRole="link"
+            accessibilityLabel="Watch tutorial"
+          >
+            <Text style={[styles.tutorialLinkText, { color: colors.text }]}>
+              Watch Tutorial
+            </Text>
+          </Pressable>
         </View>
       </View>
     </>
@@ -166,6 +178,17 @@ const styles = StyleSheet.create({
     letterSpacing: 0.4,
     width: '100%',
   },
+  tutorialLink: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: spacing.lg,
+    paddingVertical: spacing.sm,
+  },
+  tutorialLinkText: {
+    fontSize: fontSize.base,
+    fontWeight: '500',
+    textDecorationLine: 'underline',
+  },
   proceedButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -175,7 +198,6 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     paddingVertical: spacing.md + 2,
     paddingHorizontal: spacing.xl,
-    marginTop: spacing.xs,
   },
   proceedButtonText: {
     fontSize: fontSize.md,
