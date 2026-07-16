@@ -186,7 +186,7 @@ const Header = ({
                   <PointsIcon size={iconSize.sm} color="#00bf63" />
                 </Animated.View>
                 <Text style={styles.balanceText}>
-                  {typeof wallet_balance === "number" ? wallet_balance.toFixed(2) : wallet_balance}
+                  {wallet_balance?.toFixed(2)}
                 </Text>
               </View>
               <AppIcon icon={Add01Icon} size={iconSize.sm} color="#00bf63" />

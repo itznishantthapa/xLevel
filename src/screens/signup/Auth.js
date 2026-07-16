@@ -29,6 +29,7 @@ import {
 import Toast from 'react-native-simple-toast';
 
 import { AppIcon } from '../../components/common/AppIcon';
+import { AuthAmbientDecor, AuthButtonFrameDecor } from '../../components/auth/AuthDecorations';
 import CoolButton from '../../component/customer/common/CoolButton';
 import { useNetworkStatus } from '../../hooks/useNetworkStatus';
 import { useAuthStore } from '../../store/authStore';
@@ -441,6 +442,7 @@ const Auth = () => {
     }
   };
 
+  const isAndroid = Platform.OS === 'android';
   const handleSubmit = isSignUp ? handleCreate : handleLogin;
   const isOAuthBusy = isGoogleLoading || isAppleLoading;
 
@@ -507,6 +509,10 @@ const Auth = () => {
             showsVerticalScrollIndicator={false}
           >
             <View style={styles.content}>
+              {isAndroid ? (
+                <AuthAmbientDecor stroke={colors.stroke} />
+              ) : null}
+
               <View style={styles.brandBlock}>
                 <View
                   style={[
@@ -536,106 +542,32 @@ const Auth = () => {
 
               <View style={styles.header}>
                 <Text style={[styles.title, { color: colors.text }]}>
-                  {isSignUp ? 'Create account' : 'Welcome back'}
+                  {isAndroid ? 'Welcome' : isSignUp ? 'Create account' : 'Welcome back'}
                 </Text>
                 <Text style={[styles.subtitle, { color: colors.textMuted }]}>
-                  {isSignUp
-                    ? 'Enter your details to get started.'
-                    : 'Sign in to continue.'}
+                  {isAndroid
+                    ? 'Sign in or create an account with Google.'
+                    : isSignUp
+                      ? 'Enter your details to get started.'
+                      : 'Sign in to continue.'}
                 </Text>
               </View>
 
-              <View style={styles.authControls}>
-                <FloatingInput
-                  label="Email"
-                  value={form.email}
-                  onChangeText={updateForm('email')}
-                  icon={Mail01Icon}
-                  error={typeof errors.email === 'string' ? errors.email : ''}
-                  keyboardType="email-address"
-                  returnKeyType="next"
-                  colors={colors}
-                />
-
-                <FloatingInput
-                  label="Password"
-                  value={form.password}
-                  onChangeText={updateForm('password')}
-                  icon={LockIcon}
-                  error={errors.password}
-                  secureTextEntry={!visibility.password}
-                  secureVisible={visibility.password}
-                  onToggleSecure={() => toggleVisibility('password')}
-                  returnKeyType={isSignUp ? 'next' : 'done'}
-                  onSubmitEditing={isSignUp ? undefined : handleLogin}
-                  colors={colors}
-                />
-
-                {isSignUp ? (
-                  <FloatingInput
-                    label="Confirm Password"
-                    value={form.confirmPassword}
-                    onChangeText={updateForm('confirmPassword')}
-                    icon={LockIcon}
-                    error={errors.confirmPassword}
-                    secureTextEntry={!visibility.confirmPassword}
-                    secureVisible={visibility.confirmPassword}
-                    onToggleSecure={() => toggleVisibility('confirmPassword')}
-                    returnKeyType="done"
-                    onSubmitEditing={handleCreate}
-                    colors={colors}
-                  />
-                ) : null}
-
-                <CoolButton
-                  title={isSignUp ? 'Sign Up' : 'Log In'}
-                  handlePress={handleSubmit}
-                  disableBtn={isSubmitting}
-                  disabled={isSubmitting || isOAuthBusy}
-                  style={styles.primaryButton}
-                  textStyle={styles.primaryButtonText}
-                />
-
-                <View style={styles.dividerRow}>
-                  <View style={[styles.dividerLine, { backgroundColor: colors.divider }]} />
-                  <Text style={[styles.dividerText, { color: colors.textMuted }]}>or</Text>
-                  <View style={[styles.dividerLine, { backgroundColor: colors.divider }]} />
-                </View>
-
-                {Platform.OS === 'android'
-                  ? renderOAuthButton({
+              {isAndroid ? (
+                <View style={styles.androidAuthSection}>
+                  <AuthButtonFrameDecor stroke={colors.stroke}>
+                    {renderOAuthButton({
                       id: 'google',
                       icon: GoogleIcon,
                       label: 'Continue with Google',
                       onPress: handleGoogleSignIn,
                       loading: isGoogleLoading,
-                      disabled: isOAuthBusy || isSubmitting,
-                    })
-                  : renderOAuthButton({
-                      id: 'apple',
-                      icon: AppleIcon,
-                      label: 'Continue with Apple',
-                      onPress: handleAppleSignIn,
-                      loading: isAppleLoading,
-                      disabled: isOAuthBusy || isSubmitting,
+                      disabled: isOAuthBusy,
                     })}
-              </View>
+                  </AuthButtonFrameDecor>
 
-              <View style={styles.footer}>
-                <View style={styles.switchRow}>
-                  <Text style={[styles.switchText, { color: colors.textMuted }]}>
-                    {isSignUp ? 'Already have an account?' : "Don't have an account?"}
-                  </Text>
-                  <Pressable onPress={toggleMode} hitSlop={8} disabled={isSubmitting || isOAuthBusy}>
-                    <Text style={[styles.switchLink, { color: colors.accent }]}>
-                      {isSignUp ? 'Log In' : 'Sign Up'}
-                    </Text>
-                  </Pressable>
-                </View>
-
-                {isSignUp ? (
-                  <Text style={[styles.legalText, { color: colors.textMuted }]}>
-                    By signing up, you agree to our{' '}
+                  <Text style={[styles.legalText, styles.androidLegalText, { color: colors.textMuted }]}>
+                    By continuing, you agree to our{' '}
                     <Text style={[styles.legalLink, { color: colors.text }]} onPress={handleOpenTerms}>
                       Terms
                     </Text>
@@ -645,8 +577,104 @@ const Auth = () => {
                     </Text>
                     .
                   </Text>
-                ) : null}
-              </View>
+                </View>
+              ) : (
+                <View style={styles.authControls}>
+                  <FloatingInput
+                    label="Email"
+                    value={form.email}
+                    onChangeText={updateForm('email')}
+                    icon={Mail01Icon}
+                    error={typeof errors.email === 'string' ? errors.email : ''}
+                    keyboardType="email-address"
+                    returnKeyType="next"
+                    colors={colors}
+                  />
+
+                  <FloatingInput
+                    label="Password"
+                    value={form.password}
+                    onChangeText={updateForm('password')}
+                    icon={LockIcon}
+                    error={errors.password}
+                    secureTextEntry={!visibility.password}
+                    secureVisible={visibility.password}
+                    onToggleSecure={() => toggleVisibility('password')}
+                    returnKeyType={isSignUp ? 'next' : 'done'}
+                    onSubmitEditing={isSignUp ? undefined : handleLogin}
+                    colors={colors}
+                  />
+
+                  {isSignUp ? (
+                    <FloatingInput
+                      label="Confirm Password"
+                      value={form.confirmPassword}
+                      onChangeText={updateForm('confirmPassword')}
+                      icon={LockIcon}
+                      error={errors.confirmPassword}
+                      secureTextEntry={!visibility.confirmPassword}
+                      secureVisible={visibility.confirmPassword}
+                      onToggleSecure={() => toggleVisibility('confirmPassword')}
+                      returnKeyType="done"
+                      onSubmitEditing={handleCreate}
+                      colors={colors}
+                    />
+                  ) : null}
+
+                  <CoolButton
+                    title={isSignUp ? 'Sign Up' : 'Log In'}
+                    handlePress={handleSubmit}
+                    disableBtn={isSubmitting}
+                    disabled={isSubmitting || isOAuthBusy}
+                    style={styles.primaryButton}
+                    textStyle={styles.primaryButtonText}
+                  />
+
+                  <View style={styles.dividerRow}>
+                    <View style={[styles.dividerLine, { backgroundColor: colors.divider }]} />
+                    <Text style={[styles.dividerText, { color: colors.textMuted }]}>or</Text>
+                    <View style={[styles.dividerLine, { backgroundColor: colors.divider }]} />
+                  </View>
+
+                  {renderOAuthButton({
+                    id: 'apple',
+                    icon: AppleIcon,
+                    label: 'Continue with Apple',
+                    onPress: handleAppleSignIn,
+                    loading: isAppleLoading,
+                    disabled: isOAuthBusy || isSubmitting,
+                  })}
+                </View>
+              )}
+
+              {!isAndroid ? (
+                <View style={styles.footer}>
+                  <View style={styles.switchRow}>
+                    <Text style={[styles.switchText, { color: colors.textMuted }]}>
+                      {isSignUp ? 'Already have an account?' : "Don't have an account?"}
+                    </Text>
+                    <Pressable onPress={toggleMode} hitSlop={8} disabled={isSubmitting || isOAuthBusy}>
+                      <Text style={[styles.switchLink, { color: colors.accent }]}>
+                        {isSignUp ? 'Log In' : 'Sign Up'}
+                      </Text>
+                    </Pressable>
+                  </View>
+
+                  {isSignUp ? (
+                    <Text style={[styles.legalText, { color: colors.textMuted }]}>
+                      By signing up, you agree to our{' '}
+                      <Text style={[styles.legalLink, { color: colors.text }]} onPress={handleOpenTerms}>
+                        Terms
+                      </Text>
+                      {' '}and{' '}
+                      <Text style={[styles.legalLink, { color: colors.text }]} onPress={handleOpenPrivacy}>
+                        Privacy Policy
+                      </Text>
+                      .
+                    </Text>
+                  ) : null}
+                </View>
+              ) : null}
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
@@ -671,6 +699,14 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 420,
     alignSelf: 'center',
+    position: 'relative',
+  },
+  androidAuthSection: {
+    gap: spacing['2xl'],
+    marginTop: spacing.sm,
+  },
+  androidLegalText: {
+    paddingHorizontal: spacing.sm,
   },
   brandBlock: {
     alignItems: 'center',
