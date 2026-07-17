@@ -335,9 +335,6 @@ const PointsOut = () => {
                     }}
                   />
                 </View>
-                <Text style={[styles.redeemHint, { color: colors.textSecondary }]}>
-                  &quot;You can redeem only one time per day.&quot;
-                </Text>
                 {errors.amount ? (
                   <View style={styles.errorContainer}>
                     <AppIcon icon={AlertCircleIcon} size={iconSize.xs} color="#FF4444" />
@@ -515,13 +512,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: fontSize.base,
     fontSize: fontSize.md,
-  },
-  redeemHint: {
-    fontSize: fontSize.sm,
-    fontStyle: 'italic',
-    fontWeight: '500',
-    marginTop: spacing.sm,
-    lineHeight: 18,
   },
   uploadButton: {
     flexDirection: "row",

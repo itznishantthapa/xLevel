@@ -34,7 +34,7 @@ const TAB_CONFIG = [
   { name: 'OpenGamesTab', component: OpenGames, label: 'Matches' },
   { name: 'StoreTab', component: GameStores, label: 'Store' },
   { name: 'BuySellTab', component: BuySell, label: 'Buy&Sell' },
-  { name: 'Notification', component: Notify, label: 'Notifications' },
+  { name: 'Notification', component: Notify, label: 'Notifee' },
 ];
 
 const TAB_BAR_CONTENT_HEIGHT = 68;

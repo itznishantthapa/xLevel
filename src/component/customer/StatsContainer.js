@@ -12,7 +12,7 @@ import { useThemeStore } from '../../store/themeStore';
 import { useAuthStore } from '../../store/authStore';
 import { fontSize, spacing, radius, iconSize, lineHeight } from '../../theme/typography';
 
-const REDEEM_MIN_POINTS = 50;
+const REDEEM_MIN_POINTS = 100;
 
 const STAT_ITEMS = [
   { id: 'requests', name: 'Request', icon: ReceiptDollarIcon, color: '#16A34A', pulseColor: '#059669', activeKey: 'requests' },

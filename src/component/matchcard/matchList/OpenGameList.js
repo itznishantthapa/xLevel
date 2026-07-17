@@ -485,7 +485,7 @@ const styles = StyleSheet.create({
     borderWidth: 0,
   },
   notificationButtonUnsubscribed: {
-    backgroundColor: '#FF4444',
+    backgroundColor: '#fc0000',
     borderWidth: 0,
   },
   notificationLoader: {
