@@ -42,8 +42,6 @@ const GOOGLE_WEB_CLIENT_ID =
 
 const EMOJI_REGEX = /\p{Extended_Pictographic}/u;
 const INVALID_CREDENTIALS_MESSAGE = 'Invalid email or password';
-const EMAIL_TAKEN_MESSAGE = 'A user with this email already exists.';
-
 const AUTH_CONTROL_HEIGHT = 48;
 const AUTH_CONTROL_RADIUS = radius.lg;
 const AUTH_CONTROL_GAP = spacing.md;
@@ -60,20 +58,9 @@ const passwordSchema = yup
   .required('Password is required')
   .test('no-emoji', 'Password cannot contain emojis', (value) => !value || !EMOJI_REGEX.test(value));
 
-const signUpPasswordSchema = passwordSchema.min(6, 'Password must be at least 6 characters');
-
 const loginSchema = yup.object({
   email: emailSchema,
   password: passwordSchema,
-});
-
-const signUpSchema = yup.object({
-  email: emailSchema,
-  password: signUpPasswordSchema,
-  confirmPassword: yup
-    .string()
-    .required('Please confirm your password')
-    .oneOf([yup.ref('password')], 'Passwords do not match'),
 });
 
 const mapYupErrors = (err) => {
@@ -85,13 +72,6 @@ const mapYupErrors = (err) => {
 };
 
 const getApiErrorMessage = (err, fallback) => err?.message || fallback;
-
-const deriveFullNameFromEmail = (email) => {
-  const localPart = email.split('@')[0] || 'User';
-  const normalized = localPart.replace(/[._-]+/g, ' ').trim();
-  if (!normalized) return 'User';
-  return normalized.replace(/\b\w/g, (char) => char.toUpperCase());
-};
 
 const FloatingInput = ({
   label,
@@ -203,17 +183,14 @@ const Auth = () => {
   const insets = useSafeAreaInsets();
   const { isLight } = useThemeStore();
   const { isConnected } = useNetworkStatus();
-  const { login, signup, google_signup, apple_signup } = useAuthStore();
+  const { login, google_signup, apple_signup } = useAuthStore();
 
-  const [isSignUp, setIsSignUp] = useState(false);
   const [form, setForm] = useState({
     email: '',
     password: '',
-    confirmPassword: '',
   });
   const [visibility, setVisibility] = useState({
     password: false,
-    confirmPassword: false,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -227,7 +204,6 @@ const Auth = () => {
     textMuted: isLight ? '#888888' : '#888888',
     border: isLight ? '#e8e8e8' : 'rgba(255, 255, 255, 0.14)',
     divider: isLight ? '#ececec' : 'rgba(255, 255, 255, 0.12)',
-    accent: '#00bf63',
     stroke: isLight ? '#000000' : '#ffffff',
     error: '#FF4444',
   };
@@ -241,18 +217,12 @@ const Auth = () => {
     });
   }, []);
 
-  const getValidationSchema = () => (isSignUp ? signUpSchema : loginSchema);
-
-  const buildFormValues = (snapshot) => ({
-    email: snapshot.email.trim(),
-    password: snapshot.password,
-    confirmPassword: snapshot.confirmPassword,
-  });
-
   const validateField = async (field, snapshot) => {
     try {
-      const schema = getValidationSchema();
-      await schema.validateAt(field, buildFormValues(snapshot));
+      await loginSchema.validateAt(field, {
+        email: snapshot.email.trim(),
+        password: snapshot.password,
+      });
       setErrors((prev) => ({ ...prev, [field]: '' }));
     } catch (error) {
       if (error instanceof yup.ValidationError) {
@@ -267,33 +237,12 @@ const Auth = () => {
     setForm((prev) => {
       const next = { ...prev, [field]: nextValue };
       validateField(field, next);
-      if (field === 'password' && isSignUp && next.confirmPassword) {
-        validateField('confirmPassword', next);
-      }
       return next;
     });
   };
 
   const toggleVisibility = (field) => {
     setVisibility((prev) => ({ ...prev, [field]: !prev[field] }));
-  };
-
-  const resetForm = () => {
-    setForm({
-      email: '',
-      password: '',
-      confirmPassword: '',
-    });
-    setVisibility({
-      password: false,
-      confirmPassword: false,
-    });
-    setErrors({});
-  };
-
-  const toggleMode = () => {
-    resetForm();
-    setIsSignUp((prev) => !prev);
   };
 
   const handleLogin = async () => {
@@ -319,46 +268,6 @@ const Auth = () => {
         const message = getApiErrorMessage(err, 'Unable to log in.');
         if (message === INVALID_CREDENTIALS_MESSAGE) {
           setErrors({ email: '', password: message });
-        } else {
-          Toast.show(message, Toast.SHORT);
-        }
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleCreate = async () => {
-    if (!isConnected) {
-      Toast.show('No internet connection.', Toast.SHORT);
-      return;
-    }
-
-    const email = form.email.trim();
-    const payload = {
-      email,
-      password: form.password,
-      confirmPassword: form.confirmPassword,
-      full_name: deriveFullNameFromEmail(email),
-    };
-
-    try {
-      await signUpSchema.validate(payload, { abortEarly: false });
-      setIsSubmitting(true);
-      const authMetadata = await getAuthMetadata();
-      await signup({
-        email: payload.email,
-        password: payload.password,
-        full_name: payload.full_name,
-        ...authMetadata,
-      });
-    } catch (err) {
-      if (err instanceof yup.ValidationError) {
-        setErrors(mapYupErrors(err));
-      } else {
-        const message = getApiErrorMessage(err, 'Unable to create account.');
-        if (message === EMAIL_TAKEN_MESSAGE) {
-          setErrors({ email: message });
         } else {
           Toast.show(message, Toast.SHORT);
         }
@@ -442,7 +351,6 @@ const Auth = () => {
   };
 
   const isAndroid = Platform.OS === 'android';
-  const handleSubmit = isSignUp ? handleCreate : handleLogin;
   const isOAuthBusy = isGoogleLoading || isAppleLoading;
 
   const handleOpenTerms = () => {
@@ -504,9 +412,7 @@ const Auth = () => {
             showsVerticalScrollIndicator={false}
           >
             <View style={styles.content}>
-              {isAndroid ? (
-                <AuthAmbientDecor stroke={colors.stroke} />
-              ) : null}
+              <AuthAmbientDecor stroke={colors.stroke} />
 
               <View style={styles.brandBlock}>
                 <View
@@ -536,20 +442,16 @@ const Auth = () => {
               </View>
 
               <View style={styles.header}>
-                <Text style={[styles.title, { color: colors.text }]}>
-                  {isAndroid ? 'Welcome' : isSignUp ? 'Create account' : 'Welcome back'}
-                </Text>
+                <Text style={[styles.title, { color: colors.text }]}>Welcome</Text>
                 <Text style={[styles.subtitle, { color: colors.textMuted }]}>
                   {isAndroid
                     ? 'Sign in or create an account with Google.'
-                    : isSignUp
-                      ? 'Enter your details to get started.'
-                      : 'Sign in to continue.'}
+                    : 'Sign in to continue.'}
                 </Text>
               </View>
 
               {isAndroid ? (
-                <View style={styles.androidAuthSection}>
+                <View style={styles.authSection}>
                   <AuthButtonFrameDecor stroke={colors.stroke}>
                     {renderOAuthButton({
                       id: 'google',
@@ -561,7 +463,7 @@ const Auth = () => {
                     })}
                   </AuthButtonFrameDecor>
 
-                  <Text style={[styles.legalText, styles.androidLegalText, { color: colors.textMuted }]}>
+                  <Text style={[styles.legalText, styles.authLegalText, { color: colors.textMuted }]}>
                     By continuing, you agree to our{' '}
                     <Text style={[styles.legalLink, { color: colors.text }]} onPress={handleOpenTerms}>
                       Terms
@@ -595,30 +497,14 @@ const Auth = () => {
                     secureTextEntry={!visibility.password}
                     secureVisible={visibility.password}
                     onToggleSecure={() => toggleVisibility('password')}
-                    returnKeyType={isSignUp ? 'next' : 'done'}
-                    onSubmitEditing={isSignUp ? undefined : handleLogin}
+                    returnKeyType="done"
+                    onSubmitEditing={handleLogin}
                     colors={colors}
                   />
 
-                  {isSignUp ? (
-                    <FloatingInput
-                      label="Confirm Password"
-                      value={form.confirmPassword}
-                      onChangeText={updateForm('confirmPassword')}
-                      icon={LockIcon}
-                      error={errors.confirmPassword}
-                      secureTextEntry={!visibility.confirmPassword}
-                      secureVisible={visibility.confirmPassword}
-                      onToggleSecure={() => toggleVisibility('confirmPassword')}
-                      returnKeyType="done"
-                      onSubmitEditing={handleCreate}
-                      colors={colors}
-                    />
-                  ) : null}
-
                   <CoolButton
-                    title={isSignUp ? 'Sign Up' : 'Log In'}
-                    handlePress={handleSubmit}
+                    title="Log In"
+                    handlePress={handleLogin}
                     disableBtn={isSubmitting}
                     disabled={isSubmitting || isOAuthBusy}
                     style={styles.primaryButton}
@@ -631,45 +517,30 @@ const Auth = () => {
                     <View style={[styles.dividerLine, { backgroundColor: colors.divider }]} />
                   </View>
 
-                  {renderOAuthButton({
-                    id: 'apple',
-                    icon: AppleIcon,
-                    label: 'Continue with Apple',
-                    onPress: handleAppleSignIn,
-                    loading: isAppleLoading,
-                    disabled: isOAuthBusy || isSubmitting,
-                  })}
+                  <AuthButtonFrameDecor stroke={colors.stroke}>
+                    {renderOAuthButton({
+                      id: 'apple',
+                      icon: AppleIcon,
+                      label: 'Continue with Apple',
+                      onPress: handleAppleSignIn,
+                      loading: isAppleLoading,
+                      disabled: isOAuthBusy || isSubmitting,
+                    })}
+                  </AuthButtonFrameDecor>
+
+                  <Text style={[styles.legalText, styles.authLegalText, { color: colors.textMuted }]}>
+                    By continuing, you agree to our{' '}
+                    <Text style={[styles.legalLink, { color: colors.text }]} onPress={handleOpenTerms}>
+                      Terms
+                    </Text>
+                    {' '}and{' '}
+                    <Text style={[styles.legalLink, { color: colors.text }]} onPress={handleOpenPrivacy}>
+                      Privacy Policy
+                    </Text>
+                    .
+                  </Text>
                 </View>
               )}
-
-              {!isAndroid ? (
-                <View style={styles.footer}>
-                  <View style={styles.switchRow}>
-                    <Text style={[styles.switchText, { color: colors.textMuted }]}>
-                      {isSignUp ? 'Already have an account?' : "Don't have an account?"}
-                    </Text>
-                    <Pressable onPress={toggleMode} hitSlop={8} disabled={isSubmitting || isOAuthBusy}>
-                      <Text style={[styles.switchLink, { color: colors.accent }]}>
-                        {isSignUp ? 'Log In' : 'Sign Up'}
-                      </Text>
-                    </Pressable>
-                  </View>
-
-                  {isSignUp ? (
-                    <Text style={[styles.legalText, { color: colors.textMuted }]}>
-                      By signing up, you agree to our{' '}
-                      <Text style={[styles.legalLink, { color: colors.text }]} onPress={handleOpenTerms}>
-                        Terms
-                      </Text>
-                      {' '}and{' '}
-                      <Text style={[styles.legalLink, { color: colors.text }]} onPress={handleOpenPrivacy}>
-                        Privacy Policy
-                      </Text>
-                      .
-                    </Text>
-                  ) : null}
-                </View>
-              ) : null}
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
@@ -696,12 +567,13 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     position: 'relative',
   },
-  androidAuthSection: {
+  authSection: {
     gap: spacing['2xl'],
     marginTop: spacing.sm,
   },
-  androidLegalText: {
+  authLegalText: {
     paddingHorizontal: spacing.sm,
+    marginTop: spacing.md,
   },
   brandBlock: {
     alignItems: 'center',
@@ -817,24 +689,6 @@ const styles = StyleSheet.create({
   },
   oauthButtonText: {
     fontSize: fontSize.md,
-    fontWeight: '600',
-  },
-  footer: {
-    marginTop: spacing['2xl'] + spacing.sm,
-    gap: spacing.xl,
-  },
-  switchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-    gap: spacing.xs,
-  },
-  switchText: {
-    fontSize: fontSize.base,
-  },
-  switchLink: {
-    fontSize: fontSize.base,
     fontWeight: '600',
   },
   legalText: {

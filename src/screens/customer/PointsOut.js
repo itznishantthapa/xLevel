@@ -96,8 +96,8 @@ const PointsOut = () => {
 
     if (!crownAmount) {
       newErrors.amount = 'Please enter points amount';
-    } else if (parseInt(crownAmount) < 50) {
-      newErrors.amount = 'Minimum 50 points';
+    } else if (parseInt(crownAmount) < 100) {
+      newErrors.amount = 'Minimum 100 points';
     }
 
     if (!qrImage) {
@@ -323,7 +323,7 @@ const PointsOut = () => {
                   </View>
                   <TextInput
                     style={[styles.input, { color: colors.text }]}
-                    placeholder="Enter amount ( min. 50 points )"
+                    placeholder="Enter amount ( min. 100 points )"
                     placeholderTextColor={colors.textSecondary}
                     keyboardType="numeric"
                     value={crownAmount}
