@@ -39,6 +39,13 @@ const getCompactGameName = (name = '') => name.replace(/\s+/g, '');
 // Constants
 const { width, height } = Dimensions.get('window');
 const ITEM_HEIGHT = 280;
+const NOTIFICATION_BUTTON_SIZE = 34;
+const NOTIFICATION_BUTTON_BORDER_WIDTH = 1.5;
+const NOTIFICATION_BUTTON_RING_PADDING = spacing.xxs;
+const NOTIFICATION_BUTTON_INNER_SIZE =
+  NOTIFICATION_BUTTON_SIZE -
+  NOTIFICATION_BUTTON_BORDER_WIDTH * 2 -
+  NOTIFICATION_BUTTON_RING_PADDING * 2;
 
 /**
  * OpenGameList Component
@@ -237,11 +244,14 @@ const OpenGameList = ({
     if (!showFilters) return null;
 
     const borderColor = isLight ? '#000000' : '#eaf4f4';
-    const notificationButtonStyle = isTopicLoading
-      ? { backgroundColor: isLight ? '#000000' : '#FFFFFF' }
+    const notificationColors = isTopicLoading
+      ? {
+          ring: isLight ? '#000000' : '#FFFFFF',
+          fill: isLight ? '#000000' : '#FFFFFF',
+        }
       : isCreationSubscribed
-        ? styles.notificationButtonSubscribed
-        : styles.notificationButtonUnsubscribed;
+        ? { ring: '#00bf63', fill: '#00bf63' }
+        : { ring: '#fc0000', fill: '#fc0000' };
     const notificationIcon = isCreationSubscribed ? Notification01Icon : NotificationOff01Icon;
     const loaderColor = isLight ? '#FFFFFF' : '#000000';
 
@@ -318,7 +328,10 @@ const OpenGameList = ({
         </ScrollView>
 
         <Pressable
-          style={[styles.notificationButton, notificationButtonStyle]}
+          style={[
+            styles.notificationButtonOuter,
+            { borderColor: notificationColors.ring },
+          ]}
           onPress={handleNotificationPress}
           disabled={isTopicLoading}
           accessibilityRole="button"
@@ -328,16 +341,23 @@ const OpenGameList = ({
               : `Turn on ${gameName} game creation notifications`
           }
         >
-          {isTopicLoading ? (
-            <LoaderKitView
-              style={styles.notificationLoader}
-              name="LineSpinFadeLoader"
-              color={loaderColor}
-              animationSpeedMultiplier={1.0}
-            />
-          ) : (
-            <AppIcon icon={notificationIcon} size={iconSize.md} color="#FFFFFF" />
-          )}
+          <View
+            style={[
+              styles.notificationButtonInner,
+              { backgroundColor: notificationColors.fill },
+            ]}
+          >
+            {isTopicLoading ? (
+              <LoaderKitView
+                style={styles.notificationLoader}
+                name="LineSpinFadeLoader"
+                color={loaderColor}
+                animationSpeedMultiplier={1.0}
+              />
+            ) : (
+              <AppIcon icon={notificationIcon} size={iconSize.sm} color="#FFFFFF" />
+            )}
+          </View>
         </Pressable>
       </View>
     );
@@ -460,7 +480,7 @@ const styles = StyleSheet.create({
   filterChipsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 6,
     paddingLeft: 10,
     paddingRight: 10,
     borderBottomWidth: 1,
@@ -473,24 +493,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingRight: spacing.sm,
   },
-  notificationButton: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+  notificationButtonOuter: {
+    width: NOTIFICATION_BUTTON_SIZE,
+    height: NOTIFICATION_BUTTON_SIZE,
+    borderRadius: NOTIFICATION_BUTTON_SIZE / 2,
+    borderWidth: NOTIFICATION_BUTTON_BORDER_WIDTH,
+    padding: NOTIFICATION_BUTTON_RING_PADDING,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  notificationButtonSubscribed: {
-    backgroundColor: '#00bf63',
-    borderWidth: 0,
-  },
-  notificationButtonUnsubscribed: {
-    backgroundColor: '#fc0000',
-    borderWidth: 0,
+  notificationButtonInner: {
+    width: NOTIFICATION_BUTTON_INNER_SIZE,
+    height: NOTIFICATION_BUTTON_INNER_SIZE,
+    borderRadius: NOTIFICATION_BUTTON_INNER_SIZE / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   notificationLoader: {
-    width: 20,
-    height: 20,
+    width: 16,
+    height: 16,
   },
   filterChip: {
     backgroundColor: 'transparent',

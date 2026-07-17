@@ -18,6 +18,11 @@ const REPORT_TYPES = [
     { id: 'refund_agreement', label: 'Refund Agreement', description: 'Request a mutual refund agreement' },
 ];
 
+const isFreeFireGame = (gameName = '') => {
+    const normalizedName = gameName.toLowerCase();
+    return normalizedName.includes('free fire') || normalizedName.includes('freefire');
+};
+
 const REPORT_DETAILS = {
   game_issue:
     'Tapai ko match ma k-kasto problem aako chha hami lai explain garnus and screenshots pni dinu hos. All 3 screenshots required.\n[ False information may result in -20 points ]',
@@ -56,9 +61,13 @@ const Report = ({ route }) => {
     const { isLight } = useThemeStore();
     const { game } = route.params;
     const { mutateAsync: createReport } = useCreateReport();
+    const showFairnessCheck = isFreeFireGame(game?.game?.name);
+    const reportTypes = showFairnessCheck
+        ? REPORT_TYPES
+        : REPORT_TYPES.filter((type) => type.id !== 'fairness');
 
     // State management
-    const [reportType, setReportType] = useState('fairness');
+    const [reportType, setReportType] = useState(showFairnessCheck ? 'fairness' : 'game_issue');
     const [description, setDescription] = useState('');
     const [evidence1, setEvidence1] = useState(null);
     const [evidence2, setEvidence2] = useState(null);
@@ -84,6 +93,12 @@ const Report = ({ route }) => {
         selected: isLight ? '#000000' : '#ffffff',
         unselected: isLight ? '#cccccc' : '#666666',
     };
+
+    useEffect(() => {
+        if (!showFairnessCheck && reportType === 'fairness') {
+            setReportType('game_issue');
+        }
+    }, [showFairnessCheck, reportType]);
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
@@ -320,9 +335,9 @@ const Report = ({ route }) => {
         </View>
     );
 
-    const renderReportTypeOption = (type, index) => {
+    const renderReportTypeOption = (type, index, types) => {
         const isSelected = reportType === type.id;
-        const isLast = index === REPORT_TYPES.length - 1;
+        const isLast = index === types.length - 1;
 
         return (
             <Pressable
@@ -403,7 +418,7 @@ const Report = ({ route }) => {
                     </View>
 
                     <View style={[styles.reportTypeList, { backgroundColor: colors.cardBackground }]}>
-                        {REPORT_TYPES.map((type, index) => renderReportTypeOption(type, index))}
+                        {reportTypes.map((type, index) => renderReportTypeOption(type, index, reportTypes))}
                     </View>
 
                     <View style={[styles.detailsCard, { backgroundColor: colors.cardBackground }]}>
