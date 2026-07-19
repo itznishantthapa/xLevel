@@ -13,7 +13,7 @@ import { useJoinMatch } from '../../../queries/useMutation/useJoinMatch';
 import Loader from '../../../component/Loader';
 
 
-const MainTab = ({ gameId, gameName }) => {
+const MainTab = ({ gameId, gameName, isActive = true }) => {
   // Global state and hooks
   const { isLight } = useThemeStore();
   const { data: games = [] } = useGames();
@@ -25,7 +25,7 @@ const MainTab = ({ gameId, gameName }) => {
     refetch,
     isFetching,
     isFetchingNextPage,
-  } = useOpenChallenge(10, gameId, selectedMode);
+  } = useOpenChallenge(10, gameId, selectedMode, isActive);
 
   const navigation = useNavigation();
   const { isConnected } = useNetworkStatus();

@@ -3,11 +3,12 @@ import { ChallengeAPI } from "../api/challengeApi";
 
 const THIRTY_SEC = 30 * 1000; 
 
-export const useOpenChallenge = (pageSize = 10, game_id, game_mode) =>
+export const useOpenChallenge = (pageSize = 10, game_id, game_mode, enabled = true) =>
   useInfiniteQuery({
 
     queryKey: ["openChallenge", pageSize, game_id, game_mode],
     initialPageParam: 0,
+    enabled: enabled && !!game_id,
 
     queryFn: ({ pageParam = 0 }) =>
       ChallengeAPI.getOpenChallengesOnLoads({

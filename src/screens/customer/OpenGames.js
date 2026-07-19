@@ -1,32 +1,67 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StatusBar, StyleSheet, View, useWindowDimensions, Text, Pressable, Animated } from 'react-native';
 import { TabView, TabBar } from 'react-native-tab-view';
 import { useThemeStore } from '../../store/themeStore';
-import { useNetworkStatus } from '../../hooks/useNetworkStatus';
 import { useGames } from '../../queries/useGames';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
+import {
+  getOpenGamesTabIndex,
+  setOpenGamesActiveGameId,
+} from '../../utils/openGamesTabStorage';
 
 import MainTab from './gamesTabs/MainTab';
-
 
 const OpenGames = () => {
   const layout = useWindowDimensions();
   const { isLight } = useThemeStore();
   const { data: games = [] } = useGames();
-  const { isConnected } = useNetworkStatus();
   const insets = useSafeAreaInsets();
 
   const [index, setIndex] = useState(0);
+  const [isTabReady, setIsTabReady] = useState(false);
 
-  // Generate routes dynamically
-  const routes = games.map(game => ({
-    key: game?.game_id,
-    title: game?.game_name,
-    game_id: game?.game_id,
-  }));
+  const routes = useMemo(
+    () => games.map(game => ({
+      key: String(game?.game_id),
+      title: game?.game_name,
+      game_id: game?.game_id,
+    })),
+    [games],
+  );
 
-  // Custom TabBar
+  useEffect(() => {
+    if (!routes.length) {
+      setIsTabReady(false);
+      return;
+    }
+
+    let isMounted = true;
+
+    const restoreActiveTab = async () => {
+      const savedIndex = await getOpenGamesTabIndex(routes);
+
+      if (!isMounted) return;
+
+      setIndex(savedIndex);
+      setIsTabReady(true);
+    };
+
+    restoreActiveTab();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [routes]);
+
+  const handleIndexChange = useCallback((newIndex) => {
+    setIndex(newIndex);
+
+    const activeRoute = routes[newIndex];
+    if (activeRoute?.game_id != null) {
+      setOpenGamesActiveGameId(activeRoute.game_id);
+    }
+  }, [routes]);
+
   const renderTabBar = props => {
     const { position } = props;
 
@@ -40,12 +75,11 @@ const OpenGames = () => {
           style={styles.tabBar}
           indicatorStyle={[styles.indicator, { backgroundColor: 'transparent' }]}
           tabStyle={styles.tab}
-          renderTabBarItem={({ route, navigationState, onPress, onLongPress, activeColor, inactiveColor }) => {
+          renderTabBarItem={({ route, navigationState, onPress, onLongPress }) => {
             const inputRange = navigationState.routes.map((_, i) => i);
             const routeIndex = navigationState.routes.findIndex(r => r.key === route.key);
             const isActive = routeIndex === index;
 
-            // Using regular Animated API which is compatible with react-native-tab-view
             const opacity = position.interpolate({
               inputRange,
               outputRange: inputRange.map(i => (i === routeIndex ? 1 : 0.6)),
@@ -69,9 +103,9 @@ const OpenGames = () => {
                     fontWeight: '900',
                     opacity,
                     transform: [{ scale }],
-                    color: isLight ? "#000000" : "#eaf4f4",
+                    color: isLight ? '#000000' : '#eaf4f4',
                     borderBottomWidth: isActive ? 1 : 0,
-                    borderColor: isActive && isLight ? "#000000" : "#ffffff",
+                    borderColor: isActive && isLight ? '#000000' : '#ffffff',
                   }}
                 >
                   {route.title}
@@ -85,27 +119,36 @@ const OpenGames = () => {
     );
   };
 
-  // Render scene for each tab
-  const renderScene = ({ route }) => {
+  const renderScene = useCallback(({ route }) => {
+    const routeIndex = routes.findIndex(item => item.key === route.key);
 
-    return <MainTab gameId={route.game_id} gameName={route.title} />;
-  };
+    return (
+      <MainTab
+        gameId={route.game_id}
+        gameName={route.title}
+        isActive={routeIndex === index}
+      />
+    );
+  }, [routes, index]);
 
   return (
     <View style={[styles.container, { backgroundColor: isLight ? '#ffffff' : '#000', paddingTop: insets.top }]}>
       <StatusBar translucent backgroundColor="transparent" barStyle={isLight ? 'dark-content' : 'light-content'} />
 
-      {routes.length > 0 ? (
+      {routes.length > 0 && isTabReady ? (
         <TabView
           lazy
+          lazyPreloadDistance={0}
           navigationState={{ index, routes }}
           renderScene={renderScene}
-          onIndexChange={setIndex}
+          onIndexChange={handleIndexChange}
           initialLayout={{ width: layout.width }}
           renderTabBar={renderTabBar}
           style={styles.tabView}
           gestureHandlerProps={{ activeOffsetX: [-150, 150], failOffsetY: [-30, 30] }}
         />
+      ) : routes.length > 0 ? (
+        <View style={styles.notAvailableContainer} />
       ) : (
         <View style={styles.notAvailableContainer}>
           <Text>No games available</Text>
@@ -127,7 +170,7 @@ const styles = StyleSheet.create({
     shadowRadius: 0,
     backgroundColor: 'transparent',
   },
-  tabBar: {backgroundColor:'transparent', height: 48,elevation:0,shadowColor:'transparent',shadowOffset:{width:0,height:0},shadowOpacity:0,shadowRadius:0 },
+  tabBar: { backgroundColor: 'transparent', height: 48, elevation: 0, shadowColor: 'transparent', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0, shadowRadius: 0 },
   tab: { width: 'auto', minWidth: 90, marginHorizontal: 4 },
   tabLabel: { fontSize: 14, fontWeight: '600', textTransform: 'none', paddingHorizontal: 16 },
   indicator: { height: 3, marginBottom: 2 },
