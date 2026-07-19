@@ -1,23 +1,25 @@
-import { View, Text, StyleSheet, Image, Pressable, TextInput, Animated } from 'react-native'
+import { View, Text, StyleSheet, Image, Pressable, Animated, ScrollView } from 'react-native'
 import Toast from 'react-native-simple-toast'
 import { useThemeStore } from '../../../store/themeStore'
 import { AppIcon, PointsIcon } from '../../../components/common/AppIcon'
 import {
   CheckmarkCircle01Icon,
-  UserIcon,
-  UserArrowLeftRightIcon,
-  IdentityCardIcon,
-  GameController03Icon,
-  LabelIcon,
-  Location01Icon,
   CheckIcon,
+  ArrowRight01Icon,
 } from '@hugeicons/core-free-icons'
 import { fontSize, spacing, iconSize } from '../../../theme/typography'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useMemo } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { useGameProfiles } from '../../../queries/useGameProfiles'
 import { useStoreScreenData } from '../../../hooks/useStoreScreenData'
-import { CreateGameLayout, SectionTitle, DividerLine, TermsAgreement } from '../../../component/customer/createGame'
+import {
+  CreateGameLayout,
+  SectionTitle,
+  DividerLine,
+  TermsAgreement,
+  StoreProfileSection,
+  STORE_PROFILE_AGREEMENT_TEXT,
+} from '../../../component/customer/createGame'
 import { useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '../../../store/authStore'
 import { useStoreTopup } from '../../../queries/useMutation/useStoreTopup'
@@ -25,6 +27,36 @@ import { useStoreTopup } from '../../../queries/useMutation/useStoreTopup'
 // Monochrome accent colors
 const ACCENT_PRIMARY = (isLight) => isLight ? '#000000' : '#ffffff'
 const ACCENT_ALT = (isLight) => isLight ? '#555555' : '#aaaaaa'
+const EVENT_STORE_TYPE = 'event'
+const LEGACY_EVOACCESS_TYPE = 'evoaccess'
+
+const isEventStoreType = (type) =>
+  type === EVENT_STORE_TYPE || type === LEGACY_EVOACCESS_TYPE
+
+const normalizeStoreItemType = (type) =>
+  type === LEGACY_EVOACCESS_TYPE ? EVENT_STORE_TYPE : type
+
+const getSectionTitle = (type) => {
+  if (!type) return 'Packages'
+  const formattedType = type.charAt(0).toUpperCase() + type.slice(1)
+  return `${formattedType} Packages`
+}
+
+const getLevelChipLayout = (totalCount) => {
+  if (totalCount === 1) {
+    return { flexGrow: 1, flexShrink: 0, flexBasis: '100%' }
+  }
+
+  if (totalCount === 2) {
+    return { flexGrow: 1, flexShrink: 1, flexBasis: 0 }
+  }
+
+  if (totalCount === 3) {
+    return { flexGrow: 1, flexShrink: 1, flexBasis: 0 }
+  }
+
+  return { flexGrow: 1, flexShrink: 0, flexBasis: '31%' }
+}
 
 const FreeFireStore = ({ route }) => {
   const { game } = route.params || {}
@@ -70,7 +102,7 @@ const FreeFireStore = ({ route }) => {
       slideAnim.setValue(0)
     }
   }, [selectedItem])
-  
+
   // Transform backend data to frontend format
   const transformStoreItems = (items) => {
     if (!items || items.length === 0) return []
@@ -78,9 +110,10 @@ const FreeFireStore = ({ route }) => {
     return items.map(item => {
       const transformed = {
         id: item.id,
-        type: item.type,
+        type: normalizeStoreItemType(item.type),
         points: item.points,
         image: { uri: item.image },
+        label: item.label,
       }
 
       // Add type-specific fields based on quantity and label
@@ -94,9 +127,9 @@ const FreeFireStore = ({ route }) => {
           .replace(/\s+/g, '-')
         transformed.membership = membershipType
       } else if (item.type === 'levelup') {
-        transformed.level = String(item.quantity)
-      } else if (item.type === 'evoaccess') {
-        transformed.day = `${item.quantity}D`
+        transformed.level = item.quantity != null ? String(item.quantity) : 'All'
+      } else if (isEventStoreType(item.type)) {
+        transformed.day = item.quantity != null ? `${item.quantity}D` : 'All'
       }
 
       return transformed
@@ -110,7 +143,18 @@ const FreeFireStore = ({ route }) => {
   const diamonds = storeItems?.filter(item => item.type === "diamond") || []
   const memberships = storeItems?.filter(item => item.type === "membership") || []
   const levelups = storeItems?.filter(item => item.type === "levelup") || []
-  const evoaccesses = storeItems?.filter(item => item.type === "evoaccess") || []
+  const events = storeItems?.filter(item => item.type === EVENT_STORE_TYPE) || []
+
+  const visibleStoreSections = useMemo(() => {
+    const sections = []
+
+    if (diamonds.length > 0) sections.push('diamond')
+    if (memberships.length > 0) sections.push('membership')
+    if (levelups.length > 0) sections.push('levelup')
+    if (events.length > 0) sections.push(EVENT_STORE_TYPE)
+
+    return sections
+  }, [diamonds.length, memberships.length, levelups.length, events.length])
 
   // Get the username and UID based on profile type
   const getProfileData = () => {
@@ -197,7 +241,7 @@ const FreeFireStore = ({ route }) => {
     if (item.type === 'diamond') return `${item.diamonds.toLocaleString()} Diamonds`
     if (item.type === 'membership') return `${getMembershipName(item.membership)} Membership`
     if (item.type === 'levelup') return `Level Up ${item.level}`
-    if (item.type === 'evoaccess') return `Evo Access ${item.day}`
+    if (item.type === EVENT_STORE_TYPE) return item.label || `Event ${item.day}`
     return ''
   }
 
@@ -206,7 +250,7 @@ const FreeFireStore = ({ route }) => {
     if (item.type === 'diamond') return 'DIAMONDS'
     if (item.type === 'membership') return 'MEMBERSHIP'
     if (item.type === 'levelup') return 'LEVEL UP PASS'
-    if (item.type === 'evoaccess') return 'EVO ACCESS'
+    if (item.type === EVENT_STORE_TYPE) return 'EVENT'
     return ''
   }
 
@@ -364,8 +408,11 @@ const FreeFireStore = ({ route }) => {
 
   // Render single level up card with level selector
   const renderLevelUpSection = () => {
+    if (levelups.length === 0) return null
+
     const selectedLevel = selectedItem?.type === 'levelup' ? selectedItem : null
     const cardColor = isLight ? '#000000' : '#ffffff'
+    const levelChipLayout = getLevelChipLayout(levelups.length)
 
     return (
       <View style={[styles.levelUpCard, {
@@ -395,26 +442,26 @@ const FreeFireStore = ({ route }) => {
         </Text>
 
         {/* Level Boxes */}
-        <View style={styles.levelSelectorGrid}>
+        <View style={[
+          styles.levelSelectorGrid,
+          levelups.length <= 3 && styles.levelSelectorSingleRow,
+        ]}>
           {levelups.map((item) => {
             const isSelected = selectedItem?.id === item.id
             return (
               <Pressable
                 key={item.id}
-                style={[styles.levelChip, {
+                style={[styles.levelChip, levelChipLayout, {
                   backgroundColor: isSelected
                     ? (isLight ? '#000000' : '#ffffff')
-                    : 'transparent',
-                  borderColor: isSelected
-                    ? (isLight ? '#000000' : '#ffffff')
-                    : (isLight ? '#000000' : '#ffffff'),
+                    : (isLight ? '#e6e6e6' : '#2c2c2c'),
                 }]}
                 onPress={() => setSelectedItem(item)}
               >
                 <Text style={[styles.levelChipText, {
                   color: isSelected
                     ? (isLight ? '#ffffff' : '#000000')
-                    : (isLight ? '#000000' : '#ffffff'),
+                    : (isLight ? '#1a1a1a' : '#f0f0f0'),
                 }]}>
                   LvL Up {item.level}
                 </Text>
@@ -438,8 +485,8 @@ const FreeFireStore = ({ route }) => {
     )
   }
 
-  // Render evo access card (3-column row)
-  const renderEvoOption = (item, index) => {
+  // Render event store card
+  const renderEventOption = (item, index) => {
     const isSelected = selectedItem?.id === item.id
     const cardColor = isSelected
       ? (isLight ? '#ffffff' : '#000000')
@@ -469,22 +516,13 @@ const FreeFireStore = ({ route }) => {
 
         <Image source={item.image} style={styles.evaImg} resizeMode="contain" />
 
-        <Text 
-          style={[styles.modeLabel, { color: cardColor, marginTop: spacing.sm }]}
-          numberOfLines={1}
+        <Text
+          style={[styles.eventCardLabel, { color: cardColor }]}
+          numberOfLines={3}
           adjustsFontSizeToFit
+          minimumFontScale={0.7}
         >
-          EVO ACCESS
-        </Text>
-        <Text 
-          style={[styles.diamondCount, {
-            color: isSelected
-              ? (isLight ? '#ffffff' : '#000000')
-              : (isLight ? '#1a1a1a' : '#ffffff'),
-          }]}
-          numberOfLines={1}
-        >
-          {item.day}
+          {item.label}
         </Text>
 
         <View style={styles.diamondPriceContainer}>
@@ -581,162 +619,85 @@ const FreeFireStore = ({ route }) => {
         )
       }
     >
-      {/* Diamond Packages */}
-      <View style={styles.section}>
-        <SectionTitle title="Diamond Packages" isLight={isLight} />
-        <View style={styles.optionsGrid}>
-          {diamonds.map((item, index) => renderDiamondOption(item, index))}
+      {visibleStoreSections.map((sectionKey, index) => (
+        <View key={sectionKey}>
+          {index > 0 ? <DividerLine isLight={isLight} /> : null}
+
+          {sectionKey === 'diamond' ? (
+            <View style={styles.section}>
+              <SectionTitle title={getSectionTitle('diamond')} isLight={isLight} />
+              <View style={styles.optionsGrid}>
+                {diamonds.map((item, itemIndex) => renderDiamondOption(item, itemIndex))}
+              </View>
+            </View>
+          ) : null}
+
+          {sectionKey === 'membership' ? (
+            <View style={styles.section}>
+              <SectionTitle title={getSectionTitle('membership')} isLight={isLight} />
+              <View style={styles.membershipGrid}>
+                {memberships.map((item, itemIndex) => renderMembershipOption(item, itemIndex))}
+              </View>
+            </View>
+          ) : null}
+
+          {sectionKey === 'levelup' ? (
+            <View style={styles.section}>
+              <SectionTitle title={getSectionTitle('levelup')} isLight={isLight} />
+              {renderLevelUpSection()}
+            </View>
+          ) : null}
+
+          {sectionKey === EVENT_STORE_TYPE ? (
+            <View style={styles.section}>
+              <View style={styles.sectionHeaderRow}>
+                <View style={styles.sectionHeaderTitleWrap}>
+                  <SectionTitle title={getSectionTitle(EVENT_STORE_TYPE)} isLight={isLight} />
+                </View>
+                <AppIcon
+                  icon={ArrowRight01Icon}
+                  size={iconSize.lg}
+                  color={isLight ? '#cccccc' : '#444444'}
+                  style={styles.sectionHeaderArrow}
+                />
+              </View>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.evoScrollContent}
+              >
+                {events.map((item, itemIndex) => renderEventOption(item, itemIndex))}
+              </ScrollView>
+            </View>
+          ) : null}
         </View>
-      </View>
+      ))}
 
-      <DividerLine isLight={isLight} />
-
-      {/* Membership Packages */}
-      <View style={styles.section}>
-        <SectionTitle title="Memberships" isLight={isLight} />
-        <View style={styles.membershipGrid}>
-          {memberships.map((item, index) => renderMembershipOption(item, index))}
-        </View>
-      </View>
-
-      <DividerLine isLight={isLight} />
-
-      {/* Level Up Pass */}
-      <View style={styles.section}>
-        <SectionTitle title="Level Up Packages" isLight={isLight} />
-        {renderLevelUpSection()}
-      </View>
-
-      <DividerLine isLight={isLight} />
-
-      {/* Evo Access */}
-      <View style={styles.section}>
-        <SectionTitle title="Evo Access" isLight={isLight} />
-        <View style={styles.evoGrid}>
-          {evoaccesses.map((item, index) => renderEvoOption(item, index))}
-        </View>
-      </View>
-
-      <DividerLine isLight={isLight} />
+      {visibleStoreSections.length > 0 ? <DividerLine isLight={isLight} /> : null}
       <View style={styles.section}>
         <SectionTitle title="Select Profile" isLight={isLight} />
-        
-        {/* Profile Type Toggle */}
-        <View style={styles.profileToggleContainer}>
-          <Pressable
-            style={[
-              styles.profileToggleOption,
-              {
-                backgroundColor: profileType === 'own'
-                  ? (isLight ? '#000000' : '#ffffff')
-                  : 'transparent',
-                borderColor: profileType === 'own'
-                  ? (isLight ? '#000000' : '#ffffff')
-                  : (isLight ? '#cccccc' : '#333333'),
-              }
-            ]}
-            onPress={() => setProfileType('own')}
-          >
-            <AppIcon icon={UserIcon} size={iconSize.sm} color={profileType === 'own' 
-                ? (isLight ? '#ffffff' : '#000000')
-                : (isLight ? '#666666' : '#999999')} />
-            <Text style={[
-              styles.profileToggleText,
-              {
-                color: profileType === 'own'
-                  ? (isLight ? '#ffffff' : '#000000')
-                  : (isLight ? '#333333' : '#ffffff')
-              }
-            ]}>
-              Use My Profile
-            </Text>
-          </Pressable>
-          
-          <Pressable
-            style={[
-              styles.profileToggleOption,
-              {
-                backgroundColor: profileType === 'other'
-                  ? (isLight ? '#000000' : '#ffffff')
-                  : 'transparent',
-                borderColor: profileType === 'other'
-                  ? (isLight ? '#000000' : '#ffffff')
-                  : (isLight ? '#cccccc' : '#333333'),
-              }
-            ]}
-            onPress={() => setProfileType('other')}
-          >
-            <AppIcon icon={UserArrowLeftRightIcon} size={iconSize.sm} color={profileType === 'other' 
-                ? (isLight ? '#ffffff' : '#000000')
-                : (isLight ? '#666666' : '#999999')} />
-            <Text style={[
-              styles.profileToggleText,
-              {
-                color: profileType === 'other'
-                  ? (isLight ? '#ffffff' : '#000000')
-                  : (isLight ? '#333333' : '#ffffff')
-              }
-            ]}>
-              Use Another Profile
-            </Text>
-          </Pressable>
-        </View>
-
-        {/* Profile Details */}
-        {profileType === 'own' ? (
-          <View style={[styles.profileBox, {
-            backgroundColor: 'transparent',
-            borderColor: isLight ? "#cccccc" : "#333333",
-          }]}>
-            <View style={styles.profileItem}>
-              <AppIcon icon={UserIcon} size={iconSize.sm} color={isLight ? '#888888' : '#777777'} style={{ marginBottom: 4 }} />
-   
-              <Text style={[styles.profileValue, { color: isLight ? '#000000' : '#ffffff' }]}>
-                {freeFireProfile?.game_username || 'Not Set'}
-              </Text>
-            </View>
-            <View style={[styles.profileDivider, { backgroundColor: isLight ? '#cccccc' : '#333333' }]} />
-            <View style={styles.profileItem}>
-              <AppIcon icon={IdentityCardIcon} size={iconSize.sm} color={isLight ? '#888888' : '#777777'} style={{ marginBottom: 4 }} />
-
-              <Text style={[styles.profileValue, { color: isLight ? '#000000' : '#ffffff' }]}>
-                {freeFireProfile?.uid || freeFireProfile?.game_uid || 'Not Set'}
-              </Text>
-            </View>
-          </View>
-        ) : (
-          <View style={styles.customProfileContainer}>
-            <View style={[styles.inputContainer, {
-              borderColor: isLight ? '#cccccc' : '#333333',
-              backgroundColor: isLight ? '#f8f8f8' : '#1a1a1a',
-            }]}>
-              <AppIcon icon={GameController03Icon} size={iconSize.md} color={isLight ? '#666666' : '#999999'} />
-              <TextInput
-                style={[styles.textInput, { color: isLight ? '#000000' : '#ffffff' }]}
-                placeholder="Game Name"
-                placeholderTextColor={isLight ? '#999999' : '#666666'}
-                value={customUsername}
-                onChangeText={setCustomUsername}
-                autoCapitalize="none"
-              />
-            </View>
-            
-            <View style={[styles.inputContainer, {
-              borderColor: isLight ? '#cccccc' : '#333333',
-              backgroundColor: isLight ? '#f8f8f8' : '#1a1a1a',
-            }]}>
-              <AppIcon icon={LabelIcon} size={iconSize.md} color={isLight ? '#666666' : '#999999'} />
-              <TextInput
-                style={[styles.textInput, { color: isLight ? '#000000' : '#ffffff' }]}
-                placeholder="UID"
-                placeholderTextColor={isLight ? '#999999' : '#666666'}
-                value={customUid}
-                onChangeText={setCustomUid}
-                keyboardType="number-pad"
-              />
-            </View>
-          </View>
-        )}
+        <StoreProfileSection
+          isLight={isLight}
+          profileType={profileType}
+          setProfileType={setProfileType}
+          ownFields={[
+            { label: 'Game Name', value: freeFireProfile?.game_username },
+            { label: 'UID', value: freeFireProfile?.uid || freeFireProfile?.game_uid },
+          ]}
+          otherFields={[
+            {
+              placeholder: 'Game Name',
+              value: customUsername,
+              onChangeText: setCustomUsername,
+            },
+            {
+              placeholder: 'UID',
+              value: customUid,
+              onChangeText: setCustomUid,
+              keyboardType: 'number-pad',
+            },
+          ]}
+        />
       </View>
 
       {/* Terms Agreement */}
@@ -745,9 +706,7 @@ const FreeFireStore = ({ route }) => {
         isAccepted={agreementAccepted}
         onToggle={() => setAgreementAccepted(!agreementAccepted)}
         isLight={isLight}
-        text={profileType === 'own' 
-          ? "My Game Name & UID are correct."
-          : "Provided Game Name & UID are correct."}
+        text={STORE_PROFILE_AGREEMENT_TEXT}
       />
     </CreateGameLayout>
   )
@@ -755,6 +714,17 @@ const FreeFireStore = ({ route }) => {
 
 const styles = StyleSheet.create({
   section: {
+    marginBottom: 8,
+  },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  sectionHeaderTitleWrap: {
+    flex: 1,
+  },
+  sectionHeaderArrow: {
     marginBottom: 8,
   },
   optionsGrid: {
@@ -858,75 +828,6 @@ const styles = StyleSheet.create({
     gap: 4,
     marginTop: 6,
   },
-  profileBox: {
-    borderWidth: 1.5,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    overflow: 'hidden',
-    position: 'relative',
-    borderRadius: 16,
-    marginTop: 12,
-  },
-  profileItem: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 8,
-  },
-  profileDivider: {
-    width: 1,
-    height: '100%',
-    marginHorizontal: 12,
-  },
-
-  profileValue: {
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  profileToggleContainer: {
-    flexDirection: 'row',
-    gap: 10,
-    marginBottom: 12,
-    marginTop: 8,
-  },
-  profileToggleOption: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    paddingVertical: 14,
-    borderWidth: 1.5,
-    borderRadius: 14,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  profileToggleText: {
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  customProfileContainer: {
-    gap: 10,
-    marginTop: 12,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    borderWidth: 1.5,
-    borderRadius: 14,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  textInput: {
-    flex: 1,
-    fontSize: 14,
-    fontWeight: '500',
-    padding: 0,
-  },
   selectedItemDisplay: {
     marginBottom: 12,
     paddingVertical: 12,
@@ -1021,12 +922,11 @@ const styles = StyleSheet.create({
     gap: 8,
     width: '100%',
   },
+  levelSelectorSingleRow: {
+    flexWrap: 'nowrap',
+  },
   levelChip: {
-    flexBasis: '31%',
-    flexGrow: 0,
-    flexShrink: 0,
     paddingVertical: 10,
-    borderWidth: 1.5,
     position: 'relative',
     alignItems: 'center',
     justifyContent: 'center',
@@ -1048,12 +948,12 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     letterSpacing: 0.5,
   },
-  evoGrid: {
-    flexDirection: 'row',
+  evoScrollContent: {
     gap: 10,
+    paddingRight: spacing.sm,
   },
   evoCard: {
-    flex: 1,
+    width: 156,
     padding: 14,
     alignItems: 'center',
     position: 'relative',
@@ -1063,6 +963,16 @@ const styles = StyleSheet.create({
   evaImg: {
     width: '100%',
     height: 90,
+  },
+  eventCardLabel: {
+    fontSize: fontSize.xs,
+    fontWeight: '600',
+    textAlign: 'center',
+    lineHeight: 12,
+    width: '100%',
+    minHeight: 24,
+    paddingHorizontal: spacing.xs,
+    marginTop: spacing.sm,
   },
 })
 

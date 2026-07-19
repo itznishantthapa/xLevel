@@ -1,6 +1,30 @@
 import { View } from "react-native"
 import { InfoRow, sharedStyles } from "../sharedStyleAndInfo"
 
+const CONDITION_RANKS = {
+  excellent: 4,
+  good: 3,
+  average: 2,
+  poor: 1,
+}
+
+const getConditionRank = (value) =>
+  CONDITION_RANKS[String(value || '').trim().toLowerCase()] ?? 0
+
+const shouldHighlightConditionValue = (homeCondition, awayCondition, sideValue) => {
+  const homeRank = getConditionRank(homeCondition)
+  const awayRank = getConditionRank(awayCondition)
+
+  if (!homeRank || !awayRank) return false
+
+  if (homeRank === 1 && awayRank === 1) return true
+
+  if (homeRank !== awayRank) {
+    return getConditionRank(sideValue) === Math.min(homeRank, awayRank)
+  }
+
+  return false
+}
 
 const GameDetails = ({ game, isLight }) => {
 
@@ -81,6 +105,19 @@ const GameDetails = ({ game, isLight }) => {
   }
 
   if (game.game.name.toLowerCase().includes("efootball")) {
+    const homeCondition = game.settings.home_condition
+    const awayCondition = game.settings.away_condition
+    const highlightHomeCondition = shouldHighlightConditionValue(
+      homeCondition,
+      awayCondition,
+      homeCondition,
+    )
+    const highlightAwayCondition = shouldHighlightConditionValue(
+      homeCondition,
+      awayCondition,
+      awayCondition,
+    )
+
     return (
       <View style={sharedStyles.gameDetails}>
 
@@ -95,16 +132,16 @@ const GameDetails = ({ game, isLight }) => {
 
         <InfoRow
           label="Home Condition"
-          value={game.settings.home_condition }
+          value={homeCondition}
           isDark={!isLight}
-
-
+          valueColor={highlightHomeCondition ? '#dc2626' : undefined}
         />
         <InfoRow
           label="Away Condition"
-          value={game.settings.away_condition }
+          value={awayCondition}
           isDark={!isLight}
           curveOnBottom={true}
+          valueColor={highlightAwayCondition ? '#dc2626' : undefined}
         />
       </View>
     )

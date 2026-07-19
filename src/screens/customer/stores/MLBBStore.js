@@ -1,15 +1,9 @@
-import { View, Text, StyleSheet, Image, Pressable, TextInput, Animated } from 'react-native'
+import { View, Text, StyleSheet, Image, Pressable, Animated } from 'react-native'
 import Toast from 'react-native-simple-toast'
 import { useThemeStore } from '../../../store/themeStore'
 import { AppIcon, PointsIcon } from '../../../components/common/AppIcon'
 import {
   CheckmarkCircle01Icon,
-  UserIcon,
-  UserArrowLeftRightIcon,
-  IdentityCardIcon,
-  GameController03Icon,
-  LabelIcon,
-  Location01Icon,
   CheckIcon,
 } from '@hugeicons/core-free-icons'
 import { fontSize, spacing, iconSize } from '../../../theme/typography'
@@ -17,7 +11,14 @@ import { useEffect, useState, useRef } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { useGameProfiles } from '../../../queries/useGameProfiles'
 import { useStoreScreenData } from '../../../hooks/useStoreScreenData'
-import { CreateGameLayout, SectionTitle, DividerLine, TermsAgreement } from '../../../component/customer/createGame'
+import {
+  CreateGameLayout,
+  SectionTitle,
+  DividerLine,
+  TermsAgreement,
+  StoreProfileSection,
+  STORE_PROFILE_AGREEMENT_TEXT,
+} from '../../../component/customer/createGame'
 import { useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '../../../store/authStore'
 import { useStoreTopup } from '../../../queries/useMutation/useStoreTopup'
@@ -447,123 +448,29 @@ const MLBBStore = ({ route }) => {
       {/* Profile Selection */}
       <View style={styles.section}>
         <SectionTitle title="Select Profile" isLight={isLight} />
-        
-        {/* Profile Type Switcher */}
-        <View style={styles.profileToggleContainer}>
-          <Pressable
-            style={[
-              styles.profileToggleOption,
-              {
-                backgroundColor: profileType === 'own'
-                  ? (isLight ? '#000000' : '#ffffff')
-                  : 'transparent',
-                borderColor: profileType === 'own'
-                  ? (isLight ? '#000000' : '#ffffff')
-                  : (isLight ? '#cccccc' : '#333333'),
-              }
-            ]}
-            onPress={() => setProfileType('own')}
-          >
-            <AppIcon icon={UserIcon} size={iconSize.sm} color={profileType === 'own' 
-                ? (isLight ? '#ffffff' : '#000000')
-                : (isLight ? '#666666' : '#999999')} />
-            <Text style={[
-              styles.profileToggleText,
-              {
-                color: profileType === 'own'
-                  ? (isLight ? '#ffffff' : '#000000')
-                  : (isLight ? '#333333' : '#ffffff')
-              }
-            ]}>
-              Use My Profile
-            </Text>
-          </Pressable>
-          
-          <Pressable
-            style={[
-              styles.profileToggleOption,
-              {
-                backgroundColor: profileType === 'other'
-                  ? (isLight ? '#000000' : '#ffffff')
-                  : 'transparent',
-                borderColor: profileType === 'other'
-                  ? (isLight ? '#000000' : '#ffffff')
-                  : (isLight ? '#cccccc' : '#333333'),
-              }
-            ]}
-            onPress={() => setProfileType('other')}
-          >
-            <AppIcon icon={UserArrowLeftRightIcon} size={iconSize.sm} color={profileType === 'other' 
-                ? (isLight ? '#ffffff' : '#000000')
-                : (isLight ? '#666666' : '#999999')} />
-            <Text style={[
-              styles.profileToggleText,
-              {
-                color: profileType === 'other'
-                  ? (isLight ? '#ffffff' : '#000000')
-                  : (isLight ? '#333333' : '#ffffff')
-              }
-            ]}>
-              Use Another Profile
-            </Text>
-          </Pressable>
-        </View>
-
-        {/* Profile Display/Input */}
-        {profileType === 'own' ? (
-          <View style={[styles.profileBox, {
-            backgroundColor: 'transparent',
-            borderColor: isLight ? "#cccccc" : "#333333",
-          }]}>
-            <View style={styles.profileItem}>
-              <AppIcon icon={IdentityCardIcon} size={iconSize.sm} color={isLight ? '#888888' : '#777777'} style={{ marginBottom: 4 }} />
-   
-              <Text style={[styles.profileValue, { color: isLight ? '#000000' : '#ffffff' }]}>
-                {mlbbProfile?.uid || mlbbProfile?.game_uid || 'Not Set'}
-              </Text>
-            </View>
-            <View style={[styles.profileDivider, { backgroundColor: isLight ? '#cccccc' : '#333333' }]} />
-            <View style={styles.profileItem}>
-              <AppIcon icon={Location01Icon} size={iconSize.sm} color={isLight ? '#888888' : '#777777'} style={{ marginBottom: 4 }} />
-
-              <Text style={[styles.profileValue, { color: isLight ? '#000000' : '#ffffff' }]}>
-                {mlbbProfile?.server_id || 'Not Set'}
-              </Text>
-            </View>
-          </View>
-        ) : (
-          <View style={styles.customProfileContainer}>
-            <View style={[styles.inputContainer, {
-              borderColor: isLight ? '#cccccc' : '#333333',
-              backgroundColor: isLight ? '#f8f8f8' : '#1a1a1a',
-            }]}>
-              <AppIcon icon={IdentityCardIcon} size={iconSize.md} color={isLight ? '#666666' : '#999999'} />
-              <TextInput
-                style={[styles.textInput, { color: isLight ? '#000000' : '#ffffff' }]}
-                placeholder="Player UID"
-                placeholderTextColor={isLight ? '#999999' : '#666666'}
-                value={customUid}
-                onChangeText={setCustomUid}
-                keyboardType="numeric"
-              />
-            </View>
-            
-            <View style={[styles.inputContainer, {
-              borderColor: isLight ? '#cccccc' : '#333333',
-              backgroundColor: isLight ? '#f8f8f8' : '#1a1a1a',
-            }]}>
-              <AppIcon icon={Location01Icon} size={iconSize.md} color={isLight ? '#666666' : '#999999'} />
-              <TextInput
-                style={[styles.textInput, { color: isLight ? '#000000' : '#ffffff' }]}
-                placeholder="Zone ID"
-                placeholderTextColor={isLight ? '#999999' : '#666666'}
-                value={customZoneId}
-                onChangeText={setCustomZoneId}
-                keyboardType="numeric"
-              />
-            </View>
-          </View>
-        )}
+        <StoreProfileSection
+          isLight={isLight}
+          profileType={profileType}
+          setProfileType={setProfileType}
+          ownFields={[
+            { label: 'Player UID', value: mlbbProfile?.uid || mlbbProfile?.game_uid },
+            { label: 'Zone ID', value: mlbbProfile?.server_id },
+          ]}
+          otherFields={[
+            {
+              placeholder: 'Player UID',
+              value: customUid,
+              onChangeText: setCustomUid,
+              keyboardType: 'numeric',
+            },
+            {
+              placeholder: 'Zone ID',
+              value: customZoneId,
+              onChangeText: setCustomZoneId,
+              keyboardType: 'numeric',
+            },
+          ]}
+        />
       </View>
 
       {/* Terms Agreement */}
@@ -572,9 +479,7 @@ const MLBBStore = ({ route }) => {
         isAccepted={agreementAccepted}
         onToggle={() => setAgreementAccepted(!agreementAccepted)}
         isLight={isLight}
-        text={profileType === 'own' 
-          ? "My UID & Zone ID are correct."
-          : "Provided UID & Zone ID are correct."}
+        text={STORE_PROFILE_AGREEMENT_TEXT}
       />
     </CreateGameLayout>
   )
@@ -679,74 +584,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.xs,
     marginTop: 6,
-  },
-  profileBox: {
-    borderWidth: 1.5,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    overflow: 'hidden',
-    position: 'relative',
-    borderRadius: 16,
-    marginTop: 12,
-  },
-  profileItem: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 8,
-  },
-  profileDivider: {
-    width: 1,
-    height: '100%',
-    marginHorizontal: 12,
-  },
-  profileValue: {
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  profileToggleContainer: {
-    flexDirection: 'row',
-    gap: 10,
-    marginBottom: 12,
-    marginTop: 8,
-  },
-  profileToggleOption: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    paddingVertical: 14,
-    borderWidth: 1.5,
-    borderRadius: 14,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  profileToggleText: {
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  customProfileContainer: {
-    gap: 10,
-    marginTop: 12,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    borderWidth: 1.5,
-    borderRadius: 14,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  textInput: {
-    flex: 1,
-    fontSize: 14,
-    fontWeight: '500',
-    padding: 0,
   },
   selectedItemDisplay: {
     marginBottom: 12,

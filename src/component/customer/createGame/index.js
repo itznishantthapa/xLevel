@@ -8,3 +8,4 @@ export { default as TermsAgreement } from './TermsAgreement';
 export { default as CreateGameLayout } from './CreateGameLayout';
 export { default as OptionsSection } from './OptionsSection';
 export { default as BooleanOptionsSection } from './BooleanOptionsSection';
+export { default as StoreProfileSection, STORE_PROFILE_AGREEMENT_TEXT } from './StoreProfileSection';

@@ -470,7 +470,7 @@ export const sharedStyles = StyleSheet.create({
 });
 
 // InfoRow Component - shared between both cards
-export const InfoRow = ({ label, value, isDark, gameMode="", needMoreWidth = false, curveOnTop = false, curveOnBottom = false }) => {
+export const InfoRow = ({ label, value, isDark, gameMode="", needMoreWidth = false, curveOnTop = false, curveOnBottom = false, valueColor }) => {
   const isMapCode = label.toLowerCase() === 'map code';
   
   const copyToClipboard = (text) => {
@@ -505,7 +505,8 @@ export const InfoRow = ({ label, value, isDark, gameMode="", needMoreWidth = fal
         style={[
           sharedStyles.infoValue, 
           isDark && sharedStyles.infoValueDark, 
-          needMoreWidth && { width: '50%' }
+          needMoreWidth && { width: '50%' },
+          valueColor && { color: valueColor },
         ]} 
         numberOfLines={1}
       >
