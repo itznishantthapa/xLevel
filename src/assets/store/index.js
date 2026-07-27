@@ -3,23 +3,23 @@ export const STORE_THEMES = {
     label: 'FREE FIRE',
     listSubtitle: 'Top up diamonds and more items',
     subtitle: 'Top up diamonds | Delivery within 5 minutes',
-    gradient: ['#C2410C', '#F59E0B'],
-    gradientStart: { x: 0, y: 1 },
-    gradientEnd: { x: 1, y: 0 },
+    gradient: ['#FF416C', '#FF4B2B'],
+    gradientStart: { x: 0, y: 0 },
+    gradientEnd: { x: 1, y: 1 },
   },
   pubg: {
     label: 'PUBG MOBILE',
     listSubtitle: 'Top up UC and more items you want',
     subtitle: 'UC & items | Delivery within 5 minutes',
-    gradient: ['#0F766E', '#1E3A5F'],
+    gradient: ['#F7971E', '#FFD200'],
     gradientStart: { x: 0, y: 0 },
     gradientEnd: { x: 1, y: 1 },
   },
   efootball: {
-    label: 'EFOOTBALL',
-    listSubtitle: 'Top up coins and more items you want',
-    subtitle: 'Coins & packs | Delivery within 5 minutes',
-    gradient: ['#7C3AED', '#312E81'],
+    label: 'EFOOTBALL, FC & MORE',
+    listSubtitle: 'Top up coins, subscriptions & more',
+    subtitle: 'eFootball, FC Mobile & subscriptions',
+    gradient: ['#00C6FF', '#0072FF'],
     gradientStart: { x: 0, y: 0 },
     gradientEnd: { x: 1, y: 1 },
   },
@@ -27,15 +27,27 @@ export const STORE_THEMES = {
     label: 'MLBB',
     listSubtitle: 'Top up diamonds and more items you want',
     subtitle: 'Diamonds & skins | Delivery within 5 minutes',
-    gradient: ['#4338CA', '#7C3AED', '#EA580C'],
+    gradient: ['#A855F7', '#6D28D9'],
     gradientStart: { x: 0, y: 0 },
     gradientEnd: { x: 1, y: 1 },
   },
 };
 
-export const storeHeroImages = {
-  freefire: require('../freefirestore.png'),
-  pubg: require('../pubgstore.png'),
+export const storeCardLogos = {
+  freefire: require('../ffstorelogo.png'),
+  pubg: require('../pubgstorelogo.png'),
   efootball: require('../efootballstore.png'),
-  mlbb: require('../mlbbstore.png'),
+  fcmobile: require('../fcmobilestore.png'),
+  mlbb: require('../mlbbstorelogo.png'),
+};
+
+export const storeHeroImages = {
+  freefire: storeCardLogos.freefire,
+  pubg: storeCardLogos.pubg,
+  efootball: storeCardLogos.efootball,
+  mlbb: storeCardLogos.mlbb,
+};
+
+export const storeStackedHeroImages = {
+  efootball: [storeCardLogos.fcmobile, storeCardLogos.efootball],
 };

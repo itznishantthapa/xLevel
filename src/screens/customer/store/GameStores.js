@@ -9,62 +9,156 @@ import {
   ScrollView,
   useWindowDimensions,
 } from 'react-native';
+import Svg, {
+  Path,
+  Defs,
+  LinearGradient as SvgGradient,
+  Stop,
+  ClipPath,
+  G,
+} from 'react-native-svg';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { AppIcon } from '../../../components/common/AppIcon';
-import { StoreIcon, UnavailableIcon, Diamond02Icon, GameboyIcon } from '@hugeicons/core-free-icons';
+import { StoreIcon, UnavailableIcon, Diamond02Icon } from '@hugeicons/core-free-icons';
 import { useThemeStore } from '../../../store/themeStore';
 import { useUtils } from '../../../queries/useUtils';
 import { useGames } from '../../../queries/useGames';
-import { storeHeroImages, STORE_THEMES } from '../../../assets/store';
+import { STORE_THEMES, storeCardLogos } from '../../../assets/store';
 import AppHeader from '../header/AppHeader';
 import { fontSize, spacing, radius, iconSize } from '../../../theme/typography';
 
 const HORIZONTAL_PADDING = spacing.lg;
 const GRID_GAP = spacing.md;
-const CARD_ASPECT_RATIO = 1.18;
+const CARD_ASPECT = 1.45; // Increased aspect ratio for a taller proportion
 
-const getStoreGridLayout = (windowWidth) => {
+const getGridLayout = (windowWidth) => {
   const contentWidth = windowWidth - HORIZONTAL_PADDING * 2;
   const cardWidth = Math.floor((contentWidth - GRID_GAP) / 2);
-  const cardHeight = Math.round(cardWidth * CARD_ASPECT_RATIO);
+  const cardHeight = Math.round(cardWidth * CARD_ASPECT);
 
   return { contentWidth, cardWidth, cardHeight };
 };
 
+/**
+ * Deep asymmetrical diagonal cut path:
+ * - Top edge cuts early (28% width)
+ * - Deep diagonal slant down to 44% of card height on the right side
+ * - Creates a large empty notch so logo images pop out up to ~50%
+ */
+const buildCardPath = (w, h) => {
+  const rTopLeft = 24;
+  const rBottom = 20;
+  const topEdgeEnd = w * 0.28;
+  const slantEndY = h * 0.44;
+
+  return `
+    M ${rTopLeft} 0
+    H ${topEdgeEnd}
+    Q ${topEdgeEnd + 12} 0 ${topEdgeEnd + 24} 8
+    L ${w - 6} ${slantEndY - 14}
+    Q ${w} ${slantEndY} ${w} ${slantEndY + 14}
+    V ${h - rBottom}
+    Q ${w} ${h} ${w - rBottom} ${h}
+    H ${rBottom}
+    Q 0 ${h} 0 ${h - rBottom}
+    V ${rTopLeft}
+    Q 0 0 ${rTopLeft} 0
+    Z
+  `;
+};
+
+const CardCutBackground = ({ width, height, colors, id }) => {
+  const path = buildCardPath(width, height);
+  const clipId = `cardCutShape_${id}`;
+  const gradId = `cardGradient_${id}`;
+
+  return (
+    <Svg width={width} height={height} style={StyleSheet.absoluteFill}>
+      <Defs>
+        <ClipPath id={clipId}>
+          <Path d={path} />
+        </ClipPath>
+        <SvgGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
+          <Stop offset="0%" stopColor={colors[0]} />
+          <Stop offset="100%" stopColor={colors[1]} />
+        </SvgGradient>
+      </Defs>
+
+      <G clipPath={`url(#${clipId})`}>
+        {/* Gradient Background */}
+        <Path d={path} fill={`url(#${gradId})`} />
+
+        {/* Thick Curvy Wavy Background Lines */}
+        <Path
+          d={`M -20 ${height * 0.22} Q ${width * 0.45} ${height * 0.02} ${width + 30} ${height * 0.38}`}
+          fill="none"
+          stroke="#FFFFFF"
+          strokeWidth="16"
+          strokeLinecap="round"
+          opacity={0.22}
+        />
+        <Path
+          d={`M -30 ${height * 0.52} Q ${width * 0.55} ${height * 0.28} ${width + 20} ${height * 0.62}`}
+          fill="none"
+          stroke="#FFFFFF"
+          strokeWidth="12"
+          strokeLinecap="round"
+          opacity={0.16}
+        />
+        <Path
+          d={`M -10 ${height * 0.8} Q ${width * 0.5} ${height * 0.98} ${width + 30} ${height * 0.68}`}
+          fill="none"
+          stroke="#FFFFFF"
+          strokeWidth="20"
+          strokeLinecap="round"
+          opacity={0.18}
+        />
+      </G>
+    </Svg>
+  );
+};
+
 const STORE_CONFIG = [
   {
+    ...STORE_THEMES.freefire,
     id: 'freefire',
     match: ['free fire', 'freefire'],
     route: 'freeFireStore',
     flag: 'is_freefire_store_active',
-    heroKey: 'freefire',
-    ...STORE_THEMES.freefire,
+    subtitle: 'Topup diamonds, passes & more',
+    logo: storeCardLogos.freefire,
   },
   {
+    ...STORE_THEMES.pubg,
     id: 'pubg',
     match: ['pubg'],
     route: 'pubgStore',
     flag: 'is_pubg_store_active',
-    heroKey: 'pubg',
-    ...STORE_THEMES.pubg,
+    subtitle: 'Topup UC, royale pass & items',
+    logo: storeCardLogos.pubg,
   },
   {
+    ...STORE_THEMES.efootball,
     id: 'efootball',
     match: ['efootball'],
     route: 'efootballStore',
     flag: 'is_efootball_store_active',
-    heroKey: 'efootball',
-    ...STORE_THEMES.efootball,
+    subtitle: 'Topup coins, FC & subscriptions',
+    cardLabel: 'Efootball , FC & more..',
+    isStackedCard: true,
+    stackedLogos: [storeCardLogos.fcmobile, storeCardLogos.efootball],
+    logo: storeCardLogos.efootball,
   },
   {
+    ...STORE_THEMES.mlbb,
     id: 'mlbb',
     match: ['mlbb'],
     route: 'mlbbStore',
     flag: 'is_mlbb_store_active',
-    heroKey: 'mlbb',
-    ...STORE_THEMES.mlbb,
+    subtitle: 'Topup diamonds & starlight pass',
+    logo: storeCardLogos.mlbb,
   },
 ];
 
@@ -92,109 +186,103 @@ const PromoBanner = ({ colors }) => (
   </LinearGradient>
 );
 
-const SectionHeader = ({ colors }) => (
-  <View style={styles.sectionHeader}>
-    <View style={[styles.sectionAccent, { backgroundColor: colors.sectionAccent }]} />
-    <View style={styles.sectionHeaderContent}>
-      <View style={styles.sectionTitleRow}>
-        <View style={[styles.sectionIconWrap, { backgroundColor: colors.sectionIconBg }]}>
-          <AppIcon icon={GameboyIcon} size={iconSize.md} color={colors.sectionIcon} />
-        </View>
-        <View style={styles.sectionTitleBlock}>
-          <Text style={[styles.sectionEyebrow, { color: colors.textTertiary }]}>GAME STORES</Text>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Select Your Game</Text>
-        </View>
-      </View>
-      <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
-        Choose a game & explore the store.
-      </Text>
-    </View>
-    <View style={[styles.sectionAccent, { backgroundColor: colors.sectionAccent }]} />
-  </View>
-);
-
 const StoreGameCard = ({ game, config, layout, onPress, closed = false, colors }) => {
   const { cardWidth, cardHeight } = layout;
+  // Enlarged logo size to pop ~50% out of the diagonal cutout
+  const logoSize = Math.round(cardWidth * 0.78);
+  const displayName = config.cardLabel || game.game_name || config.label;
+  const subtitleText = config.subtitle || 'Topup game currency & items';
+  const gradientColors = closed ? ['#64748B', '#334155'] : (config.gradient || ['#3B82F6', '#1E40AF']);
 
-  if (closed) {
-    return (
-      <View style={[styles.gridCell, { width: cardWidth }]}>
-        <View
-          style={[
-            styles.gameCard,
-            styles.closedCard,
-            {
-              width: cardWidth,
-              height: cardHeight,
-              backgroundColor: colors.cardBackground,
-              borderColor: colors.border,
-            },
-          ]}
-        >
-          <View style={styles.closedIconWrap}>
-            <AppIcon icon={UnavailableIcon} size={iconSize.xl + 8} color={colors.textTertiary} />
-          </View>
+  const cardContent = (
+    <View
+      style={[
+        styles.cardShell,
+        {
+          width: cardWidth,
+          height: cardHeight,
+          shadowColor: colors.shadow,
+        },
+        closed && styles.closedCard,
+      ]}
+    >
+      {/* 1. Diagonal Cut Background */}
+      <CardCutBackground
+        width={cardWidth}
+        height={cardHeight}
+        colors={gradientColors}
+        id={config.id}
+      />
 
-          <View style={[styles.cardFooter, { borderTopColor: colors.border }]}>
-            <View style={styles.cardTextBlock}>
-              <Text style={[styles.closedCardTitle, { color: colors.textSecondary }]} numberOfLines={1}>
-                {`${config.label} CLOSED`}
-              </Text>
-              <Text style={[styles.closedCardSubtitle, { color: colors.textTertiary }]} numberOfLines={1}>
-                {game.game_name}
-              </Text>
-            </View>
-            <View style={[styles.logoBadge, styles.logoBadgeMuted, { borderColor: colors.border }]}>
-              <Image source={{ uri: game.game_logo_url }} style={styles.logoImage} resizeMode="cover" />
-            </View>
-          </View>
-        </View>
-      </View>
-    );
-  }
-
-  return (
-    <View style={[styles.gridCell, { width: cardWidth }]}>
-      <Pressable style={styles.cardPressable} onPress={onPress}>
-        <LinearGradient
-          colors={config.gradient}
-          start={config.gradientStart || { x: 0, y: 0 }}
-          end={config.gradientEnd || { x: 1, y: 1 }}
-          style={[styles.gameCard, { width: cardWidth, height: cardHeight }]}
-        >
-          <View style={styles.imageWrap}>
+      {/* 2. Logo Stage with ~50% Pop-Out offset */}
+      <View style={styles.logoStage}>
+        {config.isStackedCard ? (
+          /* eFootball Carousel Card Stack Effect */
+          <View style={styles.stackedWrap}>
+            {/* Back Card */}
             <Image
-              source={storeHeroImages[config.heroKey]}
-              style={styles.heroImage}
+              source={config.stackedLogos?.[0] || config.logo}
+              style={[
+                styles.stackedCardBack,
+                styles.logoRounded,
+                { width: logoSize * 0.8, height: logoSize * 0.8 },
+                closed && styles.logoClosed,
+              ]}
+              resizeMode="contain"
+            />
+            {/* Front Card */}
+            <Image
+              source={config.stackedLogos?.[1] || config.logo}
+              style={[
+                styles.stackedCardFront,
+                styles.logoRounded,
+                { width: logoSize * 0.8, height: logoSize * 0.8 },
+                closed && styles.logoClosed,
+              ]}
               resizeMode="contain"
             />
           </View>
+        ) : (
+          /* Standard Game Logo Pop-Out */
+          <Image
+            source={config.logo}
+            style={[
+              styles.logoPopOut,
+              styles.logoRounded,
+              { width: logoSize, height: logoSize },
+              closed && styles.logoClosed,
+            ]}
+            resizeMode="contain"
+          />
+        )}
 
-          <LinearGradient
-            colors={['transparent', 'rgba(0,0,0,0.55)']}
-            style={styles.footerGradient}
-          >
-            <View style={styles.cardFooter}>
-              <View style={styles.cardTextBlock}>
-                <Text style={styles.cardTitle} numberOfLines={1}>
-                  {config.label}
-                </Text>
-                <Text style={styles.cardSubtitle} numberOfLines={1}>
-                  {config.listSubtitle}
-                </Text>
-              </View>
-              <View style={styles.logoBadge}>
-                <Image
-                  source={{ uri: game.game_logo_url }}
-                  style={styles.logoImage}
-                  resizeMode="cover"
-                />
-              </View>
-            </View>
-          </LinearGradient>
-        </LinearGradient>
-      </Pressable>
+        {closed && (
+          <View style={styles.closedOverlay}>
+            <AppIcon icon={UnavailableIcon} size={iconSize.lg} color="#FFFFFF" />
+          </View>
+        )}
+      </View>
+
+      {/* 3. Translucent Glass Game Pill with Title & Subtitle */}
+      <View style={styles.actionPill}>
+        <Text style={styles.actionPillTitle} numberOfLines={1}>
+          {closed ? `${displayName} (Closed)` : displayName}
+        </Text>
+        <Text style={styles.actionPillSubtitle} numberOfLines={1}>
+          {subtitleText}
+        </Text>
+      </View>
     </View>
+  );
+
+  if (closed) {
+    return <View style={{ width: cardWidth }}>{cardContent}</View>;
+  }
+
+  return (
+    <Pressable style={{ width: cardWidth }} onPress={onPress}>
+      {cardContent}
+    </Pressable>
   );
 };
 
@@ -206,7 +294,7 @@ const GameStores = () => {
   const { data: utils = {} } = useUtils();
   const { data: games = [] } = useGames();
 
-  const layout = useMemo(() => getStoreGridLayout(windowWidth), [windowWidth]);
+  const layout = useMemo(() => getGridLayout(windowWidth), [windowWidth]);
 
   const storeFlags = utils?.active_store || {};
 
@@ -231,17 +319,12 @@ const GameStores = () => {
 
   const colors = useMemo(
     () => ({
-      background: isLight ? '#ffffff' : '#000000',
-      cardBackground: isLight ? '#F8FAFC' : '#111111',
-      text: isLight ? '#111827' : '#ffffff',
-      textSecondary: isLight ? '#6B7280' : '#9CA3AF',
-      textTertiary: isLight ? '#9CA3AF' : '#6B7280',
-      border: isLight ? '#E5E7EB' : 'rgba(255, 255, 255, 0.12)',
-      accent: '#00bf63',
-      sectionAccent: isLight ? '#000000' : '#ffffff',
-      sectionIcon: isLight ? '#000000' : '#ffffff',
-      sectionIconBg: isLight ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.1)',
-      promoGradient: isLight ? ['#1F2937', '#111827'] : ['#1F2937', '#0A0A0A'],
+      background: isLight ? '#F1F5F9' : '#0A0A0A',
+      text: isLight ? '#0F172A' : '#FFFFFF',
+      textSecondary: isLight ? '#64748B' : '#94A3B8',
+      textTertiary: isLight ? '#94A3B8' : '#64748B',
+      shadow: '#000000',
+      promoGradient: isLight ? ['#1E293B', '#0F172A'] : ['#1E293B', '#0A0A0A'],
     }),
     [isLight],
   );
@@ -282,7 +365,7 @@ const GameStores = () => {
           </View>
         ) : (
           <View style={styles.section}>
-            <SectionHeader colors={colors} />
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Game Stores</Text>
 
             <View style={[styles.grid, { width: layout.contentWidth }]}>
               {storeItems.map(({ game, config, isActive }) => (
@@ -297,18 +380,6 @@ const GameStores = () => {
                 />
               ))}
             </View>
-
-            <Text
-              style={[
-                styles.deliveryQuote,
-                {
-                  color: colors.textSecondary,
-                  borderTopColor: colors.border,
-                },
-              ]}
-            >
-              "Delivery within 5 minutes !"
-            </Text>
           </View>
         )}
       </ScrollView>
@@ -335,11 +406,6 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     padding: spacing.lg,
     gap: spacing.md,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 5,
   },
   promoTextBlock: {
     flex: 1,
@@ -365,158 +431,107 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   section: {
-    gap: spacing.lg,
-  },
-  deliveryQuote: {
-    fontSize: fontSize.sm,
-    fontWeight: '600',
-    fontStyle: 'italic',
-    textAlign: 'center',
-    letterSpacing: 0.2,
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.md,
-    marginTop: spacing.sm,
-    borderTopWidth: 1,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
     gap: spacing.md,
-    alignItems: 'stretch',
-    marginTop: spacing.md,
-  },
-  sectionAccent: {
-    width: 3,
-    borderRadius: radius.full,
-  },
-  sectionHeaderContent: {
-    flex: 1,
-    gap: spacing.xs,
-  },
-  sectionTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  sectionIconWrap: {
-    width: 36,
-    height: 36,
-    borderRadius: radius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  sectionTitleBlock: {
-    flex: 1,
-    gap: spacing.xxs,
-  },
-  sectionEyebrow: {
-    fontSize: fontSize.xs,
-    fontWeight: '700',
-    letterSpacing: 1.2,
   },
   sectionTitle: {
     fontSize: fontSize.xl,
-    fontWeight: '800',
-    letterSpacing: -0.3,
-  },
-  sectionSubtitle: {
-    fontSize: fontSize.sm,
-    fontWeight: '500',
-    lineHeight: fontSize.base + 4,
-    paddingLeft: 48,
+    fontWeight: '700',
+    letterSpacing: -0.2,
   },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     alignSelf: 'center',
-    rowGap: GRID_GAP,
+    rowGap: spacing.xl + 6,
     marginTop: spacing.md,
   },
-  gridCell: {
-    overflow: 'hidden',
-  },
-  cardPressable: {
-    borderRadius: radius.lg,
-    overflow: 'hidden',
-  },
-  gameCard: {
-    borderRadius: radius.lg,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.16)',
-  },
-  imageWrap: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: spacing.sm,
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.xs,
-  },
-  heroImage: {
-    width: '100%',
-    height: '100%',
-  },
-  footerGradient: {
-    justifyContent: 'flex-end',
-  },
-  cardFooter: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
+  cardShell: {
+    position: 'relative',
+    overflow: 'visible', // Essential for the ~50% image pop-out effect
     justifyContent: 'space-between',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    gap: spacing.sm,
-  },
-  cardTextBlock: {
-    flex: 1,
-    gap: spacing.xxs,
-  },
-  cardTitle: {
-    color: '#FFFFFF',
-    fontSize: fontSize.sm,
-    fontWeight: '800',
-    letterSpacing: 0.6,
-    textTransform: 'uppercase',
-  },
-  cardSubtitle: {
-    color: 'rgba(255, 255, 255, 0.86)',
-    fontSize: fontSize.xs,
-    fontWeight: '500',
-  },
-  logoBadge: {
-    width: 34,
-    height: 34,
-    borderRadius: radius.sm,
-    overflow: 'hidden',
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
-  },
-  logoBadgeMuted: {
-    backgroundColor: 'transparent',
-  },
-  logoImage: {
-    width: '100%',
-    height: '100%',
+    alignItems: 'center',
+    paddingHorizontal: spacing.sm,
+    paddingBottom: spacing.sm + 2,
+    paddingTop: spacing.xs,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.18,
+    shadowRadius: 12,
+    elevation: 6,
   },
   closedCard: {
-    borderWidth: 1.5,
+    opacity: 0.75,
   },
-  closedIconWrap: {
+  logoStage: {
     flex: 1,
+    width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: spacing.sm,
+    overflow: 'visible',
+    zIndex: 2,
   },
-  closedCardTitle: {
+  logoRounded: {
+    borderRadius: radius['2xl'],
+  },
+  logoPopOut: {
+    zIndex: 2,
+    // Negative translates to push logo up and right past the diagonal cut
+    transform: [{ translateY: -22 }, { translateX: 12 }],
+  },
+  stackedWrap: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'visible',
+    zIndex: 2,
+    transform: [{ translateY: -18 }, { translateX: 8 }],
+  },
+  stackedCardBack: {
+    position: 'absolute',
+    transform: [{ rotate: '-16deg' }, { translateX: -16 }, { translateY: -4 }],
+    opacity: 0.82,
+    zIndex: 1,
+  },
+  stackedCardFront: {
+    position: 'absolute',
+    transform: [{ rotate: '12deg' }, { translateX: 12 }, { translateY: 4 }],
+    zIndex: 2,
+  },
+  logoClosed: {
+    opacity: 0.35,
+  },
+  closedOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 4,
+  },
+  actionPill: {
+    width: '100%',
+    backgroundColor: 'rgba(255, 255, 255, 0.22)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.38)',
+    paddingVertical: spacing.xs + 3,
+    paddingHorizontal: spacing.sm,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 3,
+  },
+  actionPillTitle: {
+    color: '#FFFFFF',
     fontSize: fontSize.sm,
     fontWeight: '700',
-    letterSpacing: 0.4,
-    textTransform: 'uppercase',
+    textAlign: 'center',
+    letterSpacing: -0.1,
   },
-  closedCardSubtitle: {
-    fontSize: fontSize.xs,
+  actionPillSubtitle: {
+    color: 'rgba(255, 255, 255, 0.88)',
+    fontSize: 10,
     fontWeight: '500',
+    textAlign: 'center',
+    marginTop: 2,
   },
   emptyContainer: {
     alignItems: 'center',
