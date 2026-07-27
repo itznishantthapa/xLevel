@@ -39,5 +39,14 @@ allprojects {
   }
 }
 
+// Google Play requires target API 36 (Android 16) for app updates from Aug 31, 2026.
+// Must be set before expo-root-project (it only applies defaults when unset).
+ext {
+    buildToolsVersion = "36.0.0"
+    minSdkVersion = 24
+    compileSdkVersion = 36
+    targetSdkVersion = 36
+}
+
 apply plugin: "expo-root-project"
 apply plugin: "com.facebook.react.rootproject"
