@@ -239,7 +239,7 @@ const displayNotification = async (data) => {
     channelId,
     smallIcon: 'ic_notification',
     pressAction: { id: 'default' },
-    sound: 'custom_sound',
+    sound: 'default',
     style: data.bigImage
       ? {
           type: AndroidStyle.BIGPICTURE,
@@ -360,13 +360,14 @@ export const handleBackgroundMessage = async (remoteMessage) => {
 export const setupNotificationChannel = async () => {
   if (Platform.OS !== 'android') return;
 
+
   await notifee.createChannel({
     id: 'high_importance',
     name: 'High Importance Notifications',
     importance: AndroidImportance.HIGH,
     vibration: true,
     vibrationPattern: [250, 250, 250, 250],
-    sound: 'custom_sound',
+    sound: 'default',
   });
 
   await notifee.createChannel({
@@ -375,7 +376,7 @@ export const setupNotificationChannel = async () => {
     importance: AndroidImportance.DEFAULT,
     vibration: true,
     vibrationPattern: [250, 250],
-    sound: 'custom_sound',
+    sound: 'default',
   });
 
   await notifee.createChannel({

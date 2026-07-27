@@ -47,7 +47,7 @@ const EfootballStore = () => {
   const calculatedGamePoints = useMemo(() => {
     const amount = parseFloat(dollarAmount)
     if (isNaN(amount) || amount <= 0) return 0
-    return Math.ceil(amount * oneDollarPrice * 1.10)
+    return Math.ceil(amount * oneDollarPrice)
   }, [dollarAmount, oneDollarPrice])
 
   const colors = useMemo(

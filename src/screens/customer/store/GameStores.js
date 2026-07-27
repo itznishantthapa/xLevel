@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -6,7 +6,6 @@ import {
   Pressable,
   Image,
   StatusBar,
-  ScrollView,
   useWindowDimensions,
 } from 'react-native';
 import Svg, {
@@ -21,7 +20,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { AppIcon } from '../../../components/common/AppIcon';
-import { StoreIcon, UnavailableIcon, Diamond02Icon } from '@hugeicons/core-free-icons';
+import { StoreIcon, UnavailableIcon, Diamond02Icon, EnergyIcon } from '@hugeicons/core-free-icons';
 import { useThemeStore } from '../../../store/themeStore';
 import { useUtils } from '../../../queries/useUtils';
 import { useGames } from '../../../queries/useGames';
@@ -31,14 +30,29 @@ import { fontSize, spacing, radius, iconSize } from '../../../theme/typography';
 
 const HORIZONTAL_PADDING = spacing.lg;
 const GRID_GAP = spacing.md;
-const CARD_ASPECT = 1.45; // Increased aspect ratio for a taller proportion
+const CARD_ASPECT = 1.45;
+const GRID_ROW_GAP = spacing.lg;
+const CONTENT_VERTICAL_PADDING = spacing.sm + spacing.xs;
+const CONTENT_BLOCK_GAP = spacing.lg;
+const SECTION_TITLE_GAP = spacing.sm;
+const HEADER_ESTIMATE = 44;
+const PROMO_ESTIMATE = 88;
+const TITLE_ESTIMATE = 22;
+const FOOTER_ESTIMATE = 52;
 
-const getGridLayout = (windowWidth) => {
+const getGridLayout = (windowWidth, availableGridHeight = 0) => {
   const contentWidth = windowWidth - HORIZONTAL_PADDING * 2;
   const cardWidth = Math.floor((contentWidth - GRID_GAP) / 2);
-  const cardHeight = Math.round(cardWidth * CARD_ASPECT);
+  let cardHeight = Math.round(cardWidth * CARD_ASPECT);
 
-  return { contentWidth, cardWidth, cardHeight };
+  if (availableGridHeight > 0) {
+    const maxCardHeight = Math.floor((availableGridHeight - GRID_ROW_GAP) / 2);
+    cardHeight = Math.min(cardHeight, Math.max(maxCardHeight, 0));
+  }
+
+  const gridContentHeight = cardHeight > 0 ? cardHeight * 2 + GRID_ROW_GAP : 0;
+
+  return { contentWidth, cardWidth, cardHeight, gridContentHeight };
 };
 
 /**
@@ -157,7 +171,7 @@ const STORE_CONFIG = [
     match: ['mlbb'],
     route: 'mlbbStore',
     flag: 'is_mlbb_store_active',
-    subtitle: 'Topup diamonds & starlight pass',
+    subtitle: 'Topup diamonds, passes & more',
     logo: storeCardLogos.mlbb,
   },
 ];
@@ -186,9 +200,25 @@ const PromoBanner = ({ colors }) => (
   </LinearGradient>
 );
 
+const DeliveryNote = ({ isLight }) => (
+  <View
+    style={[
+      styles.deliveryNote,
+      {
+        backgroundColor: isLight ? '#FFFFFF' : '#0F0F0F',
+        borderColor: isLight ? '#E8E8E8' : 'rgba(255, 255, 255, 0.14)',
+      },
+    ]}
+  >
+    <AppIcon icon={EnergyIcon} size={iconSize.md} color="#00bf63" strokeWidth={2} />
+    <Text style={[styles.deliveryTitle, { color: isLight ? '#000000' : '#FFFFFF' }]}>
+      Delivery within 5 minutes!
+    </Text>
+  </View>
+);
+
 const StoreGameCard = ({ game, config, layout, onPress, closed = false, colors }) => {
   const { cardWidth, cardHeight } = layout;
-  // Enlarged logo size to pop ~50% out of the diagonal cutout
   const logoSize = Math.round(cardWidth * 0.78);
   const displayName = config.cardLabel || game.game_name || config.label;
   const subtitleText = config.subtitle || 'Topup game currency & items';
@@ -206,7 +236,6 @@ const StoreGameCard = ({ game, config, layout, onPress, closed = false, colors }
         closed && styles.closedCard,
       ]}
     >
-      {/* 1. Diagonal Cut Background */}
       <CardCutBackground
         width={cardWidth}
         height={cardHeight}
@@ -214,12 +243,9 @@ const StoreGameCard = ({ game, config, layout, onPress, closed = false, colors }
         id={config.id}
       />
 
-      {/* 2. Logo Stage with ~50% Pop-Out offset */}
       <View style={styles.logoStage}>
         {config.isStackedCard ? (
-          /* eFootball Carousel Card Stack Effect */
           <View style={styles.stackedWrap}>
-            {/* Back Card */}
             <Image
               source={config.stackedLogos?.[0] || config.logo}
               style={[
@@ -230,7 +256,6 @@ const StoreGameCard = ({ game, config, layout, onPress, closed = false, colors }
               ]}
               resizeMode="contain"
             />
-            {/* Front Card */}
             <Image
               source={config.stackedLogos?.[1] || config.logo}
               style={[
@@ -243,7 +268,6 @@ const StoreGameCard = ({ game, config, layout, onPress, closed = false, colors }
             />
           </View>
         ) : (
-          /* Standard Game Logo Pop-Out */
           <Image
             source={config.logo}
             style={[
@@ -263,7 +287,6 @@ const StoreGameCard = ({ game, config, layout, onPress, closed = false, colors }
         )}
       </View>
 
-      {/* 3. Translucent Glass Game Pill with Title & Subtitle */}
       <View style={styles.actionPill}>
         <Text style={styles.actionPillTitle} numberOfLines={1}>
           {closed ? `${displayName} (Closed)` : displayName}
@@ -287,14 +310,61 @@ const StoreGameCard = ({ game, config, layout, onPress, closed = false, colors }
 };
 
 const GameStores = () => {
-  const { width: windowWidth } = useWindowDimensions();
+  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const { isLight } = useThemeStore();
   const { data: utils = {} } = useUtils();
   const { data: games = [] } = useGames();
+  const [layoutMetrics, setLayoutMetrics] = useState({
+    content: 0,
+    promo: 0,
+    title: 0,
+    footer: 0,
+  });
 
-  const layout = useMemo(() => getGridLayout(windowWidth), [windowWidth]);
+  const fallbackGridHeight = useMemo(() => {
+    const reserved =
+      CONTENT_VERTICAL_PADDING +
+      CONTENT_BLOCK_GAP * 2 +
+      SECTION_TITLE_GAP +
+      HEADER_ESTIMATE +
+      PROMO_ESTIMATE +
+      TITLE_ESTIMATE +
+      FOOTER_ESTIMATE;
+
+    return Math.max(0, windowHeight - insets.top - reserved);
+  }, [windowHeight, insets.top]);
+
+  const availableGridHeight = useMemo(() => {
+    const { content, promo, title, footer } = layoutMetrics;
+
+    if (!content) {
+      return fallbackGridHeight;
+    }
+
+    const reserved =
+      CONTENT_VERTICAL_PADDING +
+      CONTENT_BLOCK_GAP * 2 +
+      SECTION_TITLE_GAP +
+      (promo || PROMO_ESTIMATE) +
+      (title || TITLE_ESTIMATE) +
+      (footer || FOOTER_ESTIMATE);
+
+    return Math.max(0, content - reserved);
+  }, [layoutMetrics, fallbackGridHeight]);
+
+  const layout = useMemo(
+    () => getGridLayout(windowWidth, availableGridHeight),
+    [windowWidth, availableGridHeight],
+  );
+
+  const updateLayoutMetric = useCallback((key, value) => {
+    setLayoutMetrics((current) => {
+      if (current[key] === value) return current;
+      return { ...current, [key]: value };
+    });
+  }, []);
 
   const storeFlags = utils?.active_store || {};
 
@@ -344,14 +414,20 @@ const GameStores = () => {
 
       <AppHeader title="Store" />
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={[
-          styles.scrollContent,
-          { paddingBottom: insets.bottom + spacing['2xl'] },
-        ]}
+      <View
+        style={styles.content}
+        onLayout={({ nativeEvent }) => {
+          updateLayoutMetric('content', Math.round(nativeEvent.layout.height));
+        }}
       >
-        <PromoBanner colors={colors} />
+        <View
+          style={styles.promoWrap}
+          onLayout={({ nativeEvent }) => {
+            updateLayoutMetric('promo', Math.round(nativeEvent.layout.height));
+          }}
+        >
+          <PromoBanner colors={colors} />
+        </View>
 
         {storeItems.length === 0 ? (
           <View style={styles.emptyContainer}>
@@ -364,25 +440,53 @@ const GameStores = () => {
             </Text>
           </View>
         ) : (
-          <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>Game Stores</Text>
+          <>
+            <View style={styles.section}>
+              <Text
+                style={[styles.sectionTitle, { color: colors.text }]}
+                onLayout={({ nativeEvent }) => {
+                  updateLayoutMetric('title', Math.round(nativeEvent.layout.height));
+                }}
+              >
+                Game Stores
+              </Text>
 
-            <View style={[styles.grid, { width: layout.contentWidth }]}>
-              {storeItems.map(({ game, config, isActive }) => (
-                <StoreGameCard
-                  key={config.id}
-                  game={game}
-                  config={config}
-                  layout={layout}
-                  colors={colors}
-                  closed={!isActive}
-                  onPress={isActive ? () => handleStorePress(game, config) : undefined}
-                />
-              ))}
+              <View
+                style={[
+                  styles.grid,
+                  {
+                    width: layout.contentWidth,
+                    height: layout.gridContentHeight || undefined,
+                  },
+                ]}
+              >
+                {layout.cardHeight > 0
+                  ? storeItems.map(({ game, config, isActive }) => (
+                      <StoreGameCard
+                        key={config.id}
+                        game={game}
+                        config={config}
+                        layout={layout}
+                        colors={colors}
+                        closed={!isActive}
+                        onPress={isActive ? () => handleStorePress(game, config) : undefined}
+                      />
+                    ))
+                  : null}
+              </View>
             </View>
-          </View>
+
+            <View
+              style={styles.deliveryFooter}
+              onLayout={({ nativeEvent }) => {
+                updateLayoutMetric('footer', Math.round(nativeEvent.layout.height));
+              }}
+            >
+              <DeliveryNote isLight={isLight} />
+            </View>
+          </>
         )}
-      </ScrollView>
+      </View>
     </View>
   );
 };
@@ -393,11 +497,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  scrollContent: {
-    flexGrow: 1,
+  content: {
+    flex: 1,
+    minHeight: 0,
     paddingHorizontal: HORIZONTAL_PADDING,
     paddingTop: spacing.sm,
-    gap: spacing.xl,
+    paddingBottom: spacing.xs,
+    gap: CONTENT_BLOCK_GAP,
+  },
+  promoWrap: {
+    flexShrink: 0,
   },
   promoBanner: {
     flexDirection: 'row',
@@ -431,20 +540,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   section: {
-    gap: spacing.md,
+    flex: 1,
+    minHeight: 0,
+    gap: SECTION_TITLE_GAP,
   },
   sectionTitle: {
+    flexShrink: 0,
     fontSize: fontSize.xl,
     fontWeight: '700',
     letterSpacing: -0.2,
   },
   grid: {
+    flexShrink: 0,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+    alignContent: 'flex-start',
     alignSelf: 'center',
-    rowGap: spacing.xl + 6,
-    marginTop: spacing.md,
+    rowGap: GRID_ROW_GAP,
   },
   cardShell: {
     position: 'relative',
@@ -551,5 +664,26 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
     textAlign: 'center',
     lineHeight: spacing.xl,
+  },
+  deliveryFooter: {
+    flexShrink: 0,
+    paddingTop: spacing.xs,
+    paddingBottom: spacing.md,
+  },
+  deliveryNote: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    gap: spacing.sm,
+    paddingVertical: spacing.sm + 2,
+    paddingHorizontal: spacing.xl,
+    borderRadius: radius.pill,
+    borderWidth: 1,
+  },
+  deliveryTitle: {
+    fontSize: fontSize.sm,
+    fontWeight: '600',
+    letterSpacing: 0.15,
   },
 });
