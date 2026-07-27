@@ -15,7 +15,7 @@ const Loader = ({
   visible = false,
   message = 'Loading…',
   size = 56,
-  animationName = 'BallPulse',
+  animationName = 'LineSpinFadeLoader',
   backdropOpacity,
   fullScreen = false,
   testID = 'app-loader',

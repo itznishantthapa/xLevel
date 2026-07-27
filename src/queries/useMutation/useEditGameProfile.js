@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { GameProfilesAPI } from "../../api/gameProfilesApi";
 import { queryClient } from "../../lib/queryClient";
 import { useAuthStore } from "../../store/authStore";
+import { subscribeToGameUserTopicIfPermitted } from "../../utils/gameUserTopicStorage";
 
 
 export const useEditGameProfile = () => {
@@ -10,7 +11,7 @@ export const useEditGameProfile = () => {
   return useMutation({
     mutationFn: (payload) => GameProfilesAPI.save(payload),
 
-    onSuccess: (updatedProfile) => {
+    onSuccess: async (updatedProfile, variables) => {
       if (!user?.id) return;
 
       queryClient.setQueryData(["gameProfiles", user.id], (oldData) => {
@@ -24,6 +25,14 @@ export const useEditGameProfile = () => {
         }
         return [...oldData, updatedProfile];
       });
+
+      try {
+        await subscribeToGameUserTopicIfPermitted(
+          updatedProfile?.game_name || variables?.game_name,
+        );
+      } catch (error) {
+        if (__DEV__) console.log('Game user topic subscription error:', error);
+      }
     },
   });
 };

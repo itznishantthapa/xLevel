@@ -4,6 +4,7 @@ import { getApp } from '@react-native-firebase/app';
 import {
   getMessaging,
   requestPermission,
+  hasPermission,
   getToken,
   AuthorizationStatus,
   registerDeviceForRemoteMessages,
@@ -47,6 +48,35 @@ export const requestNotificationPermission = async () => {
     return true;
   } catch (error) {
     if (__DEV__) console.error('Permission error:', error);
+    return false;
+  }
+};
+
+export const hasNotificationPermission = async () => {
+  try {
+    const messaging = getMessaging(getApp());
+
+    if (Platform.OS === 'android') {
+      if (Platform.Version >= 33) {
+        return PermissionsAndroid.check(
+          PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+        );
+      }
+
+      return true;
+    }
+
+    if (Platform.OS === 'ios') {
+      const authStatus = await hasPermission(messaging);
+      return (
+        authStatus === AuthorizationStatus.AUTHORIZED ||
+        authStatus === AuthorizationStatus.PROVISIONAL
+      );
+    }
+
+    return false;
+  } catch (error) {
+    if (__DEV__) console.error('Notification permission check error:', error);
     return false;
   }
 };

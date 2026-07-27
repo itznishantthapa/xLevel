@@ -6,6 +6,7 @@ import {
   getGameCreationStorageKey,
 } from '../constants/notifications';
 import { checkFCMTokenInStorage } from '../utils/tokenUtils';
+import { clearGameUserTopicSubscriptions } from '../utils/gameUserTopicStorage';
 import {
   deleteFCMToken,
   unsubscribeFromBroadcastTopic,
@@ -39,6 +40,8 @@ const unsubscribeUserTopics = async () => {
         }
       }),
     );
+
+    await clearGameUserTopicSubscriptions();
   } catch (error) {
     if (__DEV__) {
       console.log('FCM topic unsubscription error:', error);

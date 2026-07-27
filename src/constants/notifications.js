@@ -56,6 +56,13 @@ export const GAME_CREATION_TOPICS = {
   mlbb: 'mlbbcreation',
 };
 
+export const GAME_USER_TOPICS = {
+  freefire: 'freefireusers',
+  pubg: 'pubgusers',
+  mlbb: 'mlbbusers',
+  efootball: 'efootballusers',
+};
+
 export const getGameCreationTopicKey = (gameName = '') => {
   const name = gameName.toLowerCase();
   if (name.includes('free fire') || name.includes('freefire')) return 'freefire';
@@ -71,6 +78,13 @@ export const getGameCreationTopic = (gameName = '') => {
 };
 
 export const getGameCreationStorageKey = (gameKey) => `topic_${gameKey}_creation`;
+
+export const getGameUserTopic = (gameName = '') => {
+  const key = getGameCreationTopicKey(gameName);
+  return key ? GAME_USER_TOPICS[key] : null;
+};
+
+export const getGameUserStorageKey = (gameKey) => `topic_${gameKey}_users`;
 
 const GAME_CREATION_ALERT_COPY = {
   freefire: {

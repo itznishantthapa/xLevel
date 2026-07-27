@@ -12,6 +12,10 @@ import { useAuthStore } from '../store/authStore';
 import { getFcmBroadcastTopicForRole } from '../constants/notifications';
 import { resyncGameCreationTopicsFromStorage } from '../utils/gameCreationTopicStorage';
 import {
+  resyncGameUserTopicsFromStorage,
+  syncGameUserTopicsFromProfiles,
+} from '../utils/gameUserTopicStorage';
+import {
   requestNotificationPermission,
   getFCMToken,
   setupNotificationChannel,
@@ -49,6 +53,13 @@ export function useNotificationEngine() {
       try {
         await subscribeToBroadcastTopic(broadcastTopic);
         await resyncGameCreationTopicsFromStorage();
+        await resyncGameUserTopicsFromStorage();
+
+        const { queryClient } = await import('../lib/queryClient');
+        const cachedProfiles = queryClient.getQueryData(['gameProfiles', useAuthStore.getState().user?.id]);
+        if (cachedProfiles?.length) {
+          await syncGameUserTopicsFromProfiles(cachedProfiles);
+        }
       } catch (error) {
         // Topic sync failures must not prevent the message listeners below
         // from being registered.
@@ -70,8 +81,16 @@ export function useNotificationEngine() {
           // creation topics or the user silently stops receiving them.
           try {
             const role = useAuthStore.getState().user?.role;
+            const userId = useAuthStore.getState().user?.id;
             await subscribeToBroadcastTopic(getFcmBroadcastTopicForRole(role));
             await resyncGameCreationTopicsFromStorage();
+            await resyncGameUserTopicsFromStorage();
+
+            const { queryClient } = await import('../lib/queryClient');
+            const cachedProfiles = queryClient.getQueryData(['gameProfiles', userId]);
+            if (cachedProfiles?.length) {
+              await syncGameUserTopicsFromProfiles(cachedProfiles);
+            }
           } catch (error) {
             if (__DEV__) console.log('Token refresh topic resync error:', error);
           }

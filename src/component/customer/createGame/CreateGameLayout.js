@@ -22,6 +22,7 @@ import StoreScreenHeader from '../store/StoreScreenHeader';
  * NOTE: Keyboard handling now uses KeyboardAvoidingView internally; external refs no longer required.
  * @param {string} props.buttonTitle - Title for the submit button (default: "Create Match")
  * @param {string} props.loaderMessage - Message for the loader (default: "Creating match...")
+ * @param {string} props.loaderAnimationName - Loader animation name (default: "LineSpinFadeLoader")
  * @returns {JSX.Element}
  */
 const CreateGameLayout = ({
@@ -35,6 +36,7 @@ const CreateGameLayout = ({
   onSubmit,
   buttonTitle = "Create Match",
   loaderMessage = "Creating match...",
+  loaderAnimationName = 'LineSpinFadeLoader',
   buttonBackgroundColor,
   buttonTextColor,
   aboveButtonContent
@@ -70,7 +72,7 @@ const CreateGameLayout = ({
         visible={isLoading}
         message={loaderMessage}
         fullScreen
-        animationName="BallSpinFadeLoader"
+        animationName={loaderAnimationName}
       />
       <StatusBar translucent backgroundColor="transparent" barStyle={isLight ? "dark-content" : "light-content"} />
 
