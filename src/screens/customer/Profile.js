@@ -90,7 +90,7 @@ const Profile = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Loader visible={isLoading} message="Logging out..." size={50} />
+      <Loader visible={isLoading} message="Signing out..." size={50} />
       <StatusBar translucent backgroundColor="transparent" barStyle={isLight ? "dark-content" : "light-content"} />
 
       <SafeAreaView style={styles.container}>
@@ -307,9 +307,9 @@ const Profile = () => {
                   style={styles.actionRow}
                   onPress={() =>
                     showConfirmSheet({
-                      title: "Logout?",
-                      message: "Are you sure you want to logout of your account?",
-                      confirmText: "Logout",
+                      title: "Sign out?",
+                      message: "Are you sure you want to sign out of your account?",
+                      confirmText: "Sign out",
                       cancelText: "Cancel",
                       isDestructive: true,
                       onConfirm: handleLogout,
@@ -318,7 +318,7 @@ const Profile = () => {
                 >
                   <View style={styles.actionContent}>
                     <AppIcon icon={Logout01Icon} size={iconSize.md} color={colors.destructive} />
-                    <Text style={[styles.actionText, { color: colors.destructive }]}>Logout</Text>
+                    <Text style={[styles.actionText, { color: colors.destructive }]}>Sign out</Text>
                   </View>
                   <AppIcon icon={ChevronRightIcon} size={iconSize.md} color={colors.textTertiary} />
                 </Pressable>
@@ -327,7 +327,7 @@ const Profile = () => {
           </View>
 
           <View style={styles.versionFooter}>
-            <Text style={[styles.versionText, { color: colors.textTertiary }]}>Version 1.0 (12)</Text>
+            <Text style={[styles.versionText, { color: colors.textTertiary }]}>Version 7.6 (76)</Text>
           </View>
 
        
