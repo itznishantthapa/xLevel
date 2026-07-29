@@ -331,9 +331,12 @@ const ResultUpload = ({ route }) => {
       { value: 'draw', label: 'Draw', icon: 'remove' }
     ];
 
-    // Check if current game supports draw (Chess and eFootball only)
+    // Chess, eFootball, and FC support draw results
     const gameName = game?.game?.name?.toLowerCase() || '';
-    const supportsDraws = gameName.includes('chess') || gameName.includes('efootball');
+    const supportsDraws =
+      gameName.includes('chess') ||
+      gameName.includes('efootball') ||
+      gameName.includes('fc');
 
     // Filter results based on game type
     const gameResults = supportsDraws
