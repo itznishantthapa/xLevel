@@ -56,23 +56,18 @@ const getGridLayout = (windowWidth, availableGridHeight = 0) => {
 };
 
 /**
- * Deep asymmetrical diagonal cut path:
- * - Top edge cuts early (28% width)
- * - Deep diagonal slant down to 44% of card height on the right side
- * - Creates a large empty notch so logo images pop out up to ~50%
+ * Rounded card path with a large top-right radius for a smooth circular cut
+ * that leaves room for logo images to pop out at the top-right.
  */
 const buildCardPath = (w, h) => {
   const rTopLeft = 24;
+  const rTopRight = Math.min(w * 0.52, h * 0.55);
   const rBottom = 20;
-  const topEdgeEnd = w * 0.28;
-  const slantEndY = h * 0.44;
 
   return `
     M ${rTopLeft} 0
-    H ${topEdgeEnd}
-    Q ${topEdgeEnd + 12} 0 ${topEdgeEnd + 24} 8
-    L ${w - 6} ${slantEndY - 14}
-    Q ${w} ${slantEndY} ${w} ${slantEndY + 14}
+    H ${w - rTopRight}
+    Q ${w} 0 ${w} ${rTopRight}
     V ${h - rBottom}
     Q ${w} ${h} ${w - rBottom} ${h}
     H ${rBottom}
@@ -588,8 +583,7 @@ const styles = StyleSheet.create({
   },
   logoPopOut: {
     zIndex: 2,
-    // Negative translates to push logo up and right past the diagonal cut
-    transform: [{ translateY: -22 }, { translateX: 12 }],
+    transform: [{ translateY: -18 }, { translateX: 10 }],
   },
   stackedWrap: {
     width: '100%',
@@ -598,7 +592,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     overflow: 'visible',
     zIndex: 2,
-    transform: [{ translateY: -18 }, { translateX: 8 }],
+    transform: [{ translateY: -14 }, { translateX: 6 }],
   },
   stackedCardBack: {
     position: 'absolute',
