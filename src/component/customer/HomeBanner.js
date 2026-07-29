@@ -3,6 +3,7 @@ import { StyleSheet, View, Image, Pressable, useWindowDimensions, Linking, Platf
 import Carousel from 'react-native-reanimated-carousel';
 import { interpolate, Extrapolation } from 'react-native-reanimated';
 import { spacing, radius } from '../../theme/typography';
+import HomeBannerSkeleton from './skeleton/HomeBannerSkeleton';
 
 const BANNER_BORDER_RADIUS = radius.lg;
 const BANNER_HORIZONTAL_PADDING = spacing.lg;
@@ -65,7 +66,7 @@ const BannerPage = ({ data, width, height }) => {
   );
 };
 
-const HomeBanner = ({ data = [] }) => {
+const HomeBanner = ({ data = [], isLoading = false }) => {
   const { width: screenWidth } = useWindowDimensions();
   const { width: bannerWidth, height: bannerHeight } = useMemo(
     () => getBannerDimensions(screenWidth),
@@ -77,8 +78,8 @@ const HomeBanner = ({ data = [] }) => {
     [data.length],
   );
 
-  if (!data.length) {
-    return null;
+  if (isLoading || !data.length) {
+    return <HomeBannerSkeleton />;
   }
 
   return (

@@ -40,6 +40,7 @@ import PUBGStore from "../screens/customer/stores/PUBGStore";
 import EfootballStore from "../screens/customer/stores/EfootballStore";
 import MLBBStore from "../screens/customer/stores/MLBBStore";
 import CreateSell from "../screens/customer/store/CreateSell";
+import GameSelection from "../screens/signup/GameSelection";
 
 
 const Stack = createNativeStackNavigator();
@@ -88,6 +89,11 @@ export default function CustomerNavigator(){
             <Stack.Screen component={EfootballStore} name="efootballStore"/>
             <Stack.Screen component={MLBBStore} name="mlbbStore"/>
             <Stack.Screen component={CreateSell} name="createSell"/>
+            <Stack.Screen
+                component={GameSelection}
+                name="gameSelection"
+                options={{ animation: "fade" }}
+            />
         </Stack.Navigator>
         </>
     );

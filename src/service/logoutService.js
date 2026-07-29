@@ -7,6 +7,7 @@ import {
 } from '../constants/notifications';
 import { checkFCMTokenInStorage } from '../utils/tokenUtils';
 import { clearGameUserTopicSubscriptions } from '../utils/gameUserTopicStorage';
+import { clearSelectedCarouselGames } from '../utils/selectedGamesStorage';
 import {
   deleteFCMToken,
   unsubscribeFromBroadcastTopic,
@@ -22,6 +23,7 @@ const clearLocalAuthData = async () => {
     '@user',
     '@fcm_token',
   ]);
+  await clearSelectedCarouselGames();
 };
 
 const unsubscribeUserTopics = async () => {

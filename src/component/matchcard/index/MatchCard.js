@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from "react-native"
 import GameHeader from "../GameHeader"
-import { sharedStyles, shouldShowResultPortalWaitInfo } from "../sharedStyleAndInfo"
+import { sharedStyles, shouldShowResultPortalWaitInfo, shouldShowSettingsFiller } from "../sharedStyleAndInfo"
 import GameDetails from "../gameDetails/GameDetails"
 import CreatorInfo from "../CreatorInfo"
 import StatusDisplay from "../StatusDisplay"
@@ -12,6 +12,7 @@ import { useThemeStore } from "../../../store/themeStore"
 import { useAuthStore } from "../../../store/authStore"
 import { Time } from "../Time"
 import SettingInfo from "../SettingInfo"
+import SettingsFiller from "../SettingsFiller"
 import { AppIcon } from "../../../components/common/AppIcon"
 import { Flag01Icon } from "@hugeicons/core-free-icons"
 import { StyleSheet } from "react-native"
@@ -61,6 +62,7 @@ const MatchCard = ({
           <View style={sharedStyles.leftSection}>
             <SettingInfo />
             <GameDetails game={game} isLight={isLight} />
+            {shouldShowSettingsFiller(game) ? <SettingsFiller isLight={isLight} /> : null}
           </View>
 
           {/* Vertical Divider */}
@@ -102,11 +104,6 @@ const MatchCard = ({
             </View>
           )
         }
-
-
-        <View
-          style={[sharedStyles.buttonLine, { backgroundColor: isLight ? "#e0e0e0" : "rgba(255, 255, 255, 0.1)" }]}
-        />
 
         {isCreator && <OpponentsList game={game} isLight={isLight} handleConfirmedOpponent={handleConfirmedOpponent} />}
 
@@ -164,9 +161,9 @@ const localStyles = StyleSheet.create({
   },
   reportButton: {
     paddingHorizontal: spacing.lg,
-    paddingVertical: 9,
-    borderRadius: spacing["2xl"],
-    minHeight: 36,
+    paddingVertical: spacing.md,
+    borderRadius: spacing.md,
+    minHeight: 44,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000000',

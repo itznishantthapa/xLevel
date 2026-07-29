@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StatusBar, StyleSheet, View, useWindowDimensions, Text, Pressable, Animated } from 'react-native';
 import { TabView, TabBar } from 'react-native-tab-view';
+import { useFocusEffect } from '@react-navigation/native';
 import { useThemeStore } from '../../store/themeStore';
 import { useGames } from '../../queries/useGames';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { getVisibleCarouselGames } from '../../utils/selectedGamesStorage';
 import {
   getOpenGamesTabIndex,
   setOpenGamesActiveGameId,
@@ -19,14 +21,30 @@ const OpenGames = () => {
 
   const [index, setIndex] = useState(0);
   const [isTabReady, setIsTabReady] = useState(false);
+  const [tabGames, setTabGames] = useState([]);
+
+  const loadTabGames = useCallback(async () => {
+    const visibleGames = await getVisibleCarouselGames(games);
+    setTabGames(visibleGames);
+  }, [games]);
+
+  useEffect(() => {
+    loadTabGames();
+  }, [loadTabGames]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadTabGames();
+    }, [loadTabGames]),
+  );
 
   const routes = useMemo(
-    () => games.map(game => ({
+    () => tabGames.map(game => ({
       key: String(game?.game_id),
       title: game?.game_name,
       game_id: game?.game_id,
     })),
-    [games],
+    [tabGames],
   );
 
   useEffect(() => {

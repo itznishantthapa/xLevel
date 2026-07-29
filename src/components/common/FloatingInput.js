@@ -35,7 +35,7 @@ const FloatingInput = ({
 
   const labelTop = animation.interpolate({
     inputRange: [0, 1],
-    outputRange: [12, -9],
+    outputRange: [(INPUT_HEIGHT - (fontSize.md + 2)) / 2, -9],
   });
 
   const labelFontSize = animation.interpolate({
@@ -68,6 +68,7 @@ const FloatingInput = ({
               {
                 top: labelTop,
                 fontSize: labelFontSize,
+                lineHeight: fontSize.md + 2,
                 color: isFocused ? colors.text : colors.textMuted,
                 backgroundColor: colors.surface,
               },
@@ -78,7 +79,10 @@ const FloatingInput = ({
           </Animated.Text>
 
           <TextInput
-            style={[styles.textInput, { color: colors.text }]}
+            style={[
+              styles.textInput,
+              { color: colors.text, paddingTop: isFloating ? spacing.sm : 0 },
+            ]}
             value={value}
             onChangeText={onChangeText}
             onFocus={() => setIsFocused(true)}
@@ -139,7 +143,6 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    paddingTop: spacing.sm,
     paddingBottom: 0,
     fontSize: fontSize.md,
     lineHeight: fontSize.md + 2,

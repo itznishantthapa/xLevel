@@ -4,6 +4,7 @@ import Clipboard from "@react-native-clipboard/clipboard";
 import Toast from "react-native-simple-toast";
 import { fontSize, spacing } from '../../theme/typography';
 
+export const MATCH_CARD_ACTION_HEIGHT = 44;
 
 // Shared styles for use in all match card components
 export const sharedStyles = StyleSheet.create({
@@ -29,10 +30,12 @@ export const sharedStyles = StyleSheet.create({
   leftSection: {
     flex: 1,
     paddingRight: spacing.md,
+    flexDirection: "column",
   },
   rightSection: {
     flex: 1,
     paddingLeft: spacing.md,
+    flexDirection: "column",
   },
   gameInfoHeader: {
     flexDirection: 'row',
@@ -85,7 +88,6 @@ export const sharedStyles = StyleSheet.create({
   },
   gameDetails: {
     gap: 6,
-    marginBottom: spacing.md,
   },
   infoRow: {
     flexDirection: 'row',
@@ -215,9 +217,13 @@ export const sharedStyles = StyleSheet.create({
     color: '#00bf63'
   },
   sendButton: {
-    paddingVertical: fontSize.base,
+    minHeight: MATCH_CARD_ACTION_HEIGHT,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
     borderRadius: spacing.md,
     marginTop: spacing.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.15,
@@ -335,7 +341,9 @@ export const sharedStyles = StyleSheet.create({
     fontFamily: 'monospace',
   },
   statusButton: {
+    minHeight: MATCH_CARD_ACTION_HEIGHT,
     paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
     borderWidth: 1,
     borderRadius: spacing.md,
     alignItems: 'center',
@@ -375,11 +383,12 @@ export const sharedStyles = StyleSheet.create({
   },
   waitingContainer: {
     width: '100%',
-    paddingVertical: spacing.lg,
+    minHeight: MATCH_CARD_ACTION_HEIGHT,
+    paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
     borderWidth: 1,
     borderStyle: 'dashed',
-    borderRadius: spacing.sm,
+    borderRadius: spacing.md,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -538,6 +547,13 @@ export const hasMatchCredentials = (game = {}) => {
     game.team_code ||
     game.lobby_id,
   );
+};
+
+export const shouldShowSettingsFiller = (game = {}) => {
+  const gameName = game.game?.name?.toLowerCase() || "";
+  if (gameName.includes("efootball")) return false;
+  if (gameName.includes("free fire") || gameName.includes("freefire")) return false;
+  return true;
 };
 
 export const shouldShowResultPortalWaitInfo = (game = {}, { forOpenGames = false } = {}) =>

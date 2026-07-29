@@ -79,9 +79,9 @@ const Home = () => {
 
 
   // API data queries
-  const { data: games = [] } = useGames()
+  const { data: games = [], isPending: isGamesPending } = useGames()
   const { data: gameProfiles = [] } = useGameProfiles()
-  const { data: banners = [] } = useBanners()
+  const { data: banners = [], isPending: isBannersPending } = useBanners()
   const { mutateAsync: registerTournament } = useRegisterTournament();
   const { data: upcomingChallenges, isLoading: isUpcomingLoading } = useUpcomingChallenges()
   const {data: utils = []} = useUtils()
@@ -344,7 +344,7 @@ const Home = () => {
   const renderSection = ({ item }) => {
     switch (item.type) {
       case "banner":
-        return <HomeBanner data={displayBanners} />
+        return <HomeBanner data={displayBanners} isLoading={isBannersPending} />
 
       case "stats":
         return (
@@ -360,7 +360,13 @@ const Home = () => {
         )
 
       case "games":
-        return <GameCarousel games={games} handleGameCardPress={handleGameCardPress} />
+        return (
+          <GameCarousel
+            games={games}
+            isLoading={isGamesPending}
+            handleGameCardPress={handleGameCardPress}
+          />
+        )
 
       case "upcoming":
         return <UpcommingList games={upcomingChallenges} handleConfirmChallenge={handleConfirmChallenge} />

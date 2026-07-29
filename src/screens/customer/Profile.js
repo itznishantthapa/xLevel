@@ -196,6 +196,19 @@ const Profile = () => {
             <View style={styles.section}>
               <Text style={[styles.sectionTitle, { color: colors.text }]}>Settings</Text>
               <View style={[styles.settingsCard, { backgroundColor: colors.cardBackground }]}>
+                <Pressable
+                  onPress={() => navigation.navigate("gameSelection")}
+                  style={[styles.settingRow, styles.settingRowBorder, { borderBottomColor: colors.border }]}
+                >
+                  <View style={styles.settingInfo}>
+                    <Text style={[styles.settingTitle, { color: colors.text }]}>Select Games</Text>
+                    <Text style={[styles.settingDescription, { color: colors.textTertiary }]}>
+                      Choose games for your create match
+                    </Text>
+                  </View>
+                  <AppIcon icon={Edit02Icon} size={iconSize.lg} color={colors.text} />
+                </Pressable>
+
                 <Pressable onPress={toggleTheme} style={styles.settingRow}>
                   <View style={styles.settingInfo}>
                     <Text style={[styles.settingTitle, { color: colors.text }]}>Scheme</Text>
@@ -327,7 +340,7 @@ const Profile = () => {
           </View>
 
           <View style={styles.versionFooter}>
-            <Text style={[styles.versionText, { color: colors.textTertiary }]}>Version 1.0 (14)</Text>
+            <Text style={[styles.versionText, { color: colors.textTertiary }]}>Version 8.0 (80)</Text>
           </View>
 
        
@@ -484,6 +497,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     padding: 16,
+  },
+  settingRowBorder: {
+    borderBottomWidth: 1,
   },
   settingInfo: {
     flex: 1,

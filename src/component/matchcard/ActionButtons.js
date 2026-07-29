@@ -49,7 +49,7 @@ const ActionButtons = ({ game, isLight, isCreator, user, handleResultUpload, for
         onPress={() => handleResultUpload(game)}
       >
         <View style={sharedStyles.sendButtonContent}>
-        <Text style={[styles.joinButtonText, isLight ? { color: "#ffffff" } : { color: "#000000" }]}>Result</Text>
+        <Text style={[styles.actionButtonText, isLight ? { color: "#ffffff" } : { color: "#000000" }]}>Result</Text>
         </View>
         <AppIcon icon={ArrowRight01Icon} size={iconSize.sm} color={isLight ? "#ffffff" : "#000000"} />
       </Pressable>
@@ -59,15 +59,19 @@ const ActionButtons = ({ game, isLight, isCreator, user, handleResultUpload, for
   if (forOpenGames) {
     return (
       <Pressable
-        style={[styles.joinButton, isLight ? { backgroundColor: '#000000' } : { backgroundColor: '#eaf4f4' }]}
+        style={[
+          sharedStyles.sendButton,
+          isLight ? { backgroundColor: '#000000' } : { backgroundColor: '#eaf4f4' },
+        ]}
         onPress={() => handleConfirmChallenge(game)}
         activeOpacity={0.8}
       >
-        <View style={styles.joinButtonContent}>
-          <Text style={[styles.joinButtonText, isLight ? { color: "#ffffff" } : { color: "#000000" }]}>JOIN {game.entry_fee ? `${game.entry_fee}` : ""}</Text>
+        <View style={sharedStyles.sendButtonContent}>
+          <Text style={[styles.actionButtonText, isLight ? { color: "#ffffff" } : { color: "#000000" }]}>
+            JOIN {game.entry_fee ? `${game.entry_fee}` : ""}
+          </Text>
         </View>
       </Pressable>
-
     )
   }
 
@@ -75,24 +79,12 @@ const ActionButtons = ({ game, isLight, isCreator, user, handleResultUpload, for
 }
 
 const styles = StyleSheet.create({
-  joinButton: {
-    paddingVertical: 12,
-    borderRadius: 12,
-    marginTop: 8,
-  },
-  joinButtonContent: {
-    alignItems: 'center',
-    flexDirection:'row',
-    justifyContent:'center',
-    gap:4
-  },
-  joinButtonText: {
-    color: '#ffffff',
+  actionButtonText: {
     fontSize: 14,
-    fontWeight: 'bold',
-    marginBottom: 2,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+    textAlign: 'center',
   },
-
 })
 
 

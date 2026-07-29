@@ -15,13 +15,25 @@ import { fontSize, iconSize, spacing, radius } from '../../../theme/typography'
 import { useMemo, useRef, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { useStoreScreenData } from '../../../hooks/useStoreScreenData'
-import { CreateGameLayout, DividerLine, TermsAgreement } from '../../../component/customer/createGame'
+import { CreateGameLayout, DividerLine, TermsAgreement, OptionButton } from '../../../component/customer/createGame'
 import { useAuthStore } from '../../../store/authStore'
 import { useStoreTopup } from '../../../queries/useMutation/useStoreTopup'
 import * as ImagePicker from 'expo-image-picker'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const PRICE_REGEX = /^\d+(\.\d{1,2})?$/
+
+const ACCOUNT_TYPES = [
+  { id: 'efootball', label: 'eFootball' },
+  { id: 'fc_mobile', label: 'FC Mobile' },
+  { id: 'others', label: 'Others' },
+]
+
+const LOGIN_LABELS = {
+  efootball: { email: 'Konami Email', password: 'Konami Password' },
+  fc_mobile: { email: 'EA Email', password: 'EA Password' },
+  others: { email: 'Account Email', password: 'Account Password' },
+}
 
 const EfootballStore = () => {
   const { isLight } = useThemeStore()
@@ -35,6 +47,8 @@ const EfootballStore = () => {
   const [screenshot, setScreenshot] = useState(null)
   const [screenshotResult, setScreenshotResult] = useState(null)
   const [dollarAmount, setDollarAmount] = useState('')
+  const [accountType, setAccountType] = useState(null)
+  const [purchaseDescription, setPurchaseDescription] = useState('')
   const [accountEmail, setAccountEmail] = useState('')
   const [accountPassword, setAccountPassword] = useState('')
   const [agreementAccepted, setAgreementAccepted] = useState(false)
@@ -49,6 +63,11 @@ const EfootballStore = () => {
     if (isNaN(amount) || amount <= 0) return 0
     return Math.ceil(amount * oneDollarPrice)
   }, [dollarAmount, oneDollarPrice])
+
+  const loginLabels = useMemo(
+    () => LOGIN_LABELS[accountType] ?? LOGIN_LABELS.others,
+    [accountType],
+  )
 
   const colors = useMemo(
     () => ({
@@ -88,6 +107,15 @@ const EfootballStore = () => {
     setFieldErrors((prev) => (prev[field] ? { ...prev, [field]: '' } : prev))
   }
 
+  const handleAccountTypeChange = (typeId) => {
+    setAccountType(typeId)
+    clearFieldError('accountType')
+    if (typeId !== 'others') {
+      setPurchaseDescription('')
+      clearFieldError('purchaseDescription')
+    }
+  }
+
   const validateForm = () => {
     const errors = {}
     const trimmedPrice = dollarAmount.trim()
@@ -103,6 +131,14 @@ const EfootballStore = () => {
       errors.price = 'Enter a valid price (up to 2 decimal places)'
     } else if (parseFloat(trimmedPrice) <= 0) {
       errors.price = 'Item price must be greater than 0'
+    }
+
+    if (!accountType) {
+      errors.accountType = 'Please select an account type'
+    }
+
+    if (accountType === 'others' && !purchaseDescription.trim()) {
+      errors.purchaseDescription = 'Please tell us what you want to purchase'
     }
 
     if (!trimmedEmail) {
@@ -124,6 +160,8 @@ const EfootballStore = () => {
     const hasErrors = Boolean(
       errors.screenshot ||
       errors.price ||
+      errors.accountType ||
+      errors.purchaseDescription ||
       errors.email ||
       errors.password ||
       errors.agreement,
@@ -155,8 +193,13 @@ const EfootballStore = () => {
     }
 
     formData.append('calculated_game_point', calculatedGamePoints.toString())
+    formData.append('account_type', accountType)
     formData.append('email', accountEmail.trim())
     formData.append('password', accountPassword.trim())
+
+    if (accountType === 'others') {
+      formData.append('purchase_description', purchaseDescription.trim())
+    }
 
     try {
       setIsSubmitting(true)
@@ -320,6 +363,65 @@ const EfootballStore = () => {
         <DividerLine isLight={isLight} />
 
         <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Select Account Type</Text>
+          <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
+            Choose the account type for this purchase
+          </Text>
+        </View>
+
+        <View style={styles.accountTypeRow}>
+          {ACCOUNT_TYPES.map((type) => (
+            <OptionButton
+              key={type.id}
+              label={type.label}
+              isSelected={accountType === type.id}
+              onPress={() => handleAccountTypeChange(type.id)}
+              isLight={isLight}
+            />
+          ))}
+        </View>
+
+        {fieldErrors.accountType ? (
+          <Text style={[styles.fieldErrorText, styles.leftAlignedError, { color: colors.error }]}>
+            {fieldErrors.accountType}
+          </Text>
+        ) : null}
+
+        {accountType === 'others' ? (
+          <View
+            style={[
+              styles.textAreaShell,
+              {
+                backgroundColor: colors.inputBackground,
+                borderColor: fieldErrors.purchaseDescription ? colors.error : colors.border,
+              },
+            ]}
+          >
+            <TextInput
+              style={[styles.textArea, { color: colors.text }]}
+              placeholder="Please tell us more about your purchase..."
+              placeholderTextColor={colors.textTertiary}
+              value={purchaseDescription}
+              onChangeText={(text) => {
+                setPurchaseDescription(text)
+                clearFieldError('purchaseDescription')
+              }}
+              multiline
+              numberOfLines={4}
+              textAlignVertical="top"
+            />
+          </View>
+        ) : null}
+
+        {fieldErrors.purchaseDescription ? (
+          <Text style={[styles.fieldErrorText, styles.leftAlignedError, { color: colors.error }]}>
+            {fieldErrors.purchaseDescription}
+          </Text>
+        ) : null}
+
+        <DividerLine isLight={isLight} />
+
+        <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>Account Login Info</Text>
           <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
             Provide the login details for your account.
@@ -328,7 +430,7 @@ const EfootballStore = () => {
 
         <View style={[styles.formCard, { backgroundColor: colors.cardBackground }]}>
           <FloatingInput
-            label="Account email"
+            label={loginLabels.email}
             value={accountEmail}
             onChangeText={(text) => {
               setAccountEmail(text)
@@ -341,7 +443,7 @@ const EfootballStore = () => {
           />
 
           <FloatingInput
-            label="Account Password"
+            label={loginLabels.password}
             value={accountPassword}
             onChangeText={(text) => {
               setAccountPassword(text)
@@ -354,6 +456,10 @@ const EfootballStore = () => {
             error={fieldErrors.password}
             colors={colors}
           />
+
+          <Text style={[styles.infoText, { color: colors.textTertiary }]}>
+            If 2FA is enabled, we will ask for the OTP code via notification.
+          </Text>
         </View>
       </View>
 
@@ -483,6 +589,31 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
     fontWeight: '500',
     textAlign: 'center',
+    marginTop: spacing.xxs,
+  },
+  leftAlignedError: {
+    textAlign: 'left',
+  },
+  accountTypeRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  textAreaShell: {
+    borderWidth: 1,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    minHeight: 110,
+  },
+  textArea: {
+    fontSize: fontSize.md,
+    lineHeight: 20,
+    minHeight: 88,
+    padding: 0,
+  },
+  infoText: {
+    fontSize: fontSize.sm,
+    lineHeight: 18,
     marginTop: spacing.xxs,
   },
   arrowWrapper: {

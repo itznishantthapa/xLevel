@@ -1,101 +1,80 @@
-import { View, Text, Pressable, Image } from "react-native"
+import { View, Text, Pressable, ScrollView, Image, StyleSheet } from "react-native"
 import { AppIcon } from "../../components/common/AppIcon"
-import { UserIcon, CheckmarkCircle01Icon, ArrowTurnBackwardIcon } from "@hugeicons/core-free-icons"
-import { sharedStyles } from "./sharedStyleAndInfo"
+import { UserGroupIcon, CheckmarkCircle01Icon, UserIcon } from "@hugeicons/core-free-icons"
 import { useBottomSheet } from "../../context/BottomSheetContext"
 import { FadingText } from "../customer/animation/FadingText"
-import { spacing, iconSize } from '../../theme/typography';
+import { fontSize, spacing, iconSize } from "../../theme/typography"
+import { getParticipantGameData } from "./participantGameData"
+import { sharedStyles } from "./sharedStyleAndInfo"
 
+const TABLET_HEIGHT = 44
+const AVATAR_SIZE = 32
 
-const OpponentCard = ({ opponent, game, isLight, showOpponentSheet, handleConfirmedOpponent }) => {
-
-
-
+const OpponentTablet = ({ opponent, game, isLight, onPress }) => {
+  const matchGameName = game?.game?.name?.toLowerCase() || opponent?.theGame || ""
+  const gameData = getParticipantGameData(opponent, matchGameName)
+  const displayName = gameData.gameUsername || opponent.game_name || "Player"
+  const isConfirmed = opponent?.is_confirmed
 
   return (
     <Pressable
+      onPress={onPress}
       style={[
-        sharedStyles.opponentBox,
+        styles.tablet,
         {
-          backgroundColor: isLight ? "transparent" : "#000000",
-          borderColor: isLight ? "#000000" : "#ffffff",
-        },
-        game.status === "in_progress" && {
-          borderColor: isLight ? "#000000" : "#ffffff",
-          borderWidth: spacing.xxs,
           backgroundColor: isLight ? "#f5f5f5" : "#1a1a1a",
+          borderColor: isConfirmed ? "#00bf63" : isLight ? "#333333" : "#ffffff",
         },
       ]}
-      onPress={() => {
-        showOpponentSheet({
-          opponent,
-          isConfirmed: opponent?.is_confirmed,
-          gameStatus: game.status,
-          onConfirm: (confirmedOpponent) => {
-            handleConfirmedOpponent(confirmedOpponent.participant_id, game.id)
-          },
-        })
-      }}
     >
-
-      <View style={sharedStyles.opponentContent}>
-        {opponent.profile_picture ? (
-          <Image source={{ uri: opponent.profile_picture }} style={sharedStyles.opponentAvatar} />
-        ) : (
-          <View style={[sharedStyles.opponentAvatarFallback, { backgroundColor: isLight ? "#dadada" : "#444444" }]}>
-            <AppIcon icon={UserIcon} size={iconSize.sm} color={isLight ? "#333333" : "#EAEAEA"} />
-          </View>
-        )}
-        <View style={sharedStyles.opponentInfo}>
-          <View style={sharedStyles.opponentNameRow}>
-            <Text style={[sharedStyles.opponentName, { color: isLight ? "#000000" : "#ffffff" }]} numberOfLines={1}>
-              {opponent.game_name}
-            </Text>
-            {opponent?.is_confirmed && (
-              <View
-                style={[
-                  sharedStyles.confirmedBadge,
-                  {
-                    backgroundColor: isLight ? "rgba(0, 0, 0, 0.05)" : "rgba(255, 255, 255, 0.1)",
-                    borderColor: isLight ? "rgba(0, 0, 0, 0.1)" : "rgba(255, 255, 255, 0.2)",
-                  },
-                ]}
-              >
-
-                <AppIcon
-                  icon={CheckmarkCircle01Icon}
-                  size={spacing.md}
-                  color={isLight ? "#000000" : "#ffffff"}
-                />
-                <Text style={[sharedStyles.confirmedText, { color: isLight ? "#000000" : "#ffffff" }]}>Confirmed</Text>
-              </View>
-            )}
-          </View>
-          {/* <Text style={[sharedStyles.opponentLevel, { color: isLight ? "#666666" : "#cccccc" }]} numberOfLines={1}>
-            Level- {opponent.game_level}
-          </Text> */}
-        </View>
-      </View>
-
-      {!opponent?.is_confirmed && (
-        <View style={{ position: "absolute", right: 20, top: "40%" }}>
-          <AppIcon icon={ArrowTurnBackwardIcon} size={28} color="black" />
+      {opponent.profile_picture ? (
+        <Image source={{ uri: opponent.profile_picture }} style={styles.avatar} />
+      ) : (
+        <View style={[styles.avatarFallback, { backgroundColor: isLight ? "#dadada" : "#444444" }]}>
+          <AppIcon icon={UserIcon} size={iconSize.sm} color={isLight ? "#333333" : "#EAEAEA"} />
         </View>
       )}
+
+      <Text
+        style={[styles.tabletText, { color: isLight ? "#1a1a1a" : "#ffffff" }]}
+        numberOfLines={1}
+        ellipsizeMode="tail"
+      >
+        {displayName}
+      </Text>
+
+      {isConfirmed ? (
+        <View style={[styles.confirmedMark, { backgroundColor: isLight ? "#ffffff" : "#1a1a1a" }]}>
+          <AppIcon icon={CheckmarkCircle01Icon} size={14} color="#00bf63" />
+        </View>
+      ) : null}
     </Pressable>
   )
 }
-
 
 const OpponentsList = ({ game, isLight, handleConfirmedOpponent }) => {
   const { showOpponentSheet } = useBottomSheet()
   const hasOpponents = game?.participants?.length >= 1
   const isGameActive = !["cancelled", "completed", "expired"].includes(game.status)
+  const sectionTitle = game?.participants?.some((p) => p.is_confirmed)
+    ? "Your Opponent"
+    : "Requested Opponent"
+
+  const openOpponentSheet = (opponent) => {
+    showOpponentSheet({
+      opponent,
+      isConfirmed: opponent?.is_confirmed,
+      gameStatus: game.status,
+      onConfirm: (confirmedOpponent) => {
+        handleConfirmedOpponent(confirmedOpponent.participant_id, game.id)
+      },
+    })
+  }
 
   if (!hasOpponents && isGameActive) {
     return (
-      <View style={sharedStyles.opponentsRow}>
-        <View style={[sharedStyles.waitingContainer, { borderWidth: 0, backgroundColor: isLight ? "#000000" : "#ffffff" }]}>
+      <View style={styles.section}>
+        <View style={[sharedStyles.waitingContainer, styles.waitingContainerSolid, { backgroundColor: isLight ? "#000000" : "#ffffff", borderWidth: 0 }]}>
           <FadingText
             text="WAITING FOR OPPONENT"
             color={isLight ? "#ffffff" : "#000000"}
@@ -110,27 +89,98 @@ const OpponentsList = ({ game, isLight, handleConfirmedOpponent }) => {
     return null
   }
 
-
-
   return (
-    <>
-      <View style={sharedStyles.opponentsSection}>
-        <Text style={[sharedStyles.opponentsTitle, { color: isLight ? "#000000" : "#ffffff" }]}>
-          {game?.participants?.some((p) => p.is_confirmed) ? "Your Opponent" : "Requested Opponent"}
+    <View style={styles.section}>
+      <View style={styles.sectionTitleRow}>
+        <AppIcon icon={UserGroupIcon} size={iconSize.sm} color={isLight ? "#333333" : "#ffffff"} />
+        <Text style={[styles.sectionTitle, { color: isLight ? "#333333" : "#ffffff" }]}>
+          {sectionTitle}
         </Text>
       </View>
-      {game?.participants?.map((opponent) => (
-        <OpponentCard
-          key={opponent.participant_id || opponent.id}
-          opponent={opponent}
-          game={game}
-          isLight={isLight}
-          showOpponentSheet={showOpponentSheet}
-          handleConfirmedOpponent={handleConfirmedOpponent}
-        />
-      ))}
-    </>
+
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.tabletsRow}
+      >
+        {game.participants.map((opponent) => (
+          <OpponentTablet
+            key={opponent.participant_id || opponent.id}
+            opponent={opponent}
+            game={game}
+            isLight={isLight}
+            onPress={() => openOpponentSheet(opponent)}
+          />
+        ))}
+      </ScrollView>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  section: {
+    marginTop: spacing.md,
+    gap: spacing.sm,
+  },
+  sectionTitleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+    paddingHorizontal: spacing.xxs,
+  },
+  sectionTitle: {
+    fontSize: fontSize.sm,
+    fontWeight: "700",
+    letterSpacing: 0.3,
+  },
+  waitingContainerSolid: {
+    borderStyle: 'solid',
+  },
+  tabletsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    paddingHorizontal: spacing.xxs,
+    paddingBottom: spacing.xxs,
+  },
+  tablet: {
+    flexDirection: "row",
+    alignItems: "center",
+    height: TABLET_HEIGHT,
+    minWidth: 120,
+    maxWidth: 160,
+    borderRadius: TABLET_HEIGHT / 2,
+    borderWidth: 1.5,
+    paddingLeft: 6,
+    paddingRight: spacing.md,
+    paddingVertical: 6,
+    gap: spacing.sm,
+    position: "relative",
+  },
+  avatar: {
+    width: AVATAR_SIZE,
+    height: AVATAR_SIZE,
+    borderRadius: AVATAR_SIZE / 2,
+  },
+  avatarFallback: {
+    width: AVATAR_SIZE,
+    height: AVATAR_SIZE,
+    borderRadius: AVATAR_SIZE / 2,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  tabletText: {
+    flex: 1,
+    fontSize: fontSize.xs,
+    fontWeight: "700",
+    letterSpacing: 0.2,
+  },
+  confirmedMark: {
+    position: "absolute",
+    top: -4,
+    right: -2,
+    borderRadius: 10,
+  },
+})
 
 export default OpponentsList

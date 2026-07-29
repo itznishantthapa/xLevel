@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,17 +6,48 @@ import {
   Pressable,
   Image,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { useThemeStore } from '../../store/themeStore';
 import { fontSize, spacing, radius } from '../../theme/typography';
+import { getVisibleCarouselGames } from '../../utils/selectedGamesStorage';
+import GameCarouselSkeleton from './skeleton/GameCarouselSkeleton';
 
-const GameCarousel = ({ games, handleGameCardPress }) => {
+const GameCarousel = ({ games, handleGameCardPress, isLoading = false }) => {
   const { isLight } = useThemeStore();
+  const [visibleGames, setVisibleGames] = useState([]);
+  const [isCarouselReady, setIsCarouselReady] = useState(false);
 
-  if (!games?.length) {
-    return null;
+  const loadSelectedGames = useCallback(async () => {
+    if (isLoading) {
+      setVisibleGames([]);
+      setIsCarouselReady(false);
+      return;
+    }
+
+    if (!games?.length) {
+      setVisibleGames([]);
+      setIsCarouselReady(true);
+      return;
+    }
+
+    const selected = await getVisibleCarouselGames(games);
+    setVisibleGames(selected);
+    setIsCarouselReady(true);
+  }, [games, isLoading]);
+
+  useEffect(() => {
+    loadSelectedGames();
+  }, [loadSelectedGames]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadSelectedGames();
+    }, [loadSelectedGames]),
+  );
+
+  if (isLoading || !isCarouselReady || !visibleGames.length) {
+    return <GameCarouselSkeleton />;
   }
-
-  console.log(games);
 
   return (
     <View style={styles.container}>
@@ -27,7 +58,7 @@ const GameCarousel = ({ games, handleGameCardPress }) => {
       </View>
 
       <View style={styles.cardsRow}>
-        {games.map((game) => (
+        {visibleGames.map((game) => (
           <Pressable
             key={game.game_id}
             style={[
