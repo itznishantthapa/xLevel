@@ -529,13 +529,16 @@ export const InfoRow = ({ label, value, isDark, gameMode="", needMoreWidth = fal
   );
 };
 
-export const hasMatchCredentials = (game = {}) =>
-  Boolean(
+export const hasMatchCredentials = (game = {}) => {
+  const gameName = game.game?.name?.toLowerCase() || "";
+  return Boolean(
     (game.room_id && game.room_pass) ||
+    (gameName === "fc" && game.room_id) ||
     game.join_url ||
     game.team_code ||
     game.lobby_id,
   );
+};
 
 export const shouldShowResultPortalWaitInfo = (game = {}, { forOpenGames = false } = {}) =>
   !forOpenGames &&

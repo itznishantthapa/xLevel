@@ -80,6 +80,8 @@ const CredentialsSection = ({
       return "team_code";
     } else if (gameName.includes("mlbb")) {
       return "lobby_id"; // MLBB uses lobby ID (stored as team_code in backend)
+    } else if (gameName === "fc") {
+      return "room_id_only";
     } else {
       // Team Death Match, WOW, Clash Squad, eFootball Friend Match etc.
       return "room_credentials";
@@ -90,6 +92,7 @@ const CredentialsSection = ({
   const isChessGame = credentialType === "join_url";
   const isLoneWolf = credentialType === "team_code";
   const isMLBB = credentialType === "lobby_id";
+  const isRoomIdOnly = credentialType === "room_id_only";
   const isRoomCredentials = credentialType === "room_credentials";
 
   // Creator view - show input fields or sent credentials
@@ -104,6 +107,7 @@ const CredentialsSection = ({
     const hasCredentials = isChessGame ? !!game.join_url :
       isLoneWolf ? !!game.team_code :
         isMLBB ? !!game.lobby_id :
+          isRoomIdOnly ? !!game.room_id :
           (!!game.room_id && !!game.room_pass);
 
     // Show resend button when credentials are sent but resend limit allows
@@ -123,14 +127,38 @@ const CredentialsSection = ({
             </Text>
           ) : (
             <Text style={[sharedStyles.credentialsGuide, { color: isLight ? "#495057" : "#adb5bd" }]}>
-              {isRoomCredentials ? "Send Room ID & Password" :
+              {isRoomIdOnly ? "Send Room ID" :
+                isRoomCredentials ? "Send Room ID & Password" :
                 isLoneWolf ? "Send Teamcode" :
                   isMLBB ? "Send Lobby ID" :
                     "Send Join URL"}
             </Text>
           )}
 
-          {isRoomCredentials ? (
+          {isRoomIdOnly ? (
+            <View>
+              <View
+                style={[
+                  sharedStyles.potInputContainer,
+                  {
+                    borderColor: isLight ? "#000000" : "#ffffff",
+                    backgroundColor: isLight ? "#f8f9fa" : "#1a1a1a"
+                  }
+                ]}
+              >
+                <TextInput
+                  style={[sharedStyles.potInput, { color: isLight ? "#212529" : "#ffffff" }]}
+                  placeholder={`${game.room_id ? game.room_id : "Room ID"}`}
+                  placeholderTextColor={isLight ? "#868e96" : "#6c757d"}
+                  value={credentials.roomId}
+                  onChangeText={credentials.setRoomId}
+                  autoComplete="off"
+                  textContentType="none"
+                  importantForAutofill="no"
+                />
+              </View>
+            </View>
+          ) : isRoomCredentials ? (
             <View>
               <View
                 style={[
@@ -330,6 +358,57 @@ const CredentialsSection = ({
   // Hide credentials once the result portal opens; ActionButtons shows Result instead.
   if (!isCreator && game.enableResultPortal) {
     return null
+  }
+
+  // Room ID only (for FC Quick Match)
+  if (isRoomIdOnly && game.room_id && game.status === "in_progress") {
+    return (
+      <View style={sharedStyles.credentialsDisplayContainer}>
+        <Text style={[sharedStyles.credentialsGuide, { color: isLight ? "#495057" : "#adb5bd" }]}>
+          Room ID
+        </Text>
+        <View>
+          <Pressable
+            onPress={() => copyToClipboard(game.room_id, true)}
+            style={[
+              sharedStyles.potInputContainer,
+              {
+                borderColor: isLight ? "#000000" : "#ffffff",
+                backgroundColor: isLight ? "#f8f9fa" : "#1a1a1a"
+              }
+            ]}
+          >
+            <View style={[
+              {
+                paddingHorizontal: spacing.sm,
+                paddingVertical: spacing.xs,
+                borderRadius: 6,
+                backgroundColor: isLight ? "#e9ecef" : "#2a2a2a",
+                marginRight: fontSize.xs
+              }
+            ]}>
+              <Text style={[{ color: isLight ? "#495057" : "#adb5bd", fontSize: fontSize.xs, fontWeight: '700', letterSpacing: 0.5 }]}>ID</Text>
+            </View>
+            <Text
+              style={[{ flex: 1, color: isLight ? "#212529" : "#ffffff", fontWeight: '600', fontSize: 13 }]}
+              numberOfLines={1}
+              ellipsizeMode="middle"
+            >
+              {game.room_id}
+            </Text>
+            <View style={[
+              {
+                padding: 6,
+                borderRadius: spacing.sm,
+                backgroundColor: isLight ? "#e9ecef" : "#2a2a2a"
+              }
+            ]}>
+              <AppIcon icon={Copy01Icon} size={iconSize.sm} color={isLight ? "#495057" : "#adb5bd"} />
+            </View>
+          </Pressable>
+        </View>
+      </View>
+    )
   }
 
   // Room ID and Password (for PUBG TDM, WOW, Clash Squad, eFootball Friend Match, etc.)

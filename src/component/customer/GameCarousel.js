@@ -16,6 +16,8 @@ const GameCarousel = ({ games, handleGameCardPress }) => {
     return null;
   }
 
+  console.log(games);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>

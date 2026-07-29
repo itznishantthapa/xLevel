@@ -24,6 +24,7 @@ export const GAME_CREATION_TITLES = {
   pubg: 'PUBG Match 🎯',
   efootball: 'Efootball Match 🎯',
   mlbb: 'MLBB Match 🎯',
+  fc: 'FC Match 🎯',
 };
 
 export const isGameCreationNotificationTitle = (title = '') => {
@@ -54,6 +55,7 @@ export const GAME_CREATION_TOPICS = {
   pubg: 'pubgcreation',
   efootball: 'efootballcreation',
   mlbb: 'mlbbcreation',
+  fc: 'fccreation',
 };
 
 export const GAME_USER_TOPICS = {
@@ -61,6 +63,7 @@ export const GAME_USER_TOPICS = {
   pubg: 'pubgusers',
   mlbb: 'mlbbusers',
   efootball: 'efootballusers',
+  fc: 'fcusers',
 };
 
 export const getGameCreationTopicKey = (gameName = '') => {
@@ -69,6 +72,7 @@ export const getGameCreationTopicKey = (gameName = '') => {
   if (name.includes('pubg')) return 'pubg';
   if (name.includes('efootball')) return 'efootball';
   if (name.includes('mlbb')) return 'mlbb';
+  if (name === 'fc') return 'fc';
   return null;
 };
 
@@ -102,6 +106,10 @@ const GAME_CREATION_ALERT_COPY = {
   mlbb: {
     alertTitle: 'MLBB Alert',
     matchName: 'mlbb',
+  },
+  fc: {
+    alertTitle: 'FC Alert',
+    matchName: 'fc',
   },
 };
 

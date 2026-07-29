@@ -161,6 +161,39 @@ const GameDetails = ({ game, isLight }) => {
     )
   }
 
+  if (game.game.name.toLowerCase() === "fc") {
+    const isHeadToHead = game.settings.match_type === "Head to Head"
+    const matchTypeLabel = isHeadToHead ? "H2H" : game.settings.match_type
+
+    return (
+      <View style={sharedStyles.gameDetails}>
+        <InfoRow label="Match Type" value={matchTypeLabel} isDark={!isLight} />
+        {isHeadToHead ? (
+          <>
+            <InfoRow label="Team Type" value={game.settings.team_type} isDark={!isLight} />
+            <InfoRow
+              label="Extra Time"
+              value={game.settings.extra_time ? "Yes" : "No"}
+              isDark={!isLight}
+            />
+            <InfoRow
+              label="Penalty"
+              value={game.settings.penalties ? "Yes" : "No"}
+              isDark={!isLight}
+              curveOnBottom={true}
+            />
+          </>
+        ) : (
+          <>
+            <InfoRow label="Team Type" value="My Team" isDark={!isLight} />
+            <InfoRow label="Extra Time" value="N/A" isDark={!isLight} />
+            <InfoRow label="Penalty" value="N/A" isDark={!isLight} curveOnBottom={true} />
+          </>
+        )}
+      </View>
+    )
+  }
+
   if (game.game.name.toLowerCase().includes("mlbb")) {
     const gameMode = game.game?.game_mode?.toLowerCase()
     

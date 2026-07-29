@@ -54,6 +54,16 @@ const EFOOTBALL_COURTESY_RATINGS = [
   { label: 'C', value: 'C' },
 ]
 
+// FC division options
+const FC_DIVISIONS = [
+  { label: 'Amateur', value: 'Amateur' },
+  { label: 'Semi Pro', value: 'Semi Pro' },
+  { label: 'Pro', value: 'Pro' },
+  { label: 'World Class', value: 'World Class' },
+  { label: 'Legendary', value: 'Legendary' },
+  { label: 'FC Champion', value: 'FC Champion' },
+]
+
 // Create a comprehensive list of vulgar words for validation
 const getAllVulgarWords = () => {
   const words = []
@@ -227,6 +237,17 @@ const mlbbValidationSchema = relaxedUsernameValidationSchema.shape({
     .required('Highest rank is required'),
 })
 
+const fcValidationSchema = relaxedUsernameValidationSchema.shape({
+  ovr: yup
+    .string()
+    .matches(/^[0-9]{3}$/, 'OVR must be exactly 3 digits')
+    .required('OVR is required'),
+  division: yup
+    .string()
+    .oneOf(FC_DIVISIONS.map((d) => d.value), 'Invalid division')
+    .required('Division is required'),
+})
+
 const defaultGameValidationSchema = baseValidationSchema.shape({
   game_uid: yup
     .string()
@@ -316,6 +337,13 @@ const EditGameInfo = () => {
           highest_rank: profile?.highest_rank || "",
         }
 
+      case "fc":
+        return {
+          ...baseState,
+          ovr: profile?.ovr?.toString() || "",
+          division: profile?.division || "",
+        }
+
       default:
         return {
           ...baseState,
@@ -383,6 +411,9 @@ const EditGameInfo = () => {
     if (field === 'server_id') {
       transformed = value.replace(/[^0-9]/g,'').slice(0,5)
     }
+    if (field === 'ovr') {
+      transformed = value.replace(/[^0-9]/g, '').slice(0, 3)
+    }
     setGameProfile((prev) => ({ ...prev, [field]: transformed }))
     // Clear error when user starts typing and validate field
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }))
@@ -406,6 +437,8 @@ const EditGameInfo = () => {
         return efootballValidationSchema
       case 'mlbb':
         return mlbbValidationSchema
+      case 'fc':
+        return fcValidationSchema
       default:
         return defaultGameValidationSchema
     }
@@ -486,6 +519,10 @@ const EditGameInfo = () => {
         
         case "mlbb":
           // MLBB ranks are strings, no conversion needed
+          break
+
+        case "fc":
+          apiData.ovr = Number.parseInt(gameProfile.ovr)
           break
         
         default:
@@ -895,6 +932,67 @@ const EditGameInfo = () => {
               />
               {errors.highest_rank ? (
                 <Text style={styles.errorText}>{errors.highest_rank}</Text>
+              ) : null}
+            </View>
+          </>
+        )
+
+      case "fc":
+        return (
+          <>
+            <View style={styles.inputGroup}>
+              <Text style={[styles.fieldLabel, { color: isLight ? "#333333" : "#ffffff" }]}>OVR *</Text>
+              <TextInput
+                style={[
+                  inputStyle,
+                  errors.ovr && {
+                    borderColor: "#FF4444",
+                  }
+                ]}
+                value={gameProfile.ovr}
+                onChangeText={(text) => updateProfile("ovr", text)}
+                placeholder="Ex. 120"
+                placeholderTextColor={isLight ? "#666666" : "#999999"}
+                keyboardType="numeric"
+                maxLength={3}
+              />
+              {errors.ovr ? (
+                <Text style={styles.errorText}>{errors.ovr}</Text>
+              ) : null}
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={[styles.fieldLabel, { color: isLight ? "#333333" : "#ffffff" }]}>Division *</Text>
+              <Dropdown
+                style={[
+                  styles.dropdown,
+                  {
+                    backgroundColor: isLight ? "transparent" : "#1a1a1a",
+                    borderColor: isLight ? "#cccccc" : "#333333",
+                  },
+                  errors.division && {
+                    borderColor: "#FF4444",
+                  }
+                ]}
+                placeholderStyle={[styles.dropdownPlaceholder, { color: isLight ? "#666666" : "#999999" }]}
+                selectedTextStyle={[styles.dropdownSelectedText, { color: isLight ? "#333333" : "#ffffff" }]}
+                iconStyle={styles.dropdownIcon}
+                containerStyle={[styles.dropdownContainer, {
+                  backgroundColor: isLight ? "#ffffff" : "#1a1a1a",
+                  borderColor: isLight ? "#cccccc" : "#333333",
+                }]}
+                itemTextStyle={{ color: isLight ? "#333333" : "#ffffff" }}
+                activeColor={isLight ? "#f0f0f0" : "#2a2a2a"}
+                data={FC_DIVISIONS}
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                placeholder="Select division"
+                value={gameProfile.division}
+                onChange={(item) => updateProfile("division", item.value)}
+              />
+              {errors.division ? (
+                <Text style={styles.errorText}>{errors.division}</Text>
               ) : null}
             </View>
           </>

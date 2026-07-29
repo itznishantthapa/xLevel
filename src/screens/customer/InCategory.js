@@ -66,7 +66,15 @@ const InCategory = ({ route }) => {
         game_name: game.game_name,
         game_mode: selectedGameMode
       });
-    } 
+    }
+
+    else if (game.game_name.toLowerCase() === 'fc') {
+      navigation.navigate('fcCreate', {
+        game_id: game.game_id,
+        game_name: game.game_name,
+        game_mode: selectedGameMode
+      });
+    }
     
     else {
       // Default to regular createGame for other games (like Free Fire)

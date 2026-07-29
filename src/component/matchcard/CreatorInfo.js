@@ -68,6 +68,16 @@ const CreatorInfo = ({ game, isLight, isCreator }) => {
           ].filter((stat) => stat.value),
         }
 
+      case "fc":
+        return {
+          showUID: false,
+          gameUsername: createdBy?.game_username,
+          stats: [
+            { key: "ovr", label: "OVR", value: createdBy?.ovr || 0 },
+            { key: "division", label: "Division", value: createdBy?.division, needMoreWidth: true },
+          ].filter((stat) => stat.value),
+        }
+
       default:
         return {
           showUID: true,

@@ -112,7 +112,19 @@ export const useCredentials = (gameId) => {
             lobby_id: lobbyId.trim(),
           }
         };
-      } 
+      }
+      // FC - Room ID only (no password)
+      else if (gameName === "fc") {
+        await roomIdSchema.validate(roomId.trim());
+        return {
+          isValid: true,
+          payload: {
+            challenge_id: game?.id,
+            post_type: "provided",
+            room_id: roomId.trim(),
+          }
+        };
+      }
       // Other games (Room ID & Password) - including eFootball Friend Match
       else {
         await roomIdSchema.validate(roomId.trim());

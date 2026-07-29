@@ -38,6 +38,7 @@ const NotificationCard = ({ notification }) => {
     // Determine notification type
     const notificationType = notification.notification_type;
     const challengeId = notification?.challenge?.challenge_id ?? notification?.challenge_id ?? notification?.challenge?.id ?? notification?.id;
+    console.log(notification);
 
     // Load once-per-challenge acceptance flag (same behavior as MyMatchCard)
     useEffect(() => {
