@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useThemeStore } from '../../../store/themeStore';
 import { spacing, radius } from '../../../theme/typography';
-import { getBannerDimensions } from '../HomeBanner';
+import { getBannerDimensions } from '../bannerDimensions';
 
 const HomeBannerSkeleton = () => {
   const { isLight } = useThemeStore();
