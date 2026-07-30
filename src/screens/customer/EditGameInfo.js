@@ -240,7 +240,7 @@ const mlbbValidationSchema = relaxedUsernameValidationSchema.shape({
 const fcValidationSchema = relaxedUsernameValidationSchema.shape({
   ovr: yup
     .string()
-    .matches(/^[0-9]{3}$/, 'OVR must be exactly 3 digits')
+    .matches(/^[0-9]{1,3}$/, 'OVR must be 1 to 3 digits')
     .required('OVR is required'),
   division: yup
     .string()
