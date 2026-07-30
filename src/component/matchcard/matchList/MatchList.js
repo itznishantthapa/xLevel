@@ -3,10 +3,9 @@ import {
   View,
   Text,
   StyleSheet,
-  Dimensions,
   RefreshControl,
   ActivityIndicator,
-  Platform,
+  useWindowDimensions,
 } from 'react-native';
 import MatchCardSkeleton from '../skeleton/Skeleton';
 import { FlashList } from "@shopify/flash-list";
@@ -22,7 +21,6 @@ import OpponentMatchCard from '../cards/OpponentMatchCard';
 
 
 // Constants
-const { width, height } = Dimensions.get('window');
 const ITEM_HEIGHT = 280;
 
 /**
@@ -44,6 +42,7 @@ const MatchList = ({
   handleLeaveChallenge,
   handleReport
 }) => {
+  const { width, height } = useWindowDimensions();
   const { isLight } = useThemeStore();
   const { user } = useAuthStore();
   const endReachedTimeoutRef = React.useRef(null);
@@ -97,43 +96,52 @@ const MatchList = ({
 
 
 
-  // Memoize the render item function for real match cards
-  const renderMatchCard = ({ item }) => {
+  const renderMatchCard = useCallback(({ item }) => {
     const isCreator = user?.id === item?.created_by?.id;
     const win_pot = Math.floor((item?.entry_fee || 0) * 2 * 0.9);
 
-    return isCreator? (
+    const card = isCreator ? (
+      <CreatorMatchCard
+        game={item}
+        win_pot={win_pot}
+        isCreator={isCreator}
+        handleSendGameCredentials={handleSendGameCredentials}
+        handleResultUpload={handleResultUpload}
+        handleDeleteChallenge={handleDeleteChallenge}
+        handleConfirmedOpponent={handleConfirmedOpponent}
+        handleReport={handleReport}
+      />
+    ) : (
+      <OpponentMatchCard
+        game={item}
+        win_pot={win_pot}
+        isCreator={isCreator}
+        handleSendGameCredentials={handleSendGameCredentials}
+        handleResultUpload={handleResultUpload}
+        handleAcceptChallengeOnCopy={handleAcceptChallengeOnCopy}
+        handleDeleteChallenge={handleDeleteChallenge}
+        handleLeaveChallenge={handleLeaveChallenge}
+        handleReport={handleReport}
+      />
+    );
 
-    <CreatorMatchCard
-      game={item}
-      win_pot={win_pot}
-      isCreator={isCreator}
-      handleSendGameCredentials={handleSendGameCredentials}
-      handleResultUpload={handleResultUpload}
-      handleDeleteChallenge={handleDeleteChallenge}
-      handleConfirmedOpponent={handleConfirmedOpponent}
-      handleReport={handleReport}
-    />
-    ):(
-        <OpponentMatchCard
-          game={item}
-          win_pot={win_pot}
-          isCreator={isCreator}
-          handleSendGameCredentials={handleSendGameCredentials}
-          handleResultUpload={handleResultUpload}
-          handleAcceptChallengeOnCopy={handleAcceptChallengeOnCopy}
-          handleDeleteChallenge={handleDeleteChallenge}
-          handleLeaveChallenge={handleLeaveChallenge}
-          handleReport={handleReport}
-        />
-    )
-    
-
-}
+    return <View style={styles.listItem}>{card}</View>;
+  }, [
+    user?.id,
+    handleSendGameCredentials,
+    handleResultUpload,
+    handleDeleteChallenge,
+    handleConfirmedOpponent,
+    handleReport,
+    handleAcceptChallengeOnCopy,
+    handleLeaveChallenge,
+  ]);
   
   // Memoize the render item function for skeleton cards
   const renderSkeletonItem = useCallback(({ item }) => (
-    <MatchCardSkeleton isLight={isLight} />
+    <View style={styles.listItem}>
+      <MatchCardSkeleton isLight={isLight} />
+    </View>
   ), [isLight]);
 
   // Memoize FlashList props
@@ -141,7 +149,7 @@ const MatchList = ({
     estimatedItemSize: ITEM_HEIGHT,
     estimatedListSize: { height, width },
     showsVerticalScrollIndicator: false,
-  }), []);
+  }), [width, height]);
   
   // Determine which data to show based on loading state
   const dataToShow = isLoading ? skeletonData : (games || []);
@@ -201,6 +209,9 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     flex: 1,
+  },
+  listItem: {
+    width: '100%',
   },
   scrollContent: {
     paddingBottom: 40,

@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useCallback } from 'react'
-import { StatusBar, StyleSheet, Text, View, Dimensions, ActivityIndicator, RefreshControl } from 'react-native'
+import { StatusBar, StyleSheet, Text, View, ActivityIndicator, RefreshControl, useWindowDimensions } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { FlashList } from '@shopify/flash-list'
 import Toast from "react-native-simple-toast"
@@ -13,7 +13,6 @@ import Loader from '../../component/Loader'
 import AppHeader from './header/AppHeader'
 
 
-const { width, height } = Dimensions.get('window')
 const ITEM_HEIGHT = 200 // Approximate height of each notification card
 
 const NotificationCardSkeleton = ({ index, isLight }) => (
@@ -73,6 +72,7 @@ const getItemType = (item) => {
 }
 
 const Notify = () => {
+    const { width, height } = useWindowDimensions()
     const { isLight } = useThemeStore()
     const [isRefreshing, setIsRefreshing] = useState(false)
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching, refetch, } = useInfiniteNotifications(10)
@@ -112,10 +112,15 @@ const Notify = () => {
         }
     }, [isConnected, refetch])
 
-    // Memoize the render item function
-    const renderNotificationCard = useMemo(() => (
-        ({ item }) => <NotificationCard notification={item} />
-    ), [])
+    const renderNotificationCard = useCallback(({ item, index }) => (
+        item.isSkeleton ? (
+            <NotificationCardSkeleton index={index} isLight={isLight} />
+        ) : (
+            <View style={styles.listItem}>
+                <NotificationCard notification={item} />
+            </View>
+        )
+    ), [isLight])
 
     // Memoize the layout override function
     const overrideItemLayout = useMemo(() => (
@@ -136,7 +141,7 @@ const Notify = () => {
         contentContainerStyle: styles.listContainer,
         onEndReached: handleLoadMore,
         onEndReachedThreshold: 0,
-    }), [overrideItemLayout, handleLoadMore])
+    }), [overrideItemLayout, handleLoadMore, width, height])
 
     return (
         <View style={[styles.container, { backgroundColor: isLight ? '#ffffff' : '#000000', paddingTop: insets.top }]}>
@@ -150,13 +155,7 @@ const Notify = () => {
                 <FlashList
                     {...flashListProps}
                     data={isFetching && notifications.length === 0 ? Array(5).fill(null).map((_, i) => ({ id: `skeleton-${i}`, isSkeleton: true })) : notifications}
-                    renderItem={({ item, index }) => 
-                        item.isSkeleton ? (
-                            <NotificationCardSkeleton index={index} isLight={isLight} />
-                        ) : (
-                            <NotificationCard notification={item} />
-                        )
-                    }
+                    renderItem={renderNotificationCard}
                     keyExtractor={(item, index) => item.isSkeleton ? item.id : `notification-${item.id}-${index}`}
                     ListEmptyComponent={isFetching ? null : <EmptyListComponent isLight={isLight} />}
                     refreshControl={
@@ -190,8 +189,9 @@ const styles = StyleSheet.create({
     },
     listWrapper: {
         flex: 1,
-        width: width,
-        height: height,
+    },
+    listItem: {
+        width: '100%',
     },
     listContainer: {
         paddingBottom: 40,
@@ -267,13 +267,12 @@ const styles = StyleSheet.create({
         borderRadius: 4,
     },
     skeletonRoomContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 12,
+        flexDirection: 'column',
+        gap: 8,
         marginBottom: 12,
     },
     skeletonRoomItem: {
-        flex: 1,
+        width: '100%',
         height: 32,
         borderRadius: 8,
     },

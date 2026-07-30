@@ -1,8 +1,4 @@
-import { View, StyleSheet, Dimensions } from "react-native"
-
-const { width } = Dimensions.get("window")
-const CARD_WIDTH = width - 20
-const IMAGE_HEIGHT = (CARD_WIDTH * 736) / 1600
+import { View, StyleSheet } from "react-native"
 
 const ProductCardSkeleton = ({ isLight = true }) => {
   const skeletonColor = isLight ? "#d9d9d9" : "#333333"
@@ -52,7 +48,7 @@ export default ProductCardSkeleton
 
 const styles = StyleSheet.create({
   card: {
-    width: CARD_WIDTH,
+    width: '100%',
     marginBottom: 16,
     borderTopRightRadius: 25,
     borderTopLeftRadius: 25,
@@ -62,8 +58,8 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   imagePlaceholder: {
-    width: CARD_WIDTH,
-    height: IMAGE_HEIGHT,
+    width: '100%',
+    aspectRatio: 1600 / 736,
   },
   info: {
     padding: 12,

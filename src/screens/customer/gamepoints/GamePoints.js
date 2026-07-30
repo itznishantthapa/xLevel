@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, FlatList, ActivityIndicator, StatusBar, Pressable, RefreshControl } from 'react-native'
-import React, { useCallback, useEffect, useEffectEvent, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { useThemeStore } from '../../../store/themeStore'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { AppIcon, PointsIcon } from '../../../components/common/AppIcon'
@@ -309,6 +309,7 @@ const GamePoints = () => {
           }
         />
       )}
+
     </View>
   )
 }

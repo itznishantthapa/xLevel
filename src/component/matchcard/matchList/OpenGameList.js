@@ -3,12 +3,12 @@ import {
   View,
   Text,
   StyleSheet,
-  Dimensions,
   RefreshControl,
   ActivityIndicator,
   ScrollView,
   TouchableOpacity,
   Pressable,
+  useWindowDimensions,
 } from 'react-native';
 import Toast from 'react-native-simple-toast';
 import { LoaderKitView } from 'react-native-loader-kit';
@@ -37,7 +37,6 @@ import {
 const getCompactGameName = (name = '') => name.replace(/\s+/g, '');
 
 // Constants
-const { width, height } = Dimensions.get('window');
 const ITEM_HEIGHT = 280;
 const NOTIFICATION_BUTTON_SIZE = 34;
 const NOTIFICATION_BUTTON_BORDER_WIDTH = 1.5;
@@ -79,6 +78,7 @@ const OpenGameList = ({
   onFilterChange = null,
   showFilters = false,
 }) => {
+  const { width, height } = useWindowDimensions();
   const { isLight } = useThemeStore();
   const userRole = useAuthStore((state) => state.user?.role);
   const { showGameCreationNotificationSheet } = useBottomSheet();
@@ -374,19 +374,19 @@ const OpenGameList = ({
   ]);
 
 
-  // Memoize the render item function for real match cards
-  const renderMatchCard = ({ item }) => {
+  const renderMatchCard = useCallback(({ item }) => {
     const win_pot = Math.floor((item?.entry_fee || 0) * 2 * 0.9);
     return (
-      <OpenGameCard
-      win_pot={win_pot}
-      game={item}
-      handleConfirmChallenge={handleConfirmChallenge}
-      handleReportUser={handleReportUser}
-    />
-    )
-
-  }
+      <View style={styles.listItem}>
+        <OpenGameCard
+          win_pot={win_pot}
+          game={item}
+          handleConfirmChallenge={handleConfirmChallenge}
+          handleReportUser={handleReportUser}
+        />
+      </View>
+    );
+  }, [handleConfirmChallenge, handleReportUser]);
 
     
 
@@ -394,7 +394,9 @@ const OpenGameList = ({
   
   // Memoize the render item function for skeleton cards
   const renderSkeletonItem = useCallback(({ item }) => (
-    <MatchCardSkeleton isLight={isLight} />
+    <View style={styles.listItem}>
+      <MatchCardSkeleton isLight={isLight} />
+    </View>
   ), [isLight]);
 
   // Memoize FlashList props
@@ -403,7 +405,7 @@ const OpenGameList = ({
     estimatedListSize: { height, width },
     showsVerticalScrollIndicator: false,
     contentContainerStyle: styles.scrollContent
-  }), []);
+  }), [width, height]);
   
   // Determine which data to show based on loading state
   const dataToShow = isLoading ? skeletonData : (games || []);
@@ -455,7 +457,9 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     flex: 1,
-    height: '100%',
+  },
+  listItem: {
+    width: '100%',
   },
   scrollContent: {
     paddingBottom: 40,

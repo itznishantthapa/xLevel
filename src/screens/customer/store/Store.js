@@ -3,12 +3,12 @@ import {
   StyleSheet,
   Text,
   View,
-  Dimensions,
   StatusBar,
   Pressable,
   Image,
   RefreshControl,
   Linking,
+  useWindowDimensions,
 } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -36,10 +36,6 @@ import { useDeleteGameAccount } from '../../../queries/useMutation/useDeleteGame
 import { usePurchaseGameAccount } from '../../../queries/useMutation/usePurchaseGameAccount'
 import { useThemeStore } from '../../../store/themeStore'
 import { useAuthStore } from '../../../store/authStore'
-
-const { width } = Dimensions.get('window')
-const CARD_WIDTH = width - spacing.xl // Full width card with minimal padding
-const IMAGE_HEIGHT = (CARD_WIDTH * 736) / 1600 // Maintain 1600x736 aspect ratio
 
 const getTimeAgo = (dateString) => {
   const now = new Date()
@@ -81,6 +77,7 @@ const ProductCard = ({ product, index, isLight, onOrderPress, onDeletePress, use
   const carouselRef = useRef(null)
   const progress = useSharedValue(0)
   const animatedProgress = useDerivedValue(() => progress.value)
+  const [carouselSize, setCarouselSize] = useState({ width: 0, height: 0 })
 
   const isSold = product.status === 'sold'
   const isOwner = product.seller?.email === userEmail
@@ -96,11 +93,22 @@ const ProductCard = ({ product, index, isLight, onOrderPress, onDeletePress, use
       ]}  
     >
       {/* Product Images Carousel */}
-      <View style={styles.imageContainer}>
+      <View
+        style={styles.imageContainer}
+        onLayout={(event) => {
+          const { width, height } = event.nativeEvent.layout
+          setCarouselSize((current) =>
+            current.width === width && current.height === height
+              ? current
+              : { width, height }
+          )
+        }}
+      >
+        {carouselSize.width > 0 && (
         <Carousel
           ref={carouselRef}
-          width={CARD_WIDTH}
-          height={IMAGE_HEIGHT}
+          width={carouselSize.width}
+          height={carouselSize.height}
           loop={true}
           pagingEnabled
           data={product.images}
@@ -121,6 +129,7 @@ const ProductCard = ({ product, index, isLight, onOrderPress, onDeletePress, use
             </View>
           )}
         />
+        )}
 
         {/* Pagination Dots */}
         <Pagination.Custom
@@ -386,6 +395,7 @@ const EmptyListComponent = ({ isLight }) => (
 const SKELETON_DATA = Array(3).fill(null).map((_, i) => ({ id: `skeleton-${i}` }))
 
 const Store = () => {
+  const { width: windowWidth } = useWindowDimensions()
   const { isLight } = useThemeStore()
   const { user } = useAuthStore()
   const { showPurchaseSheet, showConfirmSheet } = useBottomSheet()
@@ -499,20 +509,24 @@ const Store = () => {
 
   const renderProduct = useCallback(
     ({ item, index }) => (
-      <ProductCard
-        product={item}
-        index={index}
-        isLight={isLight}
-        onOrderPress={handleOrderPress}
-        onDeletePress={handleDeletePress}
-        userEmail={user?.email}
-      />
+      <View style={styles.listItem}>
+        <ProductCard
+          product={item}
+          index={index}
+          isLight={isLight}
+          onOrderPress={handleOrderPress}
+          onDeletePress={handleDeletePress}
+          userEmail={user?.email}
+        />
+      </View>
     ),
     [isLight, handleOrderPress, handleDeletePress, user?.email]
   )
 
   const renderSkeleton = useCallback(() => (
-    <ProductCardSkeleton isLight={isLight} />
+    <View style={styles.listItem}>
+      <ProductCardSkeleton isLight={isLight} />
+    </View>
   ), [isLight])
 
   const showSkeleton = isLoading || isManualRefreshing
@@ -552,7 +566,7 @@ const Store = () => {
           renderItem={showSkeleton ? renderSkeleton : renderProduct}
           keyExtractor={(item, index) => showSkeleton ? `skeleton-${index}` : item.id.toString()}
           numColumns={1}
-          estimatedItemSize={CARD_WIDTH + 200}
+          estimatedItemSize={windowWidth + 200}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
           ListEmptyComponent={!showSkeleton ? <EmptyListComponent isLight={isLight} /> : null}
@@ -609,12 +623,15 @@ const styles = StyleSheet.create({
   listWrapper: {
     flex: 1,
   },
+  listItem: {
+    width: '100%',
+  },
   listContainer: {
     paddingHorizontal: spacing.sm + 2,
     paddingBottom: spacing.xl,
   },
   productCard: {
-    width: CARD_WIDTH,
+    width: '100%',
     marginBottom: spacing.lg,
     borderTopRightRadius: radius.pill - 7,
     borderTopLeftRadius: radius.pill - 7,
@@ -668,17 +685,17 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3,
   },
   imageContainer: {
-    width: CARD_WIDTH,
-    height: IMAGE_HEIGHT,
+    width: '100%',
+    aspectRatio: 1600 / 736,
     position: 'relative',
   },
   imageSlide: {
-    width: CARD_WIDTH,
-    height: IMAGE_HEIGHT,
+    width: '100%',
+    height: '100%',
   },
   productImage: {
-    width: CARD_WIDTH,
-    height: IMAGE_HEIGHT,
+    width: '100%',
+    height: '100%',
     resizeMode: 'cover',
     backgroundColor: '#f8f8f8',
   },

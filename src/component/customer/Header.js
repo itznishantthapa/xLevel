@@ -12,13 +12,9 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
-  interpolate,
-  Extrapolation,
   Easing,
   runOnJS,
 } from "react-native-reanimated"
-import { usePointCreditAnimationStore } from "../../store/pointCreditAnimationStore"
-import { POINT_LOAD_PULSE_DURATION_MS } from "../../utils/pointLoadSound"
 
 const Header = ({
   player_name,
@@ -36,40 +32,6 @@ const Header = ({
 
   const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0)
   const flipAnimation = useSharedValue(0)
-  const pulseProgress = useSharedValue(0)
-  const pulseKey = usePointCreditAnimationStore((state) => state.pulseKey)
-
-  useEffect(() => {
-    if (pulseKey === 0) return
-
-    pulseProgress.value = 0
-    pulseProgress.value = withTiming(1, {
-      duration: POINT_LOAD_PULSE_DURATION_MS,
-      easing: Easing.bezier(0.22, 1.18, 0.36, 1),
-    })
-  }, [pulseKey, pulseProgress])
-
-  const walletAnimatedStyle = useAnimatedStyle(() => {
-    const scale = interpolate(
-      pulseProgress.value,
-      [0, 0.22, 0.48, 0.74, 1],
-      [1, 1.26, 0.94, 1.06, 1],
-      Extrapolation.CLAMP,
-    )
-
-    return { transform: [{ scale }] }
-  })
-
-  const iconAnimatedStyle = useAnimatedStyle(() => {
-    const scale = interpolate(
-      pulseProgress.value,
-      [0, 0.26, 0.52, 0.78, 1],
-      [1, 1.48, 0.92, 1.1, 1],
-      Extrapolation.CLAMP,
-    )
-
-    return { transform: [{ scale }] }
-  })
 
   useEffect(() => {
     setCurrentPhraseIndex(0)
@@ -174,24 +136,20 @@ const Header = ({
 
       <View style={styles.rightSection}>
         <Pressable onPress={handleHeaderGamePoint}>
-          <Animated.View style={walletAnimatedStyle}>
-            <LinearGradient
-              colors={['#ffffff', '#f8fbff', '#f0f8ff', '#ffffff']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.balanceContainer}
-            >
-              <View style={styles.balanceContent}>
-                <Animated.View style={iconAnimatedStyle}>
-                  <PointsIcon size={iconSize.sm} color="#00bf63" />
-                </Animated.View>
-                <Text style={styles.balanceText}>
-                  {wallet_balance?.toFixed(2)}
-                </Text>
-              </View>
-              <AppIcon icon={Add01Icon} size={iconSize.sm} color="#00bf63" />
-            </LinearGradient>
-          </Animated.View>
+          <LinearGradient
+            colors={['#ffffff', '#f8fbff', '#f0f8ff', '#ffffff']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.balanceContainer}
+          >
+            <View style={styles.balanceContent}>
+              <PointsIcon size={iconSize.sm} color="#00bf63" />
+              <Text style={styles.balanceText}>
+                {wallet_balance?.toFixed(2)}
+              </Text>
+            </View>
+            <AppIcon icon={Add01Icon} size={iconSize.sm} color="#00bf63" />
+          </LinearGradient>
         </Pressable>
       </View>
     </View>

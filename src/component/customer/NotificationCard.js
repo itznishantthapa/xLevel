@@ -147,6 +147,7 @@ const NotificationCard = ({ notification }) => {
                     <Text
                         style={[styles.roomInfoText, { color: isLight ? '#333333' : '#dadada' }]}
                         numberOfLines={1}
+                        ellipsizeMode="middle"
                     >
                         {value}
                     </Text>
@@ -272,12 +273,12 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
     gameInfoContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 12,
+        flexDirection: 'column',
+        gap: 8,
     },
     roomDetail: {
-        flex: 1,
+        width: '100%',
+        minWidth: 0,
     },
     roomInfoItem: {
         flexDirection: 'row',
@@ -286,9 +287,11 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         borderRadius: 8,
         gap: 8,
+        minWidth: 0,
     },
     roomInfoText: {
         flex: 1,
+        minWidth: 0,
         fontSize: 13,
         fontWeight: '500',
         fontFamily: 'monospace',

@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, ActivityIndicator, StatusBar, Dimensions, RefreshControl, Platform } from 'react-native'
-import React, { useState, useCallback, useMemo, useEffect } from 'react'
+import { StyleSheet, Text, View, ActivityIndicator, StatusBar, RefreshControl, useWindowDimensions } from 'react-native'
+import React, { useState, useCallback, useMemo } from 'react'
 import { useThemeStore } from '../../store/themeStore'
 import TournamentCard from '../../component/customer/TournamentCard'
 import NoGamesView from '../../component/customer/NoGameView'
@@ -12,7 +12,6 @@ import { useNetworkStatus } from '../../hooks/useNetworkStatus'
 import Toast from 'react-native-simple-toast'
 import { queryClient } from '../../lib/queryClient'
 
-const { width, height } = Dimensions.get('window')
 const ITEM_HEIGHT = 350 // Approximate height of tournament card
 
 // Pre-define static components
@@ -36,6 +35,7 @@ const HeaderComponent = () => (
 )
 
 const UserTournament = () => {
+  const { width, height } = useWindowDimensions()
   const insets = useSafeAreaInsets()
   const { isLight } = useThemeStore()
   const [isRefreshing, setIsRefreshing] = useState(false)
@@ -90,7 +90,9 @@ const UserTournament = () => {
 
   // Memoize the render item function
   const renderTournamentCard = useCallback(({ item }) => (
-    <TournamentCard game={item} />
+    <View style={styles.listItem}>
+      <TournamentCard game={item} />
+    </View>
   ), [])
 
   // Memoize FlashList props
@@ -103,7 +105,7 @@ const UserTournament = () => {
     contentContainerStyle: styles.listContainer,
     onEndReached: handleLoadMore,
     onEndReachedThreshold: 0.5,
-  }), [handleLoadMore])
+  }), [handleLoadMore, width, height])
 
   return (
     <View style={[styles.container, { backgroundColor: isLight ? '#ffffff' : '#000000', paddingTop: insets.top }]}>
@@ -160,8 +162,9 @@ const styles = StyleSheet.create({
   },
   listWrapper: {
     flex: 1,
-    width: width,
-    height: height,
+  },
+  listItem: {
+    width: '100%',
   },
   listContainer: {
     // paddingBottom: 50,

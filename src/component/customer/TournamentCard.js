@@ -65,7 +65,11 @@ const TournamentCard = ({ game }) => {
           >
             <View style={[styles.roomInfoItem, { backgroundColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)' }]}>
               <Text style={{ color: isLight ? '#666666' : '#dadada' }}>ID</Text>
-              <Text style={[styles.roomInfoText, { color: isLight ? '#333333' : '#dadada' }]} numberOfLines={1}>
+              <Text
+                style={[styles.roomInfoText, { color: isLight ? '#333333' : '#dadada' }]}
+                numberOfLines={1}
+                ellipsizeMode="middle"
+              >
                 {roomId}
               </Text>
               <AppIcon icon={Copy01Icon} size={iconSize.sm} color={isLight ? '#666666' : '#dadada'} />
@@ -80,7 +84,11 @@ const TournamentCard = ({ game }) => {
           >
             <View style={[styles.roomInfoItem, { backgroundColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)' }]}>
               <Text style={{ color: isLight ? '#666666' : '#dadada' }}>Pass</Text>
-              <Text style={[styles.roomInfoText, { color: isLight ? '#333333' : '#dadada' }]} numberOfLines={1}>
+              <Text
+                style={[styles.roomInfoText, { color: isLight ? '#333333' : '#dadada' }]}
+                numberOfLines={1}
+                ellipsizeMode="middle"
+              >
                 {roomPass}
               </Text>
               <AppIcon icon={Copy01Icon} size={iconSize.sm} color={isLight ? '#666666' : '#dadada'} />
@@ -560,14 +568,14 @@ const styles = StyleSheet.create({
   },
   // New styles for room credentials
   gameInfoContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
+    flexDirection: 'column',
+    gap: 8,
     paddingHorizontal: 16,
     paddingBottom: 16,
   },
   roomDetail: {
-    flex: 1,
+    width: '100%',
+    minWidth: 0,
   },
   roomInfoItem: {
     flexDirection: 'row',
@@ -576,9 +584,11 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 8,
     gap: 8,
+    minWidth: 0,
   },
   roomInfoText: {
     flex: 1,
+    minWidth: 0,
     fontSize: 13,
     fontWeight: '500',
     fontFamily: 'monospace',
