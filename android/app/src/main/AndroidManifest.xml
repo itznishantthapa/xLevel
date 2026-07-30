@@ -32,23 +32,16 @@
     <meta-data android:name="expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS" android:value="0"/>
 
 
-    <!-- Default notification icon & color for FCM (small status bar icon) -->
+    <!-- Default notification icon for FCM (small status bar icon) -->
     <meta-data
       android:name="com.google.firebase.messaging.default_notification_icon"
-      android:resource="@drawable/ic_notification" />
-    <meta-data
-      android:name="com.google.firebase.messaging.default_notification_color"
-      android:resource="@color/notification_color"
-      tools:replace="android:resource" />
+      android:resource="@drawable/ic_level_status" />
 
       
-    <!-- Ensure Expo Notifications (local foreground notifications) also use the same small icon/color -->
+    <!-- Ensure Expo Notifications (local foreground notifications) also use the same small icon -->
     <meta-data
       android:name="expo.modules.notifications.default_notification_icon"
-      android:resource="@drawable/ic_notification" />
-    <meta-data
-      android:name="expo.modules.notifications.default_notification_color"
-      android:resource="@color/notification_color" />
+      android:resource="@drawable/ic_level_status" />
 
     <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
       <intent-filter>

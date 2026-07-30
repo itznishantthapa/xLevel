@@ -11,11 +11,7 @@
         "android.permission.READ_MEDIA_AUDIO",
         "android.permission.READ_MEDIA_VISUAL_USER_SELECTED",
         "android.permission.READ_EXTERNAL_STORAGE"
-      ],
-      "notification": {
-        "icon": "./src/assets/ic_notification.png",
-        "color": "#ffffff"
-      }
+      ]
     },
     "ios": {
       "bundleIdentifier": "com.blackonedevs.levelesportmatchmaking.v1"

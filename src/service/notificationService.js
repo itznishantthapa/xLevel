@@ -237,7 +237,7 @@ const displayNotification = async (data) => {
 
   const androidConfig = {
     channelId,
-    smallIcon: 'ic_notification',
+    smallIcon: 'ic_level_status',
     pressAction: { id: 'default' },
     sound: 'default',
     style: data.bigImage
