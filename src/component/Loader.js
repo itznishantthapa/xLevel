@@ -14,7 +14,7 @@ import { useThemeStore } from '../store/themeStore';
 const Loader = ({
   visible = false,
   message = 'Loading…',
-  size = 16, // Reduced default size for a sleeker horizontal box
+  size = 16,
   animationName = 'LineSpinFadeLoader',
   backdropOpacity,
   fullScreen = false,
@@ -30,22 +30,21 @@ const Loader = ({
 
   const colors = useMemo(() => {
     const defaultOverlayOpacity = isLight ? 0.3 : 0.5;
-    const finalOpacity = typeof backdropOpacity === 'number' ? Math.max(0, Math.min(1, backdropOpacity)) : defaultOverlayOpacity;
-
-    if (fullScreen) {
-      return {
-        surface: isLight ? '#FFFFFF' : '#000000',
-        text: isLight ? 'rgba(17, 17, 17, 0.7)' : 'rgba(255, 255, 255, 0.8)',
-        spinner: isLight ? '#111111' : '#FFFFFF',
-        overlay: isLight ? '#FFFFFF' : '#000000',
-      };
-    }
+    const finalOpacity =
+      typeof backdropOpacity === 'number'
+        ? Math.max(0, Math.min(1, backdropOpacity))
+        : defaultOverlayOpacity;
 
     return {
       surface: isLight ? '#FFFFFF' : '#1E1E1E',
       text: isLight ? '#333333' : '#E0E0E0',
       spinner: isLight ? '#111111' : '#FFFFFF',
-      overlay: `rgba(0,0,0,${finalOpacity})`,
+      overlay: fullScreen
+        ? isLight
+          ? '#FFFFFF'
+          : '#000000'
+        : `rgba(0,0,0,${finalOpacity})`,
+      boxBorder: isLight ? '#E8E8E8' : 'transparent',
     };
   }, [isLight, backdropOpacity, fullScreen]);
 
@@ -61,8 +60,8 @@ const Loader = ({
         }),
         Animated.spring(scaleAnimated, {
           toValue: 1,
-          speed: fullScreen ? 16 : 14,
-          bounciness: fullScreen ? 0 : 2, // Kept very low for a sharp, rigid box entrance
+          speed: 14,
+          bounciness: 2,
           useNativeDriver: true,
         }),
       ]).start();
@@ -82,7 +81,7 @@ const Loader = ({
         }),
       ]).start(() => setShouldRender(false));
     }
-  }, [visible, backdropOpacityAnimated, scaleAnimated, fullScreen]);
+  }, [visible, backdropOpacityAnimated, scaleAnimated]);
 
   return (
     <View style={styles.overlayRoot} pointerEvents="box-none">
@@ -98,56 +97,32 @@ const Loader = ({
           accessibilityLiveRegion="polite"
           testID={testID}
         >
-          {fullScreen ? (
-            <Animated.View
-              style={[
-                styles.fullScreenContent,
-                { transform: [{ scale: scaleAnimated }] },
-              ]}
-              accessible
-              accessibilityRole="progressbar"
-              accessibilityLabel={message || 'Loading'}
-            >
-              <View style={styles.fullScreenLoader}>
-                <LoaderKitView
-                  style={{ width: spinnerSize, height: spinnerSize }}
-                  name={animationName}
-                  color={colors.spinner}
-                  animationSpeedMultiplier={0.85}
-                />
-              </View>
-              {message ? (
-                <Text style={[styles.fullScreenLoaderText, { color: colors.text }]} numberOfLines={2}>
-                  {message}
-                </Text>
-              ) : null}
-            </Animated.View>
-          ) : (
-            <Animated.View
-              style={[
-                styles.loaderContainer,
-                {
-                  backgroundColor: colors.surface,
-                  transform: [{ scale: scaleAnimated }],
-                },
-              ]}
-              accessible
-              accessibilityRole="progressbar"
-              accessibilityLabel={message || 'Loading'}
-            >
-              <LoaderKitView
-                style={{ width: size, height: size }}
-                name={animationName}
-                color={colors.spinner}
-                animationSpeedMultiplier={1.0}
-              />
-              {message ? (
-                <Text style={[styles.loaderText, { color: colors.text }]} numberOfLines={2}>
-                  {message}
-                </Text>
-              ) : null}
-            </Animated.View>
-          )}
+          <Animated.View
+            style={[
+              styles.loaderContainer,
+              fullScreen && styles.fullScreenLoaderContainer,
+              {
+                backgroundColor: colors.surface,
+                borderColor: fullScreen ? colors.boxBorder : 'transparent',
+                transform: [{ scale: scaleAnimated }],
+              },
+            ]}
+            accessible
+            accessibilityRole="progressbar"
+            accessibilityLabel={message || 'Loading'}
+          >
+            <LoaderKitView
+              style={{ width: spinnerSize, height: spinnerSize }}
+              name={animationName}
+              color={colors.spinner}
+              animationSpeedMultiplier={1.0}
+            />
+            {message ? (
+              <Text style={[styles.loaderText, { color: colors.text }]} numberOfLines={2}>
+                {message}
+              </Text>
+            ) : null}
+          </Animated.View>
         </Animated.View>
       ) : null}
     </View>
@@ -169,18 +144,6 @@ const styles = StyleSheet.create({
   fullScreenBackdrop: {
     paddingTop: 0,
   },
-  fullScreenContent: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 40,
-    gap: 16,
-  },
-  fullScreenLoader: {
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   loaderContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -190,20 +153,14 @@ const styles = StyleSheet.create({
     paddingVertical: 18,
     borderRadius: 0,
   },
+  fullScreenLoaderContainer: {
+    borderWidth: 1,
+  },
   loaderText: {
-    marginLeft: 18, // Creates the gap between the loader (left) and text (right)
-    marginTop: 0, // Removed top margin
+    marginLeft: 18,
     fontSize: 15,
     fontWeight: '500',
-    textAlign: 'left', // Aligns text cleanly against the left margin
-    flex: 1, // Ensures text wraps cleanly instead of overflowing if it gets too long
-  },
-  fullScreenLoaderText: {
-    fontSize: 14,
-    fontWeight: '500',
-    textAlign: 'center',
-    letterSpacing: 0.5,
-    lineHeight: 20,
-    maxWidth: 220,
+    textAlign: 'left',
+    flex: 1,
   },
 });
