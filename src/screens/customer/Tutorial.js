@@ -13,8 +13,10 @@ import { useThemeStore } from '../../store/themeStore'
 import AppHeader from './header/AppHeader'
 import { fontSize, spacing, radius } from '../../theme/typography'
 
-const TUTORIAL_VIDEO_URL =
-  'https://drive.google.com/uc?export=download&confirm=t&id=1HQA-WuuCPX5hZhTezvbBMzzeySXS8pm0'
+const TUTORIAL_VIDEO_SOURCES = [
+  'https://drive.google.com/uc?export=download&confirm=t&id=1HQA-WuuCPX5hZhTezvbBMzzeySXS8pm0',
+  'https://drive.google.com/uc?export=download&confirm=t&id=1d20q1P3qKBHwIv1tJC5Wk1pkiQ8REfve',
+]
 
 const Tutorial = () => {
   const insets = useSafeAreaInsets()
@@ -22,11 +24,25 @@ const Tutorial = () => {
   const { isLight } = useThemeStore()
   const [isReady, setIsReady] = useState(false)
   const [hasError, setHasError] = useState(false)
+  const [sourceIndex, setSourceIndex] = useState(0)
+
+  const currentVideoUrl = TUTORIAL_VIDEO_SOURCES[sourceIndex]
 
   const headerBlockHeight = 96
   const availableHeight = screenHeight - insets.top - insets.bottom - headerBlockHeight
   const cardWidth = screenWidth * 0.92
   const cardHeight = Math.min((cardWidth * 16) / 9, availableHeight)
+
+  const handleVideoError = () => {
+    if (sourceIndex < TUTORIAL_VIDEO_SOURCES.length - 1) {
+      setIsReady(false)
+      setHasError(false)
+      setSourceIndex((prev) => prev + 1)
+      return
+    }
+
+    setHasError(true)
+  }
 
   return (
     <>
@@ -67,14 +83,15 @@ const Tutorial = () => {
               </View>
             ) : (
               <Video
-                source={{ uri: TUTORIAL_VIDEO_URL }}
+                key={currentVideoUrl}
+                source={{ uri: currentVideoUrl }}
                 style={StyleSheet.absoluteFillObject}
                 resizeMode={ResizeMode.COVER}
                 controls={isReady}
                 repeat
                 onLoad={() => setIsReady(true)}
                 onReadyForDisplay={() => setIsReady(true)}
-                onError={() => setHasError(true)}
+                onError={handleVideoError}
               />
             )}
           </View>

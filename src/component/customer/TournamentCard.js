@@ -1,20 +1,22 @@
-import { View, Text, StyleSheet, Pressable, Dimensions } from "react-native"
+import { View, Text, StyleSheet, Dimensions } from "react-native"
 import { HugeiconsIcon } from "@hugeicons/react-native"
 import {
   GameController03Icon,
   UserGroupIcon,
   Calendar03Icon,
   Clock01Icon,
-  Copy01Icon,
+  InformationCircleIcon,
+  CheckmarkCircle01Icon,
 } from "@hugeicons/core-free-icons"
 import AppIcon from "../../components/common/AppIcon"
-import { iconSize } from "../../theme/typography"
+import { iconSize, fontSize, spacing, radius } from "../../theme/typography"
 import { useThemeStore } from "../../store/themeStore"
 import { useAuthStore } from "../../store/authStore"
 import Clipboard from "@react-native-clipboard/clipboard"
 import Toast from "react-native-simple-toast"
 import StampID from "../matchcard/StampID"
 import SlotStamp from "../matchcard/SlotStamp"
+import { RoomCredentialRow, RoomCredentialsBlock } from "../matchcard/RoomCredentialRow"
 
 const TournamentCard = ({ game }) => {
   const { user } = useAuthStore()
@@ -39,15 +41,25 @@ const TournamentCard = ({ game }) => {
     Toast.show('Copied!', Toast.SHORT);
   };
 
+  const renderCredentialsInfoBox = (message, variant = 'info') => {
+    const cardBackground = isLight ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.1)'
+    const textColor = isLight ? '#000000' : '#ffffff'
+    const textSecondary = isLight ? 'rgba(51, 51, 51, 0.7)' : 'rgba(255, 255, 255, 0.7)'
+    const icon = variant === 'completed' ? CheckmarkCircle01Icon : InformationCircleIcon
+
+    return (
+      <View style={[styles.credentialsInfoBox, { backgroundColor: cardBackground }]}>
+        <AppIcon icon={icon} size={iconSize.md} color={textColor} />
+        <Text style={[styles.credentialsInfoText, { color: textSecondary }]}>
+          {message}
+        </Text>
+      </View>
+    )
+  }
+
   const renderRoomCredentials = () => {
     if (game.status === 'completed') {
-      return (
-        <View style={[styles.credentialsContainer, { borderColor: isLight ? '#000000' : '#ffffff' }]}>
-          <Text style={[styles.credentialsText, { color: isLight ? '#000000' : '#ffffff' }]}>
-            Match is Completed
-          </Text>
-        </View>
-      );
+      return renderCredentialsInfoBox('Match is Completed', 'completed');
     }
 
     // Check for room details in registered_time_slot
@@ -56,55 +68,28 @@ const TournamentCard = ({ game }) => {
 
     if (roomId && roomPass) {
       return (
-        <View style={styles.gameInfoContainer}>
-          {/* Room ID */}
-          <Pressable
-            style={styles.roomDetail}
+        <RoomCredentialsBlock
+          title="Room ID & Password"
+          isLight={isLight}
+          style={{ paddingHorizontal: 16, paddingBottom: 16 }}
+        >
+          <RoomCredentialRow
+            label="ID"
+            value={roomId}
             onPress={() => copyToClipboard(roomId)}
-            activeOpacity={0.7}
-          >
-            <View style={[styles.roomInfoItem, { backgroundColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)' }]}>
-              <Text style={{ color: isLight ? '#666666' : '#dadada' }}>ID</Text>
-              <Text
-                style={[styles.roomInfoText, { color: isLight ? '#333333' : '#dadada' }]}
-                numberOfLines={1}
-                ellipsizeMode="middle"
-              >
-                {roomId}
-              </Text>
-              <AppIcon icon={Copy01Icon} size={iconSize.sm} color={isLight ? '#666666' : '#dadada'} />
-            </View>
-          </Pressable>
-
-          {/* Room Password */}
-          <Pressable
-            style={styles.roomDetail}
+            isLight={isLight}
+          />
+          <RoomCredentialRow
+            label="PASS"
+            value={roomPass}
             onPress={() => copyToClipboard(roomPass)}
-            activeOpacity={0.7}
-          >
-            <View style={[styles.roomInfoItem, { backgroundColor: isLight ? '#f5f5f5' : 'rgba(255, 255, 255, 0.1)' }]}>
-              <Text style={{ color: isLight ? '#666666' : '#dadada' }}>Pass</Text>
-              <Text
-                style={[styles.roomInfoText, { color: isLight ? '#333333' : '#dadada' }]}
-                numberOfLines={1}
-                ellipsizeMode="middle"
-              >
-                {roomPass}
-              </Text>
-              <AppIcon icon={Copy01Icon} size={iconSize.sm} color={isLight ? '#666666' : '#dadada'} />
-            </View>
-          </Pressable>
-        </View>
+            isLight={isLight}
+          />
+        </RoomCredentialsBlock>
       );
     }
 
-    return (
-      <View style={[styles.credentialsContainer, { borderColor: isLight ? '#000000' : '#ffffff' }]}>
-        <Text style={[styles.credentialsText, { color: isLight ? '#000000' : '#ffffff' }]}>
-          "Get ID & Pass 10 mins early"
-        </Text>
-      </View>
-    );
+    return renderCredentialsInfoBox('Get ID & Pass 10 mins early');
   };
 
   return (
@@ -566,45 +551,20 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     borderColor: "#ffffff",
   },
-  // New styles for room credentials
-  gameInfoContainer: {
-    flexDirection: 'column',
-    gap: 8,
-    paddingHorizontal: 16,
-    paddingBottom: 16,
-  },
-  roomDetail: {
-    width: '100%',
-    minWidth: 0,
-  },
-  roomInfoItem: {
+  credentialsInfoBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderRadius: 8,
-    gap: 8,
-    minWidth: 0,
-  },
-  roomInfoText: {
-    flex: 1,
-    minWidth: 0,
-    fontSize: 13,
-    fontWeight: '500',
-    fontFamily: 'monospace',
-  },
-  credentialsContainer: {
     marginHorizontal: 16,
     marginBottom: 16,
-    padding: 12,
-    borderWidth: 1,
-    borderRadius: 8,
-    alignItems: 'center',
+    padding: spacing.lg,
+    borderRadius: radius.md,
+    gap: spacing.md,
   },
-  credentialsText: {
-    fontSize: 14,
-    fontWeight: '500',
-    textAlign: 'center',
+  credentialsInfoText: {
+    flex: 1,
+    fontSize: fontSize.base,
+    fontWeight: '600',
+    lineHeight: 18,
   },
 });
 

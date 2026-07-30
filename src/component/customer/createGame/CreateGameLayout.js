@@ -7,6 +7,7 @@ import Loader from '../../Loader';
 import CoolButton from '../common/CoolButton';
 import AppHeader from '../../../screens/customer/header/AppHeader';
 import StoreScreenHeader from '../store/StoreScreenHeader';
+import LightStoreHeader from '../store/LightStoreHeader';
 
 /**
  * CreateGameLayout - Shared layout wrapper for all game creation screens
@@ -30,6 +31,7 @@ const CreateGameLayout = ({
   title,
   storeKey,
   gameLogoUrl,
+  lightHeader = false,
   isLight,
   isLoading,
   isFormValid = true,
@@ -90,7 +92,11 @@ const CreateGameLayout = ({
             showsVerticalScrollIndicator={false}
           >
             {storeKey ? (
-              <StoreScreenHeader storeKey={storeKey} gameLogoUrl={gameLogoUrl} />
+              lightHeader ? (
+                <LightStoreHeader storeKey={storeKey} />
+              ) : (
+                <StoreScreenHeader storeKey={storeKey} gameLogoUrl={gameLogoUrl} />
+              )
             ) : null}
             <View style={[styles.gameCard, {
               backgroundColor: isLight ? "#ffffff" : "#000000",

@@ -1,10 +1,9 @@
-import { StyleSheet, Text, View, Pressable } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   GameController03Icon,
   StoreIcon,
   Notification01Icon,
-  Copy01Icon,
 } from '@hugeicons/core-free-icons';
 import AppIcon, { PointsIcon } from '../../components/common/AppIcon';
 import { iconSize } from '../../theme/typography';
@@ -14,6 +13,7 @@ import { useThemeStore } from '../../store/themeStore';
 import { ChallengeAPI } from '../../api/challengeApi';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { timeAgo } from '../matchcard/index/timeFormatter';
+import { RoomCredentialRow, RoomCredentialsBlock } from '../matchcard/RoomCredentialRow';
 
 /**
  * Constants for notification types and their configurations
@@ -38,7 +38,7 @@ const NotificationCard = ({ notification }) => {
     // Determine notification type
     const notificationType = notification.notification_type;
     const challengeId = notification?.challenge?.challenge_id ?? notification?.challenge_id ?? notification?.challenge?.id ?? notification?.id;
-    console.log(notification);
+
 
     // Load once-per-challenge acceptance flag (same behavior as MyMatchCard)
     useEffect(() => {
@@ -132,44 +132,21 @@ const NotificationCard = ({ notification }) => {
 
         // Helper to render a single info row
         const renderInfoRow = (label, value, onPressFn) => (
-            <Pressable
-                style={styles.roomDetail}
+            <RoomCredentialRow
+                label={label}
+                value={value}
                 onPress={onPressFn}
-                activeOpacity={0.7}
-            >
-                <View
-                    style={[
-                        styles.roomInfoItem,
-                        { backgroundColor: isLight ? '#f8f9fa' : 'rgba(255, 255, 255, 0.1)' },
-                    ]}
-                >
-                    <Text style={{ color: isLight ? '#666666' : '#dadada' }}>{label}</Text>
-                    <Text
-                        style={[styles.roomInfoText, { color: isLight ? '#333333' : '#dadada' }]}
-                        numberOfLines={1}
-                        ellipsizeMode="middle"
-                    >
-                        {value}
-                    </Text>
-                    <AppIcon icon={Copy01Icon} size={iconSize.sm} color={isLight ? '#666666' : '#dadada'} />
-                </View>
-            </Pressable>
+                isLight={isLight}
+            />
         );
 
         return (
-            <View style={styles.gameInfoContainer}>
-                {/* Room ID */}
+            <RoomCredentialsBlock isLight={isLight}>
                 {room_id && renderInfoRow('ID', room_id, () => handleRoomCopy(room_id))}
-
-                {/* Room Password */}
-                {room_pass && renderInfoRow('Pass', room_pass, () => copyToClipboard(room_pass))}
-
-                {/* Team Code */}
-                {team_code && renderInfoRow('Teamcode', team_code, () => handleRoomCopy(team_code))}
-
-                {/* Lobby ID (for MLBB) */}
-                {lobby_id && renderInfoRow('Lobby ID', lobby_id, () => handleRoomCopy(lobby_id))}
-            </View>
+                {room_pass && renderInfoRow('PASS', room_pass, () => copyToClipboard(room_pass))}
+                {team_code && renderInfoRow('TEAMCODE', team_code, () => handleRoomCopy(team_code))}
+                {lobby_id && renderInfoRow('LOBBY ID', lobby_id, () => handleRoomCopy(lobby_id))}
+            </RoomCredentialsBlock>
         );
     };
 
@@ -271,30 +248,6 @@ const styles = StyleSheet.create({
         lineHeight: 20,
         marginBottom: 12,
         fontWeight: '500',
-    },
-    gameInfoContainer: {
-        flexDirection: 'column',
-        gap: 8,
-    },
-    roomDetail: {
-        width: '100%',
-        minWidth: 0,
-    },
-    roomInfoItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 10,
-        paddingVertical: 8,
-        borderRadius: 8,
-        gap: 8,
-        minWidth: 0,
-    },
-    roomInfoText: {
-        flex: 1,
-        minWidth: 0,
-        fontSize: 13,
-        fontWeight: '500',
-        fontFamily: 'monospace',
     },
     buttonLine: {
         width: '100%',

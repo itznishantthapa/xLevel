@@ -90,7 +90,7 @@ const Profile = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Loader visible={isLoading} message="Signing out..." size={50} />
+      <Loader visible={isLoading} message="Signing out..." />
       <StatusBar translucent backgroundColor="transparent" barStyle={isLight ? "dark-content" : "light-content"} />
 
       <SafeAreaView style={styles.container}>

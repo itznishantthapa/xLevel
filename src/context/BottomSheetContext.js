@@ -577,7 +577,7 @@ const JoinSheetContent = React.memo(
                 }))}
               >
                 <Text style={[styles.toggleLinkText, { color: isDark ? "#ffffff" : "#000000" }]}>
-                  {payload.hasAccessCode ? "// USE POINTS" : "// USE ACCESS CODE"}
+                  {payload.hasAccessCode ? "Use Game Points" : "Use Access Code"}
                 </Text>
               </Pressable>
             )
@@ -1455,14 +1455,15 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   toggleTextButton: {
-    alignSelf: "flex-start",
-    paddingVertical: 6,
-    paddingHorizontal: 0,
+    alignSelf: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 4,
   },
   toggleLinkText: {
-    fontSize: 11,
+    fontSize: fontSize.sm,
     fontWeight: "600",
-    letterSpacing: 1,
+    textDecorationLine: "underline",
+    textDecorationStyle: "solid",
   },
   accessCodeInput: {
     flex: 1,

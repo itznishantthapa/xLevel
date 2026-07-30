@@ -14,8 +14,8 @@ import { useThemeStore } from '../store/themeStore';
 const Loader = ({
   visible = false,
   message = 'Loading…',
-  size = 56,
-  animationName = 'BallBeat',
+  size = 16, // Reduced default size for a sleeker horizontal box
+  animationName = 'LineSpinFadeLoader',
   backdropOpacity,
   fullScreen = false,
   testID = 'app-loader',
@@ -24,30 +24,29 @@ const Loader = ({
 
   const [shouldRender, setShouldRender] = useState(visible);
   const backdropOpacityAnimated = useRef(new Animated.Value(0)).current;
-  const scaleAnimated = useRef(new Animated.Value(0.98)).current;
+  const scaleAnimated = useRef(new Animated.Value(0.95)).current;
 
   const spinnerSize = fullScreen ? 32 : size;
 
   const colors = useMemo(() => {
-    const surface = fullScreen
-      ? (isLight ? '#ffffff' : '#000000')
-      : (isLight ? '#ffffff' : '#121212');
-    const text = fullScreen
-      ? (isLight ? 'rgba(17, 17, 17, 0.62)' : 'rgba(255, 255, 255, 0.68)')
-      : (isLight ? '#111111' : '#FFFFFF');
-    const spinner = fullScreen
-      ? (isLight ? 'rgba(17, 17, 17, 0.88)' : 'rgba(255, 255, 255, 0.88)')
-      : (isLight ? '#111111' : '#FFFFFF');
-    const overlayOpacity =
-      typeof backdropOpacity === 'number'
-        ? Math.max(0, Math.min(1, backdropOpacity))
-        : isLight
-        ? 0.28
-        : 0.35;
-    const overlay = fullScreen
-      ? surface
-      : `rgba(0,0,0,${overlayOpacity})`;
-    return { surface, text, spinner, overlay };
+    const defaultOverlayOpacity = isLight ? 0.3 : 0.5;
+    const finalOpacity = typeof backdropOpacity === 'number' ? Math.max(0, Math.min(1, backdropOpacity)) : defaultOverlayOpacity;
+
+    if (fullScreen) {
+      return {
+        surface: isLight ? '#FFFFFF' : '#000000',
+        text: isLight ? 'rgba(17, 17, 17, 0.7)' : 'rgba(255, 255, 255, 0.8)',
+        spinner: isLight ? '#111111' : '#FFFFFF',
+        overlay: isLight ? '#FFFFFF' : '#000000',
+      };
+    }
+
+    return {
+      surface: isLight ? '#FFFFFF' : '#1E1E1E',
+      text: isLight ? '#333333' : '#E0E0E0',
+      spinner: isLight ? '#111111' : '#FFFFFF',
+      overlay: `rgba(0,0,0,${finalOpacity})`,
+    };
   }, [isLight, backdropOpacity, fullScreen]);
 
   useEffect(() => {
@@ -56,14 +55,14 @@ const Loader = ({
       Animated.parallel([
         Animated.timing(backdropOpacityAnimated, {
           toValue: 1,
-          duration: 180,
+          duration: 200,
           easing: Easing.out(Easing.cubic),
           useNativeDriver: true,
         }),
         Animated.spring(scaleAnimated, {
           toValue: 1,
-          speed: fullScreen ? 20 : 14,
-          bounciness: fullScreen ? 0 : 6,
+          speed: fullScreen ? 16 : 14,
+          bounciness: fullScreen ? 0 : 2, // Kept very low for a sharp, rigid box entrance
           useNativeDriver: true,
         }),
       ]).start();
@@ -76,14 +75,14 @@ const Loader = ({
           useNativeDriver: true,
         }),
         Animated.timing(scaleAnimated, {
-          toValue: 0.98,
+          toValue: 0.95,
           duration: 150,
           easing: Easing.inOut(Easing.quad),
           useNativeDriver: true,
         }),
       ]).start(() => setShouldRender(false));
     }
-  }, [visible, backdropOpacityAnimated, scaleAnimated]);
+  }, [visible, backdropOpacityAnimated, scaleAnimated, fullScreen]);
 
   return (
     <View style={styles.overlayRoot} pointerEvents="box-none">
@@ -127,7 +126,10 @@ const Loader = ({
             <Animated.View
               style={[
                 styles.loaderContainer,
-                { backgroundColor: colors.surface, transform: [{ scale: scaleAnimated }] },
+                {
+                  backgroundColor: colors.surface,
+                  transform: [{ scale: scaleAnimated }],
+                },
               ]}
               accessible
               accessibilityRole="progressbar"
@@ -156,11 +158,7 @@ export default Loader;
 
 const styles = StyleSheet.create({
   overlayRoot: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    ...StyleSheet.absoluteFillObject,
     zIndex: 9999,
   },
   backdrop: {
@@ -175,7 +173,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 40,
-    gap: 14,
+    gap: 16,
   },
   fullScreenLoader: {
     width: 40,
@@ -184,27 +182,28 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   loaderContainer: {
-    minWidth: 160,
-    maxWidth: '80%',
-    paddingHorizontal: 24,
-    paddingVertical: 20,
-    borderRadius: 16,
+    flexDirection: 'row',
     alignItems: 'center',
+    minWidth: 200,
+    maxWidth: '85%',
+    paddingHorizontal: 24,
+    paddingVertical: 18,
+    borderRadius: 0,
   },
-
   loaderText: {
-    marginTop: 16,
-    fontSize: 16,
-    fontWeight: '600',
-    textAlign: 'center',
+    marginLeft: 18, // Creates the gap between the loader (left) and text (right)
+    marginTop: 0, // Removed top margin
+    fontSize: 15,
+    fontWeight: '500',
+    textAlign: 'left', // Aligns text cleanly against the left margin
+    flex: 1, // Ensures text wraps cleanly instead of overflowing if it gets too long
   },
   fullScreenLoaderText: {
-    marginTop: 0,
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '500',
     textAlign: 'center',
-    letterSpacing: 0.8,
-    lineHeight: 18,
+    letterSpacing: 0.5,
+    lineHeight: 20,
     maxWidth: 220,
   },
 });
